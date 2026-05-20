@@ -1,59 +1,36 @@
-<div class="w-full max-w-[420px]">
+<div class="w-full max-w-[400px] flex flex-col items-center">
 
-  <!-- Glass card -->
-  <div class="backdrop-blur-2xl bg-gradient-to-b from-white/[0.09] to-white/[0.04] border border-white/10 rounded-3xl p-8 shadow-[0_32px_72px_rgba(0,0,0,0.55)]">
+  <!-- Brand — outside the card -->
+  <div class="mb-8 text-center">
+    <h1 class="text-white font-bold text-[2.5rem] leading-none tracking-tight">
+      <span class="auth-word" style="animation-delay: 0.04s">Kawader</span>
+    </h1>
+    <p class="text-white/25 text-[10px] font-medium uppercase tracking-[0.22em] mt-2">
+      <span class="auth-word" style="animation-delay: 0.22s">HR Management System</span>
+    </p>
+  </div>
 
-    <!-- Brand -->
-    <div class="flex flex-col items-center mb-8">
-      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center mb-3 shadow-lg shadow-indigo-500/35">
-        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      </div>
-      <span class="text-white/90 font-semibold text-base tracking-wide">Kawader</span>
-      <span class="text-white/30 text-[10px] font-medium uppercase tracking-[0.22em] mt-0.5">HR Management System</span>
-    </div>
+  <!-- Card -->
+  <div class="auth-card-enter w-full rounded-2xl p-7" style="background: #13122a; border: 1px solid rgba(255,255,255,0.055);">
 
-    <!-- Heading -->
-    <div class="mb-7">
-      <h1 class="text-[1.65rem] font-bold text-white leading-snug mb-1.5">
-        <span class="auth-word" style="animation-delay: 0.06s">Welcome back</span>
-      </h1>
-      <p class="text-white/40 text-sm">
-        <span class="auth-word" style="animation-delay: 0.32s">Sign in to continue to your workspace</span>
-      </p>
-    </div>
-
-    <!-- Form -->
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4" novalidate>
 
       <!-- Phone number -->
       <div>
-        <label class="block text-white/50 text-[11px] font-semibold uppercase tracking-[0.14em] mb-1.5">
+        <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">
           Phone Number
         </label>
-        <div class="relative">
-          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-white/30">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 6.75z" />
-            </svg>
-          </span>
-          <input
-            formControlName="phoneNumber"
-            type="tel"
-            inputmode="numeric"
-            maxlength="10"
-            placeholder="10-digit phone number"
-            class="auth-input pl-10"
-            [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched"
-          />
-        </div>
+        <input
+          formControlName="phoneNumber"
+          type="tel"
+          inputmode="numeric"
+          maxlength="10"
+          placeholder="10-digit phone number"
+          class="auth-input"
+          [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched"
+        />
         @if (phoneNumber.invalid && phoneNumber.touched) {
-          <p class="flex items-center gap-1.5 text-red-400/80 text-xs mt-1.5">
-            <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-            </svg>
+          <p class="text-red-400/75 text-xs mt-1.5">
             {{ phoneNumber.hasError('required') ? 'Phone number is required' : 'Must be exactly 10 digits' }}
           </p>
         }
@@ -61,27 +38,21 @@
 
       <!-- Password -->
       <div>
-        <div class="flex items-center justify-between mb-1.5">
-          <label class="text-white/50 text-[11px] font-semibold uppercase tracking-[0.14em]">Password</label>
-          <a href="#" class="text-indigo-400/70 text-xs hover:text-indigo-300 transition-colors duration-150">Forgot password?</a>
-        </div>
+        <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">
+          Password
+        </label>
         <div class="relative">
-          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-white/30">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-            </svg>
-          </span>
           <input
             formControlName="password"
             [type]="showPassword() ? 'text' : 'password'"
             placeholder="••••••••"
-            class="auth-input pl-10 pr-11"
+            class="auth-input pr-11"
             [class.is-invalid]="password.invalid && password.touched"
           />
           <button
             type="button"
             (click)="togglePassword()"
-            class="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors duration-150"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/55 transition-colors duration-150"
             [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
           >
             @if (showPassword()) {
@@ -97,26 +68,15 @@
           </button>
         </div>
         @if (password.invalid && password.touched) {
-          <div class="mt-1.5 space-y-0.5">
-            @if (password.hasError('required')) {
-              <p class="flex items-center gap-1.5 text-red-400/80 text-xs">
-                <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>
-                Password is required
-              </p>
-            }
-            @if (password.hasError('minlength')) {
-              <p class="flex items-center gap-1.5 text-red-400/80 text-xs">
-                <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>
-                Minimum 8 characters required
-              </p>
-            }
-          </div>
+          <p class="text-red-400/75 text-xs mt-1.5">
+            {{ password.hasError('required') ? 'Password is required' : 'Minimum 8 characters' }}
+          </p>
         }
       </div>
 
       <!-- Server error -->
       @if (errorMessage()) {
-        <div class="flex items-start gap-2.5 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+        <div class="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-3.5 py-2.5">
           <svg class="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
           </svg>
@@ -127,34 +87,40 @@
       <!-- Submit -->
       <button type="submit" [disabled]="loading()" class="auth-btn mt-1">
         @if (loading()) {
-          <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-          </svg>
-          Signing in…
+          <span>Signing in…</span>
+          <span class="auth-btn-icon">
+            <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+          </span>
         } @else {
-          Sign In
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-          </svg>
+          <span>Sign In</span>
+          <span class="auth-btn-icon">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </span>
         }
       </button>
+
     </form>
 
-    <!-- Divider -->
-    <div class="flex items-center gap-3 my-6">
-      <div class="flex-1 h-px bg-white/10"></div>
-      <span class="text-white/25 text-xs">or</span>
-      <div class="flex-1 h-px bg-white/10"></div>
-    </div>
-
-    <!-- Register link -->
-    <p class="text-center text-white/35 text-sm">
-      Don't have an account?
-      <a routerLink="/auth/register" class="text-indigo-400 hover:text-indigo-300 font-semibold ml-1 transition-colors duration-150">
-        Create account
+    <!-- Forgot password -->
+    <p class="text-center mt-5">
+      <a href="#" class="text-white/25 text-[10px] font-semibold uppercase tracking-[0.16em] hover:text-white/50 transition-colors duration-150">
+        Forgot your password?
       </a>
     </p>
 
   </div>
+
+  <!-- Create account link -->
+  <p class="mt-6 text-white/30 text-sm">
+    Don't have an account?
+    <a routerLink="/auth/register" class="text-white/80 font-semibold hover:text-white transition-colors duration-150 ml-1">
+      Create account
+    </a>
+  </p>
+
 </div>

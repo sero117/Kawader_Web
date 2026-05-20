@@ -41,14 +41,29 @@ export interface ConfirmCodeRequest {
   code: string;
 }
 
+export interface GenerateCodeResponse {
+  id?: number;
+  code?: string;
+}
+
+export interface CompleteCompanyInfoRequest {
+  phoneNumber: string;
+  code: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+}
+
 // ── Response models ─────────────────────────────────────────────────────────
 
 export interface AuthTokenResponse {
-  accessToken: string;
+  accessToken?: string;       // standard OAuth field
+  token?: string;             // alias returned by this API
   refreshToken: string;
-  expiresIn: number;
-  tokenType: string;
-  userId?: number;
+  expiresIn?: number;
+  tokenExpiration?: string;
+  tokenType?: string;
+  userId?: number | string;
   role?: Role;
 }
 

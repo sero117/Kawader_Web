@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, signal, inject, OnInit } from '@angular/core';
+import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import {
   trigger,
   transition,
@@ -14,10 +15,8 @@ const authRouteAnimation = trigger('routeAnim', [
     query(':enter, :leave', [
       style({
         position: 'fixed',
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: '100%',
+        top: '0', left: '0',
+        width: '100%', height: '100%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -43,34 +42,40 @@ const authRouteAnimation = trigger('routeAnim', [
   animations: [authRouteAnimation],
   templateUrl: './auth-layout.component.html',
 })
-export class AuthLayoutComponent {
-  mouseX = signal(50);
-  mouseY = signal(50);
+export class AuthLayoutComponent implements OnInit {
+  private readonly router = inject(Router);
 
-  onMouseMove(event: MouseEvent): void {
-    this.mouseX.set((event.clientX / window.innerWidth) * 100);
-    this.mouseY.set((event.clientY / window.innerHeight) * 100);
+  routeAnim = signal('');
+
+  ngOnInit(): void {
+    this.syncAnim();
+    this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => this.syncAnim());
   }
 
-  prepareRoute(outlet: RouterOutlet): string {
-    return outlet?.activatedRouteData?.['animation'] ?? '';
+  private syncAnim(): void {
+    const grandchild = this.router.routerState.snapshot.root.firstChild?.firstChild;
+    this.routeAnim.set((grandchild?.data?.['animation'] as string) ?? '');
   }
 
-  readonly particles: { left: string; duration: string; delay: string; size: string }[] = [
-    { left: '7%',  duration: '9s',  delay: '0s',    size: '3px' },
-    { left: '15%', duration: '13s', delay: '1.8s',  size: '4px' },
-    { left: '24%', duration: '10s', delay: '3.2s',  size: '2px' },
-    { left: '32%', duration: '15s', delay: '0.6s',  size: '3px' },
-    { left: '40%', duration: '11s', delay: '4.1s',  size: '4px' },
-    { left: '49%', duration: '8s',  delay: '2.3s',  size: '2px' },
-    { left: '57%', duration: '14s', delay: '1.1s',  size: '3px' },
-    { left: '65%', duration: '12s', delay: '3.7s',  size: '4px' },
-    { left: '74%', duration: '9s',  delay: '0.9s',  size: '2px' },
-    { left: '82%', duration: '11s', delay: '2.6s',  size: '3px' },
-    { left: '90%', duration: '16s', delay: '1.4s',  size: '4px' },
-    { left: '4%',  duration: '10s', delay: '5.2s',  size: '2px' },
-    { left: '44%', duration: '13s', delay: '6.0s',  size: '3px' },
-    { left: '71%', duration: '9s',  delay: '4.8s',  size: '2px' },
-    { left: '95%', duration: '12s', delay: '7.2s',  size: '4px' },
+  readonly sparkles: { top: string; left: string; size: string; duration: string; delay: string }[] = [
+    { top: '6%',  left: '90%', size: '20px', duration: '3.3s', delay: '0s'   },
+    { top: '12%', left: '4%',  size: '14px', duration: '2.8s', delay: '0.7s' },
+    { top: '30%', left: '2%',  size: '10px', duration: '4.0s', delay: '1.5s' },
+    { top: '50%', left: '95%', size: '12px', duration: '2.5s', delay: '0.3s' },
+    { top: '72%', left: '87%', size: '16px', duration: '3.8s', delay: '1.9s' },
+    { top: '84%', left: '6%',  size: '11px', duration: '3.1s', delay: '0.9s' },
+    { top: '42%', left: '93%', size: '8px',  duration: '2.3s', delay: '2.3s' },
+    { top: '63%', left: '1%',  size: '13px', duration: '3.6s', delay: '0.5s' },
+    { top: '20%', left: '50%', size: '7px',  duration: '4.2s', delay: '1.2s' },
+  ];
+
+  readonly blobs: { top: string; left: string; width: string; height: string; rot: string; delay: string; duration: string }[] = [
+    { top: '-4%',  left: '38%',  width: '560px', height: '210px', rot: '42deg',  delay: '0s',   duration: '9s'  },
+    { top: '28%',  left: '-10%', width: '430px', height: '165px', rot: '-18deg', delay: '1.5s', duration: '11s' },
+    { top: '65%',  left: '-5%',  width: '270px', height: '270px', rot: '0deg',   delay: '0.8s', duration: '10s' },
+    { top: '52%',  left: '60%',  width: '390px', height: '145px', rot: '28deg',  delay: '2.2s', duration: '8s'  },
+    { top: '78%',  left: '28%',  width: '350px', height: '135px', rot: '-8deg',  delay: '1.0s', duration: '12s' },
   ];
 }

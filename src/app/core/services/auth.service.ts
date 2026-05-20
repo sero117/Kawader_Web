@@ -8,6 +8,8 @@ import {
   RefreshTokenRequest,
   GenerateCodeRequest,
   ConfirmCodeRequest,
+  GenerateCodeResponse,
+  CompleteCompanyInfoRequest,
   AuthTokenResponse,
   ApiResponse,
 } from '../models/auth.models';
@@ -37,9 +39,9 @@ export class AuthService {
     );
   }
 
-  generateCode(payload: GenerateCodeRequest): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(
-      `${this.baseUrl}/GenerateCode`,
+  generateCode(payload: GenerateCodeRequest): Observable<ApiResponse<GenerateCodeResponse>> {
+    return this.http.post<ApiResponse<GenerateCodeResponse>>(
+      `${this.baseUrl}/generate-code`,
       payload
     );
   }
@@ -51,6 +53,15 @@ export class AuthService {
     );
   }
 
+  completeCompanyInfo(
+    payload: CompleteCompanyInfoRequest
+  ): Observable<ApiResponse<AuthTokenResponse>> {
+    return this.http.post<ApiResponse<AuthTokenResponse>>(
+      `${this.baseUrl}/complete-company-info`,
+      payload
+    );
+  }
+
   // ── Token management ────────────────────────────────────────────────────────
 
   private readonly ACCESS_TOKEN_KEY = 'kawader_access_token';
@@ -58,8 +69,9 @@ export class AuthService {
   private readonly USER_ID_KEY = 'kawader_user_id';
 
   saveTokens(tokens: AuthTokenResponse): void {
-    localStorage.setItem(this.ACCESS_TOKEN_KEY, tokens.accessToken);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, tokens.refreshToken);
+    const access = tokens.accessToken ?? tokens.token;
+    if (access) localStorage.setItem(this.ACCESS_TOKEN_KEY, access);
+    if (tokens.refreshToken) localStorage.setItem(this.REFRESH_TOKEN_KEY, tokens.refreshToken);
     if (tokens.userId !== undefined) {
       localStorage.setItem(this.USER_ID_KEY, tokens.userId.toString());
     }
@@ -86,5 +98,20 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.getAccessToken();
+  }
+
+  getDisplayName(): string {
+    const token = this.getAccessToken();
+    if (!token) return 'Admin';
+    try {
+      const claims = JSON.parse(atob(token.split('.')[1])) as Record<string, unknown>;
+      const given  = claims['given_name']  as string | undefined;
+      const family = claims['family_name'] as string | undefined;
+      const name   = claims['name']        as string | undefined;
+      if (given && family) return `${given} ${family}`;
+      if (given)  return given;
+      if (name)   return name;
+    } catch { /* invalid token */ }
+    return 'Admin';
   }
 }

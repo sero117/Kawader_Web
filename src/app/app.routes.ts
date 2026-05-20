@@ -1,46 +1,61 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+  // ── Auth ──────────────────────────────────────────────────────────────────
   {
     path: 'auth',
     loadComponent: () =>
-      import('./features/auth/auth-layout/auth-layout.component').then(
-        m => m.AuthLayoutComponent
-      ),
+      import('./features/auth/auth-layout/auth-layout.component').then(m => m.AuthLayoutComponent),
     children: [
       {
         path: 'login',
         data: { animation: 'login' },
         loadComponent: () =>
-          import('./features/auth/login/login.component').then(
-            m => m.LoginComponent
-          ),
+          import('./features/auth/login/login.component').then(m => m.LoginComponent),
       },
       {
         path: 'register',
         data: { animation: 'register' },
         loadComponent: () =>
-          import('./features/auth/register/register.component').then(
-            m => m.RegisterComponent
-          ),
+          import('./features/auth/register/register.component').then(m => m.RegisterComponent),
       },
       {
         path: 'confirm-code',
         loadComponent: () =>
-          import('./features/auth/confirm-code/confirm-code.component').then(
-            m => m.ConfirmCodeComponent
-          ),
+          import('./features/auth/confirm-code/confirm-code.component').then(m => m.ConfirmCodeComponent),
       },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],
   },
+
+  // ── Admin dashboard ────────────────────────────────────────────────────────
+  {
+    path: 'dashboard/admin',
+    loadComponent: () =>
+      import('./features/admin/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./features/admin/overview/admin-overview.component').then(m => m.AdminOverviewComponent),
+      },
+      {
+        path: 'companies',
+        loadComponent: () =>
+          import('./features/admin/companies/companies.component').then(m => m.CompaniesComponent),
+      },
+    ],
+  },
+
+  // ── Employee / Manager dashboard (placeholder) ────────────────────────────
   {
     path: 'dashboard',
     loadComponent: () =>
-      import('./features/dashboard/dashboard.component').then(
-        m => m.DashboardComponent
-      ),
+      import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
   },
-  { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
+
+  // ── Redirects ──────────────────────────────────────────────────────────────
+  { path: '',   redirectTo: 'auth/login', pathMatch: 'full' },
   { path: '**', redirectTo: 'auth/login' },
 ];
