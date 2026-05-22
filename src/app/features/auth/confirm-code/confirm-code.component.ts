@@ -2,12 +2,13 @@ import { Component, signal, computed, inject, OnDestroy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { ConfirmCodeRequest, GenerateCodeRequest } from '../../../core/models/auth.models';
 
 @Component({
   selector: 'app-confirm-code',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './confirm-code.component.html',
 })
 export class ConfirmCodeComponent implements OnDestroy {

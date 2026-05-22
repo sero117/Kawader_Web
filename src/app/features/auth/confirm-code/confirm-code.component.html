@@ -1,12 +1,12 @@
 <div class="w-full max-w-[400px] flex flex-col items-center">
 
-  <!-- Brand — outside the card -->
+  <!-- Brand -->
   <div class="mb-8 text-center">
     <h1 class="text-white font-bold text-[2.5rem] leading-none tracking-tight">
-      <span class="auth-word" style="animation-delay: 0.04s">Kawader</span>
+      <span class="auth-word" style="animation-delay: 0.04s">{{ 'brand.name' | translate }}</span>
     </h1>
     <p class="text-white/25 text-[10px] font-medium uppercase tracking-[0.22em] mt-2">
-      <span class="auth-word" style="animation-delay: 0.22s">HR Management System</span>
+      <span class="auth-word" style="animation-delay: 0.22s">{{ 'brand.tagline' | translate }}</span>
     </p>
   </div>
 
@@ -21,31 +21,31 @@
             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
           </svg>
         </div>
-        <span class="text-white/25 text-[10px] font-medium uppercase tracking-[0.12em]">Register</span>
+        <span class="text-white/25 text-[10px] font-medium uppercase tracking-[0.12em]">{{ 'auth.verify.stepRegister' | translate }}</span>
       </div>
       <div class="w-8 h-px" style="background: rgba(255,255,255,0.1);"></div>
       <div class="flex items-center gap-1.5">
         <div class="w-5 h-5 rounded-full bg-white flex items-center justify-center">
           <span class="text-[#0d0c1e] text-[9px] font-black">2</span>
         </div>
-        <span class="text-white text-[10px] font-semibold uppercase tracking-[0.12em]">Verify</span>
+        <span class="text-white text-[10px] font-semibold uppercase tracking-[0.12em]">{{ 'auth.verify.stepVerify' | translate }}</span>
       </div>
       <div class="w-8 h-px" style="background: rgba(255,255,255,0.1);"></div>
       <div class="flex items-center gap-1.5">
         <div class="w-5 h-5 rounded-full flex items-center justify-center" style="border: 1px solid rgba(255,255,255,0.12);">
           <span class="text-white/25 text-[9px] font-semibold">3</span>
         </div>
-        <span class="text-white/25 text-[10px] font-medium uppercase tracking-[0.12em]">Sign In</span>
+        <span class="text-white/25 text-[10px] font-medium uppercase tracking-[0.12em]">{{ 'auth.verify.stepSignIn' | translate }}</span>
       </div>
     </div>
 
     <!-- Heading -->
     <div class="mb-6">
       <h2 class="text-white font-semibold text-lg">
-        <span class="auth-word" style="animation-delay: 0.3s">Verify your phone</span>
+        <span class="auth-word" style="animation-delay: 0.3s">{{ 'auth.verify.title' | translate }}</span>
       </h2>
       <p class="text-white/30 text-sm mt-0.5">
-        <span class="auth-word" style="animation-delay: 0.42s">Enter the 6-digit code sent to your number</span>
+        <span class="auth-word" style="animation-delay: 0.42s">{{ 'auth.verify.subtitle' | translate }}</span>
       </p>
     </div>
 
@@ -74,20 +74,14 @@
       <!-- Phone number -->
       <div>
         <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">
-          Phone Number
+          {{ 'auth.verify.phoneLabel' | translate }}
         </label>
-        <input
-          formControlName="phoneNumber"
-          type="tel"
-          inputmode="numeric"
-          maxlength="10"
-          placeholder="10-digit phone number"
-          class="auth-input"
-          [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched"
-        />
+        <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10"
+          [placeholder]="'auth.verify.phonePlaceholder' | translate"
+          class="auth-input" [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched" />
         @if (phoneNumber.invalid && phoneNumber.touched) {
           <p class="text-red-400/75 text-xs mt-1.5">
-            {{ phoneNumber.hasError('required') ? 'Phone number is required' : 'Must be exactly 10 digits' }}
+            {{ phoneNumber.hasError('required') ? ('validation.phoneRequired' | translate) : ('validation.phone10digits' | translate) }}
           </p>
         }
       </div>
@@ -95,22 +89,15 @@
       <!-- OTP code -->
       <div>
         <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">
-          Verification Code
+          {{ 'auth.verify.codeLabel' | translate }}
         </label>
-        <input
-          formControlName="code"
-          type="text"
-          inputmode="numeric"
-          maxlength="6"
-          autocomplete="one-time-code"
-          placeholder="• • • • • •"
-          class="auth-input text-2xl font-mono text-center py-4"
-          style="letter-spacing: 0.5em;"
-          [class.is-invalid]="code.invalid && code.touched"
-        />
+        <input formControlName="code" type="text" inputmode="numeric" maxlength="6"
+          autocomplete="one-time-code" placeholder="• • • • • •"
+          class="auth-input text-2xl font-mono text-center py-4" style="letter-spacing: 0.5em;"
+          [class.is-invalid]="code.invalid && code.touched" />
         @if (code.invalid && code.touched) {
           <p class="text-red-400/75 text-xs mt-1.5">
-            {{ code.hasError('required') ? 'Verification code is required' : 'Enter a valid 6-digit code' }}
+            {{ code.hasError('required') ? ('validation.codeRequired' | translate) : ('validation.codeInvalid' | translate) }}
           </p>
         }
       </div>
@@ -118,7 +105,7 @@
       <!-- Submit -->
       <button type="submit" [disabled]="loading()" class="auth-btn mt-1">
         @if (loading()) {
-          <span>Verifying…</span>
+          <span>{{ 'auth.verify.submitting' | translate }}</span>
           <span class="auth-btn-icon">
             <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -126,7 +113,7 @@
             </svg>
           </span>
         } @else {
-          <span>Verify Phone</span>
+          <span>{{ 'auth.verify.submit' | translate }}</span>
           <span class="auth-btn-icon">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -139,27 +126,23 @@
 
     <!-- Resend section -->
     <div class="mt-5 flex flex-col items-center gap-2">
-      <p class="text-white/25 text-[11px]">Didn't receive a code?</p>
+      <p class="text-white/25 text-[11px]">{{ 'auth.verify.noCode' | translate }}</p>
       @if (canResend()) {
-        <button
-          type="button"
-          (click)="resendCode()"
-          [disabled]="resendLoading()"
-          class="text-white/60 hover:text-white text-sm font-semibold transition-colors duration-150 disabled:opacity-40 flex items-center gap-1.5"
-        >
+        <button type="button" (click)="resendCode()" [disabled]="resendLoading()"
+          class="text-white/60 hover:text-white text-sm font-semibold transition-colors duration-150 disabled:opacity-40 flex items-center gap-1.5">
           @if (resendLoading()) {
             <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
             </svg>
-            Sending…
+            {{ 'auth.verify.resending' | translate }}
           } @else {
-            Resend Code
+            {{ 'auth.verify.resend' | translate }}
           }
         </button>
       } @else {
         <span class="text-white/25 text-sm tabular-nums">
-          Resend in <span class="text-white/45 font-semibold">{{ cooldownSeconds() }}s</span>
+          {{ 'auth.verify.resendIn' | translate }} <span class="text-white/45 font-semibold">{{ cooldownSeconds() }}s</span>
         </span>
       }
     </div>
@@ -172,7 +155,7 @@
       <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
       </svg>
-      Back to Sign In
+      {{ 'auth.verify.backToLogin' | translate }}
     </a>
   </p>
 

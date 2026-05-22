@@ -6,6 +6,7 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { SignInRequest, Role, AuthTokenResponse } from '../../../core/models/auth.models';
 
 function navigateByRole(role: Role | number | undefined, router: Router): void {
@@ -55,7 +56,7 @@ function extractErrorMessage(err: any): string {
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './login.component.html',
 })
 export class LoginComponent {

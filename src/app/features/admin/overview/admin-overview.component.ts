@@ -1,12 +1,13 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CompanyService } from '../../../core/services/company.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { Company } from '../../../core/models/company.models';
 
 @Component({
   selector: 'app-admin-overview',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   templateUrl: './admin-overview.component.html',
 })
 export class AdminOverviewComponent implements OnInit {

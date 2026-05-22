@@ -14,147 +14,83 @@
   <span class="auth-sparkle" style="top:72%; left:95%; font-size:13px; animation-duration:3.7s; animation-delay:1.6s;">✦</span>
   <span class="auth-sparkle" style="top:88%; left:5%; font-size:9px; animation-duration:4.0s; animation-delay:0.4s;">✦</span>
 
-  <!-- ── Top Navigation ─────────────────────────────────────────────── -->
+  <!-- Header -->
   <header class="sticky top-0 z-10" style="background: rgba(13,12,30,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.06);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-
-      <!-- Logo -->
       <div class="flex items-center gap-3">
-        <span class="text-white font-bold text-xl tracking-tight">Kawader</span>
-        <span class="text-[10px] font-medium uppercase tracking-[0.18em] px-2 py-0.5 rounded-md" style="color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.06);">HRMS</span>
+        <span class="text-white font-bold text-xl tracking-tight">{{ 'brand.name' | translate }}</span>
+        <span class="text-[10px] font-medium uppercase tracking-[0.18em] px-2 py-0.5 rounded-md" style="color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.06);">{{ 'brand.hrms' | translate }}</span>
       </div>
-
-      <!-- Right side -->
       <div class="flex items-center gap-3">
-
-        <!-- Notification bell -->
         <button class="w-9 h-9 rounded-xl flex items-center justify-center transition-colors" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.45);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
-          <svg class="w-4.5 h-4.5 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
         </button>
-
-        <!-- Divider -->
         <div class="h-6 w-px" style="background: rgba(255,255,255,0.08);"></div>
-
-        <!-- User + Sign out -->
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: rgba(255,255,255,0.12);">
             <span class="text-xs font-bold text-white">HR</span>
           </div>
-          <button
-            (click)="signOut()"
-            class="hidden sm:flex items-center gap-1.5 text-sm font-medium transition-colors"
+          <button (click)="signOut()" class="hidden sm:flex items-center gap-1.5 text-sm font-medium transition-colors"
             style="color: rgba(255,255,255,0.35);"
             onmouseover="this.style.color='rgba(239,68,68,0.8)'"
-            onmouseout="this.style.color='rgba(255,255,255,0.35)'"
-          >
+            onmouseout="this.style.color='rgba(255,255,255,0.35)'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-            Sign out
+            {{ 'nav.signOut' | translate }}
           </button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- ── Main Content ───────────────────────────────────────────────── -->
+  <!-- Main Content -->
   <main class="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
 
     <!-- Welcome banner -->
     <div class="rounded-2xl p-8 mb-8 relative overflow-hidden" style="background: #13122a; border: 1px solid rgba(255,255,255,0.07);">
-      <!-- Decorative blob inside banner -->
       <div class="absolute right-0 top-0 w-64 h-full pointer-events-none" style="background: radial-gradient(ellipse at right center, rgba(255,255,255,0.03) 0%, transparent 70%);"></div>
       <div class="absolute -right-8 -top-8 w-48 h-48 rounded-full pointer-events-none" style="background: rgba(255,255,255,0.02);"></div>
       <div class="relative z-10">
-        <p class="text-[11px] font-semibold uppercase tracking-[0.18em] mb-1" style="color: rgba(255,255,255,0.35);">Welcome back</p>
-        <h1 class="text-3xl font-bold text-white mb-2">Good morning!</h1>
-        <p class="text-sm max-w-md" style="color: rgba(255,255,255,0.35);">
-          Your Kawader dashboard is ready. Modules will be added as you build out the platform.
-        </p>
+        <p class="text-[11px] font-semibold uppercase tracking-[0.18em] mb-1" style="color: rgba(255,255,255,0.35);">{{ 'dashboard.welcomeLabel' | translate }}</p>
+        <h1 class="text-3xl font-bold text-white mb-2">{{ 'dashboard.greeting' | translate }}</h1>
+        <p class="text-sm max-w-md" style="color: rgba(255,255,255,0.35);">{{ 'dashboard.subtitle' | translate }}</p>
       </div>
     </div>
 
     <!-- Stats grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-
-      <!-- Total Employees -->
-      <div class="rounded-2xl p-6" style="background: #13122a; border: 1px solid rgba(255,255,255,0.07);">
-        <div class="flex items-center justify-between mb-5">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(255,255,255,0.07);">
-            <svg class="w-5 h-5" style="color: rgba(255,255,255,0.6);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+      @for (stat of [
+        { key: 'dashboard.totalEmployees', badge: '+2.5%' },
+        { key: 'dashboard.presentToday',   badge: 'dashboard.badgeToday' },
+        { key: 'dashboard.onLeave',        badge: 'dashboard.badgeActive' },
+        { key: 'dashboard.openPositions',  badge: 'dashboard.badgeHiring' }
+      ]; track stat.key) {
+        <div class="rounded-2xl p-6" style="background: #13122a; border: 1px solid rgba(255,255,255,0.07);">
+          <div class="flex items-center justify-between mb-5">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(255,255,255,0.07);">
+              <svg class="w-5 h-5" style="color: rgba(255,255,255,0.6);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
           </div>
-          <span class="text-[10px] font-semibold uppercase tracking-[0.12em] px-2 py-0.5 rounded-lg" style="color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.06);">+2.5%</span>
+          <p class="text-2xl font-bold text-white mb-0.5">—</p>
+          <p class="text-sm" style="color: rgba(255,255,255,0.35);">{{ stat.key | translate }}</p>
         </div>
-        <p class="text-2xl font-bold text-white mb-0.5">—</p>
-        <p class="text-sm" style="color: rgba(255,255,255,0.35);">Total Employees</p>
-      </div>
-
-      <!-- Present Today -->
-      <div class="rounded-2xl p-6" style="background: #13122a; border: 1px solid rgba(255,255,255,0.07);">
-        <div class="flex items-center justify-between mb-5">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(255,255,255,0.07);">
-            <svg class="w-5 h-5" style="color: rgba(255,255,255,0.6);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <span class="text-[10px] font-semibold uppercase tracking-[0.12em] px-2 py-0.5 rounded-lg" style="color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.06);">Today</span>
-        </div>
-        <p class="text-2xl font-bold text-white mb-0.5">—</p>
-        <p class="text-sm" style="color: rgba(255,255,255,0.35);">Present Today</p>
-      </div>
-
-      <!-- On Leave -->
-      <div class="rounded-2xl p-6" style="background: #13122a; border: 1px solid rgba(255,255,255,0.07);">
-        <div class="flex items-center justify-between mb-5">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(255,255,255,0.07);">
-            <svg class="w-5 h-5" style="color: rgba(255,255,255,0.6);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <span class="text-[10px] font-semibold uppercase tracking-[0.12em] px-2 py-0.5 rounded-lg" style="color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.06);">Active</span>
-        </div>
-        <p class="text-2xl font-bold text-white mb-0.5">—</p>
-        <p class="text-sm" style="color: rgba(255,255,255,0.35);">On Leave</p>
-      </div>
-
-      <!-- Open Positions -->
-      <div class="rounded-2xl p-6" style="background: #13122a; border: 1px solid rgba(255,255,255,0.07);">
-        <div class="flex items-center justify-between mb-5">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(255,255,255,0.07);">
-            <svg class="w-5 h-5" style="color: rgba(255,255,255,0.6);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <span class="text-[10px] font-semibold uppercase tracking-[0.12em] px-2 py-0.5 rounded-lg" style="color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.06);">Hiring</span>
-        </div>
-        <p class="text-2xl font-bold text-white mb-0.5">—</p>
-        <p class="text-sm" style="color: rgba(255,255,255,0.35);">Open Positions</p>
-      </div>
-
+      }
     </div>
 
     <!-- Modules placeholder -->
     <div class="rounded-2xl p-10 text-center" style="background: #13122a; border: 1px solid rgba(255,255,255,0.07);">
       <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: rgba(255,255,255,0.06);">
         <svg class="w-8 h-8" style="color: rgba(255,255,255,0.3);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       </div>
-      <h3 class="text-lg font-semibold text-white mb-1">Modules coming soon</h3>
-      <p class="text-sm max-w-xs mx-auto" style="color: rgba(255,255,255,0.3);">
-        Employees, Payroll, Attendance, and other HR modules will appear here as they are built.
-      </p>
+      <h3 class="text-lg font-semibold text-white mb-1">{{ 'dashboard.modulesTitle' | translate }}</h3>
+      <p class="text-sm max-w-xs mx-auto" style="color: rgba(255,255,255,0.3);">{{ 'dashboard.modulesSubtitle' | translate }}</p>
     </div>
 
   </main>

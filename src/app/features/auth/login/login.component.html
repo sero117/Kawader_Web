@@ -3,10 +3,10 @@
   <!-- Brand — outside the card -->
   <div class="mb-8 text-center">
     <h1 class="text-white font-bold text-[2.5rem] leading-none tracking-tight">
-      <span class="auth-word" style="animation-delay: 0.04s">Kawader</span>
+      <span class="auth-word" style="animation-delay: 0.04s">{{ 'brand.name' | translate }}</span>
     </h1>
     <p class="text-white/25 text-[10px] font-medium uppercase tracking-[0.22em] mt-2">
-      <span class="auth-word" style="animation-delay: 0.22s">HR Management System</span>
+      <span class="auth-word" style="animation-delay: 0.22s">{{ 'brand.tagline' | translate }}</span>
     </p>
   </div>
 
@@ -18,20 +18,20 @@
       <!-- Phone number -->
       <div>
         <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">
-          Phone Number
+          {{ 'auth.login.phoneLabel' | translate }}
         </label>
         <input
           formControlName="phoneNumber"
           type="tel"
           inputmode="numeric"
           maxlength="10"
-          placeholder="10-digit phone number"
+          [placeholder]="'auth.login.phonePlaceholder' | translate"
           class="auth-input"
           [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched"
         />
         @if (phoneNumber.invalid && phoneNumber.touched) {
           <p class="text-red-400/75 text-xs mt-1.5">
-            {{ phoneNumber.hasError('required') ? 'Phone number is required' : 'Must be exactly 10 digits' }}
+            {{ phoneNumber.hasError('required') ? ('validation.phoneRequired' | translate) : ('validation.phone10digits' | translate) }}
           </p>
         }
       </div>
@@ -39,7 +39,7 @@
       <!-- Password -->
       <div>
         <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">
-          Password
+          {{ 'auth.login.passwordLabel' | translate }}
         </label>
         <div class="relative">
           <input
@@ -53,7 +53,7 @@
             type="button"
             (click)="togglePassword()"
             class="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/55 transition-colors duration-150"
-            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+            [attr.aria-label]="showPassword() ? ('auth.login.hidePassword' | translate) : ('auth.login.showPassword' | translate)"
           >
             @if (showPassword()) {
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -69,7 +69,7 @@
         </div>
         @if (password.invalid && password.touched) {
           <p class="text-red-400/75 text-xs mt-1.5">
-            {{ password.hasError('required') ? 'Password is required' : 'Minimum 8 characters' }}
+            {{ password.hasError('required') ? ('validation.passwordRequired' | translate) : ('validation.passwordMin' | translate) }}
           </p>
         }
       </div>
@@ -87,7 +87,7 @@
       <!-- Submit -->
       <button type="submit" [disabled]="loading()" class="auth-btn mt-1">
         @if (loading()) {
-          <span>Signing in…</span>
+          <span>{{ 'auth.login.submitting' | translate }}</span>
           <span class="auth-btn-icon">
             <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -95,7 +95,7 @@
             </svg>
           </span>
         } @else {
-          <span>Sign In</span>
+          <span>{{ 'auth.login.submit' | translate }}</span>
           <span class="auth-btn-icon">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -109,7 +109,7 @@
     <!-- Forgot password -->
     <p class="text-center mt-5">
       <a href="#" class="text-white/25 text-[10px] font-semibold uppercase tracking-[0.16em] hover:text-white/50 transition-colors duration-150">
-        Forgot your password?
+        {{ 'auth.forgotPassword' | translate }}
       </a>
     </p>
 
@@ -117,9 +117,9 @@
 
   <!-- Create account link -->
   <p class="mt-6 text-white/30 text-sm">
-    Don't have an account?
+    {{ 'auth.noAccount' | translate }}
     <a routerLink="/auth/register" class="text-white/80 font-semibold hover:text-white transition-colors duration-150 ml-1">
-      Create account
+      {{ 'auth.createAccount' | translate }}
     </a>
   </p>
 

@@ -1,5 +1,7 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LanguageService } from '../../../core/services/language.service';
 
 function passwordComplexity(c: AbstractControl): ValidationErrors | null {
   const v: string = c.value ?? '';
@@ -16,13 +18,14 @@ import {
 @Component({
   selector: 'app-companies',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslatePipe],
   templateUrl: './companies.component.html',
 })
 export class CompaniesComponent implements OnInit {
   private readonly companyService = inject(CompanyService);
   private readonly authService    = inject(AuthService);
   private readonly fb             = inject(FormBuilder);
+  private readonly lang           = inject(LanguageService);
 
   // ── Table state ────────────────────────────────────────────────────────────
   companies = signal<Company[]>([]);
@@ -421,7 +424,7 @@ export class CompaniesComponent implements OnInit {
 
   // ── Helpers ────────────────────────────────────────────────────────────────
   companyTypeLabel(type?: CompanyType): string {
-    return type !== undefined ? CompanyTypeLabels[type] : '—';
+    return type !== undefined ? this.lang.t(`companyTypes.${type}`) : '—';
   }
 
   statusLabel(c: Company): { text: string; active: boolean; pending: boolean } {

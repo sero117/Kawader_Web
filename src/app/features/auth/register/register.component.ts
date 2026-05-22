@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { SignUpRequest, GenerateCodeRequest } from '../../../core/models/auth.models';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
@@ -30,7 +31,7 @@ function passwordComplexityValidator(control: AbstractControl): ValidationErrors
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './register.component.html',
 })
 export class RegisterComponent {

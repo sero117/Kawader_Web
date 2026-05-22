@@ -1,25 +1,24 @@
 <div class="w-full max-w-[600px] flex flex-col items-center">
 
-  <!-- Brand — outside the card -->
+  <!-- Brand -->
   <div class="mb-7 text-center">
     <h1 class="text-white font-bold text-[2.5rem] leading-none tracking-tight">
-      <span class="auth-word" style="animation-delay: 0.04s">Kawader</span>
+      <span class="auth-word" style="animation-delay: 0.04s">{{ 'brand.name' | translate }}</span>
     </h1>
     <p class="text-white/25 text-[10px] font-medium uppercase tracking-[0.22em] mt-2">
-      <span class="auth-word" style="animation-delay: 0.22s">HR Management System</span>
+      <span class="auth-word" style="animation-delay: 0.22s">{{ 'brand.tagline' | translate }}</span>
     </p>
   </div>
 
   <!-- Card -->
   <div class="auth-card-enter w-full rounded-2xl p-7" style="background: #13122a; border: 1px solid rgba(255,255,255,0.055);">
 
-    <!-- Card heading -->
     <div class="mb-6">
       <h2 class="text-white font-semibold text-lg leading-snug">
-        <span class="auth-word" style="animation-delay: 0.34s">Create your account</span>
+        <span class="auth-word" style="animation-delay: 0.34s">{{ 'auth.register.title' | translate }}</span>
       </h2>
       <p class="text-white/30 text-sm mt-0.5">
-        <span class="auth-word" style="animation-delay: 0.46s">Fill in your details to get started</span>
+        <span class="auth-word" style="animation-delay: 0.46s">{{ 'auth.register.subtitle' | translate }}</span>
       </p>
     </div>
 
@@ -48,32 +47,22 @@
       <!-- Row 1: First Name + Last Name -->
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">First Name</label>
-          <input
-            formControlName="firstName"
-            type="text"
-            placeholder="First name"
-            class="auth-input text-sm"
-            [class.is-invalid]="firstName.invalid && firstName.touched"
-          />
+          <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">{{ 'auth.register.firstNameLabel' | translate }}</label>
+          <input formControlName="firstName" type="text" [placeholder]="'auth.register.firstNamePlaceholder' | translate"
+            class="auth-input text-sm" [class.is-invalid]="firstName.invalid && firstName.touched" />
           @if (firstName.invalid && firstName.touched) {
             <p class="text-red-400/75 text-xs mt-1">
-              {{ firstName.hasError('required') ? 'Required' : 'Min 2 chars' }}
+              {{ firstName.hasError('required') ? ('validation.required' | translate) : ('validation.nameMin' | translate) }}
             </p>
           }
         </div>
         <div>
-          <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">Last Name</label>
-          <input
-            formControlName="lastName"
-            type="text"
-            placeholder="Last name"
-            class="auth-input text-sm"
-            [class.is-invalid]="lastName.invalid && lastName.touched"
-          />
+          <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">{{ 'auth.register.lastNameLabel' | translate }}</label>
+          <input formControlName="lastName" type="text" [placeholder]="'auth.register.lastNamePlaceholder' | translate"
+            class="auth-input text-sm" [class.is-invalid]="lastName.invalid && lastName.touched" />
           @if (lastName.invalid && lastName.touched) {
             <p class="text-red-400/75 text-xs mt-1">
-              {{ lastName.hasError('required') ? 'Required' : 'Min 2 chars' }}
+              {{ lastName.hasError('required') ? ('validation.required' | translate) : ('validation.nameMin' | translate) }}
             </p>
           }
         </div>
@@ -82,34 +71,23 @@
       <!-- Row 2: Phone + Email -->
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">Phone Number</label>
-          <input
-            formControlName="phoneNumber"
-            type="tel"
-            inputmode="numeric"
-            maxlength="10"
-            placeholder="10-digit number"
-            class="auth-input text-sm"
-            [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched"
-          />
+          <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">{{ 'auth.register.phoneLabel' | translate }}</label>
+          <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10"
+            [placeholder]="'auth.register.phonePlaceholder' | translate"
+            class="auth-input text-sm" [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched" />
           @if (phoneNumber.invalid && phoneNumber.touched) {
             <p class="text-red-400/75 text-xs mt-1">
-              {{ phoneNumber.hasError('required') ? 'Required' : '10 digits only' }}
+              {{ phoneNumber.hasError('required') ? ('validation.required' | translate) : ('validation.phone10only' | translate) }}
             </p>
           }
         </div>
         <div>
-          <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">Email Address</label>
-          <input
-            formControlName="email"
-            type="email"
-            placeholder="you@company.com"
-            class="auth-input text-sm"
-            [class.is-invalid]="email.invalid && email.touched"
-          />
+          <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">{{ 'auth.register.emailLabel' | translate }}</label>
+          <input formControlName="email" type="email" [placeholder]="'auth.register.emailPlaceholder' | translate"
+            class="auth-input text-sm" [class.is-invalid]="email.invalid && email.touched" />
           @if (email.invalid && email.touched) {
             <p class="text-red-400/75 text-xs mt-1">
-              {{ email.hasError('required') ? 'Required' : 'Invalid email' }}
+              {{ email.hasError('required') ? ('validation.required' | translate) : ('validation.emailInvalid' | translate) }}
             </p>
           }
         </div>
@@ -120,20 +98,13 @@
 
         <!-- Password -->
         <div>
-          <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">Password</label>
+          <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">{{ 'auth.register.passwordLabel' | translate }}</label>
           <div class="relative">
-            <input
-              formControlName="password"
-              [type]="showPassword() ? 'text' : 'password'"
-              placeholder="8–20 chars"
-              class="auth-input text-sm pr-10"
-              [class.is-invalid]="password.invalid && password.touched"
-            />
-            <button
-              type="button"
-              (click)="togglePassword()"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/55 transition-colors duration-150"
-            >
+            <input formControlName="password" [type]="showPassword() ? 'text' : 'password'"
+              [placeholder]="'auth.register.passwordPlaceholder' | translate"
+              class="auth-input text-sm pr-10" [class.is-invalid]="password.invalid && password.touched" />
+            <button type="button" (click)="togglePassword()"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/55 transition-colors duration-150">
               @if (showPassword()) {
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
@@ -146,7 +117,6 @@
               }
             </button>
           </div>
-          <!-- Requirements -->
           @if (password.dirty || password.touched) {
             <div class="grid grid-cols-2 gap-x-2 gap-y-1 mt-2">
               <div class="flex items-center gap-1 text-[10px] transition-colors duration-200"
@@ -159,7 +129,7 @@
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/>
                   }
                 </svg>
-                8–20 chars
+                {{ 'auth.register.pwReqChars' | translate }}
               </div>
               <div class="flex items-center gap-1 text-[10px] transition-colors duration-200"
                 [class.text-emerald-400]="!password.hasError('requiresUppercase') && !!password.value"
@@ -171,7 +141,7 @@
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/>
                   }
                 </svg>
-                Uppercase
+                {{ 'auth.register.pwReqUppercase' | translate }}
               </div>
               <div class="flex items-center gap-1 text-[10px] transition-colors duration-200"
                 [class.text-emerald-400]="!password.hasError('requiresNumber') && !!password.value"
@@ -183,7 +153,7 @@
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/>
                   }
                 </svg>
-                Number
+                {{ 'auth.register.pwReqNumber' | translate }}
               </div>
               <div class="flex items-center gap-1 text-[10px] transition-colors duration-200"
                 [class.text-emerald-400]="!password.hasError('requiresSpecial') && !!password.value"
@@ -195,7 +165,7 @@
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/>
                   }
                 </svg>
-                Special (!&#64;#)
+                {{ 'auth.register.pwReqSpecial' | translate }}
               </div>
             </div>
           }
@@ -203,20 +173,14 @@
 
         <!-- Confirm Password -->
         <div>
-          <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">Confirm Password</label>
+          <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">{{ 'auth.register.confirmPasswordLabel' | translate }}</label>
           <div class="relative">
-            <input
-              formControlName="confirmPassword"
-              [type]="showConfirmPassword() ? 'text' : 'password'"
-              placeholder="Re-enter password"
+            <input formControlName="confirmPassword" [type]="showConfirmPassword() ? 'text' : 'password'"
+              [placeholder]="'auth.register.confirmPasswordPlaceholder' | translate"
               class="auth-input text-sm pr-10"
-              [class.is-invalid]="confirmPassword.touched && (confirmPassword.invalid || form.hasError('passwordMismatch'))"
-            />
-            <button
-              type="button"
-              (click)="toggleConfirmPassword()"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/55 transition-colors duration-150"
-            >
+              [class.is-invalid]="confirmPassword.touched && (confirmPassword.invalid || form.hasError('passwordMismatch'))" />
+            <button type="button" (click)="toggleConfirmPassword()"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/55 transition-colors duration-150">
               @if (showConfirmPassword()) {
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
@@ -230,10 +194,10 @@
             </button>
           </div>
           @if (confirmPassword.touched && form.hasError('passwordMismatch')) {
-            <p class="text-red-400/75 text-xs mt-1">Passwords don't match</p>
+            <p class="text-red-400/75 text-xs mt-1">{{ 'validation.passwordsMismatch' | translate }}</p>
           }
           @if (confirmPassword.touched && confirmPassword.hasError('required')) {
-            <p class="text-red-400/75 text-xs mt-1">Required</p>
+            <p class="text-red-400/75 text-xs mt-1">{{ 'validation.required' | translate }}</p>
           }
         </div>
       </div>
@@ -241,7 +205,7 @@
       <!-- Submit -->
       <button type="submit" [disabled]="loading()" class="auth-btn mt-1">
         @if (loading()) {
-          <span>Creating account…</span>
+          <span>{{ 'auth.register.submitting' | translate }}</span>
           <span class="auth-btn-icon">
             <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -249,7 +213,7 @@
             </svg>
           </span>
         } @else {
-          <span>Create Account</span>
+          <span>{{ 'auth.register.submit' | translate }}</span>
           <span class="auth-btn-icon">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -264,9 +228,9 @@
 
   <!-- Sign in link -->
   <p class="mt-6 text-white/30 text-sm">
-    Already have an account?
+    {{ 'auth.hasAccount' | translate }}
     <a routerLink="/auth/login" class="text-white/80 font-semibold hover:text-white transition-colors duration-150 ml-1">
-      Sign in
+      {{ 'auth.signIn' | translate }}
     </a>
   </p>
 

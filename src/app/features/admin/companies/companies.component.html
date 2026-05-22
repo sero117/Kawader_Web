@@ -1,25 +1,25 @@
 <!-- Page heading -->
 <div class="flex items-center justify-between mb-7">
   <div>
-    <h1 class="text-white font-bold text-2xl mb-1">Companies</h1>
-    <p class="text-sm" style="color: rgba(255,255,255,0.3);">Manage all registered companies on the platform.</p>
+    <h1 class="font-bold text-2xl mb-1" style="color: var(--text-base);">{{ 'admin.companies.title' | translate }}</h1>
+    <p class="text-sm" style="color: var(--text-faint);">{{ 'admin.companies.subtitle' | translate }}</p>
   </div>
   <button (click)="openWizard()" class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all" style="background: #ffffff; color: #0d0c1e;"
     onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
       <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
     </svg>
-    Add Company
+    {{ 'admin.companies.addBtn' | translate }}
   </button>
 </div>
 
 <!-- Success toast -->
 @if (successMsg()) {
-  <div class="flex items-center gap-2.5 rounded-xl px-4 py-3 mb-5" style="background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);">
-    <svg class="w-4 h-4 flex-shrink-0" style="color: rgba(255,255,255,0.7);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+  <div class="flex items-center gap-2.5 rounded-xl px-4 py-3 mb-5" style="background: var(--bg-subtle-sm); border: 1px solid var(--border);">
+    <svg class="w-4 h-4 flex-shrink-0" style="color: var(--text-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
-    <span class="text-sm" style="color: rgba(255,255,255,0.75);">{{ successMsg() }}</span>
+    <span class="text-sm" style="color: var(--text-muted);">{{ successMsg() }}</span>
   </div>
 }
 
@@ -29,23 +29,23 @@
   <!-- Search bar -->
   <div class="p-5 pb-4">
     <div class="relative max-w-sm">
-      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: rgba(255,255,255,0.25);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
       </svg>
-      <input type="text" placeholder="Search phone or email…"
+      <input type="text" [placeholder]="'admin.companies.searchPlaceholder' | translate"
         class="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm"
-        style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.07); color: rgba(255,255,255,0.8); outline: none;"
+        style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
         [value]="searchInput()"
         (input)="onSearch($any($event.target).value)"
-        onfocus="this.style.borderColor='rgba(255,255,255,0.18)'"
-        onblur="this.style.borderColor='rgba(255,255,255,0.07)'" />
+        onfocus="this.style.borderColor='rgba(128,128,128,0.35)'"
+        onblur="this.style.borderColor='var(--border)'" />
     </div>
   </div>
 
   @if (loading()) {
     <div class="px-5 pb-5 space-y-3">
       @for (_ of [1,2,3,4,5]; track $index) {
-        <div class="h-14 rounded-xl animate-pulse" style="background: rgba(255,255,255,0.04);"></div>
+        <div class="h-14 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
       }
     </div>
   } @else if (listError()) {
@@ -55,26 +55,26 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
         </svg>
       </div>
-      <p class="text-white font-medium mb-1">Failed to load companies</p>
-      <p class="text-sm mb-4" style="color: rgba(255,255,255,0.35);">{{ listError() }}</p>
-      <button (click)="loadCompanies()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold" style="background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);">
+      <p class="font-medium mb-1" style="color: var(--text-base);">{{ 'admin.companies.loadError' | translate }}</p>
+      <p class="text-sm mb-4" style="color: var(--text-faint);">{{ listError() }}</p>
+      <button (click)="loadCompanies()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold" style="background: var(--bg-subtle-sm); color: var(--text-muted);">
         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
         </svg>
-        Retry
+        {{ 'common.retry' | translate }}
       </button>
     </div>
   } @else if (companiesWithStatus().length === 0) {
     <div class="p-16 text-center">
-      <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: rgba(255,255,255,0.05);">
-        <svg class="w-7 h-7" style="color: rgba(255,255,255,0.2);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: var(--bg-subtle-sm);">
+        <svg class="w-7 h-7" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
         </svg>
       </div>
-      <p class="text-white font-medium mb-1">No companies found</p>
-      <p class="text-sm" style="color: rgba(255,255,255,0.3);">
-        @if (searchInput()) { Try a different search term. }
-        @else { Add the first company to get started. }
+      <p class="font-medium mb-1" style="color: var(--text-base);">{{ 'admin.companies.noResults' | translate }}</p>
+      <p class="text-sm" style="color: var(--text-faint);">
+        @if (searchInput()) { {{ 'admin.companies.emptySearch' | translate }} }
+        @else { {{ 'admin.companies.emptyList' | translate }} }
       </p>
     </div>
   } @else {
@@ -82,46 +82,45 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>Company</th>
-            <th>Phone</th>
-            <th>Email</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Created</th>
-            <th style="text-align: right;">Actions</th>
+            <th>{{ 'admin.companies.colCompany' | translate }}</th>
+            <th>{{ 'admin.companies.colPhone' | translate }}</th>
+            <th>{{ 'admin.companies.colEmail' | translate }}</th>
+            <th>{{ 'admin.companies.colType' | translate }}</th>
+            <th>{{ 'admin.companies.colStatus' | translate }}</th>
+            <th>{{ 'admin.companies.colCreated' | translate }}</th>
+            <th style="text-align: right;">{{ 'admin.companies.colActions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
           @for (c of companiesWithStatus(); track c.id) {
-            <tr class="cursor-pointer" (click)="viewCompany(c)"
-              style="transition: background 0.1s;"
-              onmouseover="this.style.background='rgba(255,255,255,0.025)'"
+            <tr class="cursor-pointer" (click)="viewCompany(c)" style="transition: background 0.1s;"
+              onmouseover="this.style.background='var(--bg-subtle-sm)'"
               onmouseout="this.style.background='transparent'">
 
               <!-- Company name + avatar -->
               <td>
                 <div class="flex items-center gap-2.5">
                   @if (c.logoUrl) {
-                    <img [src]="c.logoUrl" class="w-8 h-8 rounded-lg object-cover flex-shrink-0" style="border: 1px solid rgba(255,255,255,0.08);" />
+                    <img [src]="c.logoUrl" class="w-8 h-8 rounded-lg object-cover flex-shrink-0" style="border: 1px solid var(--border);" />
                   } @else {
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style="background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.45);">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style="background: var(--bg-subtle-sm); color: var(--text-faint);">
                       {{ (c.companyName ?? c.phoneNumber).charAt(0).toUpperCase() }}
                     </div>
                   }
                   <div>
                     @if (c.companyName) {
-                      <p class="text-sm font-medium text-white leading-tight">{{ c.companyName }}</p>
+                      <p class="text-sm font-medium leading-tight" style="color: var(--text-base);">{{ c.companyName }}</p>
                     } @else {
-                      <p class="text-sm" style="color: rgba(255,255,255,0.25);">—</p>
+                      <p class="text-sm" style="color: var(--text-very-faint);">—</p>
                     }
-                    <p class="text-[10px] font-mono" style="color: rgba(255,255,255,0.2);">#{{ c.id }}</p>
+                    <p class="text-[10px] font-mono" style="color: var(--text-ultra-faint);">#{{ c.id }}</p>
                   </div>
                 </div>
               </td>
 
-              <td class="font-medium text-white">{{ c.phoneNumber }}</td>
-              <td style="color: rgba(255,255,255,0.45);">{{ c.email ?? '—' }}</td>
-              <td style="color: rgba(255,255,255,0.4);">{{ companyTypeLabel(c.companyType) }}</td>
+              <td class="font-medium" style="color: var(--text-muted);">{{ c.phoneNumber }}</td>
+              <td style="color: var(--text-faint);">{{ c.email ?? '—' }}</td>
+              <td style="color: var(--text-faint);">{{ companyTypeLabel(c.companyType) }}</td>
 
               <!-- Status badge -->
               <td>
@@ -129,38 +128,38 @@
                   <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
                     style="color: rgba(251,191,36,0.9); background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2);">
                     <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(251,191,36,0.8);"></span>
-                    Setup Pending
+                    {{ 'admin.companies.statusPending' | translate }}
                   </span>
                 } @else if (statusLabel(c).active) {
                   <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
                     style="color: rgba(52,211,153,0.9); background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2);">
                     <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(52,211,153,0.8);"></span>
-                    Active
+                    {{ 'admin.companies.statusActive' | translate }}
                   </span>
                 } @else {
                   <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
-                    style="color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);">
-                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(255,255,255,0.2);"></span>
+                    style="color: var(--text-faint); background: var(--bg-subtle-sm); border: 1px solid var(--border);">
+                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: var(--text-very-faint);"></span>
                     {{ statusLabel(c).text }}
                   </span>
                 }
               </td>
 
-              <td style="color: rgba(255,255,255,0.35);">{{ formatDate(c.createdAt) }}</td>
+              <td style="color: var(--text-faint);">{{ formatDate(c.createdAt) }}</td>
 
               <!-- Actions -->
               <td>
                 <div class="flex items-center justify-end gap-1.5">
                   <button (click)="openEdit(c, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    style="color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05);" title="Edit">
+                    style="color: var(--text-faint); background: var(--bg-subtle-sm);" [title]="'admin.companies.editTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
                     </svg>
                   </button>
                   <button (click)="confirmDelete(c.id, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);" title="Delete">
+                    style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);" [title]="'admin.companies.deleteTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                     </svg>
@@ -174,29 +173,31 @@
     </div>
 
     <!-- Pagination -->
-    <div class="flex items-center justify-between px-5 py-4" style="border-top: 1px solid rgba(255,255,255,0.05);">
-      <p class="text-xs" style="color: rgba(255,255,255,0.3);">
-        Page {{ pageNumber() }}
-        @if (companiesWithStatus().length > 0) { · {{ companiesWithStatus().length }} result{{ companiesWithStatus().length !== 1 ? 's' : '' }} }
+    <div class="flex items-center justify-between px-5 py-4" style="border-top: 1px solid var(--border);">
+      <p class="text-xs" style="color: var(--text-faint);">
+        {{ 'admin.companies.page' | translate }} {{ pageNumber() }}
+        @if (companiesWithStatus().length > 0) {
+          · {{ companiesWithStatus().length }} {{ companiesWithStatus().length !== 1 ? ('admin.companies.results' | translate) : ('admin.companies.result' | translate) }}
+        }
       </p>
       <div class="flex items-center gap-2">
         <button (click)="prevPage()" [disabled]="pageNumber() === 1"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
           [style.opacity]="pageNumber() === 1 ? '0.3' : '1'"
-          style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.55);">
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
-          Prev
+          {{ 'admin.companies.prev' | translate }}
         </button>
-        <span class="w-8 h-7 rounded-lg flex items-center justify-center text-xs font-bold" style="background: rgba(255,255,255,0.1); color: #fff;">
+        <span class="w-8 h-7 rounded-lg flex items-center justify-center text-xs font-bold" style="background: var(--bg-subtle-md); color: var(--text-base);">
           {{ pageNumber() }}
         </span>
         <button (click)="nextPage()" [disabled]="!hasMore()"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
           [style.opacity]="!hasMore() ? '0.3' : '1'"
-          style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.55);">
-          Next
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+          {{ 'admin.companies.next' | translate }}
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
           </svg>
@@ -207,9 +208,7 @@
 </div>
 
 
-<!-- ══════════════════════════════════════════════════════════
-     ADD COMPANY WIZARD
-═══════════════════════════════════════════════════════════ -->
+<!-- ══ ADD COMPANY WIZARD ══ -->
 @if (showWizard()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);" (click)="closeWizard()">
     <div class="w-full max-w-[580px] rounded-2xl" style="background: #1a1930; border: 1px solid rgba(255,255,255,0.09);" (click)="$event.stopPropagation()">
@@ -217,8 +216,8 @@
       <!-- Header -->
       <div class="flex items-center justify-between px-6 pt-6 pb-5" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
         <div>
-          <h2 class="text-white font-bold text-lg">Add New Company</h2>
-          <p class="text-xs mt-0.5" style="color: rgba(255,255,255,0.3);">Complete all 4 steps to set up the company.</p>
+          <h2 class="text-white font-bold text-lg">{{ 'admin.wizard.title' | translate }}</h2>
+          <p class="text-xs mt-0.5" style="color: rgba(255,255,255,0.3);">{{ 'admin.wizard.subtitle' | translate }}</p>
         </div>
         <button (click)="closeWizard()" class="w-8 h-8 rounded-lg flex items-center justify-center" style="color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.06);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -230,10 +229,10 @@
       <!-- Step indicator -->
       <div class="flex items-center px-6 py-5">
         @for (step of [
-          { n: 1, label: 'Company' },
-          { n: 2, label: 'Manager Phone' },
-          { n: 3, label: 'Account' },
-          { n: 4, label: 'Details' }
+          { n: 1, key: 'admin.wizard.step1' },
+          { n: 2, key: 'admin.wizard.step2' },
+          { n: 3, key: 'admin.wizard.step3' },
+          { n: 4, key: 'admin.wizard.step4' }
         ]; track step.n) {
           <div class="flex items-center" [style.flex]="step.n < 4 ? '1' : 'none'">
             <div class="flex flex-col items-center gap-1 flex-shrink-0">
@@ -244,13 +243,11 @@
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                } @else {
-                  {{ step.n }}
-                }
+                } @else { {{ step.n }} }
               </div>
               <span class="text-[9px] font-semibold uppercase tracking-[0.1em] whitespace-nowrap"
                 [style.color]="wizardStep() >= step.n ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.18)'">
-                {{ step.label }}
+                {{ step.key | translate }}
               </span>
             </div>
             @if (step.n < 4) {
@@ -277,25 +274,24 @@
         @if (wizardStep() === 1) {
           <form [formGroup]="step1Form" (ngSubmit)="submitStep1()" class="space-y-4" novalidate>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Company Phone <span style="color: rgba(239,68,68,0.7);">*</span></label>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.companyPhone' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
               <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="09XXXXXXXX" class="auth-input"
                 [class.is-invalid]="step1Form.get('phoneNumber')!.invalid && step1Form.get('phoneNumber')!.touched" />
               @if (step1Form.get('phoneNumber')!.invalid && step1Form.get('phoneNumber')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
-                  {{ step1Form.get('phoneNumber')!.hasError('required') ? 'Required' : '10 digits starting with 09' }}
+                  {{ step1Form.get('phoneNumber')!.hasError('required') ? ('validation.required' | translate) : ('validation.phone09' | translate) }}
                 </p>
               }
             </div>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Company Email <span style="color: rgba(255,255,255,0.2);">(optional)</span></label>
-              <input formControlName="email" type="email" placeholder="contact@company.com" class="auth-input"
-                [class.is-invalid]="step1Form.get('email')!.invalid && step1Form.get('email')!.touched" />
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.companyEmail' | translate }} <span style="color: rgba(255,255,255,0.2);">{{ 'common.optional' | translate }}</span></label>
+              <input formControlName="email" type="email" placeholder="contact@company.com" class="auth-input" />
             </div>
-            <p class="text-[11px]" style="color: rgba(255,255,255,0.2);">A unique Tenant ID will be auto-generated.</p>
+            <p class="text-[11px]" style="color: rgba(255,255,255,0.2);">{{ 'admin.wizard.tenantNote' | translate }}</p>
             <div class="flex gap-3 pt-1">
-              <button type="button" (click)="closeWizard()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);">Cancel</button>
+              <button type="button" (click)="closeWizard()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);">{{ 'common.cancel' | translate }}</button>
               <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold" style="background: #fff; color: #0d0c1e;" [style.opacity]="submitting() ? '0.5' : '1'">
-                {{ submitting() ? 'Creating…' : 'Next →' }}
+                {{ submitting() ? ('admin.wizard.creating' | translate) : ('common.next' | translate) }}
               </button>
             </div>
           </form>
@@ -305,22 +301,22 @@
         @if (wizardStep() === 2) {
           <form [formGroup]="step2Form" (ngSubmit)="submitStep2()" class="space-y-4" novalidate>
             <div class="rounded-xl px-4 py-3" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);">
-              <p class="text-xs" style="color: rgba(255,255,255,0.4);">A verification code will be generated for the manager's phone. You'll use it in the next step.</p>
+              <p class="text-xs" style="color: rgba(255,255,255,0.4);">{{ 'admin.wizard.managerNote' | translate }}</p>
             </div>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Manager Phone <span style="color: rgba(239,68,68,0.7);">*</span></label>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.managerPhone' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
               <input formControlName="managerPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="09XXXXXXXX" class="auth-input"
                 [class.is-invalid]="step2Form.get('managerPhone')!.invalid && step2Form.get('managerPhone')!.touched" />
               @if (step2Form.get('managerPhone')!.invalid && step2Form.get('managerPhone')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
-                  {{ step2Form.get('managerPhone')!.hasError('required') ? 'Required' : '10 digits starting with 09' }}
+                  {{ step2Form.get('managerPhone')!.hasError('required') ? ('validation.required' | translate) : ('validation.phone09' | translate) }}
                 </p>
               }
             </div>
             <div class="flex gap-3 pt-1">
-              <button type="button" (click)="wizardStep.set(1)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);">← Back</button>
+              <button type="button" (click)="wizardStep.set(1)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);">{{ 'common.back' | translate }}</button>
               <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold" style="background: #fff; color: #0d0c1e;" [style.opacity]="submitting() ? '0.5' : '1'">
-                {{ submitting() ? 'Sending…' : 'Send Code →' }}
+                {{ submitting() ? ('admin.wizard.sending' | translate) : ('admin.wizard.sendCode' | translate) }}
               </button>
             </div>
           </form>
@@ -330,54 +326,54 @@
         @if (wizardStep() === 3) {
           <form [formGroup]="step3Form" (ngSubmit)="submitStep3()" class="space-y-4" novalidate>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Verification Code <span style="color: rgba(239,68,68,0.7);">*</span></label>
-              <input formControlName="code" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit code" class="auth-input"
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.verificationCode' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
+              <input formControlName="code" type="text" inputmode="numeric" maxlength="6" [placeholder]="'admin.wizard.codePlaceholder' | translate" class="auth-input"
                 [class.is-invalid]="step3Form.get('code')!.invalid && step3Form.get('code')!.touched" />
               @if (step3Form.get('code')!.invalid && step3Form.get('code')!.touched) {
-                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">Enter the 6-digit code</p>
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.codeDigits' | translate }}</p>
               }
             </div>
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">First Name <span style="color: rgba(239,68,68,0.7);">*</span></label>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.firstName' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
                 <input formControlName="firstName" type="text" placeholder="Ahmad" maxlength="50" class="auth-input"
                   [class.is-invalid]="step3Form.get('firstName')!.invalid && step3Form.get('firstName')!.touched" />
                 @if (step3Form.get('firstName')!.invalid && step3Form.get('firstName')!.touched) {
-                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">Required, max 50 chars</p>
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
                 }
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Last Name <span style="color: rgba(239,68,68,0.7);">*</span></label>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.lastName' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
                 <input formControlName="lastName" type="text" placeholder="Al-Ahmad" maxlength="50" class="auth-input"
                   [class.is-invalid]="step3Form.get('lastName')!.invalid && step3Form.get('lastName')!.touched" />
                 @if (step3Form.get('lastName')!.invalid && step3Form.get('lastName')!.touched) {
-                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">Required, max 50 chars</p>
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
                 }
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Password <span style="color: rgba(239,68,68,0.7);">*</span></label>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.password' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
                 <input formControlName="password" type="password" placeholder="Pass@1234" class="auth-input"
                   [class.is-invalid]="step3Form.get('password')!.invalid && step3Form.get('password')!.touched" />
                 @if (step3Form.get('password')!.invalid && step3Form.get('password')!.touched) {
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
-                    @if (step3Form.get('password')!.hasError('minlength')) { Min 8 characters }
-                    @else { Must include A-Z, a-z, 0-9 and a special character }
+                    @if (step3Form.get('password')!.hasError('minlength')) { {{ 'validation.passwordMin8' | translate }} }
+                    @else { {{ 'validation.passwordComplex' | translate }} }
                   </p>
                 }
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Confirm Password <span style="color: rgba(239,68,68,0.7);">*</span></label>
-                <input formControlName="confirmPassword" type="password" placeholder="Repeat" class="auth-input"
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.confirmPassword' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
+                <input formControlName="confirmPassword" type="password" [placeholder]="'auth.register.confirmPasswordPlaceholder' | translate" class="auth-input"
                   [class.is-invalid]="step3Form.get('confirmPassword')!.invalid && step3Form.get('confirmPassword')!.touched" />
                 @if (step3Form.get('confirmPassword')!.invalid && step3Form.get('confirmPassword')!.touched) {
-                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">Required</p>
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
                 }
               </div>
             </div>
             <div class="flex gap-3 pt-1">
-              <button type="button" (click)="wizardStep.set(2)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);">← Back</button>
+              <button type="button" (click)="wizardStep.set(2)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);">{{ 'common.back' | translate }}</button>
               <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold" style="background: #fff; color: #0d0c1e;" [style.opacity]="submitting() ? '0.5' : '1'">
-                {{ submitting() ? 'Setting up…' : 'Next →' }}
+                {{ submitting() ? ('admin.wizard.settingUp' | translate) : ('common.next' | translate) }}
               </button>
             </div>
           </form>
@@ -388,42 +384,42 @@
           <form [formGroup]="step4Form" (ngSubmit)="submitStep4()" class="space-y-4" novalidate>
             <div class="grid grid-cols-2 gap-3">
               <div class="col-span-2">
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Company Name <span style="color: rgba(239,68,68,0.7);">*</span></label>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.companyName' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
                 <input formControlName="companyName" type="text" placeholder="Acme Corporation" maxlength="200" class="auth-input"
                   [class.is-invalid]="step4Form.get('companyName')!.invalid && step4Form.get('companyName')!.touched" />
                 @if (step4Form.get('companyName')!.invalid && step4Form.get('companyName')!.touched) {
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
-                    @if (step4Form.get('companyName')!.hasError('required')) { Required }
-                    @else { Max 200 characters }
+                    @if (step4Form.get('companyName')!.hasError('required')) { {{ 'validation.required' | translate }} }
+                    @else { {{ 'validation.max200' | translate }} }
                   </p>
                 }
               </div>
               <div class="col-span-2">
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Address <span style="color: rgba(255,255,255,0.2);">(optional)</span></label>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.address' | translate }} <span style="color: rgba(255,255,255,0.2);">{{ 'common.optional' | translate }}</span></label>
                 <input formControlName="address" type="text" placeholder="123 Main Street, City" maxlength="500" class="auth-input"
                   [class.is-invalid]="step4Form.get('address')!.invalid && step4Form.get('address')!.touched" />
                 @if (step4Form.get('address')!.invalid && step4Form.get('address')!.touched) {
-                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">Max 500 characters</p>
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.max500' | translate }}</p>
                 }
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Landline <span style="color: rgba(255,255,255,0.2);">(optional)</span></label>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.landline' | translate }} <span style="color: rgba(255,255,255,0.2);">{{ 'common.optional' | translate }}</span></label>
                 <input formControlName="landlinePhone" type="tel" placeholder="011XXXXXXXX" class="auth-input"
                   [class.is-invalid]="step4Form.get('landlinePhone')!.invalid && step4Form.get('landlinePhone')!.touched" />
                 @if (step4Form.get('landlinePhone')!.invalid && step4Form.get('landlinePhone')!.touched) {
-                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">7–10 digits only</p>
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.landlineDigits' | translate }}</p>
                 }
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Business Field <span style="color: rgba(255,255,255,0.2);">(optional)</span></label>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.businessField' | translate }} <span style="color: rgba(255,255,255,0.2);">{{ 'common.optional' | translate }}</span></label>
                 <input formControlName="businessField" type="text" placeholder="e.g. Software" maxlength="200" class="auth-input"
                   [class.is-invalid]="step4Form.get('businessField')!.invalid && step4Form.get('businessField')!.touched" />
                 @if (step4Form.get('businessField')!.invalid && step4Form.get('businessField')!.touched) {
-                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">Max 200 characters</p>
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.max200' | translate }}</p>
                 }
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Company Type <span style="color: rgba(239,68,68,0.7);">*</span></label>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.companyType' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
                 <select formControlName="companyType" class="auth-input">
                   @for (t of companyTypes; track t.value) {
                     <option [value]="t.value">{{ t.label }}</option>
@@ -431,7 +427,7 @@
                 </select>
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Logo <span style="color: rgba(239,68,68,0.7);">*</span></label>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.wizard.logo' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
                 <label class="flex items-center gap-2 cursor-pointer rounded-xl px-3 py-2.5 text-sm"
                   style="background: rgba(255,255,255,0.055); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4);"
                   onmouseover="this.style.borderColor='rgba(255,255,255,0.15)'"
@@ -439,7 +435,7 @@
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                   </svg>
-                  <span class="truncate text-xs">{{ selectedLogo ? selectedLogo.name : 'Upload logo…' }}</span>
+                  <span class="truncate text-xs">{{ selectedLogo ? selectedLogo.name : ('admin.wizard.uploadLogo' | translate) }}</span>
                   <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" class="hidden" (change)="onLogoSelected($event)" />
                 </label>
                 @if (logoError()) {
@@ -448,28 +444,24 @@
               </div>
             </div>
             <div class="flex gap-3 pt-1">
-              <button type="button" (click)="wizardStep.set(3)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);">← Back</button>
+              <button type="button" (click)="wizardStep.set(3)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);">{{ 'common.back' | translate }}</button>
               <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold" style="background: #fff; color: #0d0c1e;" [style.opacity]="submitting() ? '0.5' : '1'">
-                {{ submitting() ? 'Finishing…' : 'Finish Setup' }}
+                {{ submitting() ? ('admin.wizard.finishing' | translate) : ('admin.wizard.finishSetup' | translate) }}
               </button>
             </div>
           </form>
         }
-
       </div>
     </div>
   </div>
 }
 
 
-<!-- ══════════════════════════════════════════════════════════
-     VIEW DETAILS MODAL
-═══════════════════════════════════════════════════════════ -->
+<!-- ══ VIEW DETAILS MODAL ══ -->
 @if (showViewModal() && selectedCompany()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);" (click)="showViewModal.set(false)">
     <div class="w-full max-w-md rounded-2xl p-6" style="background: #1a1930; border: 1px solid rgba(255,255,255,0.09);" (click)="$event.stopPropagation()">
 
-      <!-- Modal header -->
       <div class="flex items-center justify-between mb-5">
         <div class="flex items-center gap-3">
           @if (selectedCompany()!.logoUrl) {
@@ -481,7 +473,7 @@
           }
           <div>
             <h2 class="text-white font-bold text-base leading-tight">
-              {{ selectedCompany()!.companyName ?? 'Company Details' }}
+              {{ selectedCompany()!.companyName ?? ('admin.view.defaultTitle' | translate) }}
             </h2>
             <p class="text-[11px] font-mono" style="color: rgba(255,255,255,0.25);">#{{ selectedCompany()!.id }}</p>
           </div>
@@ -500,20 +492,18 @@
           }
         </div>
       } @else {
-
-        <!-- Status badge inside view modal -->
         <div class="mb-4">
           @if (statusLabel(selectedCompany()!).pending) {
             <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-3 py-1.5 rounded-full"
               style="color: rgba(251,191,36,0.9); background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2);">
               <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(251,191,36,0.8);"></span>
-              Setup Pending
+              {{ 'admin.companies.statusPending' | translate }}
             </span>
           } @else if (statusLabel(selectedCompany()!).active) {
             <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-3 py-1.5 rounded-full"
               style="color: rgba(52,211,153,0.9); background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2);">
               <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(52,211,153,0.8);"></span>
-              Active
+              {{ 'admin.companies.statusActive' | translate }}
             </span>
           } @else {
             <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-3 py-1.5 rounded-full"
@@ -524,21 +514,20 @@
           }
         </div>
 
-        <!-- Fields -->
         <div class="space-y-0">
           @for (field of [
-            { label: 'Phone',     value: selectedCompany()!.phoneNumber },
-            { label: 'Email',     value: selectedCompany()!.email },
-            { label: 'Address',   value: selectedCompany()!.address },
-            { label: 'Landline',  value: selectedCompany()!.landlinePhone },
-            { label: 'Business',  value: selectedCompany()!.businessField },
-            { label: 'Type',      value: companyTypeLabel(selectedCompany()!.companyType) !== '—' ? companyTypeLabel(selectedCompany()!.companyType) : null },
-            { label: 'Created',   value: formatDate(selectedCompany()!.createdAt) !== '—' ? formatDate(selectedCompany()!.createdAt) : null },
-            { label: 'Tenant ID', value: selectedCompany()!.tenantId }
-          ]; track field.label) {
+            { labelKey: 'admin.view.phone',    value: selectedCompany()!.phoneNumber },
+            { labelKey: 'admin.view.email',    value: selectedCompany()!.email },
+            { labelKey: 'admin.view.address',  value: selectedCompany()!.address },
+            { labelKey: 'admin.view.landline', value: selectedCompany()!.landlinePhone },
+            { labelKey: 'admin.view.business', value: selectedCompany()!.businessField },
+            { labelKey: 'admin.view.type',     value: companyTypeLabel(selectedCompany()!.companyType) !== '—' ? companyTypeLabel(selectedCompany()!.companyType) : null },
+            { labelKey: 'admin.view.created',  value: formatDate(selectedCompany()!.createdAt) !== '—' ? formatDate(selectedCompany()!.createdAt) : null },
+            { labelKey: 'admin.view.tenantId', value: selectedCompany()!.tenantId }
+          ]; track field.labelKey) {
             @if (field.value) {
               <div class="flex items-start justify-between gap-4 py-2.5" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <span class="text-[11px] font-semibold uppercase tracking-[0.14em] flex-shrink-0 pt-0.5" style="color: rgba(255,255,255,0.3);">{{ field.label }}</span>
+                <span class="text-[11px] font-semibold uppercase tracking-[0.14em] flex-shrink-0 pt-0.5" style="color: rgba(255,255,255,0.3);">{{ field.labelKey | translate }}</span>
                 <span class="text-sm text-right font-medium" style="color: rgba(255,255,255,0.75); word-break: break-all;">{{ field.value }}</span>
               </div>
             }
@@ -550,15 +539,13 @@
 }
 
 
-<!-- ══════════════════════════════════════════════════════════
-     EDIT MODAL
-═══════════════════════════════════════════════════════════ -->
+<!-- ══ EDIT MODAL ══ -->
 @if (showEditModal() && selectedCompany()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);" (click)="showEditModal.set(false)">
     <div class="w-full max-w-md rounded-2xl p-6" style="background: #1a1930; border: 1px solid rgba(255,255,255,0.09);" (click)="$event.stopPropagation()">
       <div class="flex items-center justify-between mb-6">
         <div>
-          <h2 class="text-white font-bold text-lg">Edit Company</h2>
+          <h2 class="text-white font-bold text-lg">{{ 'admin.edit.title' | translate }}</h2>
           <p class="text-xs mt-0.5" style="color: rgba(255,255,255,0.3);">#{{ selectedCompany()!.id }}</p>
         </div>
         <button (click)="showEditModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center" style="color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.06);">
@@ -579,24 +566,23 @@
 
       <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Phone Number <span style="color: rgba(239,68,68,0.7);">*</span></label>
+          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.edit.phoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
           <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="09XXXXXXXX" class="auth-input"
             [class.is-invalid]="editForm.get('phoneNumber')!.invalid && editForm.get('phoneNumber')!.touched" />
           @if (editForm.get('phoneNumber')!.invalid && editForm.get('phoneNumber')!.touched) {
             <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
-              {{ editForm.get('phoneNumber')!.hasError('required') ? 'Required' : 'Must be exactly 10 digits' }}
+              {{ editForm.get('phoneNumber')!.hasError('required') ? ('validation.required' | translate) : ('validation.phone10digits' | translate) }}
             </p>
           }
         </div>
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">Email Address <span style="color: rgba(255,255,255,0.2);">(optional)</span></label>
-          <input formControlName="email" type="email" placeholder="contact@company.com" class="auth-input"
-            [class.is-invalid]="editForm.get('email')!.invalid && editForm.get('email')!.touched" />
+          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: rgba(255,255,255,0.35);">{{ 'admin.edit.emailLabel' | translate }} <span style="color: rgba(255,255,255,0.2);">{{ 'common.optional' | translate }}</span></label>
+          <input formControlName="email" type="email" placeholder="contact@company.com" class="auth-input" />
         </div>
         <div class="flex gap-3 pt-1">
-          <button type="button" (click)="showEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);">Cancel</button>
+          <button type="button" (click)="showEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);">{{ 'common.cancel' | translate }}</button>
           <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold" style="background: #fff; color: #0d0c1e;" [style.opacity]="submitting() ? '0.5' : '1'">
-            {{ submitting() ? 'Saving…' : 'Save Changes' }}
+            {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
           </button>
         </div>
       </form>
@@ -605,9 +591,7 @@
 }
 
 
-<!-- ══════════════════════════════════════════════════════════
-     DELETE CONFIRM MODAL
-═══════════════════════════════════════════════════════════ -->
+<!-- ══ DELETE CONFIRM MODAL ══ -->
 @if (showDeleteModal()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);" (click)="showDeleteModal.set(false)">
     <div class="w-full max-w-sm rounded-2xl p-6 text-center" style="background: #1a1930; border: 1px solid rgba(255,255,255,0.09);" (click)="$event.stopPropagation()">
@@ -616,12 +600,12 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
         </svg>
       </div>
-      <h2 class="text-white font-bold text-lg mb-1">Delete Company?</h2>
-      <p class="text-sm mb-6" style="color: rgba(255,255,255,0.35);">This action cannot be undone. All associated data will be permanently removed.</p>
+      <h2 class="text-white font-bold text-lg mb-1">{{ 'admin.deleteModal.title' | translate }}</h2>
+      <p class="text-sm mb-6" style="color: rgba(255,255,255,0.35);">{{ 'admin.deleteModal.message' | translate }}</p>
       <div class="flex gap-3">
-        <button (click)="showDeleteModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);">Cancel</button>
+        <button (click)="showDeleteModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);">{{ 'common.cancel' | translate }}</button>
         <button (click)="executeDelete()" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold" style="background: rgba(239,68,68,0.8); color: #fff;" [style.opacity]="submitting() ? '0.5' : '1'">
-          {{ submitting() ? 'Deleting…' : 'Delete' }}
+          {{ submitting() ? ('common.deleting' | translate) : ('common.delete' | translate) }}
         </button>
       </div>
     </div>
