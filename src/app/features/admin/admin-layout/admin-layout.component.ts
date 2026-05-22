@@ -1,11 +1,12 @@
 import { Component, signal, inject } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeSwitcherComponent],
   templateUrl: './admin-layout.component.html',
 })
 export class AdminLayoutComponent {
