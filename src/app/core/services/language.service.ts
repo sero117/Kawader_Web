@@ -13,6 +13,12 @@ export class LanguageService {
 
   readonly current = signal<AppLanguage>(this.loadLanguage());
 
+  constructor() {
+    const lang = this.current();
+    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', lang);
+  }
+
   private loadLanguage(): AppLanguage {
     const stored = localStorage.getItem(this.STORAGE_KEY);
     return stored === 'en' ? 'en' : 'ar';
@@ -25,6 +31,8 @@ export class LanguageService {
   setLanguage(lang: AppLanguage): void {
     localStorage.setItem(this.STORAGE_KEY, lang);
     this.current.set(lang);
+    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', lang);
   }
 
   /** Translate a dot-separated key, e.g. t('errors.unexpected') */
