@@ -1,7 +1,9 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
+import { UrlFilter } from '../../../core/utils/url-filter';
 
 function passwordComplexity(c: AbstractControl): ValidationErrors | null {
   const v: string = c.value ?? '';
@@ -27,13 +29,17 @@ export class CompaniesComponent implements OnInit {
   private readonly fb             = inject(FormBuilder);
   private readonly lang           = inject(LanguageService);
 
+  // ── Filter (synced with URL) ───────────────────────────────────────────────
+  filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
+    search:     '',
+    pageNumber: 1,
+    pageSize:   10,
+  });
+
   // ── Table state ────────────────────────────────────────────────────────────
   companies = signal<Company[]>([]);
   loading   = signal(true);
-  pageNumber  = signal(1);
-  readonly pageSize = 10;
-  hasMore     = signal(false);
-  searchInput = signal('');
+  hasMore   = signal(false);
 
   // Expose companies directly — status comes from the list response itself
   companiesWithStatus = computed(() => this.companies());
@@ -106,11 +112,9 @@ export class CompaniesComponent implements OnInit {
   loadCompanies(): void {
     this.loading.set(true);
 
-    const query = this.searchInput().trim();
-    const params: GetCompaniesParams = {
-      pageSize:   this.pageSize,
-      pageNumber: this.pageNumber(),
-    };
+    const { search, pageNumber, pageSize } = this.filter.value();
+    const query = search.trim();
+    const params: GetCompaniesParams = { pageSize, pageNumber };
     if (query.includes('@')) params.email       = query;
     else if (query)          params.phoneNumber = query;
 
@@ -135,7 +139,7 @@ export class CompaniesComponent implements OnInit {
           : (raw?.items ?? raw?.data ?? raw?.companies ?? []);
 
         this.companies.set(items);
-        this.hasMore.set(items.length >= this.pageSize);
+        this.hasMore.set(items.length >= this.filter.value().pageSize);
         this.loading.set(false);
       },
       error: err => {
@@ -147,21 +151,20 @@ export class CompaniesComponent implements OnInit {
 
   // ── Search ─────────────────────────────────────────────────────────────────
   onSearch(value: string): void {
-    this.searchInput.set(value);
-    this.pageNumber.set(1);
+    this.filter.set({ search: value });   // pageNumber resets to 1 automatically
     this.loadCompanies();
   }
 
   // ── Pagination ─────────────────────────────────────────────────────────────
   prevPage(): void {
-    if (this.pageNumber() <= 1) return;
-    this.pageNumber.update(p => p - 1);
+    if (this.filter.value().pageNumber <= 1) return;
+    this.filter.patch({ pageNumber: this.filter.value().pageNumber - 1 });
     this.loadCompanies();
   }
 
   nextPage(): void {
     if (!this.hasMore()) return;
-    this.pageNumber.update(p => p + 1);
+    this.filter.patch({ pageNumber: this.filter.value().pageNumber + 1 });
     this.loadCompanies();
   }
 
@@ -332,7 +335,7 @@ export class CompaniesComponent implements OnInit {
         if (res?.data != null || res?.isSuccess === true || res?.id != null) {
           this.showWizard.set(false);
           this.flash('Company added successfully!');
-          this.pageNumber.set(1);
+          this.filter.patch({ pageNumber: 1 });
           this.loadCompanies();
         } else {
           this.modalError.set(res?.message ?? 'Failed to complete company details.');

@@ -35,7 +35,7 @@
       <input type="text" [placeholder]="'admin.companies.searchPlaceholder' | translate"
         class="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm"
         style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
-        [value]="searchInput()"
+        [value]="filter.value().search"
         (input)="onSearch($any($event.target).value)"
         onfocus="this.style.borderColor='rgba(128,128,128,0.35)'"
         onblur="this.style.borderColor='var(--border)'" />
@@ -73,7 +73,7 @@
       </div>
       <p class="font-medium mb-1" style="color: var(--text-base);">{{ 'admin.companies.noResults' | translate }}</p>
       <p class="text-sm" style="color: var(--text-faint);">
-        @if (searchInput()) { {{ 'admin.companies.emptySearch' | translate }} }
+        @if (filter.value().search) { {{ 'admin.companies.emptySearch' | translate }} }
         @else { {{ 'admin.companies.emptyList' | translate }} }
       </p>
     </div>
@@ -175,15 +175,15 @@
     <!-- Pagination -->
     <div class="flex items-center justify-between px-5 py-4" style="border-top: 1px solid var(--border);">
       <p class="text-xs" style="color: var(--text-faint);">
-        {{ 'admin.companies.page' | translate }} {{ pageNumber() }}
+        {{ 'admin.companies.page' | translate }} {{ filter.value().pageNumber }}
         @if (companiesWithStatus().length > 0) {
           · {{ companiesWithStatus().length }} {{ companiesWithStatus().length !== 1 ? ('admin.companies.results' | translate) : ('admin.companies.result' | translate) }}
         }
       </p>
       <div class="flex items-center gap-2">
-        <button (click)="prevPage()" [disabled]="pageNumber() === 1"
+        <button (click)="prevPage()" [disabled]="filter.value().pageNumber === 1"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-          [style.opacity]="pageNumber() === 1 ? '0.3' : '1'"
+          [style.opacity]="filter.value().pageNumber === 1 ? '0.3' : '1'"
           style="background: var(--bg-subtle-sm); color: var(--text-muted);">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -191,7 +191,7 @@
           {{ 'admin.companies.prev' | translate }}
         </button>
         <span class="w-8 h-7 rounded-lg flex items-center justify-center text-xs font-bold" style="background: var(--bg-subtle-md); color: var(--text-base);">
-          {{ pageNumber() }}
+          {{ filter.value().pageNumber }}
         </span>
         <button (click)="nextPage()" [disabled]="!hasMore()"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
