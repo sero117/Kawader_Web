@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { companyManagerGuard } from './core/guards/companymanager.guard';
 
 export const routes: Routes = [
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -24,6 +25,16 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/auth/confirm-code/confirm-code.component').then(m => m.ConfirmCodeComponent),
       },
+      {
+        path: 'company-setup',
+        loadComponent: () =>
+          import('./features/auth/company-setup/company-setup.component').then(m => m.CompanySetupComponent),
+      },
+      {
+        path: 'employee-activation',
+        loadComponent: () =>
+          import('./features/auth/employee-activation/employee-activation.component').then(m => m.EmployeeActivationComponent),
+      },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],
   },
@@ -44,6 +55,22 @@ export const routes: Routes = [
         path: 'companies',
         loadComponent: () =>
           import('./features/admin/companies/companies.component').then(m => m.CompaniesComponent),
+      },
+    ],
+  },
+
+  // ── Company Manager dashboard ─────────────────────────────────────────────
+  {
+    path: 'dashboard/manager',
+    canActivate: [companyManagerGuard],
+    loadComponent: () =>
+      import('./features/companymanager/companymanager-layout/companymanager-layout.component').then(m => m.CompanyManagerLayoutComponent),
+    children: [
+      { path: '', redirectTo: 'employees', pathMatch: 'full' },
+      {
+        path: 'employees',
+        loadComponent: () =>
+          import('./features/companymanager/employees/employees.component').then(m => m.EmployeesComponent),
       },
     ],
   },

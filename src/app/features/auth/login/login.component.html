@@ -1,23 +1,23 @@
 <div class="w-full max-w-[400px] flex flex-col items-center">
 
-  <!-- Brand — outside the card -->
+  <!-- Brand -->
   <div class="mb-8 text-center">
-    <h1 class="text-white font-bold text-[2.5rem] leading-none tracking-tight">
+    <h1 class="font-bold text-[2.5rem] leading-none tracking-tight" style="color: var(--auth-fg);">
       <span class="auth-word" style="animation-delay: 0.04s">{{ 'brand.name' | translate }}</span>
     </h1>
-    <p class="text-white/25 text-[10px] font-medium uppercase tracking-[0.22em] mt-2">
+    <p class="text-[10px] font-medium uppercase tracking-[0.22em] mt-2" style="color: var(--auth-fg-25);">
       <span class="auth-word" style="animation-delay: 0.22s">{{ 'brand.tagline' | translate }}</span>
     </p>
   </div>
 
   <!-- Card -->
-  <div class="auth-card-enter w-full rounded-2xl p-7" style="background: #13122a; border: 1px solid rgba(255,255,255,0.055);">
+  <div class="auth-card-enter w-full rounded-2xl p-7" style="background: var(--auth-card); border: 1px solid var(--auth-card-bdr);">
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4" novalidate>
 
       <!-- Phone number -->
       <div>
-        <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">
+        <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
           {{ 'auth.login.phoneLabel' | translate }}
         </label>
         <input
@@ -38,7 +38,7 @@
 
       <!-- Password -->
       <div>
-        <label class="block text-white/35 text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5">
+        <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
           {{ 'auth.login.passwordLabel' | translate }}
         </label>
         <div class="relative">
@@ -49,12 +49,8 @@
             class="auth-input pr-11"
             [class.is-invalid]="password.invalid && password.touched"
           />
-          <button
-            type="button"
-            (click)="togglePassword()"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/55 transition-colors duration-150"
-            [attr.aria-label]="showPassword() ? ('auth.login.hidePassword' | translate) : ('auth.login.showPassword' | translate)"
-          >
+          <button type="button" (click)="togglePassword()" class="auth-pw-toggle"
+            [attr.aria-label]="showPassword() ? ('auth.login.hidePassword' | translate) : ('auth.login.showPassword' | translate)">
             @if (showPassword()) {
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
@@ -108,19 +104,27 @@
 
     <!-- Forgot password -->
     <p class="text-center mt-5">
-      <a href="#" class="text-white/25 text-[10px] font-semibold uppercase tracking-[0.16em] hover:text-white/50 transition-colors duration-150">
+      <a href="#" class="auth-link-faint text-[10px] font-semibold uppercase tracking-[0.16em]">
         {{ 'auth.forgotPassword' | translate }}
       </a>
     </p>
 
   </div>
 
-  <!-- Create account link -->
-  <p class="mt-6 text-white/30 text-sm">
+  <!-- Footer links -->
+  <p class="mt-6 text-sm" style="color: var(--auth-fg-30);">
     {{ 'auth.noAccount' | translate }}
-    <a routerLink="/auth/register" class="text-white/80 font-semibold hover:text-white transition-colors duration-150 ml-1">
-      {{ 'auth.createAccount' | translate }}
-    </a>
+    <a routerLink="/auth/register" class="auth-link-main ml-1">{{ 'auth.createAccount' | translate }}</a>
+  </p>
+
+  <p class="mt-3 text-sm" style="color: var(--auth-fg-30);">
+    {{ 'auth.isManager' | translate }}
+    <a routerLink="/auth/company-setup" class="auth-link-main ml-1">{{ 'auth.managerSetup' | translate }}</a>
+  </p>
+
+  <p class="mt-2 text-sm" style="color: var(--auth-fg-30);">
+    {{ 'auth.isEmployee' | translate }}
+    <a routerLink="/auth/employee-activation" class="auth-link-main ml-1">{{ 'auth.employeeActivate' | translate }}</a>
   </p>
 
 </div>

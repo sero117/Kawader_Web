@@ -56,3 +56,10 @@ export interface CompanyStatus {
   companyName?: string;
   isActive: boolean;
 }
+
+export interface CompanySetupStatus {
+  isCompleted: boolean;
+  tenantId?: string;
+  logoUrl?: string;
+  companyName?: string;
+}

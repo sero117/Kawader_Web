@@ -49,7 +49,7 @@ export class RegisterComponent {
     {
       firstName:       ['', [Validators.required, Validators.minLength(2)]],
       lastName:        ['', [Validators.required, Validators.minLength(2)]],
-      phoneNumber:     ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phoneNumber:     ['', [Validators.required, Validators.pattern(/^09\d{8}$/)]],
       email:           ['', [Validators.required, Validators.email]],
       password:        ['', [Validators.required, Validators.minLength(8), Validators.maxLength(20), passwordComplexityValidator]],
       confirmPassword: ['', Validators.required],

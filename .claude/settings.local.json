@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(findstr -i \"material\\\\|translate\\\\|snack\\\\|toast\\\\|i18n\\\\|ngx\")",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(npx ng *)"
     ]
   }
 }

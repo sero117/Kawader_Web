@@ -1,6 +1,8 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
+import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
 import {
   trigger,
   transition,
@@ -38,7 +40,7 @@ const authRouteAnimation = trigger('routeAnim', [
 @Component({
   selector: 'app-auth-layout',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ThemeSwitcherComponent, LanguageSwitcherComponent],
   animations: [authRouteAnimation],
   templateUrl: './auth-layout.component.html',
 })

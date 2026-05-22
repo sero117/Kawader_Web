@@ -54,6 +54,12 @@ export interface CompleteCompanyInfoRequest {
   password: string;
 }
 
+export interface ResetPasswordRequest {
+  phoneNumber: string;
+  code: string;
+  password: string;
+}
+
 // ── Response models ─────────────────────────────────────────────────────────
 
 export interface AuthTokenResponse {

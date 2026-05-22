@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/auth.models';
 import {
   Company,
-  CompanyStatus,
+  CompanySetupStatus,
   CreateCompanyRequest,
   GetCompaniesParams,
   UpdateCompanyRequest,
@@ -42,8 +42,8 @@ export class CompanyService {
     return this.api.delete<ApiResponse<unknown>>(`${this.baseUrl}/${id}`);
   }
 
-  getStatus(): Observable<ApiResponse<CompanyStatus[]>> {
-    return this.api.get<ApiResponse<CompanyStatus[]>>(`${this.baseUrl}/status`);
+  getStatus(): Observable<ApiResponse<CompanySetupStatus>> {
+    return this.api.get<ApiResponse<CompanySetupStatus>>(`${this.baseUrl}/status`);
   }
 
   complete(formData: FormData, managerToken: string): Observable<ApiResponse<number>> {

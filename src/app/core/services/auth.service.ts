@@ -10,8 +10,10 @@ import {
   ConfirmCodeRequest,
   GenerateCodeResponse,
   CompleteCompanyInfoRequest,
+  ResetPasswordRequest,
   AuthTokenResponse,
   ApiResponse,
+  Role,
 } from '../models/auth.models';
 
 @Injectable({ providedIn: 'root' })
@@ -60,6 +62,21 @@ export class AuthService {
       `${this.baseUrl}/complete-company-info`,
       payload
     );
+  }
+
+  resetPassword(payload: ResetPasswordRequest): Observable<ApiResponse<AuthTokenResponse>> {
+    return this.http.post<ApiResponse<AuthTokenResponse>>(
+      `${this.baseUrl}/reset-password`,
+      payload
+    );
+  }
+
+  getHomeRoute(role: Role | number | undefined): string {
+    switch (Number(role)) {
+      case Role.Admin:          return '/dashboard/admin';
+      case Role.CompanyManager: return '/dashboard/manager';
+      default:                  return '/dashboard';
+    }
   }
 
   // ── Token management ────────────────────────────────────────────────────────

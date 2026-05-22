@@ -55,6 +55,21 @@ export class UrlFilter<T extends FilterRecord> {
     this.syncUrl();
   }
 
+  /**
+   * Client-side filter — reads `key` from the current filter value as a search
+   * term, then returns only the items for which `matcher` returns true.
+   * Call this inside a `computed()` so Angular tracks the signal dependency.
+   */
+  filterItems<U>(
+    items: U[],
+    key: keyof T,
+    matcher: (item: U, term: string) => boolean,
+  ): U[] {
+    const term = String(this.value()[key] ?? '').trim().toLowerCase();
+    if (!term) return items;
+    return items.filter(item => matcher(item, term));
+  }
+
   // ── private ──────────────────────────────────────────────────────────────────
 
   private loadFromUrl(): void {

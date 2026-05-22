@@ -7,15 +7,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
-import { SignInRequest, Role, AuthTokenResponse } from '../../../core/models/auth.models';
-
-function navigateByRole(role: Role | number | undefined, router: Router): void {
-  switch (Number(role)) {
-    case Role.Admin:          router.navigate(['/dashboard/admin']);   break;
-    case Role.CompanyManager: router.navigate(['/dashboard/manager']); break;
-    default:                  router.navigate(['/dashboard']);         break;
-  }
-}
+import { SignInRequest, AuthTokenResponse } from '../../../core/models/auth.models';
 
 function extractErrorMessage(err: any): string {
   if (err?.status === 0) return 'Cannot connect to server. Check your internet connection.';
@@ -69,7 +61,7 @@ export class LoginComponent {
   showPassword = signal(false);
 
   form = this.fb.group({
-    phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+    phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{8}$/)]],
     password:    ['', [Validators.required]],
   });
 
@@ -103,7 +95,7 @@ export class LoginComponent {
 
         if (hasToken) {
           this.authService.saveTokens(tokenData);
-          navigateByRole(tokenData?.role, this.router);
+          this.router.navigate([this.authService.getHomeRoute(tokenData?.role)]);
         } else if ((response as any).isSuccess === false) {
           this.errorMessage.set((response as any).message || 'Sign in failed.');
         } else {
