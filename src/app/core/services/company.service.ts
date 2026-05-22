@@ -15,7 +15,7 @@ import { ApiService } from './api.service';
 @Injectable({ providedIn: 'root' })
 export class CompanyService {
   private readonly api     = inject(ApiService);
-  private readonly baseUrl = environment.companiesApiUrl;
+  private readonly baseUrl = `${environment.apiUrl}/Companies`;
 
   create(payload: CreateCompanyRequest): Observable<{ id: number } | ApiResponse<number>> {
     return this.api.post<{ id: number } | ApiResponse<number>>(this.baseUrl, payload);

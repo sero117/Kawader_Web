@@ -17,7 +17,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}`;
+  private readonly baseUrl = `${environment.apiUrl}/accounts`;
 
   signIn(payload: SignInRequest): Observable<ApiResponse<AuthTokenResponse>> {
     return this.http.post<ApiResponse<AuthTokenResponse>>(
