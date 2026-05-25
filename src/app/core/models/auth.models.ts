@@ -9,6 +9,8 @@ export enum Role {
 export enum EmployeeType {
   Employee             = 0,
   HumanResourceManager = 1,
+  DepartmentManager    = 2,
+  BranchManager        = 3,
 }
 
 // ── Request models ──────────────────────────────────────────────────────────

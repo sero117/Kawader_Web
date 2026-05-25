@@ -105,8 +105,11 @@
     "passwordMin8": "Min 8 characters",
     "passwordComplex": "Must include A-Z, a-z, 0-9 and a special character",
     "max200": "Max 200 characters",
+    "max20": "Max 20 characters",
     "max500": "Max 500 characters",
-    "landlineDigits": "7–10 digits only"
+    "landlineDigits": "7–10 digits only",
+    "latRange": "Must be between -90 and 90",
+    "lngRange": "Must be between -180 and 180"
   },
   "admin": {
     "overview": {
@@ -285,7 +288,91 @@
   "manager": {
     "nav": {
       "panel": "Manager Panel",
-      "employees": "Employees"
+      "employees": "Employees",
+      "branches": "Branches"
+    },
+    "branches": {
+      "title": "Branches",
+      "subtitle": "Manage your company branches.",
+      "addBtn": "Add Branch",
+      "searchName": "Search by name…",
+      "searchCode": "Search by code…",
+      "loadError": "Failed to load branches",
+      "noResults": "No branches found",
+      "emptySearch": "Try a different search term.",
+      "emptyList": "Add your first branch to get started.",
+      "colName": "Branch",
+      "colCode": "Code",
+      "colCity": "City",
+      "colCreated": "Created",
+      "colActions": "Actions",
+      "viewSections": "View sections",
+      "editTitle": "Edit",
+      "deleteTitle": "Delete",
+      "page": "Page",
+      "results": "results",
+      "result": "result",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "addBranch": {
+      "title": "Add Branch",
+      "nameLabel": "Branch Name",
+      "codeLabel": "Branch Code",
+      "cityLabel": "City",
+      "addressLabel": "Address",
+      "latLabel": "Latitude",
+      "lngLabel": "Longitude"
+    },
+    "editBranch": {
+      "title": "Edit Branch",
+      "nameLabel": "Branch Name",
+      "codeLabel": "Branch Code",
+      "cityLabel": "City",
+      "addressLabel": "Address",
+      "latLabel": "Latitude",
+      "lngLabel": "Longitude"
+    },
+    "deleteBranchModal": {
+      "title": "Delete Branch?",
+      "message": "This action cannot be undone. All sections within this branch will also be removed."
+    },
+    "sections": {
+      "title": "Sections",
+      "subtitle": "Manage sections for this branch.",
+      "addBtn": "Add Section",
+      "searchName": "Search by name…",
+      "searchCode": "Search by code…",
+      "loadError": "Failed to load sections",
+      "noResults": "No sections found",
+      "emptySearch": "Try a different search term.",
+      "emptyList": "Add the first section to get started.",
+      "colName": "Section",
+      "colCode": "Code",
+      "colCreated": "Created",
+      "colActions": "Actions",
+      "viewEmployees": "View employees",
+      "editTitle": "Edit",
+      "deleteTitle": "Delete",
+      "page": "Page",
+      "results": "results",
+      "result": "result",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "addSection": {
+      "title": "Add Section",
+      "nameLabel": "Section Name",
+      "codeLabel": "Section Code"
+    },
+    "editSection": {
+      "title": "Edit Section",
+      "nameLabel": "Section Name",
+      "codeLabel": "Section Code"
+    },
+    "deleteSectionModal": {
+      "title": "Delete Section?",
+      "message": "This action cannot be undone. The section will be permanently removed."
     },
     "employees": {
       "title": "Employees",
@@ -331,7 +418,9 @@
     },
     "employeeTypes": {
       "0": "Employee",
-      "1": "HR Manager"
+      "1": "HR Manager",
+      "2": "Department Manager",
+      "3": "Branch Manager"
     }
   },
   "companyTypes": {

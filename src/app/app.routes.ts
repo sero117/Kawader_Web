@@ -66,9 +66,19 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/companymanager/companymanager-layout/companymanager-layout.component').then(m => m.CompanyManagerLayoutComponent),
     children: [
-      { path: '', redirectTo: 'employees', pathMatch: 'full' },
+      { path: '', redirectTo: 'branches', pathMatch: 'full' },
       {
-        path: 'employees',
+        path: 'branches',
+        loadComponent: () =>
+          import('./features/companymanager/branches/branches.component').then(m => m.BranchesComponent),
+      },
+      {
+        path: 'branches/:branchId/sections',
+        loadComponent: () =>
+          import('./features/companymanager/sections/sections.component').then(m => m.SectionsComponent),
+      },
+      {
+        path: 'branches/:branchId/sections/:sectionId/employees',
         loadComponent: () =>
           import('./features/companymanager/employees/employees.component').then(m => m.EmployeesComponent),
       },

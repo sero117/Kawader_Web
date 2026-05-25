@@ -105,8 +105,11 @@
     "passwordMin8": "8 أحرف على الأقل",
     "passwordComplex": "يجب أن يحتوي على أحرف كبيرة وصغيرة وأرقام ورموز",
     "max200": "بحد أقصى 200 حرف",
+    "max20": "بحد أقصى 20 حرفاً",
     "max500": "بحد أقصى 500 حرف",
-    "landlineDigits": "من 7 إلى 10 أرقام فقط"
+    "landlineDigits": "من 7 إلى 10 أرقام فقط",
+    "latRange": "يجب أن تكون بين -90 و 90",
+    "lngRange": "يجب أن تكون بين -180 و 180"
   },
   "admin": {
     "overview": {
@@ -285,7 +288,91 @@
   "manager": {
     "nav": {
       "panel": "لوحة المدير",
-      "employees": "الموظفون"
+      "employees": "الموظفون",
+      "branches": "الفروع"
+    },
+    "branches": {
+      "title": "الفروع",
+      "subtitle": "إدارة فروع شركتك.",
+      "addBtn": "إضافة فرع",
+      "searchName": "بحث بالاسم…",
+      "searchCode": "بحث بالكود…",
+      "loadError": "فشل تحميل الفروع",
+      "noResults": "لا توجد فروع",
+      "emptySearch": "جرب مصطلح بحث مختلف.",
+      "emptyList": "أضف أول فرع للبدء.",
+      "colName": "الفرع",
+      "colCode": "الكود",
+      "colCity": "المدينة",
+      "colCreated": "تاريخ الإنشاء",
+      "colActions": "الإجراءات",
+      "viewSections": "عرض الأقسام",
+      "editTitle": "تعديل",
+      "deleteTitle": "حذف",
+      "page": "الصفحة",
+      "results": "نتائج",
+      "result": "نتيجة",
+      "prev": "السابق",
+      "next": "التالي"
+    },
+    "addBranch": {
+      "title": "إضافة فرع",
+      "nameLabel": "اسم الفرع",
+      "codeLabel": "كود الفرع",
+      "cityLabel": "المدينة",
+      "addressLabel": "العنوان",
+      "latLabel": "خط العرض",
+      "lngLabel": "خط الطول"
+    },
+    "editBranch": {
+      "title": "تعديل الفرع",
+      "nameLabel": "اسم الفرع",
+      "codeLabel": "كود الفرع",
+      "cityLabel": "المدينة",
+      "addressLabel": "العنوان",
+      "latLabel": "خط العرض",
+      "lngLabel": "خط الطول"
+    },
+    "deleteBranchModal": {
+      "title": "حذف الفرع؟",
+      "message": "لا يمكن التراجع عن هذا الإجراء. ستُحذف جميع الأقسام التابعة لهذا الفرع أيضاً."
+    },
+    "sections": {
+      "title": "الأقسام",
+      "subtitle": "إدارة أقسام هذا الفرع.",
+      "addBtn": "إضافة قسم",
+      "searchName": "بحث بالاسم…",
+      "searchCode": "بحث بالكود…",
+      "loadError": "فشل تحميل الأقسام",
+      "noResults": "لا توجد أقسام",
+      "emptySearch": "جرب مصطلح بحث مختلف.",
+      "emptyList": "أضف أول قسم للبدء.",
+      "colName": "القسم",
+      "colCode": "الكود",
+      "colCreated": "تاريخ الإنشاء",
+      "colActions": "الإجراءات",
+      "viewEmployees": "عرض الموظفين",
+      "editTitle": "تعديل",
+      "deleteTitle": "حذف",
+      "page": "الصفحة",
+      "results": "نتائج",
+      "result": "نتيجة",
+      "prev": "السابق",
+      "next": "التالي"
+    },
+    "addSection": {
+      "title": "إضافة قسم",
+      "nameLabel": "اسم القسم",
+      "codeLabel": "كود القسم"
+    },
+    "editSection": {
+      "title": "تعديل القسم",
+      "nameLabel": "اسم القسم",
+      "codeLabel": "كود القسم"
+    },
+    "deleteSectionModal": {
+      "title": "حذف القسم؟",
+      "message": "لا يمكن التراجع عن هذا الإجراء. سيتم حذف القسم بشكل دائم."
     },
     "employees": {
       "title": "الموظفون",
@@ -331,7 +418,9 @@
     },
     "employeeTypes": {
       "0": "موظف",
-      "1": "مدير الموارد البشرية"
+      "1": "مدير الموارد البشرية",
+      "2": "مدير القسم",
+      "3": "مدير الفرع"
     }
   },
   "companyTypes": {

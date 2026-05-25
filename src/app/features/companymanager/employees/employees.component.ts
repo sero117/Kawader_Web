@@ -1,5 +1,5 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
@@ -10,13 +10,19 @@ import { Employee, EmployeeType, GetEmployeesParams } from '../../../core/models
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe],
+  imports: [ReactiveFormsModule, TranslatePipe, RouterLink],
   templateUrl: './employees.component.html',
 })
 export class EmployeesComponent implements OnInit {
   private readonly employeeService = inject(EmployeeService);
   private readonly fb              = inject(FormBuilder);
   private readonly lang            = inject(LanguageService);
+  private readonly route           = inject(ActivatedRoute);
+
+  branchId    = 0;
+  sectionId   = 0;
+  sectionName = signal<string>('');
+  backUrl     = signal<string>('/dashboard/manager/branches');
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     search:     '',
@@ -62,7 +68,16 @@ export class EmployeesComponent implements OnInit {
   readonly EmployeeType = EmployeeType;
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
-  ngOnInit(): void { this.loadEmployees(); }
+  ngOnInit(): void {
+    this.branchId  = Number(this.route.snapshot.paramMap.get('branchId'));
+    this.sectionId = Number(this.route.snapshot.paramMap.get('sectionId'));
+    const state = history.state as { sectionName?: string };
+    if (state?.sectionName) this.sectionName.set(state.sectionName);
+    if (this.branchId && this.sectionId) {
+      this.backUrl.set(`/dashboard/manager/branches/${this.branchId}/sections`);
+    }
+    this.loadEmployees();
+  }
 
   loadEmployees(): void {
     this.loading.set(true);

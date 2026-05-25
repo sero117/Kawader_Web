@@ -1,7 +1,7 @@
 <!-- Page heading -->
 <div class="flex items-center justify-between mb-7">
   <div class="flex items-center gap-3">
-    <a [routerLink]="backUrl()"
+    <a routerLink="/dashboard/manager/branches"
       class="w-9 h-9 rounded-xl flex items-center justify-center transition-colors flex-shrink-0"
       style="background: var(--bg-subtle-sm); color: var(--text-faint);">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -9,11 +9,11 @@
       </svg>
     </a>
     <div>
-      <h1 class="font-bold text-2xl mb-0.5" style="color: var(--text-base);">{{ 'manager.employees.title' | translate }}</h1>
-      @if (sectionName()) {
-        <p class="text-xs" style="color: var(--text-faint);">{{ sectionName() }}</p>
+      <h1 class="font-bold text-2xl mb-0.5" style="color: var(--text-base);">{{ 'manager.sections.title' | translate }}</h1>
+      @if (branchName()) {
+        <p class="text-xs" style="color: var(--text-faint);">{{ branchName() }}</p>
       } @else {
-        <p class="text-sm" style="color: var(--text-faint);">{{ 'manager.employees.subtitle' | translate }}</p>
+        <p class="text-sm" style="color: var(--text-faint);">{{ 'manager.sections.subtitle' | translate }}</p>
       }
     </div>
   </div>
@@ -23,7 +23,7 @@
     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
       <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
     </svg>
-    {{ 'manager.employees.addBtn' | translate }}
+    {{ 'manager.sections.addBtn' | translate }}
   </button>
 </div>
 
@@ -40,20 +40,33 @@
 <!-- Table card -->
 <div class="admin-card">
 
-  <!-- Search -->
+  <!-- Search filters -->
   <div class="p-5 pb-4">
-    <div class="relative max-w-sm">
-      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-      </svg>
-      <input type="tel" inputmode="numeric" maxlength="10"
-        [placeholder]="'manager.employees.searchPlaceholder' | translate"
-        class="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm"
-        style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
-        [value]="filter.value().search"
-        (input)="onSearch($any($event.target).value)"
-        onfocus="this.style.borderColor='rgba(128,128,128,0.35)'"
-        onblur="this.style.borderColor='var(--border)'" />
+    <div class="flex flex-wrap gap-3">
+      <div class="relative flex-1" style="min-width: 160px; max-width: 260px;">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+        <input type="text" [placeholder]="'manager.sections.searchName' | translate"
+          class="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm"
+          style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
+          [value]="filter.value().name"
+          (input)="onSearchName($any($event.target).value)"
+          onfocus="this.style.borderColor='rgba(128,128,128,0.35)'"
+          onblur="this.style.borderColor='var(--border)'" />
+      </div>
+      <div class="relative flex-1" style="min-width: 140px; max-width: 220px;">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
+        </svg>
+        <input type="text" [placeholder]="'manager.sections.searchCode' | translate"
+          class="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm"
+          style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
+          [value]="filter.value().code"
+          (input)="onSearchCode($any($event.target).value)"
+          onfocus="this.style.borderColor='rgba(128,128,128,0.35)'"
+          onblur="this.style.borderColor='var(--border)'" />
+      </div>
     </div>
   </div>
 
@@ -70,26 +83,26 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
         </svg>
       </div>
-      <p class="font-medium mb-1" style="color: var(--text-base);">{{ 'manager.employees.loadError' | translate }}</p>
+      <p class="font-medium mb-1" style="color: var(--text-base);">{{ 'manager.sections.loadError' | translate }}</p>
       <p class="text-sm mb-4" style="color: var(--text-faint);">{{ listError() }}</p>
-      <button (click)="loadEmployees()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold" style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+      <button (click)="loadSections()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold" style="background: var(--bg-subtle-sm); color: var(--text-muted);">
         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
         </svg>
         {{ 'common.retry' | translate }}
       </button>
     </div>
-  } @else if (employees().length === 0) {
+  } @else if (sections().length === 0) {
     <div class="p-16 text-center">
       <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: var(--bg-subtle-sm);">
         <svg class="w-7 h-7" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
         </svg>
       </div>
-      <p class="font-medium mb-1" style="color: var(--text-base);">{{ 'manager.employees.noResults' | translate }}</p>
+      <p class="font-medium mb-1" style="color: var(--text-base);">{{ 'manager.sections.noResults' | translate }}</p>
       <p class="text-sm" style="color: var(--text-faint);">
-        @if (filter.value().search) { {{ 'manager.employees.emptySearch' | translate }} }
-        @else { {{ 'manager.employees.emptyList' | translate }} }
+        @if (filter.value().name || filter.value().code) { {{ 'manager.sections.emptySearch' | translate }} }
+        @else { {{ 'manager.sections.emptyList' | translate }} }
       </p>
     </div>
   } @else {
@@ -97,70 +110,59 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>{{ 'manager.employees.colName' | translate }}</th>
-            <th>{{ 'manager.employees.colPhone' | translate }}</th>
-            <th>{{ 'manager.employees.colEmail' | translate }}</th>
-            <th>{{ 'manager.employees.colType' | translate }}</th>
-            <th>{{ 'manager.employees.colCreated' | translate }}</th>
-            <th style="text-align: right;">{{ 'manager.employees.colActions' | translate }}</th>
+            <th>{{ 'manager.sections.colName' | translate }}</th>
+            <th>{{ 'manager.sections.colCode' | translate }}</th>
+            <th>{{ 'manager.sections.colCreated' | translate }}</th>
+            <th style="text-align: right;">{{ 'manager.sections.colActions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
-          @for (emp of employees(); track emp.id) {
+          @for (s of sections(); track s.id) {
             <tr>
-              <!-- Name + avatar -->
               <td>
                 <div class="flex items-center gap-2.5">
-                  <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
-                    style="background: var(--bg-subtle-md); color: var(--text-muted);">
-                    {{ emp.firstName.charAt(0).toUpperCase() }}{{ emp.lastName.charAt(0).toUpperCase() }}
+                  <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style="background: rgba(99,102,241,0.1); color: rgba(99,102,241,0.8);">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                    </svg>
                   </div>
                   <div>
-                    <p class="text-sm font-medium leading-tight" style="color: var(--text-base);">
-                      {{ emp.firstName }} {{ emp.lastName }}
-                    </p>
-                    <p class="text-[10px] font-mono" style="color: var(--text-ultra-faint);">#{{ emp.id }}</p>
+                    <p class="text-sm font-medium leading-tight" style="color: var(--text-base);">{{ s.name }}</p>
+                    <p class="text-[10px] font-mono" style="color: var(--text-ultra-faint);">#{{ s.id }}</p>
                   </div>
                 </div>
               </td>
-
-              <td class="font-medium" style="color: var(--text-muted);">{{ emp.phoneNumber }}</td>
-              <td style="color: var(--text-faint);">{{ emp.email ?? '—' }}</td>
-
-              <!-- Type badge -->
               <td>
-                @if (emp.employeeType === EmployeeType.HumanResourceManager) {
-                  <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
-                    style="color: rgba(139,92,246,0.9); background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2);">
-                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(139,92,246,0.8);"></span>
-                    {{ employeeTypeLabel(emp.employeeType) }}
-                  </span>
-                } @else {
-                  <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
-                    style="color: var(--text-faint); background: var(--bg-subtle-sm); border: 1px solid var(--border);">
-                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: var(--text-very-faint);"></span>
-                    {{ employeeTypeLabel(emp.employeeType) }}
-                  </span>
-                }
+                <span class="inline-flex items-center text-[10px] font-bold uppercase tracking-[0.1em] px-2 py-0.5 rounded-md"
+                  style="background: var(--bg-subtle-sm); color: var(--text-muted); border: 1px solid var(--border);">
+                  {{ s.code }}
+                </span>
               </td>
-
-              <td style="color: var(--text-faint);">{{ formatDate(emp.createdAt) }}</td>
-
-              <!-- Actions -->
+              <td style="color: var(--text-faint);">{{ formatDate(s.createdAt) }}</td>
               <td>
                 <div class="flex items-center justify-end gap-1.5">
-                  <button (click)="openEdit(emp, $event)"
+                  <!-- View employees -->
+                  <button (click)="viewEmployees(s)"
+                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                    style="color: rgba(16,185,129,0.8); background: rgba(16,185,129,0.08);"
+                    [title]="'manager.sections.viewEmployees' | translate">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                    </svg>
+                  </button>
+                  <button (click)="openEdit(s, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: var(--text-faint); background: var(--bg-subtle-sm);"
-                    [title]="'manager.employees.editTitle' | translate">
+                    [title]="'manager.sections.editTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
                     </svg>
                   </button>
-                  <button (click)="confirmDelete(emp.id, $event)"
+                  <button (click)="confirmDelete(s.id, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);"
-                    [title]="'manager.employees.deleteTitle' | translate">
+                    [title]="'manager.sections.deleteTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                     </svg>
@@ -176,9 +178,9 @@
     <!-- Pagination -->
     <div class="flex items-center justify-between px-5 py-4" style="border-top: 1px solid var(--border);">
       <p class="text-xs" style="color: var(--text-faint);">
-        {{ 'manager.employees.page' | translate }} {{ filter.value().pageNumber }}
-        @if (employees().length > 0) {
-          · {{ employees().length }} {{ employees().length !== 1 ? ('manager.employees.results' | translate) : ('manager.employees.result' | translate) }}
+        {{ 'manager.sections.page' | translate }} {{ filter.value().pageNumber }}
+        @if (sections().length > 0) {
+          · {{ sections().length }} {{ sections().length !== 1 ? ('manager.sections.results' | translate) : ('manager.sections.result' | translate) }}
         }
       </p>
       <div class="flex items-center gap-2">
@@ -189,17 +191,15 @@
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
-          {{ 'manager.employees.prev' | translate }}
+          {{ 'manager.sections.prev' | translate }}
         </button>
         <span class="w-8 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
-          style="background: var(--bg-subtle-md); color: var(--text-base);">
-          {{ filter.value().pageNumber }}
-        </span>
+          style="background: var(--bg-subtle-md); color: var(--text-base);">{{ filter.value().pageNumber }}</span>
         <button (click)="nextPage()" [disabled]="!hasMore()"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
           [style.opacity]="!hasMore() ? '0.3' : '1'"
           style="background: var(--bg-subtle-sm); color: var(--text-muted);">
-          {{ 'manager.employees.next' | translate }}
+          {{ 'manager.sections.next' | translate }}
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
           </svg>
@@ -210,7 +210,7 @@
 </div>
 
 
-<!-- ══ ADD EMPLOYEE MODAL ══ -->
+<!-- ══ ADD SECTION MODAL ══ -->
 @if (showAddModal()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
     style="background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);" (click)="showAddModal.set(false)">
@@ -218,7 +218,7 @@
       (click)="$event.stopPropagation()">
 
       <div class="flex items-center justify-between px-6 pt-6 pb-5" style="border-bottom: 1px solid var(--border);">
-        <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.addEmployee.title' | translate }}</h2>
+        <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.addSection.title' | translate }}</h2>
         <button (click)="showAddModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -239,75 +239,36 @@
         }
 
         <form [formGroup]="addForm" (ngSubmit)="submitAdd()" class="space-y-4" novalidate>
-
-          <!-- Phone -->
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-              {{ 'manager.addEmployee.phoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              {{ 'manager.addSection.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="09XXXXXXXX"
-              class="modal-input" [class.is-invalid]="addForm.get('phoneNumber')!.invalid && addForm.get('phoneNumber')!.touched" />
-            @if (addForm.get('phoneNumber')!.invalid && addForm.get('phoneNumber')!.touched) {
+            <input formControlName="name" type="text" class="modal-input"
+              [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched" />
+            @if (addForm.get('name')!.invalid && addForm.get('name')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
-                {{ addForm.get('phoneNumber')!.hasError('required') ? ('validation.required' | translate) : ('validation.phone09' | translate) }}
+                {{ addForm.get('name')!.hasError('required') ? ('validation.required' | translate) : ('validation.max200' | translate) }}
               </p>
             }
           </div>
-
-          <!-- First + Last name -->
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-                {{ 'manager.addEmployee.firstNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
-              </label>
-              <input formControlName="firstName" type="text" [placeholder]="'setup.firstNamePlaceholder' | translate"
-                class="modal-input" [class.is-invalid]="addForm.get('firstName')!.invalid && addForm.get('firstName')!.touched" />
-              @if (addForm.get('firstName')!.invalid && addForm.get('firstName')!.touched) {
-                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
-              }
-            </div>
-            <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-                {{ 'manager.addEmployee.lastNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
-              </label>
-              <input formControlName="lastName" type="text" [placeholder]="'setup.lastNamePlaceholder' | translate"
-                class="modal-input" [class.is-invalid]="addForm.get('lastName')!.invalid && addForm.get('lastName')!.touched" />
-              @if (addForm.get('lastName')!.invalid && addForm.get('lastName')!.touched) {
-                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
-              }
-            </div>
-          </div>
-
-          <!-- Email -->
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-              {{ 'manager.addEmployee.emailLabel' | translate }}
-              <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+              {{ 'manager.addSection.codeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="email" type="text" placeholder="employee@company.com"
-              class="modal-input" [class.is-invalid]="addForm.get('email')!.invalid && addForm.get('email')!.touched" />
-            @if (addForm.get('email')!.invalid && addForm.get('email')!.touched) {
-              <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.emailInvalid' | translate }}</p>
+            <input formControlName="code" type="text" maxlength="20" class="modal-input"
+              [class.is-invalid]="addForm.get('code')!.invalid && addForm.get('code')!.touched" />
+            @if (addForm.get('code')!.invalid && addForm.get('code')!.touched) {
+              <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
+                {{ addForm.get('code')!.hasError('required') ? ('validation.required' | translate) : ('validation.max20' | translate) }}
+              </p>
             }
           </div>
-
-          <!-- Employee type -->
-          <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-              {{ 'manager.addEmployee.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
-            </label>
-            <select formControlName="employeeType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
-              <option [ngValue]="EmployeeType.Employee">{{ 'manager.employeeTypes.0' | translate }}</option>
-              <option [ngValue]="EmployeeType.HumanResourceManager">{{ 'manager.employeeTypes.1' | translate }}</option>
-            </select>
-          </div>
-
           <div class="flex gap-3 pt-1">
             <button type="button" (click)="showAddModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
               style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
             <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
               style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
-              {{ submitting() ? ('common.saving' | translate) : ('manager.employees.addBtn' | translate) }}
+              {{ submitting() ? ('common.saving' | translate) : ('manager.sections.addBtn' | translate) }}
             </button>
           </div>
         </form>
@@ -318,18 +279,16 @@
 
 
 <!-- ══ EDIT MODAL ══ -->
-@if (showEditModal() && selectedEmployee()) {
+@if (showEditModal() && selected()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
     style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);" (click)="showEditModal.set(false)">
     <div class="w-full max-w-md rounded-2xl p-6" style="background: var(--bg-surface-2); border: 1px solid var(--border);"
       (click)="$event.stopPropagation()">
 
-      <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center justify-between mb-5">
         <div>
-          <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.editEmployee.title' | translate }}</h2>
-          <p class="text-xs mt-0.5" style="color: var(--text-faint);">
-            {{ selectedEmployee()!.firstName }} {{ selectedEmployee()!.lastName }}
-          </p>
+          <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.editSection.title' | translate }}</h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ selected()!.name }}</p>
         </div>
         <button (click)="showEditModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
@@ -350,48 +309,30 @@
       }
 
       <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-              {{ 'manager.editEmployee.firstNameLabel' | translate }}
-            </label>
-            <input formControlName="firstName" type="text" class="modal-input"
-              [class.is-invalid]="editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched" />
-            @if (editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched) {
-              <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
-            }
-          </div>
-          <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-              {{ 'manager.editEmployee.lastNameLabel' | translate }}
-            </label>
-            <input formControlName="lastName" type="text" class="modal-input"
-              [class.is-invalid]="editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched" />
-            @if (editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched) {
-              <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
-            }
-          </div>
-        </div>
-
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-            {{ 'manager.editEmployee.emailLabel' | translate }}
-            <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+            {{ 'manager.editSection.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
           </label>
-          <input formControlName="email" type="text" placeholder="employee@company.com" class="modal-input" />
+          <input formControlName="name" type="text" class="modal-input"
+            [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched" />
+          @if (editForm.get('name')!.invalid && editForm.get('name')!.touched) {
+            <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
+              {{ editForm.get('name')!.hasError('required') ? ('validation.required' | translate) : ('validation.max200' | translate) }}
+            </p>
+          }
         </div>
-
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-            {{ 'manager.editEmployee.typeLabel' | translate }}
+            {{ 'manager.editSection.codeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
           </label>
-          <select formControlName="employeeType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
-            <option [ngValue]="EmployeeType.Employee">{{ 'manager.employeeTypes.0' | translate }}</option>
-            <option [ngValue]="EmployeeType.HumanResourceManager">{{ 'manager.employeeTypes.1' | translate }}</option>
-          </select>
+          <input formControlName="code" type="text" maxlength="20" class="modal-input"
+            [class.is-invalid]="editForm.get('code')!.invalid && editForm.get('code')!.touched" />
+          @if (editForm.get('code')!.invalid && editForm.get('code')!.touched) {
+            <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
+              {{ editForm.get('code')!.hasError('required') ? ('validation.required' | translate) : ('validation.max20' | translate) }}
+            </p>
+          }
         </div>
-
         <div class="flex gap-3 pt-1">
           <button type="button" (click)="showEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
             style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
@@ -417,8 +358,8 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
         </svg>
       </div>
-      <h2 class="font-bold text-lg mb-1" style="color: var(--text-base);">{{ 'manager.deleteModal.title' | translate }}</h2>
-      <p class="text-sm mb-6" style="color: var(--text-faint);">{{ 'manager.deleteModal.message' | translate }}</p>
+      <h2 class="font-bold text-lg mb-1" style="color: var(--text-base);">{{ 'manager.deleteSectionModal.title' | translate }}</h2>
+      <p class="text-sm mb-6" style="color: var(--text-faint);">{{ 'manager.deleteSectionModal.message' | translate }}</p>
       <div class="flex gap-3">
         <button (click)="showDeleteModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
           style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
