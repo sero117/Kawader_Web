@@ -1,4 +1,4 @@
-<div class="w-full flex flex-col items-center" [class]="step() === 3 ? 'max-w-[560px]' : 'max-w-[440px]'">
+<div class="w-full max-w-[440px] flex flex-col items-center">
 
   <!-- Brand -->
   <div class="mb-8 text-center">
@@ -109,7 +109,7 @@
             }
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
                 {{ 'setup.firstNameLabel' | translate }}
@@ -268,7 +268,7 @@
             }
           </div>
 
-          <div class="grid grid-cols-2 gap-3 mb-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
             <div>
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
                 {{ 'setup.landlineLabel' | translate }}
@@ -291,6 +291,55 @@
                 class="auth-input" [class.is-invalid]="bfield.invalid && bfield.touched" />
               @if (bfield.invalid && bfield.touched) {
                 <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.max200' | translate }}</p>
+              }
+            </div>
+          </div>
+
+          <!-- Currency + UTC Offset (required) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+                {{ 'setup.currencyLabel' | translate }} <span class="text-red-400/80">*</span>
+              </label>
+              <select formControlName="currency" class="auth-input" style="appearance:none; -webkit-appearance:none;">
+                <option [ngValue]="CurrencyType.LYD" [style.background]="'var(--auth-card)'">{{ 'manager.currencyTypes.0' | translate }}</option>
+                <option [ngValue]="CurrencyType.USD" [style.background]="'var(--auth-card)'">{{ 'manager.currencyTypes.1' | translate }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+                {{ 'setup.utcOffsetLabel' | translate }} <span class="text-red-400/80">*</span>
+              </label>
+              <input formControlName="utcOffset" type="number" step="1" min="-12" max="14" placeholder="e.g. 2"
+                class="auth-input" [class.is-invalid]="utcOffset.invalid && utcOffset.touched" />
+              @if (utcOffset.invalid && utcOffset.touched) {
+                <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.utcRange' | translate }}</p>
+              }
+            </div>
+          </div>
+
+          <!-- Lat + Lng (optional) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+                {{ 'setup.latLabel' | translate }}
+                <span class="ml-1 text-[9px] normal-case" style="color: var(--auth-fg-20);">{{ 'common.optional' | translate }}</span>
+              </label>
+              <input formControlName="latitude" type="number" step="any"
+                class="auth-input" [class.is-invalid]="lat.invalid && lat.touched" />
+              @if (lat.invalid && lat.touched) {
+                <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.latRange' | translate }}</p>
+              }
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+                {{ 'setup.lngLabel' | translate }}
+                <span class="ml-1 text-[9px] normal-case" style="color: var(--auth-fg-20);">{{ 'common.optional' | translate }}</span>
+              </label>
+              <input formControlName="longitude" type="number" step="any"
+                class="auth-input" [class.is-invalid]="lng.invalid && lng.touched" />
+              @if (lng.invalid && lng.touched) {
+                <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.lngRange' | translate }}</p>
               }
             </div>
           </div>

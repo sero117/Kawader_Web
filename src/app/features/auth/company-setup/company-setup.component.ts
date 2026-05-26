@@ -9,6 +9,7 @@ import {
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { CompanySetupService } from '../../../core/services/company-setup.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { CurrencyType } from '../../../core/models/company.models';
 
 // ── Validators ────────────────────────────────────────────────────────────────
 
@@ -64,6 +65,8 @@ export class CompanySetupComponent {
     confirmPassword: ['', [Validators.required]],
   }, { validators: passwordsMatch });
 
+  readonly CurrencyType = CurrencyType;
+
   // ── Step 3 form ──────────────────────────────────────────────────────────────
   step3Form = this.fb.group({
     companyName:   ['', [Validators.required, Validators.maxLength(200)]],
@@ -71,6 +74,10 @@ export class CompanySetupComponent {
     landlinePhone: ['', [Validators.pattern(/^\d{7,10}$/)]],
     businessField: ['', [Validators.maxLength(200)]],
     companyType:   [''],
+    currency:      [CurrencyType.LYD, [Validators.required]],
+    utcOffset:     [2, [Validators.required, Validators.min(-12), Validators.max(14)]],
+    latitude:      [null as number | null, [Validators.min(-90), Validators.max(90)]],
+    longitude:     [null as number | null, [Validators.min(-180), Validators.max(180)]],
   });
 
   logoFile  = signal<File | null>(null);
@@ -192,6 +199,10 @@ export class CompanySetupComponent {
     if (v.businessField?.trim()) fd.append('businessField',  v.businessField.trim());
     if (v.companyType != null && v.companyType !== '')
       fd.append('companyType', v.companyType);
+    fd.append('currency',   v.currency!.toString());
+    fd.append('utcOffset',  v.utcOffset!.toString());
+    if (v.latitude  != null) fd.append('latitude',  v.latitude.toString());
+    if (v.longitude != null) fd.append('longitude', v.longitude.toString());
     fd.append('logo', this.logoFile()!);
 
     this.setupService.completeCompany(fd, this._managerToken).subscribe({
@@ -221,10 +232,13 @@ export class CompanySetupComponent {
   get lname()  { return this.step2Form.get('lastName')!; }
   get pw()     { return this.step2Form.get('password')!; }
   get cpw()    { return this.step2Form.get('confirmPassword')!; }
-  get cname()  { return this.step3Form.get('companyName')!; }
-  get addr()   { return this.step3Form.get('address')!; }
-  get landline() { return this.step3Form.get('landlinePhone')!; }
-  get bfield() { return this.step3Form.get('businessField')!; }
+  get cname()     { return this.step3Form.get('companyName')!; }
+  get addr()      { return this.step3Form.get('address')!; }
+  get landline()  { return this.step3Form.get('landlinePhone')!; }
+  get bfield()    { return this.step3Form.get('businessField')!; }
+  get utcOffset() { return this.step3Form.get('utcOffset')!; }
+  get lat()       { return this.step3Form.get('latitude')!; }
+  get lng()       { return this.step3Form.get('longitude')!; }
 
   private apiErr(err: any, fallback: string): string {
     if (err?.status === 0) return 'Cannot connect to server.';

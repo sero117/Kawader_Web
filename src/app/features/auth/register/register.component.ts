@@ -9,7 +9,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
-import { SignUpRequest, GenerateCodeRequest } from '../../../core/models/auth.models';
+import { SignUpRequest, GenerateCodeRequest, Role } from '../../../core/models/auth.models';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const pw  = control.get('password')?.value;
@@ -77,12 +77,12 @@ export class RegisterComponent {
     this.errorMessage.set(null);
 
     const payload: SignUpRequest = {
-      firstName:       this.form.value.firstName!,
-      lastName:        this.form.value.lastName!,
-      phoneNumber:     this.form.value.phoneNumber!,
-      email:           this.form.value.email!,
-      password:        this.form.value.password!,
-      confirmPassword: this.form.value.confirmPassword!,
+      firstName:   this.form.value.firstName!,
+      lastName:    this.form.value.lastName!,
+      phoneNumber: this.form.value.phoneNumber!,
+      email:       this.form.value.email!,
+      password:    this.form.value.password!,
+      role:        Role.Employee,
     };
 
     this.authService.signUp(payload).subscribe({

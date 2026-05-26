@@ -104,12 +104,16 @@
     "nameMax50": "مطلوب، بحد أقصى 50 حرفاً",
     "passwordMin8": "8 أحرف على الأقل",
     "passwordComplex": "يجب أن يحتوي على أحرف كبيرة وصغيرة وأرقام ورموز",
+    "max100": "بحد أقصى 100 حرف",
     "max200": "بحد أقصى 200 حرف",
     "max20": "بحد أقصى 20 حرفاً",
     "max500": "بحد أقصى 500 حرف",
+    "max1000": "بحد أقصى 1000 حرف",
     "landlineDigits": "من 7 إلى 10 أرقام فقط",
     "latRange": "يجب أن تكون بين -90 و 90",
-    "lngRange": "يجب أن تكون بين -180 و 180"
+    "lngRange": "يجب أن تكون بين -180 و 180",
+    "salaryMin": "يجب أن يكون أكبر من 0",
+    "utcRange": "يجب أن يكون بين -12 و 14"
   },
   "admin": {
     "overview": {
@@ -263,6 +267,10 @@
     "logoRequired": "الشعار مطلوب",
     "logoInvalidType": "يُسمح فقط بصيغ JPG وPNG وWEBP",
     "logoTooLarge": "يجب أن يكون الملف أقل من 2 ميغابايت",
+    "currencyLabel": "العملة",
+    "utcOffsetLabel": "إزاحة التوقيت (ساعات)",
+    "latLabel": "خط العرض",
+    "lngLabel": "خط الطول",
     "finish": "إنهاء الإعداد",
     "finishing": "جارٍ الإنهاء…",
     "backToLogin": "→ العودة لتسجيل الدخول"
@@ -403,14 +411,44 @@
       "firstNameLabel": "الاسم الأول",
       "lastNameLabel": "اسم العائلة",
       "emailLabel": "البريد الإلكتروني",
-      "typeLabel": "نوع الموظف"
+      "typeLabel": "نوع الموظف",
+      "employeeNumberLabel": "رقم الموظف",
+      "jobTitleLabel": "المسمى الوظيفي",
+      "birthDateLabel": "تاريخ الميلاد",
+      "genderLabel": "الجنس",
+      "nationalityLabel": "الجنسية",
+      "branchIdLabel": "الفرع",
+      "sectionIdLabel": "القسم",
+      "hireDateLabel": "تاريخ التوظيف",
+      "contractTypeLabel": "نوع العقد",
+      "baseSalaryLabel": "الراتب الأساسي",
+      "workStartTimeLabel": "بداية الدوام",
+      "workEndTimeLabel": "نهاية الدوام",
+      "emergencyContactRelationLabel": "صلة الاتصال الطارئ",
+      "emergencyContactPhoneLabel": "هاتف الطوارئ",
+      "internalNotesLabel": "ملاحظات داخلية"
     },
     "editEmployee": {
       "title": "تعديل الموظف",
       "firstNameLabel": "الاسم الأول",
       "lastNameLabel": "اسم العائلة",
       "emailLabel": "البريد الإلكتروني",
-      "typeLabel": "نوع الموظف"
+      "typeLabel": "نوع الموظف",
+      "employeeNumberLabel": "رقم الموظف",
+      "jobTitleLabel": "المسمى الوظيفي",
+      "birthDateLabel": "تاريخ الميلاد",
+      "genderLabel": "الجنس",
+      "nationalityLabel": "الجنسية",
+      "branchIdLabel": "الفرع",
+      "sectionIdLabel": "القسم",
+      "hireDateLabel": "تاريخ التوظيف",
+      "contractTypeLabel": "نوع العقد",
+      "baseSalaryLabel": "الراتب الأساسي",
+      "workStartTimeLabel": "بداية الدوام",
+      "workEndTimeLabel": "نهاية الدوام",
+      "emergencyContactRelationLabel": "صلة الاتصال الطارئ",
+      "emergencyContactPhoneLabel": "هاتف الطوارئ",
+      "internalNotesLabel": "ملاحظات داخلية"
     },
     "deleteModal": {
       "title": "حذف الموظف؟",
@@ -421,6 +459,42 @@
       "1": "مدير الموارد البشرية",
       "2": "مدير القسم",
       "3": "مدير الفرع"
+    },
+    "genderTypes": {
+      "0": "ذكر",
+      "1": "أنثى"
+    },
+    "contractTypes": {
+      "0": "دوام كامل",
+      "1": "دوام جزئي",
+      "2": "مؤقت",
+      "3": "متعاقد",
+      "4": "أخرى"
+    },
+    "currencyTypes": {
+      "0": "دينار ليبي",
+      "1": "دولار أمريكي"
+    },
+    "relationTypes": {
+      "0": "أب",
+      "1": "أم",
+      "2": "أخ",
+      "3": "أخت",
+      "4": "زوج",
+      "5": "زوجة",
+      "6": "ابن",
+      "7": "ابنة",
+      "8": "قريب",
+      "9": "أخرى"
+    },
+    "attachmentTypes": {
+      "0": "صورة الهوية",
+      "1": "صورة شخصية",
+      "2": "عقد العمل",
+      "3": "شهادة",
+      "4": "المؤهلات",
+      "5": "البطاقة الصحية",
+      "6": "الرخصة المهنية"
     }
   },
   "companyTypes": {

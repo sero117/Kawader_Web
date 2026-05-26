@@ -1,3 +1,8 @@
+export enum CurrencyType {
+  LYD = 0,
+  USD = 1,
+}
+
 export enum CompanyType {
   Other      = 0,
   Technology = 1,
@@ -30,7 +35,6 @@ export interface CreateCompanyRequest {
 export interface UpdateCompanyRequest {
   phoneNumber?: string;
   email?: string;
-  tenantId?: string;
 }
 
 // ── Response ─────────────────────────────────────────────────────────────────
@@ -45,6 +49,10 @@ export interface Company {
   landlinePhone?: string;
   businessField?: string;
   companyType?: CompanyType;
+  currency?: CurrencyType;
+  utcOffset?: number;
+  latitude?: number;
+  longitude?: number;
   logoUrl?: string;
   isCompleted?: boolean;
   isActive?: boolean;

@@ -16,6 +16,21 @@ export class EmployeeService {
   private readonly api     = inject(ApiService);
   private readonly baseUrl = `${environment.apiUrl}/Employees`;
 
+  getById(id: number): Observable<any> {
+    return this.api.get<any>(`${this.baseUrl}/${id}`);
+  }
+
+  uploadAttachment(id: number, file: File, type: number): Observable<any> {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('type', type.toString());
+    return this.api.post<any>(`${this.baseUrl}/${id}/attachments`, fd);
+  }
+
+  deleteAttachment(id: number, type: number): Observable<any> {
+    return this.api.delete<any>(`${this.baseUrl}/${id}/attachments/${type}`);
+  }
+
   getAll(params?: GetEmployeesParams): Observable<any> {
     let p = new HttpParams();
     if (params?.pageNumber) p = p.set('PageNumber', params.pageNumber);

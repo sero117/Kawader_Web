@@ -1,4 +1,4 @@
-<div class="w-full max-w-[600px] flex flex-col items-center">
+<div class="w-full max-w-[440px] flex flex-col items-center">
 
   <!-- Brand -->
   <div class="mb-7 text-center">
@@ -45,7 +45,7 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4" novalidate>
 
       <!-- Row 1: First Name + Last Name -->
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">{{ 'auth.register.firstNameLabel' | translate }}</label>
           <input formControlName="firstName" type="text" [placeholder]="'auth.register.firstNamePlaceholder' | translate"
@@ -69,7 +69,7 @@
       </div>
 
       <!-- Row 2: Phone + Email -->
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">{{ 'auth.register.phoneLabel' | translate }}</label>
           <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10"
@@ -94,7 +94,7 @@
       </div>
 
       <!-- Row 3: Password + Confirm Password -->
-      <div class="grid grid-cols-2 gap-3 items-start">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
 
         <!-- Password -->
         <div>

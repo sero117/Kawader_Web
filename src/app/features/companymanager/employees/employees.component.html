@@ -108,7 +108,6 @@
         <tbody>
           @for (emp of employees(); track emp.id) {
             <tr>
-              <!-- Name + avatar -->
               <td>
                 <div class="flex items-center gap-2.5">
                   <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
@@ -123,11 +122,8 @@
                   </div>
                 </div>
               </td>
-
               <td class="font-medium" style="color: var(--text-muted);">{{ emp.phoneNumber }}</td>
               <td style="color: var(--text-faint);">{{ emp.email ?? '—' }}</td>
-
-              <!-- Type badge -->
               <td>
                 @if (emp.employeeType === EmployeeType.HumanResourceManager) {
                   <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
@@ -143,10 +139,7 @@
                   </span>
                 }
               </td>
-
               <td style="color: var(--text-faint);">{{ formatDate(emp.createdAt) }}</td>
-
-              <!-- Actions -->
               <td>
                 <div class="flex items-center justify-end gap-1.5">
                   <button (click)="openEdit(emp, $event)"
@@ -214,10 +207,10 @@
 @if (showAddModal()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
     style="background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);" (click)="showAddModal.set(false)">
-    <div class="w-full max-w-md rounded-2xl" style="background: var(--bg-surface-2); border: 1px solid var(--border);"
+    <div class="w-full max-w-xl rounded-2xl flex flex-col" style="background: var(--bg-surface-2); border: 1px solid var(--border); max-height: 90vh;"
       (click)="$event.stopPropagation()">
 
-      <div class="flex items-center justify-between px-6 pt-6 pb-5" style="border-bottom: 1px solid var(--border);">
+      <div class="flex items-center justify-between px-6 pt-6 pb-5 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.addEmployee.title' | translate }}</h2>
         <button (click)="showAddModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
@@ -227,7 +220,7 @@
         </button>
       </div>
 
-      <div class="px-6 py-5">
+      <div class="px-6 py-5 overflow-y-auto flex-1">
         @if (modalError()) {
           <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
             style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
@@ -255,13 +248,13 @@
           </div>
 
           <!-- First + Last name -->
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addEmployee.firstNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="firstName" type="text" [placeholder]="'setup.firstNamePlaceholder' | translate"
-                class="modal-input" [class.is-invalid]="addForm.get('firstName')!.invalid && addForm.get('firstName')!.touched" />
+              <input formControlName="firstName" type="text" class="modal-input"
+                [class.is-invalid]="addForm.get('firstName')!.invalid && addForm.get('firstName')!.touched" />
               @if (addForm.get('firstName')!.invalid && addForm.get('firstName')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
               }
@@ -270,12 +263,72 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addEmployee.lastNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="lastName" type="text" [placeholder]="'setup.lastNamePlaceholder' | translate"
-                class="modal-input" [class.is-invalid]="addForm.get('lastName')!.invalid && addForm.get('lastName')!.touched" />
+              <input formControlName="lastName" type="text" class="modal-input"
+                [class.is-invalid]="addForm.get('lastName')!.invalid && addForm.get('lastName')!.touched" />
               @if (addForm.get('lastName')!.invalid && addForm.get('lastName')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
               }
             </div>
+          </div>
+
+          <!-- Employee Number + Job Title -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.employeeNumberLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="employeeNumber" type="text" maxlength="50" placeholder="EMP-001" class="modal-input"
+                [class.is-invalid]="addForm.get('employeeNumber')!.invalid && addForm.get('employeeNumber')!.touched" />
+              @if (addForm.get('employeeNumber')!.invalid && addForm.get('employeeNumber')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+              }
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.jobTitleLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="jobTitle" type="text" maxlength="100" class="modal-input"
+                [class.is-invalid]="addForm.get('jobTitle')!.invalid && addForm.get('jobTitle')!.touched" />
+              @if (addForm.get('jobTitle')!.invalid && addForm.get('jobTitle')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+              }
+            </div>
+          </div>
+
+          <!-- Birth Date + Gender -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.birthDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="birthDate" type="date" class="modal-input"
+                [class.is-invalid]="addForm.get('birthDate')!.invalid && addForm.get('birthDate')!.touched" />
+              @if (addForm.get('birthDate')!.invalid && addForm.get('birthDate')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+              }
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.genderLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <select formControlName="gender" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                <option [ngValue]="GenderType.Male">{{ 'manager.genderTypes.0' | translate }}</option>
+                <option [ngValue]="GenderType.Female">{{ 'manager.genderTypes.1' | translate }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Nationality -->
+          <div>
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              {{ 'manager.addEmployee.nationalityLabel' | translate }}
+              <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+            </label>
+            <input formControlName="nationality" type="text" maxlength="100" class="modal-input"
+              [class.is-invalid]="addForm.get('nationality')!.invalid && addForm.get('nationality')!.touched" />
+            @if (addForm.get('nationality')!.invalid && addForm.get('nationality')!.touched) {
+              <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.max100' | translate }}</p>
+            }
           </div>
 
           <!-- Email -->
@@ -284,22 +337,152 @@
               {{ 'manager.addEmployee.emailLabel' | translate }}
               <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
             </label>
-            <input formControlName="email" type="text" placeholder="employee@company.com"
-              class="modal-input" [class.is-invalid]="addForm.get('email')!.invalid && addForm.get('email')!.touched" />
+            <input formControlName="email" type="text" placeholder="employee@company.com" class="modal-input"
+              [class.is-invalid]="addForm.get('email')!.invalid && addForm.get('email')!.touched" />
             @if (addForm.get('email')!.invalid && addForm.get('email')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.emailInvalid' | translate }}</p>
             }
           </div>
 
-          <!-- Employee type -->
+          <!-- Employee Type + Contract Type -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <select formControlName="employeeType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                <option [ngValue]="EmployeeType.Employee">{{ 'manager.employeeTypes.0' | translate }}</option>
+                <option [ngValue]="EmployeeType.HumanResourceManager">{{ 'manager.employeeTypes.1' | translate }}</option>
+                <option [ngValue]="EmployeeType.DepartmentManager">{{ 'manager.employeeTypes.2' | translate }}</option>
+                <option [ngValue]="EmployeeType.BranchManager">{{ 'manager.employeeTypes.3' | translate }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.contractTypeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <select formControlName="contractType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                <option [ngValue]="ContractType.FullTime">{{ 'manager.contractTypes.0' | translate }}</option>
+                <option [ngValue]="ContractType.PartTime">{{ 'manager.contractTypes.1' | translate }}</option>
+                <option [ngValue]="ContractType.Temporary">{{ 'manager.contractTypes.2' | translate }}</option>
+                <option [ngValue]="ContractType.Contractor">{{ 'manager.contractTypes.3' | translate }}</option>
+                <option [ngValue]="ContractType.Other">{{ 'manager.contractTypes.4' | translate }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Branch ID + Section ID (optional) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.branchIdLabel' | translate }}
+                <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+              </label>
+              <input formControlName="branchId" type="number" min="1" step="1" class="modal-input"
+                [class.is-invalid]="addForm.get('branchId')!.invalid && addForm.get('branchId')!.touched" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.sectionIdLabel' | translate }}
+                <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+              </label>
+              <input formControlName="sectionId" type="number" min="1" step="1" class="modal-input"
+                [class.is-invalid]="addForm.get('sectionId')!.invalid && addForm.get('sectionId')!.touched" />
+            </div>
+          </div>
+
+          <!-- Hire Date + Base Salary -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.hireDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="hireDate" type="date" class="modal-input"
+                [class.is-invalid]="addForm.get('hireDate')!.invalid && addForm.get('hireDate')!.touched" />
+              @if (addForm.get('hireDate')!.invalid && addForm.get('hireDate')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+              }
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.baseSalaryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="baseSalary" type="number" min="0.01" step="0.01" class="modal-input"
+                [class.is-invalid]="addForm.get('baseSalary')!.invalid && addForm.get('baseSalary')!.touched" />
+              @if (addForm.get('baseSalary')!.invalid && addForm.get('baseSalary')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
+                  {{ addForm.get('baseSalary')!.hasError('required') ? ('validation.required' | translate) : ('validation.salaryMin' | translate) }}
+                </p>
+              }
+            </div>
+          </div>
+
+          <!-- Work Start + Work End -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.workStartTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="workStartTime" type="time" class="modal-input"
+                [class.is-invalid]="addForm.get('workStartTime')!.invalid && addForm.get('workStartTime')!.touched" />
+              @if (addForm.get('workStartTime')!.invalid && addForm.get('workStartTime')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+              }
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.workEndTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="workEndTime" type="time" class="modal-input"
+                [class.is-invalid]="addForm.get('workEndTime')!.invalid && addForm.get('workEndTime')!.touched" />
+              @if (addForm.get('workEndTime')!.invalid && addForm.get('workEndTime')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+              }
+            </div>
+          </div>
+
+          <!-- Emergency Relation + Phone -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.emergencyContactRelationLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <select formControlName="emergencyContactRelation" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                <option [ngValue]="RelationType.Father">{{ 'manager.relationTypes.0' | translate }}</option>
+                <option [ngValue]="RelationType.Mother">{{ 'manager.relationTypes.1' | translate }}</option>
+                <option [ngValue]="RelationType.Brother">{{ 'manager.relationTypes.2' | translate }}</option>
+                <option [ngValue]="RelationType.Sister">{{ 'manager.relationTypes.3' | translate }}</option>
+                <option [ngValue]="RelationType.Husband">{{ 'manager.relationTypes.4' | translate }}</option>
+                <option [ngValue]="RelationType.Wife">{{ 'manager.relationTypes.5' | translate }}</option>
+                <option [ngValue]="RelationType.Son">{{ 'manager.relationTypes.6' | translate }}</option>
+                <option [ngValue]="RelationType.Daughter">{{ 'manager.relationTypes.7' | translate }}</option>
+                <option [ngValue]="RelationType.CloseRelative">{{ 'manager.relationTypes.8' | translate }}</option>
+                <option [ngValue]="RelationType.Other">{{ 'manager.relationTypes.9' | translate }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.emergencyContactPhoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="emergencyContactPhone" type="tel" maxlength="20" class="modal-input"
+                [class.is-invalid]="addForm.get('emergencyContactPhone')!.invalid && addForm.get('emergencyContactPhone')!.touched" />
+              @if (addForm.get('emergencyContactPhone')!.invalid && addForm.get('emergencyContactPhone')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+              }
+            </div>
+          </div>
+
+          <!-- Internal Notes -->
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-              {{ 'manager.addEmployee.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              {{ 'manager.addEmployee.internalNotesLabel' | translate }}
+              <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
             </label>
-            <select formControlName="employeeType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
-              <option [ngValue]="EmployeeType.Employee">{{ 'manager.employeeTypes.0' | translate }}</option>
-              <option [ngValue]="EmployeeType.HumanResourceManager">{{ 'manager.employeeTypes.1' | translate }}</option>
-            </select>
+            <textarea formControlName="internalNotes" rows="3" maxlength="1000" class="modal-input resize-none"
+              [class.is-invalid]="addForm.get('internalNotes')!.invalid && addForm.get('internalNotes')!.touched"></textarea>
+            @if (addForm.get('internalNotes')!.invalid && addForm.get('internalNotes')!.touched) {
+              <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.max1000' | translate }}</p>
+            }
           </div>
 
           <div class="flex gap-3 pt-1">
@@ -321,10 +504,10 @@
 @if (showEditModal() && selectedEmployee()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
     style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);" (click)="showEditModal.set(false)">
-    <div class="w-full max-w-md rounded-2xl p-6" style="background: var(--bg-surface-2); border: 1px solid var(--border);"
+    <div class="w-full max-w-xl rounded-2xl flex flex-col" style="background: var(--bg-surface-2); border: 1px solid var(--border); max-height: 90vh;"
       (click)="$event.stopPropagation()">
 
-      <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center justify-between px-6 pt-6 pb-5 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
         <div>
           <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.editEmployee.title' | translate }}</h2>
           <p class="text-xs mt-0.5" style="color: var(--text-faint);">
@@ -339,68 +522,269 @@
         </button>
       </div>
 
-      @if (modalError()) {
-        <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
-          style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
-          <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgba(239,68,68,0.8);" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-          </svg>
-          <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ modalError() }}</span>
-        </div>
-      }
-
-      <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-              {{ 'manager.editEmployee.firstNameLabel' | translate }}
-            </label>
-            <input formControlName="firstName" type="text" class="modal-input"
-              [class.is-invalid]="editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched" />
-            @if (editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched) {
-              <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
+      <div class="px-6 py-5 overflow-y-auto flex-1">
+        @if (editLoading()) {
+          <div class="space-y-3">
+            @for (_ of [1,2,3,4]; track $index) {
+              <div class="h-10 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
             }
           </div>
-          <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-              {{ 'manager.editEmployee.lastNameLabel' | translate }}
-            </label>
-            <input formControlName="lastName" type="text" class="modal-input"
-              [class.is-invalid]="editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched" />
-            @if (editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched) {
-              <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
-            }
-          </div>
-        </div>
+        } @else {
+          @if (modalError()) {
+            <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
+              style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
+              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgba(239,68,68,0.8);" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+              </svg>
+              <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ modalError() }}</span>
+            </div>
+          }
 
-        <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-            {{ 'manager.editEmployee.emailLabel' | translate }}
-            <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
-          </label>
-          <input formControlName="email" type="text" placeholder="employee@company.com" class="modal-input" />
-        </div>
+          <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
 
-        <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-            {{ 'manager.editEmployee.typeLabel' | translate }}
-          </label>
-          <select formControlName="employeeType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
-            <option [ngValue]="EmployeeType.Employee">{{ 'manager.employeeTypes.0' | translate }}</option>
-            <option [ngValue]="EmployeeType.HumanResourceManager">{{ 'manager.employeeTypes.1' | translate }}</option>
-          </select>
-        </div>
+            <!-- First + Last name -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.firstNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <input formControlName="firstName" type="text" class="modal-input"
+                  [class.is-invalid]="editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched" />
+                @if (editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched) {
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
+                }
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.lastNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <input formControlName="lastName" type="text" class="modal-input"
+                  [class.is-invalid]="editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched" />
+                @if (editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched) {
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
+                }
+              </div>
+            </div>
 
-        <div class="flex gap-3 pt-1">
-          <button type="button" (click)="showEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-            style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
-          <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
-            style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
-            {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
-          </button>
-        </div>
-      </form>
+            <!-- Employee Number + Job Title -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.employeeNumberLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <input formControlName="employeeNumber" type="text" maxlength="50" class="modal-input"
+                  [class.is-invalid]="editForm.get('employeeNumber')!.invalid && editForm.get('employeeNumber')!.touched" />
+                @if (editForm.get('employeeNumber')!.invalid && editForm.get('employeeNumber')!.touched) {
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+                }
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.jobTitleLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <input formControlName="jobTitle" type="text" maxlength="100" class="modal-input"
+                  [class.is-invalid]="editForm.get('jobTitle')!.invalid && editForm.get('jobTitle')!.touched" />
+                @if (editForm.get('jobTitle')!.invalid && editForm.get('jobTitle')!.touched) {
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+                }
+              </div>
+            </div>
+
+            <!-- Birth Date + Gender -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.birthDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <input formControlName="birthDate" type="date" class="modal-input"
+                  [class.is-invalid]="editForm.get('birthDate')!.invalid && editForm.get('birthDate')!.touched" />
+                @if (editForm.get('birthDate')!.invalid && editForm.get('birthDate')!.touched) {
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+                }
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.genderLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <select formControlName="gender" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                  <option [ngValue]="GenderType.Male">{{ 'manager.genderTypes.0' | translate }}</option>
+                  <option [ngValue]="GenderType.Female">{{ 'manager.genderTypes.1' | translate }}</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Nationality -->
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.editEmployee.nationalityLabel' | translate }}
+                <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+              </label>
+              <input formControlName="nationality" type="text" maxlength="100" class="modal-input"
+                [class.is-invalid]="editForm.get('nationality')!.invalid && editForm.get('nationality')!.touched" />
+              @if (editForm.get('nationality')!.invalid && editForm.get('nationality')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.max100' | translate }}</p>
+              }
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.editEmployee.emailLabel' | translate }}
+                <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+              </label>
+              <input formControlName="email" type="text" placeholder="employee@company.com" class="modal-input" />
+            </div>
+
+            <!-- Employee Type + Contract Type -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <select formControlName="employeeType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                  <option [ngValue]="EmployeeType.Employee">{{ 'manager.employeeTypes.0' | translate }}</option>
+                  <option [ngValue]="EmployeeType.HumanResourceManager">{{ 'manager.employeeTypes.1' | translate }}</option>
+                  <option [ngValue]="EmployeeType.DepartmentManager">{{ 'manager.employeeTypes.2' | translate }}</option>
+                  <option [ngValue]="EmployeeType.BranchManager">{{ 'manager.employeeTypes.3' | translate }}</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.contractTypeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <select formControlName="contractType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                  <option [ngValue]="ContractType.FullTime">{{ 'manager.contractTypes.0' | translate }}</option>
+                  <option [ngValue]="ContractType.PartTime">{{ 'manager.contractTypes.1' | translate }}</option>
+                  <option [ngValue]="ContractType.Temporary">{{ 'manager.contractTypes.2' | translate }}</option>
+                  <option [ngValue]="ContractType.Contractor">{{ 'manager.contractTypes.3' | translate }}</option>
+                  <option [ngValue]="ContractType.Other">{{ 'manager.contractTypes.4' | translate }}</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Branch ID + Section ID -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.branchIdLabel' | translate }}
+                  <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+                </label>
+                <input formControlName="branchId" type="number" min="1" step="1" class="modal-input" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.sectionIdLabel' | translate }}
+                  <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+                </label>
+                <input formControlName="sectionId" type="number" min="1" step="1" class="modal-input" />
+              </div>
+            </div>
+
+            <!-- Hire Date + Base Salary -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.hireDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <input formControlName="hireDate" type="date" class="modal-input"
+                  [class.is-invalid]="editForm.get('hireDate')!.invalid && editForm.get('hireDate')!.touched" />
+                @if (editForm.get('hireDate')!.invalid && editForm.get('hireDate')!.touched) {
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+                }
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.baseSalaryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <input formControlName="baseSalary" type="number" min="0.01" step="0.01" class="modal-input"
+                  [class.is-invalid]="editForm.get('baseSalary')!.invalid && editForm.get('baseSalary')!.touched" />
+                @if (editForm.get('baseSalary')!.invalid && editForm.get('baseSalary')!.touched) {
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
+                    {{ editForm.get('baseSalary')!.hasError('required') ? ('validation.required' | translate) : ('validation.salaryMin' | translate) }}
+                  </p>
+                }
+              </div>
+            </div>
+
+            <!-- Work Start + Work End -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.workStartTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <input formControlName="workStartTime" type="time" class="modal-input"
+                  [class.is-invalid]="editForm.get('workStartTime')!.invalid && editForm.get('workStartTime')!.touched" />
+                @if (editForm.get('workStartTime')!.invalid && editForm.get('workStartTime')!.touched) {
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+                }
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.workEndTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <input formControlName="workEndTime" type="time" class="modal-input"
+                  [class.is-invalid]="editForm.get('workEndTime')!.invalid && editForm.get('workEndTime')!.touched" />
+                @if (editForm.get('workEndTime')!.invalid && editForm.get('workEndTime')!.touched) {
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+                }
+              </div>
+            </div>
+
+            <!-- Emergency Relation + Phone -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.emergencyContactRelationLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <select formControlName="emergencyContactRelation" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                  <option [ngValue]="RelationType.Father">{{ 'manager.relationTypes.0' | translate }}</option>
+                  <option [ngValue]="RelationType.Mother">{{ 'manager.relationTypes.1' | translate }}</option>
+                  <option [ngValue]="RelationType.Brother">{{ 'manager.relationTypes.2' | translate }}</option>
+                  <option [ngValue]="RelationType.Sister">{{ 'manager.relationTypes.3' | translate }}</option>
+                  <option [ngValue]="RelationType.Husband">{{ 'manager.relationTypes.4' | translate }}</option>
+                  <option [ngValue]="RelationType.Wife">{{ 'manager.relationTypes.5' | translate }}</option>
+                  <option [ngValue]="RelationType.Son">{{ 'manager.relationTypes.6' | translate }}</option>
+                  <option [ngValue]="RelationType.Daughter">{{ 'manager.relationTypes.7' | translate }}</option>
+                  <option [ngValue]="RelationType.CloseRelative">{{ 'manager.relationTypes.8' | translate }}</option>
+                  <option [ngValue]="RelationType.Other">{{ 'manager.relationTypes.9' | translate }}</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.emergencyContactPhoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <input formControlName="emergencyContactPhone" type="tel" maxlength="20" class="modal-input"
+                  [class.is-invalid]="editForm.get('emergencyContactPhone')!.invalid && editForm.get('emergencyContactPhone')!.touched" />
+                @if (editForm.get('emergencyContactPhone')!.invalid && editForm.get('emergencyContactPhone')!.touched) {
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+                }
+              </div>
+            </div>
+
+            <!-- Internal Notes -->
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.editEmployee.internalNotesLabel' | translate }}
+                <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+              </label>
+              <textarea formControlName="internalNotes" rows="3" maxlength="1000" class="modal-input resize-none"
+                [class.is-invalid]="editForm.get('internalNotes')!.invalid && editForm.get('internalNotes')!.touched"></textarea>
+              @if (editForm.get('internalNotes')!.invalid && editForm.get('internalNotes')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.max1000' | translate }}</p>
+              }
+            </div>
+
+            <div class="flex gap-3 pt-1">
+              <button type="button" (click)="showEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+                style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+              <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+                style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
+                {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
+              </button>
+            </div>
+          </form>
+        }
+      </div>
     </div>
   </div>
 }

@@ -1,11 +1,14 @@
-import { Component, signal, inject, OnInit, computed } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { EmployeeService } from '../../../core/services/employee.service';
-import { Employee, EmployeeType, GetEmployeesParams } from '../../../core/models/employee.models';
+import {
+  Employee, EmployeeType, GenderType, ContractType, RelationType,
+  GetEmployeesParams,
+} from '../../../core/models/employee.models';
 
 @Component({
   selector: 'app-employees',
@@ -40,32 +43,66 @@ export class EmployeesComponent implements OnInit {
   listError  = signal<string | null>(null);
   modalError = signal<string | null>(null);
   submitting = signal(false);
+  editLoading = signal(false);
 
   // ── Modals ─────────────────────────────────────────────────────────────────
-  showAddModal    = signal(false);
-  showEditModal   = signal(false);
-  showDeleteModal = signal(false);
+  showAddModal     = signal(false);
+  showEditModal    = signal(false);
+  showDeleteModal  = signal(false);
   selectedEmployee = signal<Employee | null>(null);
   deleteTargetId   = signal<number | null>(null);
 
   private readonly phonePattern = /^09\d{8}$/;
 
+  readonly EmployeeType  = EmployeeType;
+  readonly GenderType    = GenderType;
+  readonly ContractType  = ContractType;
+  readonly RelationType  = RelationType;
+
   addForm = this.fb.group({
-    phoneNumber:  ['', [Validators.required, Validators.pattern(this.phonePattern)]],
-    firstName:    ['', [Validators.required, Validators.maxLength(50)]],
-    lastName:     ['', [Validators.required, Validators.maxLength(50)]],
-    email:        ['', [Validators.email]],
-    employeeType: [EmployeeType.Employee, Validators.required],
+    phoneNumber:               ['', [Validators.required, Validators.pattern(this.phonePattern)]],
+    firstName:                 ['', [Validators.required, Validators.maxLength(50)]],
+    lastName:                  ['', [Validators.required, Validators.maxLength(50)]],
+    email:                     ['', [Validators.email]],
+    employeeType:              [EmployeeType.Employee, Validators.required],
+    employeeNumber:            ['', [Validators.required, Validators.maxLength(50)]],
+    jobTitle:                  ['', [Validators.required, Validators.maxLength(100)]],
+    birthDate:                 ['', [Validators.required]],
+    gender:                    [GenderType.Male, Validators.required],
+    nationality:               ['', [Validators.maxLength(100)]],
+    branchId:                  [null as number | null, [Validators.min(1)]],
+    sectionId:                 [null as number | null, [Validators.min(1)]],
+    hireDate:                  ['', [Validators.required]],
+    contractType:              [ContractType.FullTime, Validators.required],
+    baseSalary:                [null as number | null, [Validators.required, Validators.min(0.01)]],
+    workStartTime:             ['', [Validators.required]],
+    workEndTime:               ['', [Validators.required]],
+    emergencyContactRelation:  [RelationType.Father, Validators.required],
+    emergencyContactPhone:     ['', [Validators.required, Validators.maxLength(20)]],
+    internalNotes:             ['', [Validators.maxLength(1000)]],
   });
 
   editForm = this.fb.group({
-    firstName:    ['', [Validators.required, Validators.maxLength(50)]],
-    lastName:     ['', [Validators.required, Validators.maxLength(50)]],
-    email:        ['', [Validators.email]],
-    employeeType: [EmployeeType.Employee, Validators.required],
+    firstName:                 ['', [Validators.required, Validators.maxLength(50)]],
+    lastName:                  ['', [Validators.required, Validators.maxLength(50)]],
+    email:                     ['', [Validators.email]],
+    employeeType:              [EmployeeType.Employee, Validators.required],
+    employeeNumber:            ['', [Validators.required, Validators.maxLength(50)]],
+    jobTitle:                  ['', [Validators.required, Validators.maxLength(100)]],
+    birthDate:                 ['', [Validators.required]],
+    gender:                    [GenderType.Male, Validators.required],
+    nationality:               ['', [Validators.maxLength(100)]],
+    branchId:                  [null as number | null, [Validators.min(1)]],
+    sectionId:                 [null as number | null, [Validators.min(1)]],
+    hireDate:                  ['', [Validators.required]],
+    contractType:              [ContractType.FullTime, Validators.required],
+    baseSalary:                [null as number | null, [Validators.required, Validators.min(0.01)]],
+    workStartTime:             ['', [Validators.required]],
+    workEndTime:               ['', [Validators.required]],
+    emergencyContactRelation:  [RelationType.Father, Validators.required],
+    emergencyContactPhone:     ['', [Validators.required, Validators.maxLength(20)]],
+    internalNotes:             ['', [Validators.maxLength(1000)]],
   });
-
-  readonly EmployeeType = EmployeeType;
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
   ngOnInit(): void {
@@ -97,8 +134,9 @@ export class EmployeesComponent implements OnInit {
         const items: Employee[] = Array.isArray(raw)
           ? raw
           : (raw?.items ?? raw?.data ?? raw?.employees ?? []);
+        const total = raw?.totalCount ?? items.length;
         this.employees.set(items);
-        this.hasMore.set(items.length >= this.filter.value().pageSize);
+        this.hasMore.set(this.filter.value().pageNumber * this.filter.value().pageSize < total);
         this.loading.set(false);
       },
       error: err => {
@@ -129,7 +167,12 @@ export class EmployeesComponent implements OnInit {
 
   // ── Add ────────────────────────────────────────────────────────────────────
   openAdd(): void {
-    this.addForm.reset({ employeeType: EmployeeType.Employee });
+    this.addForm.reset({
+      employeeType:             EmployeeType.Employee,
+      gender:                   GenderType.Male,
+      contractType:             ContractType.FullTime,
+      emergencyContactRelation: RelationType.Father,
+    });
     this.modalError.set(null);
     this.showAddModal.set(true);
   }
@@ -141,18 +184,30 @@ export class EmployeesComponent implements OnInit {
 
     const v = this.addForm.value;
     this.employeeService.create({
-      phoneNumber:  v.phoneNumber!,
-      firstName:    v.firstName!,
-      lastName:     v.lastName!,
-      email:        v.email || undefined,
-      employeeType: v.employeeType!,
+      phoneNumber:              v.phoneNumber!,
+      firstName:                v.firstName!,
+      lastName:                 v.lastName!,
+      email:                    v.email    || undefined,
+      employeeType:             v.employeeType!,
+      employeeNumber:           v.employeeNumber!,
+      jobTitle:                 v.jobTitle!,
+      birthDate:                v.birthDate!,
+      gender:                   v.gender!,
+      nationality:              v.nationality || undefined,
+      branchId:                 v.branchId  ?? undefined,
+      sectionId:                v.sectionId ?? undefined,
+      hireDate:                 v.hireDate!,
+      contractType:             v.contractType!,
+      baseSalary:               v.baseSalary!,
+      workStartTime:            v.workStartTime!,
+      workEndTime:              v.workEndTime!,
+      emergencyContactRelation: v.emergencyContactRelation!,
+      emergencyContactPhone:    v.emergencyContactPhone!,
+      internalNotes:            v.internalNotes || undefined,
     }).subscribe({
       next: (res: any) => {
         this.submitting.set(false);
-        if (res?.isSuccess === false) {
-          this.modalError.set(res.message || 'Failed to add employee.');
-          return;
-        }
+        if (res?.isSuccess === false) { this.modalError.set(res.message || 'Failed to add employee.'); return; }
         if (res?.data != null || res?.id != null || res?.isSuccess === true) {
           this.showAddModal.set(false);
           this.flash('Employee added successfully!');
@@ -162,10 +217,7 @@ export class EmployeesComponent implements OnInit {
           this.modalError.set(res?.message || 'Failed to add employee.');
         }
       },
-      error: err => {
-        this.submitting.set(false);
-        this.modalError.set(this.apiErr(err, 'Failed to add employee.'));
-      },
+      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add employee.')); },
     });
   }
 
@@ -173,14 +225,42 @@ export class EmployeesComponent implements OnInit {
   openEdit(emp: Employee, event: Event): void {
     event.stopPropagation();
     this.selectedEmployee.set(emp);
-    this.editForm.patchValue({
-      firstName:    emp.firstName,
-      lastName:     emp.lastName,
-      email:        emp.email ?? '',
-      employeeType: emp.employeeType,
-    });
+    this.editForm.reset();
     this.modalError.set(null);
+    this.editLoading.set(true);
     this.showEditModal.set(true);
+
+    this.employeeService.getById(emp.id).subscribe({
+      next: (res: any) => {
+        this.editLoading.set(false);
+        const e = res?.data ?? res;
+        this.editForm.patchValue({
+          firstName:                e.firstName,
+          lastName:                 e.lastName,
+          email:                    e.email              ?? '',
+          employeeType:             e.employeeType       ?? EmployeeType.Employee,
+          employeeNumber:           e.employeeNumber     ?? '',
+          jobTitle:                 e.jobTitle           ?? '',
+          birthDate:                e.birthDate          ?? '',
+          gender:                   e.gender             ?? GenderType.Male,
+          nationality:              e.nationality        ?? '',
+          branchId:                 e.branchId           ?? null,
+          sectionId:                e.sectionId          ?? null,
+          hireDate:                 e.hireDate           ?? '',
+          contractType:             e.contractType       ?? ContractType.FullTime,
+          baseSalary:               e.baseSalary         ?? null,
+          workStartTime:            e.workStartTime      ?? '',
+          workEndTime:              e.workEndTime        ?? '',
+          emergencyContactRelation: e.emergencyContactRelation ?? RelationType.Father,
+          emergencyContactPhone:    e.emergencyContactPhone    ?? '',
+          internalNotes:            e.internalNotes      ?? '',
+        });
+      },
+      error: err => {
+        this.editLoading.set(false);
+        this.modalError.set(this.apiErr(err, 'Failed to load employee data.'));
+      },
+    });
   }
 
   submitEdit(): void {
@@ -192,25 +272,34 @@ export class EmployeesComponent implements OnInit {
 
     const v = this.editForm.value;
     this.employeeService.update(id, {
-      firstName:    v.firstName || undefined,
-      lastName:     v.lastName  || undefined,
-      email:        v.email     || undefined,
-      employeeType: v.employeeType!,
+      firstName:                v.firstName    || undefined,
+      lastName:                 v.lastName     || undefined,
+      email:                    v.email        || undefined,
+      employeeType:             v.employeeType!,
+      employeeNumber:           v.employeeNumber || undefined,
+      jobTitle:                 v.jobTitle     || undefined,
+      birthDate:                v.birthDate    || undefined,
+      gender:                   v.gender       ?? undefined,
+      nationality:              v.nationality  || undefined,
+      branchId:                 v.branchId     ?? undefined,
+      sectionId:                v.sectionId    ?? undefined,
+      hireDate:                 v.hireDate     || undefined,
+      contractType:             v.contractType ?? undefined,
+      baseSalary:               v.baseSalary   ?? undefined,
+      workStartTime:            v.workStartTime || undefined,
+      workEndTime:              v.workEndTime   || undefined,
+      emergencyContactRelation: v.emergencyContactRelation ?? undefined,
+      emergencyContactPhone:    v.emergencyContactPhone    || undefined,
+      internalNotes:            v.internalNotes || undefined,
     }).subscribe({
       next: (res: any) => {
         this.submitting.set(false);
-        if (res?.isSuccess === false) {
-          this.modalError.set(res.message || 'Update failed.');
-          return;
-        }
+        if (res?.isSuccess === false) { this.modalError.set(res.message || 'Update failed.'); return; }
         this.showEditModal.set(false);
         this.flash('Employee updated.');
         this.loadEmployees();
       },
-      error: err => {
-        this.submitting.set(false);
-        this.modalError.set(this.apiErr(err, 'Update failed.'));
-      },
+      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Update failed.')); },
     });
   }
 
@@ -239,6 +328,10 @@ export class EmployeesComponent implements OnInit {
   // ── Helpers ────────────────────────────────────────────────────────────────
   employeeTypeLabel(type: EmployeeType): string {
     return this.lang.t(`manager.employeeTypes.${type}`);
+  }
+
+  contractTypeLabel(type: ContractType): string {
+    return this.lang.t(`manager.contractTypes.${type}`);
   }
 
   formatDate(dateStr?: string): string {
@@ -274,7 +367,9 @@ export class EmployeesComponent implements OnInit {
     switch (err?.status) {
       case 401: return 'Session expired. Please sign in again.';
       case 403: return 'You do not have permission.';
+      case 404: return 'Employee not found.';
       case 409: return 'This employee already exists.';
+      case 412: return 'No changes detected or record already deleted.';
       case 500: return 'Server error. Please try again later.';
       default:  return fallback;
     }

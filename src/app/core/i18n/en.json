@@ -104,12 +104,16 @@
     "nameMax50": "Required, max 50 chars",
     "passwordMin8": "Min 8 characters",
     "passwordComplex": "Must include A-Z, a-z, 0-9 and a special character",
+    "max100": "Max 100 characters",
     "max200": "Max 200 characters",
     "max20": "Max 20 characters",
     "max500": "Max 500 characters",
+    "max1000": "Max 1000 characters",
     "landlineDigits": "7–10 digits only",
     "latRange": "Must be between -90 and 90",
-    "lngRange": "Must be between -180 and 180"
+    "lngRange": "Must be between -180 and 180",
+    "salaryMin": "Must be greater than 0",
+    "utcRange": "Must be between -12 and 14"
   },
   "admin": {
     "overview": {
@@ -263,6 +267,10 @@
     "logoRequired": "Logo is required",
     "logoInvalidType": "Only JPG, PNG and WEBP are allowed",
     "logoTooLarge": "File must be under 2 MB",
+    "currencyLabel": "Currency",
+    "utcOffsetLabel": "UTC Offset (hours)",
+    "latLabel": "Latitude",
+    "lngLabel": "Longitude",
     "finish": "Finish Setup",
     "finishing": "Finishing…",
     "backToLogin": "← Back to Sign In"
@@ -403,14 +411,44 @@
       "firstNameLabel": "First Name",
       "lastNameLabel": "Last Name",
       "emailLabel": "Email",
-      "typeLabel": "Employee Type"
+      "typeLabel": "Employee Type",
+      "employeeNumberLabel": "Employee Number",
+      "jobTitleLabel": "Job Title",
+      "birthDateLabel": "Date of Birth",
+      "genderLabel": "Gender",
+      "nationalityLabel": "Nationality",
+      "branchIdLabel": "Branch",
+      "sectionIdLabel": "Section",
+      "hireDateLabel": "Hire Date",
+      "contractTypeLabel": "Contract Type",
+      "baseSalaryLabel": "Base Salary",
+      "workStartTimeLabel": "Work Start",
+      "workEndTimeLabel": "Work End",
+      "emergencyContactRelationLabel": "Emergency Relation",
+      "emergencyContactPhoneLabel": "Emergency Phone",
+      "internalNotesLabel": "Internal Notes"
     },
     "editEmployee": {
       "title": "Edit Employee",
       "firstNameLabel": "First Name",
       "lastNameLabel": "Last Name",
       "emailLabel": "Email",
-      "typeLabel": "Employee Type"
+      "typeLabel": "Employee Type",
+      "employeeNumberLabel": "Employee Number",
+      "jobTitleLabel": "Job Title",
+      "birthDateLabel": "Date of Birth",
+      "genderLabel": "Gender",
+      "nationalityLabel": "Nationality",
+      "branchIdLabel": "Branch",
+      "sectionIdLabel": "Section",
+      "hireDateLabel": "Hire Date",
+      "contractTypeLabel": "Contract Type",
+      "baseSalaryLabel": "Base Salary",
+      "workStartTimeLabel": "Work Start",
+      "workEndTimeLabel": "Work End",
+      "emergencyContactRelationLabel": "Emergency Relation",
+      "emergencyContactPhoneLabel": "Emergency Phone",
+      "internalNotesLabel": "Internal Notes"
     },
     "deleteModal": {
       "title": "Delete Employee?",
@@ -421,6 +459,42 @@
       "1": "HR Manager",
       "2": "Department Manager",
       "3": "Branch Manager"
+    },
+    "genderTypes": {
+      "0": "Male",
+      "1": "Female"
+    },
+    "contractTypes": {
+      "0": "Full Time",
+      "1": "Part Time",
+      "2": "Temporary",
+      "3": "Contractor",
+      "4": "Other"
+    },
+    "currencyTypes": {
+      "0": "LYD",
+      "1": "USD"
+    },
+    "relationTypes": {
+      "0": "Father",
+      "1": "Mother",
+      "2": "Brother",
+      "3": "Sister",
+      "4": "Husband",
+      "5": "Wife",
+      "6": "Son",
+      "7": "Daughter",
+      "8": "Close Relative",
+      "9": "Other"
+    },
+    "attachmentTypes": {
+      "0": "Identity Photo",
+      "1": "Personal Photo",
+      "2": "Work Contract",
+      "3": "Certificate",
+      "4": "Qualifications",
+      "5": "Health Card",
+      "6": "Professional License"
     }
   },
   "companyTypes": {

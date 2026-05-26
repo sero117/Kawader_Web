@@ -26,7 +26,7 @@ export interface SignUpRequest {
   phoneNumber: string;
   email: string;
   password: string;
-  confirmPassword: string;
+  role: Role;
 }
 
 export interface RefreshTokenRequest {
