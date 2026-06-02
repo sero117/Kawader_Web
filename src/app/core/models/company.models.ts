@@ -57,6 +57,14 @@ export interface Company {
   isCompleted?: boolean;
   isActive?: boolean;
   createdAt?: string;
+  createdBy?: number;
+  completeAt?: string;
+  isDeleted?: boolean;
+  deletedBy?: number | null;
+  deletedAt?: string | null;
+  isFrozen?: boolean;
+  frozenBy?: number | null;
+  frozenAt?: string | null;
 }
 
 export interface CompanyStatus {

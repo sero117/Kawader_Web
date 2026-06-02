@@ -55,13 +55,16 @@ export class CompaniesComponent implements OnInit {
     email:       ['', [Validators.email]],
   });
 
-  // ── View / Edit / Delete modals ────────────────────────────────────────────
-  showViewModal   = signal(false);
-  showEditModal   = signal(false);
-  showDeleteModal = signal(false);
-  selectedCompany = signal<Company | null>(null);
-  viewLoading     = signal(false);
-  deleteTargetId  = signal<number | null>(null);
+  // ── View / Edit / Delete / Freeze modals ──────────────────────────────────
+  showViewModal     = signal(false);
+  showEditModal     = signal(false);
+  showDeleteModal   = signal(false);
+  showFreezeModal   = signal(false);
+  showUnfreezeModal = signal(false);
+  selectedCompany   = signal<Company | null>(null);
+  viewLoading       = signal(false);
+  deleteTargetId    = signal<number | null>(null);
+  freezeTargetId    = signal<number | null>(null);
 
   editForm = this.fb.group({
     phoneNumber: ['', [Validators.required, Validators.pattern(this.phonePattern)]],
@@ -217,6 +220,57 @@ export class CompaniesComponent implements OnInit {
     });
   }
 
+  // ── Freeze / Unfreeze ─────────────────────────────────────────────────────
+  confirmFreeze(id: number, event: Event): void {
+    event.stopPropagation();
+    this.freezeTargetId.set(id);
+    this.showFreezeModal.set(true);
+  }
+
+  confirmUnfreeze(id: number, event: Event): void {
+    event.stopPropagation();
+    this.freezeTargetId.set(id);
+    this.showUnfreezeModal.set(true);
+  }
+
+  executeFreeze(): void {
+    const id = this.freezeTargetId();
+    if (id === null) return;
+    this.submitting.set(true);
+    this.companyService.freeze(id).subscribe({
+      next: () => {
+        this.submitting.set(false);
+        this.showFreezeModal.set(false);
+        this.companies.update(list => list.map(c => c.id === id ? { ...c, isFrozen: true } : c));
+        this.flash('Company frozen.');
+      },
+      error: err => {
+        this.submitting.set(false);
+        this.showFreezeModal.set(false);
+        this.flash(this.apiErr(err, 'Failed to freeze company.'));
+      },
+    });
+  }
+
+  executeUnfreeze(): void {
+    const id = this.freezeTargetId();
+    if (id === null) return;
+    this.submitting.set(true);
+    this.companyService.unfreeze(id).subscribe({
+      next: () => {
+        this.submitting.set(false);
+        this.showUnfreezeModal.set(false);
+        this.companies.update(list => list.map(c => c.id === id ? { ...c, isFrozen: false } : c));
+        this.flash('Company unfrozen.');
+      },
+      error: err => {
+        this.submitting.set(false);
+        this.showUnfreezeModal.set(false);
+        this.flash(this.apiErr(err, 'Failed to unfreeze company.'));
+      },
+    });
+  }
+
   // ── Delete modal ───────────────────────────────────────────────────────────
   confirmDelete(id: number, event: Event): void {
     event.stopPropagation();
@@ -246,11 +300,12 @@ export class CompaniesComponent implements OnInit {
     return type !== undefined ? this.lang.t(`companyTypes.${type}`) : '—';
   }
 
-  statusLabel(c: Company): { text: string; active: boolean; pending: boolean } {
-    if (c.isCompleted === false) return { text: 'Setup Pending', active: false, pending: true };
-    if (c.isActive === true)     return { text: 'Active',        active: true,  pending: false };
-    if (c.isActive === false)    return { text: 'Inactive',      active: false, pending: false };
-    return { text: 'Unknown', active: false, pending: false };
+  statusLabel(c: Company): { text: string; active: boolean; pending: boolean; frozen: boolean } {
+    if (c.isFrozen)              return { text: 'Frozen',        active: false, pending: false, frozen: true  };
+    if (c.isCompleted === false) return { text: 'Setup Pending', active: false, pending: true,  frozen: false };
+    if (c.isActive === true)     return { text: 'Active',        active: true,  pending: false, frozen: false };
+    if (c.isActive === false)    return { text: 'Inactive',      active: false, pending: false, frozen: false };
+    return { text: 'Unknown', active: false, pending: false, frozen: false };
   }
 
   formatDate(dateStr?: string): string {

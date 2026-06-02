@@ -1,12 +1,14 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { EmployeeService } from '../../../core/services/employee.service';
+import { EmployeeStatusService } from '../../../core/services/employee-status.service';
 import {
-  Employee, EmployeeType, GenderType, ContractType, RelationType,
+  Employee, EmployeeType, EmployeeStatus, GenderType, ContractType, RelationType,
+  EmployeeStatusHistory, CreateStatusHistoryRequest, UpdateStatusHistoryRequest,
   GetEmployeesParams,
 } from '../../../core/models/employee.models';
 
@@ -17,10 +19,11 @@ import {
   templateUrl: './employees.component.html',
 })
 export class EmployeesComponent implements OnInit {
-  private readonly employeeService = inject(EmployeeService);
-  private readonly fb              = inject(FormBuilder);
-  private readonly lang            = inject(LanguageService);
-  private readonly route           = inject(ActivatedRoute);
+  private readonly employeeService       = inject(EmployeeService);
+  private readonly employeeStatusService = inject(EmployeeStatusService);
+  private readonly fb                    = inject(FormBuilder);
+  private readonly lang                  = inject(LanguageService);
+  private readonly route                 = inject(ActivatedRoute);
 
   branchId    = 0;
   sectionId   = 0;
@@ -52,12 +55,43 @@ export class EmployeesComponent implements OnInit {
   selectedEmployee = signal<Employee | null>(null);
   deleteTargetId   = signal<number | null>(null);
 
+  // ── Status History modal ───────────────────────────────────────────────────
+  showHistoryModal       = signal(false);
+  historyEmployee        = signal<Employee | null>(null);
+  historyRecords         = signal<EmployeeStatusHistory[]>([]);
+  historyLoading         = signal(false);
+  historyError           = signal<string | null>(null);
+  historyHasMore         = signal(false);
+  historyPage            = signal(1);
+  historyView            = signal<'list' | 'add' | 'edit'>('list');
+  historySubmitting      = signal(false);
+  historyModalError      = signal<string | null>(null);
+  selectedHistoryRecord  = signal<EmployeeStatusHistory | null>(null);
+  showHistoryDeleteModal = signal(false);
+  deleteHistoryTargetId  = signal<number | null>(null);
+
+  readonly EmployeeStatusList = [
+    EmployeeStatus.Probation,
+    EmployeeStatus.Active,
+    EmployeeStatus.Suspended,
+    EmployeeStatus.Resigned,
+    EmployeeStatus.Terminated,
+  ];
+
+  historyForm = this.fb.group({
+    status:    [EmployeeStatus.Active, [Validators.required]],
+    startDate: ['', [Validators.required]],
+    endDate:   [''],
+    reason:    ['', [Validators.maxLength(500)]],
+  });
+
   private readonly phonePattern = /^09\d{8}$/;
 
-  readonly EmployeeType  = EmployeeType;
-  readonly GenderType    = GenderType;
-  readonly ContractType  = ContractType;
-  readonly RelationType  = RelationType;
+  readonly EmployeeType   = EmployeeType;
+  readonly EmployeeStatus = EmployeeStatus;
+  readonly GenderType     = GenderType;
+  readonly ContractType   = ContractType;
+  readonly RelationType   = RelationType;
 
   addForm = this.fb.group({
     phoneNumber:               ['', [Validators.required, Validators.pattern(this.phonePattern)]],
@@ -78,7 +112,7 @@ export class EmployeesComponent implements OnInit {
     workStartTime:             ['', [Validators.required]],
     workEndTime:               ['', [Validators.required]],
     emergencyContactRelation:  [RelationType.Father, Validators.required],
-    emergencyContactPhone:     ['', [Validators.required, Validators.maxLength(20)]],
+    emergencyContactPhone:     ['', [Validators.required, Validators.pattern(/^09\d{8}$/)]],
     internalNotes:             ['', [Validators.maxLength(1000)]],
   });
 
@@ -100,7 +134,7 @@ export class EmployeesComponent implements OnInit {
     workStartTime:             ['', [Validators.required]],
     workEndTime:               ['', [Validators.required]],
     emergencyContactRelation:  [RelationType.Father, Validators.required],
-    emergencyContactPhone:     ['', [Validators.required, Validators.maxLength(20)]],
+    emergencyContactPhone:     ['', [Validators.required, Validators.pattern(/^09\d{8}$/)]],
     internalNotes:             ['', [Validators.maxLength(1000)]],
   });
 
@@ -113,7 +147,41 @@ export class EmployeesComponent implements OnInit {
     if (this.branchId && this.sectionId) {
       this.backUrl.set(`/dashboard/manager/branches/${this.branchId}/sections`);
     }
+    this.watchEmployeeType(this.addForm.get('employeeType')!, this.addForm);
+    this.watchEmployeeType(this.editForm.get('employeeType')!, this.editForm);
     this.loadEmployees();
+  }
+
+  private watchEmployeeType(ctrl: AbstractControl, form: ReturnType<typeof this.fb.group>): void {
+    ctrl.valueChanges.subscribe((type: EmployeeType) => this.applyTypeValidation(type, form));
+  }
+
+  private applyTypeValidation(type: EmployeeType, form: ReturnType<typeof this.fb.group>): void {
+    const branchCtrl  = form.get('branchId')!;
+    const sectionCtrl = form.get('sectionId')!;
+    const branchReq   = [Validators.required, Validators.min(1)];
+    const branchOpt   = [Validators.min(1)];
+
+    switch (type) {
+      case EmployeeType.HumanResourceManager:
+        branchCtrl.setValidators(branchOpt);
+        sectionCtrl.setValidators(null);
+        sectionCtrl.setValue(null);
+        break;
+      case EmployeeType.BranchManager:
+        branchCtrl.setValidators(branchReq);
+        sectionCtrl.setValidators(null);
+        sectionCtrl.setValue(null);
+        break;
+      case EmployeeType.DepartmentManager:
+      case EmployeeType.Employee:
+      default:
+        branchCtrl.setValidators(branchReq);
+        sectionCtrl.setValidators([Validators.required, Validators.min(1)]);
+        break;
+    }
+    branchCtrl.updateValueAndValidity({ emitEvent: false });
+    sectionCtrl.updateValueAndValidity({ emitEvent: false });
   }
 
   loadEmployees(): void {
@@ -241,16 +309,16 @@ export class EmployeesComponent implements OnInit {
           employeeType:             e.employeeType       ?? EmployeeType.Employee,
           employeeNumber:           e.employeeNumber     ?? '',
           jobTitle:                 e.jobTitle           ?? '',
-          birthDate:                e.birthDate          ?? '',
+          birthDate:                e.birthDate          ? e.birthDate.substring(0, 10)      : '',
           gender:                   e.gender             ?? GenderType.Male,
           nationality:              e.nationality        ?? '',
           branchId:                 e.branchId           ?? null,
           sectionId:                e.sectionId          ?? null,
-          hireDate:                 e.hireDate           ?? '',
+          hireDate:                 e.hireDate           ? e.hireDate.substring(0, 10)       : '',
           contractType:             e.contractType       ?? ContractType.FullTime,
           baseSalary:               e.baseSalary         ?? null,
-          workStartTime:            e.workStartTime      ?? '',
-          workEndTime:              e.workEndTime        ?? '',
+          workStartTime:            e.workStartTime      ? e.workStartTime.substring(0, 5)   : '',
+          workEndTime:              e.workEndTime        ? e.workEndTime.substring(0, 5)     : '',
           emergencyContactRelation: e.emergencyContactRelation ?? RelationType.Father,
           emergencyContactPhone:    e.emergencyContactPhone    ?? '',
           internalNotes:            e.internalNotes      ?? '',
@@ -275,26 +343,25 @@ export class EmployeesComponent implements OnInit {
       firstName:                v.firstName    || undefined,
       lastName:                 v.lastName     || undefined,
       email:                    v.email        || undefined,
-      employeeType:             v.employeeType!,
+      employeeType:             v.employeeType ?? EmployeeType.Employee,
       employeeNumber:           v.employeeNumber || undefined,
       jobTitle:                 v.jobTitle     || undefined,
       birthDate:                v.birthDate    || undefined,
-      gender:                   v.gender       ?? undefined,
+      gender:                   v.gender       ?? GenderType.Male,
       nationality:              v.nationality  || undefined,
       branchId:                 v.branchId     ?? undefined,
       sectionId:                v.sectionId    ?? undefined,
       hireDate:                 v.hireDate     || undefined,
-      contractType:             v.contractType ?? undefined,
+      contractType:             v.contractType ?? ContractType.FullTime,
       baseSalary:               v.baseSalary   ?? undefined,
       workStartTime:            v.workStartTime || undefined,
       workEndTime:              v.workEndTime   || undefined,
-      emergencyContactRelation: v.emergencyContactRelation ?? undefined,
+      emergencyContactRelation: v.emergencyContactRelation ?? RelationType.Father,
       emergencyContactPhone:    v.emergencyContactPhone    || undefined,
       internalNotes:            v.internalNotes || undefined,
     }).subscribe({
-      next: (res: any) => {
+      next: () => {
         this.submitting.set(false);
-        if (res?.isSuccess === false) { this.modalError.set(res.message || 'Update failed.'); return; }
         this.showEditModal.set(false);
         this.flash('Employee updated.');
         this.loadEmployees();
@@ -325,9 +392,149 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
+  // ── Status History ─────────────────────────────────────────────────────────
+  openHistory(emp: Employee, event: Event): void {
+    event.stopPropagation();
+    this.historyEmployee.set(emp);
+    this.historyPage.set(1);
+    this.historyView.set('list');
+    this.historyError.set(null);
+    this.showHistoryModal.set(true);
+    this.loadHistory();
+  }
+
+  loadHistory(): void {
+    const empId = this.historyEmployee()?.id;
+    if (!empId) return;
+    this.historyLoading.set(true);
+    this.employeeStatusService.getAll(empId, { pageNumber: this.historyPage(), pageSize: 10 }).subscribe({
+      next: (res: any) => {
+        const raw   = res?.data ?? res;
+        const items: EmployeeStatusHistory[] = raw?.items ?? [];
+        const total = raw?.totalCount ?? items.length;
+        this.historyRecords.set(items);
+        this.historyHasMore.set(this.historyPage() * 10 < total);
+        this.historyLoading.set(false);
+      },
+      error: err => {
+        this.historyLoading.set(false);
+        this.historyError.set(this.apiErr(err, 'Failed to load status history.'));
+      },
+    });
+  }
+
+  historyPrev(): void {
+    if (this.historyPage() <= 1) return;
+    this.historyPage.update(p => p - 1);
+    this.loadHistory();
+  }
+
+  historyNext(): void {
+    if (!this.historyHasMore()) return;
+    this.historyPage.update(p => p + 1);
+    this.loadHistory();
+  }
+
+  openHistoryAdd(): void {
+    this.historyForm.reset({ status: EmployeeStatus.Active });
+    this.historyModalError.set(null);
+    this.historyView.set('add');
+  }
+
+  openHistoryEdit(record: EmployeeStatusHistory): void {
+    this.selectedHistoryRecord.set(record);
+    this.historyForm.patchValue({
+      status:    record.status,
+      startDate: record.startDate,
+      endDate:   record.endDate ?? '',
+      reason:    record.reason  ?? '',
+    });
+    this.historyModalError.set(null);
+    this.historyView.set('edit');
+  }
+
+  submitHistoryAdd(): void {
+    if (this.historyForm.invalid) { this.historyForm.markAllAsTouched(); return; }
+    const empId = this.historyEmployee()?.id;
+    if (!empId) return;
+    this.historySubmitting.set(true);
+    this.historyModalError.set(null);
+    const v = this.historyForm.value;
+    const payload: CreateStatusHistoryRequest = {
+      status:    v.status!,
+      startDate: v.startDate!,
+      endDate:   v.endDate  || null,
+      reason:    v.reason   || null,
+    };
+    this.employeeStatusService.create(empId, payload).subscribe({
+      next: () => {
+        this.historySubmitting.set(false);
+        this.historyView.set('list');
+        this.historyPage.set(1);
+        this.loadHistory();
+      },
+      error: err => {
+        this.historySubmitting.set(false);
+        this.historyModalError.set(this.apiErr(err, 'Failed to add status.'));
+      },
+    });
+  }
+
+  submitHistoryEdit(): void {
+    if (this.historyForm.invalid) { this.historyForm.markAllAsTouched(); return; }
+    const empId    = this.historyEmployee()?.id;
+    const recordId = this.selectedHistoryRecord()?.id;
+    if (!empId || !recordId) return;
+    this.historySubmitting.set(true);
+    this.historyModalError.set(null);
+    const v = this.historyForm.value;
+    const payload: UpdateStatusHistoryRequest = {
+      status:    v.status!,
+      startDate: v.startDate!,
+      endDate:   v.endDate  || null,
+      reason:    v.reason   || null,
+    };
+    this.employeeStatusService.update(empId, recordId, payload).subscribe({
+      next: () => {
+        this.historySubmitting.set(false);
+        this.historyView.set('list');
+        this.loadHistory();
+      },
+      error: err => {
+        this.historySubmitting.set(false);
+        this.historyModalError.set(this.apiErr(err, 'Failed to update status.'));
+      },
+    });
+  }
+
+  confirmHistoryDelete(id: number): void {
+    this.deleteHistoryTargetId.set(id);
+    this.showHistoryDeleteModal.set(true);
+  }
+
+  executeHistoryDelete(): void {
+    const empId    = this.historyEmployee()?.id;
+    const recordId = this.deleteHistoryTargetId();
+    if (!empId || recordId === null) return;
+    this.historySubmitting.set(true);
+    this.employeeStatusService.delete(empId, recordId).subscribe({
+      next: () => {
+        this.historySubmitting.set(false);
+        this.showHistoryDeleteModal.set(false);
+        this.historyRecords.update(list => list.filter(r => r.id !== recordId));
+      },
+      error: () => { this.historySubmitting.set(false); this.showHistoryDeleteModal.set(false); },
+    });
+  }
+
   // ── Helpers ────────────────────────────────────────────────────────────────
   employeeTypeLabel(type: EmployeeType): string {
     return this.lang.t(`manager.employeeTypes.${type}`);
+  }
+
+  employeeStatusLabel(status: EmployeeStatus | undefined): string {
+    if (status === undefined || status === null) return '—';
+    return this.lang.t(`manager.employeeStatus.${status}`);
   }
 
   contractTypeLabel(type: ContractType): string {

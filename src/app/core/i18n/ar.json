@@ -26,7 +26,8 @@
     "expand": "توسيع",
     "sectionMain": "الرئيسية",
     "sectionManagement": "الإدارة",
-    "adminPanel": "لوحة الإدارة"
+    "adminPanel": "لوحة الإدارة",
+    "accounts": "الحسابات"
   },
   "auth": {
     "forgotPassword": "نسيت كلمة المرور؟",
@@ -156,8 +157,19 @@
       "colActions": "الإجراءات",
       "statusPending": "إعداد معلق",
       "statusActive": "نشط",
+      "statusFrozen": "مجمد",
       "editTitle": "تعديل",
       "deleteTitle": "حذف",
+      "freezeTitle": "تجميد",
+      "unfreezeTitle": "فك التجميد",
+      "freezeModal": {
+        "title": "تجميد الشركة؟",
+        "message": "لن يتمكن مدير الشركة من الوصول إلى المنصة حتى يتم فك التجميد."
+      },
+      "unfreezeModal": {
+        "title": "فك تجميد الشركة؟",
+        "message": "سيستعيد مدير الشركة الوصول الكامل إلى المنصة."
+      },
       "page": "الصفحة",
       "results": "نتائج",
       "result": "نتيجة",
@@ -215,6 +227,42 @@
     "deleteModal": {
       "title": "حذف الشركة؟",
       "message": "لا يمكن التراجع عن هذا الإجراء. ستُحذف جميع البيانات المرتبطة بشكل دائم."
+    },
+    "accounts": {
+      "title": "الحسابات",
+      "subtitle": "إدارة جميع حسابات المستخدمين على المنصة.",
+      "searchPhone": "بحث برقم الهاتف…",
+      "searchFirstName": "الاسم الأول…",
+      "searchLastName": "اسم العائلة…",
+      "loadError": "فشل تحميل الحسابات",
+      "noResults": "لا توجد حسابات",
+      "emptySearch": "جرب مصطلح بحث مختلف.",
+      "emptyList": "لا توجد حسابات بعد.",
+      "colName": "الاسم",
+      "colPhone": "الهاتف",
+      "colEmail": "البريد الإلكتروني",
+      "colRole": "الدور",
+      "colStatus": "الحالة",
+      "colActions": "الإجراءات",
+      "statusLocked": "مقفول",
+      "statusActive": "نشط",
+      "lockTitle": "قفل",
+      "unlockTitle": "فتح القفل",
+      "lockSuccess": "تم قفل الحساب بنجاح.",
+      "unlockSuccess": "تم فتح الحساب بنجاح.",
+      "lockModal": {
+        "title": "قفل الحساب؟",
+        "message": "لن يتمكن المستخدم من تسجيل الدخول أثناء قفل حسابه."
+      },
+      "unlockModal": {
+        "title": "فتح الحساب؟",
+        "message": "سيتمكن المستخدم من تسجيل الدخول مرة أخرى."
+      },
+      "page": "الصفحة",
+      "results": "نتائج",
+      "result": "نتيجة",
+      "prev": "السابق",
+      "next": "التالي"
     }
   },
   "dashboard": {
@@ -397,6 +445,7 @@
       "colType": "النوع",
       "colCreated": "تاريخ الإنشاء",
       "colActions": "الإجراءات",
+      "colStatus": "الحالة",
       "editTitle": "تعديل",
       "deleteTitle": "حذف",
       "page": "الصفحة",
@@ -495,6 +544,73 @@
       "4": "المؤهلات",
       "5": "البطاقة الصحية",
       "6": "الرخصة المهنية"
+    },
+    "employeeStatus": {
+      "0": "تجريبي",
+      "1": "نشط",
+      "3": "موقوف",
+      "4": "مستقيل",
+      "5": "منهي عقده"
+    },
+    "statusHistory": {
+      "title": "سجل الحالات",
+      "addBtn": "إضافة حالة",
+      "statusLabel": "الحالة",
+      "startDateLabel": "تاريخ البداية",
+      "endDateLabel": "تاريخ النهاية",
+      "reasonLabel": "السبب",
+      "endDateHint": "اتركه فارغاً للحالة المفتوحة",
+      "saving": "جارٍ الحفظ…",
+      "addTitle": "إضافة سجل حالة",
+      "editTitle": "تعديل سجل الحالة",
+      "deleteTitle": "حذف سجل الحالة؟",
+      "deleteMsg": "سيتم حذف هذا السجل بشكل دائم.",
+      "loadError": "فشل تحميل سجل الحالات",
+      "noResults": "لا توجد سجلات حالة",
+      "colStatus": "الحالة",
+      "colStart": "البداية",
+      "colEnd": "النهاية",
+      "colReason": "السبب",
+      "colActions": "الإجراءات",
+      "page": "الصفحة",
+      "results": "نتائج",
+      "result": "نتيجة",
+      "prev": "السابق",
+      "next": "التالي"
+    },
+    "accounts": {
+      "title": "الحسابات",
+      "subtitle": "إدارة جميع حسابات المستخدمين على المنصة.",
+      "searchPhone": "بحث برقم الهاتف…",
+      "searchFirstName": "الاسم الأول…",
+      "searchLastName": "اسم العائلة…",
+      "loadError": "فشل تحميل الحسابات",
+      "noResults": "لا توجد حسابات",
+      "emptySearch": "جرب مصطلح بحث مختلف.",
+      "emptyList": "لا توجد حسابات بعد.",
+      "colName": "الاسم",
+      "colPhone": "الهاتف",
+      "colEmail": "البريد الإلكتروني",
+      "colRole": "الدور",
+      "colStatus": "الحالة",
+      "colActions": "الإجراءات",
+      "statusLocked": "مقفول",
+      "statusActive": "نشط",
+      "lockTitle": "قفل الحساب",
+      "unlockTitle": "فتح الحساب",
+      "lockModal": {
+        "title": "قفل الحساب؟",
+        "message": "لن يتمكن المستخدم من تسجيل الدخول أثناء قفل الحساب."
+      },
+      "unlockModal": {
+        "title": "فتح الحساب؟",
+        "message": "سيتمكن المستخدم من تسجيل الدخول مرة أخرى."
+      },
+      "page": "الصفحة",
+      "results": "نتائج",
+      "result": "نتيجة",
+      "prev": "السابق",
+      "next": "التالي"
     }
   },
   "companyTypes": {

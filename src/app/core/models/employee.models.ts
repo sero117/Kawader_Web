@@ -1,6 +1,14 @@
 import { EmployeeType } from './auth.models';
 export { EmployeeType };
 
+export enum EmployeeStatus {
+  Probation   = 0,
+  Active      = 1,
+  Suspended   = 3,
+  Resigned    = 4,
+  Terminated  = 5,
+}
+
 export enum GenderType {
   Male   = 0,
   Female = 1,
@@ -64,6 +72,7 @@ export interface Employee {
   emergencyContactRelation?: RelationType;
   emergencyContactPhone?: string;
   internalNotes?: string;
+  status?: EmployeeStatus;
   identityPhotoUrl?: string;
   personalPhotoUrl?: string;
   workContractUrl?: string;
@@ -123,4 +132,35 @@ export interface GetEmployeesParams {
   pageSize?: number;
   tenantId?: string;
   phoneNumber?: string;
+}
+
+// ── Status History ────────────────────────────────────────────────────────────
+
+export interface EmployeeStatusHistory {
+  id: number;
+  status: EmployeeStatus;
+  startDate: string;
+  endDate?: string | null;
+  reason?: string | null;
+  createdAt: string;
+}
+
+export interface CreateStatusHistoryRequest {
+  status: EmployeeStatus;
+  startDate: string;
+  endDate?: string | null;
+  reason?: string | null;
+}
+
+export interface UpdateStatusHistoryRequest {
+  status: EmployeeStatus;
+  startDate: string;
+  endDate?: string | null;
+  reason?: string | null;
+}
+
+export interface GetStatusHistoryParams {
+  pageNumber: number;
+  pageSize: number;
+  status?: EmployeeStatus;
 }

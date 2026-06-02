@@ -50,4 +50,12 @@ export class CompanyService {
     const headers = new HttpHeaders({ Authorization: `Bearer ${managerToken}` });
     return this.api.patch<ApiResponse<number>>(`${this.baseUrl}/complete`, formData, headers);
   }
+
+  freeze(id: number): Observable<{ id: number }> {
+    return this.api.patch<{ id: number }>(`${this.baseUrl}/${id}/freeze`, {});
+  }
+
+  unfreeze(id: number): Observable<{ id: number }> {
+    return this.api.patch<{ id: number }>(`${this.baseUrl}/${id}/unfreeze`, {});
+  }
 }

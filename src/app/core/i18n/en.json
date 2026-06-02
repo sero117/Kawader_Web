@@ -26,7 +26,8 @@
     "expand": "Expand",
     "sectionMain": "Main",
     "sectionManagement": "Management",
-    "adminPanel": "Admin Panel"
+    "adminPanel": "Admin Panel",
+    "accounts": "Accounts"
   },
   "auth": {
     "forgotPassword": "Forgot your password?",
@@ -156,8 +157,19 @@
       "colActions": "Actions",
       "statusPending": "Setup Pending",
       "statusActive": "Active",
+      "statusFrozen": "Frozen",
       "editTitle": "Edit",
       "deleteTitle": "Delete",
+      "freezeTitle": "Freeze",
+      "unfreezeTitle": "Unfreeze",
+      "freezeModal": {
+        "title": "Freeze Company?",
+        "message": "The company manager will lose access to the platform until the company is unfrozen."
+      },
+      "unfreezeModal": {
+        "title": "Unfreeze Company?",
+        "message": "The company manager will regain full access to the platform."
+      },
       "page": "Page",
       "results": "results",
       "result": "result",
@@ -215,6 +227,42 @@
     "deleteModal": {
       "title": "Delete Company?",
       "message": "This action cannot be undone. All associated data will be permanently removed."
+    },
+    "accounts": {
+      "title": "Accounts",
+      "subtitle": "Manage all user accounts on the platform.",
+      "searchPhone": "Search by phone…",
+      "searchFirstName": "First name…",
+      "searchLastName": "Last name…",
+      "loadError": "Failed to load accounts",
+      "noResults": "No accounts found",
+      "emptySearch": "Try a different search term.",
+      "emptyList": "No accounts yet.",
+      "colName": "Name",
+      "colPhone": "Phone",
+      "colEmail": "Email",
+      "colRole": "Role",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "statusLocked": "Locked",
+      "statusActive": "Active",
+      "lockTitle": "Lock",
+      "unlockTitle": "Unlock",
+      "lockSuccess": "Account locked successfully.",
+      "unlockSuccess": "Account unlocked successfully.",
+      "lockModal": {
+        "title": "Lock Account?",
+        "message": "The user will not be able to sign in while their account is locked."
+      },
+      "unlockModal": {
+        "title": "Unlock Account?",
+        "message": "The user will be able to sign in again."
+      },
+      "page": "Page",
+      "results": "results",
+      "result": "result",
+      "prev": "Prev",
+      "next": "Next"
     }
   },
   "dashboard": {
@@ -397,6 +445,7 @@
       "colType": "Type",
       "colCreated": "Created",
       "colActions": "Actions",
+      "colStatus": "Status",
       "editTitle": "Edit",
       "deleteTitle": "Delete",
       "page": "Page",
@@ -495,6 +544,73 @@
       "4": "Qualifications",
       "5": "Health Card",
       "6": "Professional License"
+    },
+    "employeeStatus": {
+      "0": "Probation",
+      "1": "Active",
+      "3": "Suspended",
+      "4": "Resigned",
+      "5": "Terminated"
+    },
+    "statusHistory": {
+      "title": "Status History",
+      "addBtn": "Add Status",
+      "statusLabel": "Status",
+      "startDateLabel": "Start Date",
+      "endDateLabel": "End Date",
+      "reasonLabel": "Reason",
+      "endDateHint": "Leave empty for open-ended status",
+      "saving": "Saving…",
+      "addTitle": "Add Status Record",
+      "editTitle": "Edit Status Record",
+      "deleteTitle": "Delete Status Record?",
+      "deleteMsg": "This status record will be permanently removed.",
+      "loadError": "Failed to load status history",
+      "noResults": "No status records found",
+      "colStatus": "Status",
+      "colStart": "Start",
+      "colEnd": "End",
+      "colReason": "Reason",
+      "colActions": "Actions",
+      "page": "Page",
+      "results": "results",
+      "result": "result",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "accounts": {
+      "title": "Accounts",
+      "subtitle": "Manage all user accounts on the platform.",
+      "searchPhone": "Search by phone…",
+      "searchFirstName": "First name…",
+      "searchLastName": "Last name…",
+      "loadError": "Failed to load accounts",
+      "noResults": "No accounts found",
+      "emptySearch": "Try a different search term.",
+      "emptyList": "No accounts yet.",
+      "colName": "Name",
+      "colPhone": "Phone",
+      "colEmail": "Email",
+      "colRole": "Role",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "statusLocked": "Locked",
+      "statusActive": "Active",
+      "lockTitle": "Lock account",
+      "unlockTitle": "Unlock account",
+      "lockModal": {
+        "title": "Lock Account?",
+        "message": "The user will not be able to sign in while the account is locked."
+      },
+      "unlockModal": {
+        "title": "Unlock Account?",
+        "message": "The user will be able to sign in again."
+      },
+      "page": "Page",
+      "results": "results",
+      "result": "result",
+      "prev": "Prev",
+      "next": "Next"
     }
   },
   "companyTypes": {

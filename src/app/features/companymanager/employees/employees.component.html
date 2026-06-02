@@ -101,6 +101,7 @@
             <th>{{ 'manager.employees.colPhone' | translate }}</th>
             <th>{{ 'manager.employees.colEmail' | translate }}</th>
             <th>{{ 'manager.employees.colType' | translate }}</th>
+            <th>{{ 'manager.employees.colStatus' | translate }}</th>
             <th>{{ 'manager.employees.colCreated' | translate }}</th>
             <th style="text-align: right;">{{ 'manager.employees.colActions' | translate }}</th>
           </tr>
@@ -139,9 +140,48 @@
                   </span>
                 }
               </td>
+              <td>
+                @if (emp.status === EmployeeStatus.Active) {
+                  <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
+                    style="color: rgba(52,211,153,0.9); background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2);">
+                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(52,211,153,0.8);"></span>
+                    {{ employeeStatusLabel(emp.status) }}
+                  </span>
+                } @else if (emp.status === EmployeeStatus.Probation) {
+                  <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
+                    style="color: rgba(251,191,36,0.9); background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2);">
+                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(251,191,36,0.8);"></span>
+                    {{ employeeStatusLabel(emp.status) }}
+                  </span>
+                } @else if (emp.status === EmployeeStatus.Suspended) {
+                  <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
+                    style="color: rgba(239,68,68,0.9); background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
+                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(239,68,68,0.8);"></span>
+                    {{ employeeStatusLabel(emp.status) }}
+                  </span>
+                } @else if (emp.status !== undefined && emp.status !== null) {
+                  <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
+                    style="color: var(--text-faint); background: var(--bg-subtle-sm); border: 1px solid var(--border);">
+                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: var(--text-very-faint);"></span>
+                    {{ employeeStatusLabel(emp.status) }}
+                  </span>
+                } @else {
+                  <span style="color: var(--text-very-faint);">—</span>
+                }
+              </td>
               <td style="color: var(--text-faint);">{{ formatDate(emp.createdAt) }}</td>
               <td>
                 <div class="flex items-center justify-end gap-1.5">
+                  <!-- Status History -->
+                  <button (click)="openHistory(emp, $event)"
+                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                    style="color: rgba(99,102,241,0.7); background: rgba(99,102,241,0.08);"
+                    [title]="'manager.statusHistory.title' | translate">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                  </button>
+                  <!-- Edit -->
                   <button (click)="openEdit(emp, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: var(--text-faint); background: var(--bg-subtle-sm);"
@@ -464,10 +504,10 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addEmployee.emergencyContactPhoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="emergencyContactPhone" type="tel" maxlength="20" class="modal-input"
+              <input formControlName="emergencyContactPhone" type="tel" inputmode="numeric" maxlength="10" class="modal-input"
                 [class.is-invalid]="addForm.get('emergencyContactPhone')!.invalid && addForm.get('emergencyContactPhone')!.touched" />
               @if (addForm.get('emergencyContactPhone')!.invalid && addForm.get('emergencyContactPhone')!.touched) {
-                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.phone10only' | translate }}</p>
               }
             </div>
           </div>
@@ -753,10 +793,10 @@
                 <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.emergencyContactPhoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <input formControlName="emergencyContactPhone" type="tel" maxlength="20" class="modal-input"
+                <input formControlName="emergencyContactPhone" type="tel" inputmode="numeric" maxlength="10" class="modal-input"
                   [class.is-invalid]="editForm.get('emergencyContactPhone')!.invalid && editForm.get('emergencyContactPhone')!.touched" />
                 @if (editForm.get('emergencyContactPhone')!.invalid && editForm.get('emergencyContactPhone')!.touched) {
-                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.phone10only' | translate }}</p>
                 }
               </div>
             </div>
@@ -809,6 +849,240 @@
         <button (click)="executeDelete()" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
           style="background: rgba(239,68,68,0.8); color: #fff;" [style.opacity]="submitting() ? '0.5' : '1'">
           {{ submitting() ? ('common.deleting' | translate) : ('common.delete' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ══ STATUS HISTORY MODAL ══ -->
+@if (showHistoryModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);" (click)="showHistoryModal.set(false)">
+    <div class="w-full max-w-xl rounded-2xl flex flex-col" style="background: var(--bg-surface-2); border: 1px solid var(--border); max-height: 85vh;"
+      (click)="$event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 pt-6 pb-5 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
+        <div>
+          <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.statusHistory.title' | translate }}</h2>
+          @if (historyEmployee()) {
+            <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ historyEmployee()!.firstName }} {{ historyEmployee()!.lastName }}</p>
+          }
+        </div>
+        <button (click)="showHistoryModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+          style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="flex-1 overflow-y-auto px-6 py-5">
+
+        <!-- ── LIST VIEW ── -->
+        @if (historyView() === 'list') {
+          <div class="flex items-center justify-between mb-4">
+            <p class="text-xs font-semibold uppercase tracking-widest" style="color: var(--text-faint);">
+              {{ historyRecords().length }} {{ 'manager.statusHistory.results' | translate }}
+            </p>
+            <button (click)="openHistoryAdd()"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold"
+              style="background: var(--text-base); color: var(--bg-surface);">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              {{ 'manager.statusHistory.addBtn' | translate }}
+            </button>
+          </div>
+
+          @if (historyLoading()) {
+            <div class="space-y-2">
+              @for (_ of [1,2,3]; track $index) {
+                <div class="h-14 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+              }
+            </div>
+          } @else if (historyError()) {
+            <p class="text-sm text-center py-8" style="color: rgba(239,68,68,0.7);">{{ historyError() }}</p>
+          } @else if (historyRecords().length === 0) {
+            <div class="py-12 text-center">
+              <svg class="w-10 h-10 mx-auto mb-3" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <p class="text-sm" style="color: var(--text-faint);">{{ 'manager.statusHistory.noResults' | translate }}</p>
+            </div>
+          } @else {
+            <div class="space-y-2">
+              @for (rec of historyRecords(); track rec.id) {
+                <div class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl"
+                  style="background: var(--bg-subtle-sm); border: 1px solid var(--border);">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full flex-shrink-0"
+                      [style.color]="rec.status === 1 ? 'rgba(52,211,153,0.9)' : rec.status === 0 ? 'rgba(251,191,36,0.9)' : rec.status === 3 ? 'rgba(239,68,68,0.9)' : 'var(--text-faint)'"
+                      [style.background]="rec.status === 1 ? 'rgba(52,211,153,0.08)' : rec.status === 0 ? 'rgba(251,191,36,0.08)' : rec.status === 3 ? 'rgba(239,68,68,0.08)' : 'var(--bg-subtle-md)'"
+                      [style.border]="'1px solid ' + (rec.status === 1 ? 'rgba(52,211,153,0.2)' : rec.status === 0 ? 'rgba(251,191,36,0.2)' : rec.status === 3 ? 'rgba(239,68,68,0.2)' : 'var(--border)')">
+                      {{ employeeStatusLabel(rec.status) }}
+                    </span>
+                    <div class="min-w-0">
+                      <p class="text-xs font-medium" style="color: var(--text-muted);">
+                        {{ formatDate(rec.startDate) }} → {{ rec.endDate ? formatDate(rec.endDate) : '∞' }}
+                      </p>
+                      @if (rec.reason) {
+                        <p class="text-[11px] truncate" style="color: var(--text-faint);">{{ rec.reason }}</p>
+                      }
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1 flex-shrink-0">
+                    <button (click)="openHistoryEdit(rec)"
+                      class="w-7 h-7 rounded-lg flex items-center justify-center"
+                      style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                      </svg>
+                    </button>
+                    <button (click)="confirmHistoryDelete(rec.id)"
+                      class="w-7 h-7 rounded-lg flex items-center justify-center"
+                      style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);">
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+            <!-- Pagination -->
+            @if (historyRecords().length > 0 || historyPage() > 1) {
+              <div class="flex items-center justify-between mt-4 pt-4" style="border-top: 1px solid var(--border);">
+                <p class="text-xs" style="color: var(--text-faint);">{{ 'manager.statusHistory.page' | translate }} {{ historyPage() }}</p>
+                <div class="flex items-center gap-2">
+                  <button (click)="historyPrev()" [disabled]="historyPage() === 1"
+                    class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                    [style.opacity]="historyPage() === 1 ? '0.3' : '1'"
+                    style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                    {{ 'manager.statusHistory.prev' | translate }}
+                  </button>
+                  <button (click)="historyNext()" [disabled]="!historyHasMore()"
+                    class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                    [style.opacity]="!historyHasMore() ? '0.3' : '1'"
+                    style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+                    {{ 'manager.statusHistory.next' | translate }}
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                  </button>
+                </div>
+              </div>
+            }
+          }
+        }
+
+        <!-- ── ADD / EDIT FORM VIEW ── -->
+        @if (historyView() === 'add' || historyView() === 'edit') {
+          <div class="flex items-center gap-3 mb-5">
+            <button (click)="historyView.set('list')" class="w-7 h-7 rounded-lg flex items-center justify-center"
+              style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </button>
+            <h3 class="font-semibold text-sm" style="color: var(--text-base);">
+              {{ (historyView() === 'add' ? 'manager.statusHistory.addTitle' : 'manager.statusHistory.editTitle') | translate }}
+            </h3>
+          </div>
+
+          @if (historyModalError()) {
+            <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
+              style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
+              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgba(239,68,68,0.8);" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+              </svg>
+              <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ historyModalError() }}</span>
+            </div>
+          }
+
+          <form [formGroup]="historyForm" (ngSubmit)="historyView() === 'add' ? submitHistoryAdd() : submitHistoryEdit()" class="space-y-4" novalidate>
+
+            <!-- Status -->
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.statusHistory.statusLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <select formControlName="status" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                @for (s of EmployeeStatusList; track s) {
+                  <option [ngValue]="s">{{ employeeStatusLabel(s) }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Start + End Date -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.statusHistory.startDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <input formControlName="startDate" type="date" class="modal-input"
+                  [class.is-invalid]="historyForm.get('startDate')!.invalid && historyForm.get('startDate')!.touched" />
+                @if (historyForm.get('startDate')!.invalid && historyForm.get('startDate')!.touched) {
+                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+                }
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.statusHistory.endDateLabel' | translate }}
+                  <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+                </label>
+                <input formControlName="endDate" type="date" class="modal-input" />
+                <p class="text-[10px] mt-1" style="color: var(--text-very-faint);">{{ 'manager.statusHistory.endDateHint' | translate }}</p>
+              </div>
+            </div>
+
+            <!-- Reason -->
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.statusHistory.reasonLabel' | translate }}
+                <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+              </label>
+              <textarea formControlName="reason" rows="2" class="modal-input resize-none" style="min-height: 60px;"></textarea>
+            </div>
+
+            <div class="flex gap-3 pt-1">
+              <button type="button" (click)="historyView.set('list')" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+                style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+              <button type="submit" [disabled]="historySubmitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+                style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="historySubmitting() ? '0.5' : '1'">
+                {{ historySubmitting() ? ('manager.statusHistory.saving' | translate) : ('common.save' | translate) }}
+              </button>
+            </div>
+          </form>
+        }
+
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ══ HISTORY DELETE CONFIRM MODAL ══ -->
+@if (showHistoryDeleteModal()) {
+  <div class="fixed inset-0 z-[60] flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);" (click)="showHistoryDeleteModal.set(false)">
+    <div class="w-full max-w-sm rounded-2xl p-6 text-center"
+      style="background: var(--bg-surface-2); border: 1px solid var(--border);" (click)="$event.stopPropagation()">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: rgba(239,68,68,0.1);">
+        <svg class="w-6 h-6" style="color: rgba(239,68,68,0.8);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+        </svg>
+      </div>
+      <h2 class="font-bold text-lg mb-1" style="color: var(--text-base);">{{ 'manager.statusHistory.deleteTitle' | translate }}</h2>
+      <p class="text-sm mb-6" style="color: var(--text-faint);">{{ 'manager.statusHistory.deleteMsg' | translate }}</p>
+      <div class="flex gap-3">
+        <button (click)="showHistoryDeleteModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+        <button (click)="executeHistoryDelete()" [disabled]="historySubmitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+          style="background: rgba(239,68,68,0.8); color: #fff;" [style.opacity]="historySubmitting() ? '0.5' : '1'">
+          {{ historySubmitting() ? ('common.deleting' | translate) : ('common.delete' | translate) }}
         </button>
       </div>
     </div>
