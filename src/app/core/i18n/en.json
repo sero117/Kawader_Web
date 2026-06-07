@@ -342,10 +342,18 @@
     "activating": "Activating…"
   },
   "manager": {
+    "welcome": "Welcome back",
+    "headerSubtitle": "Here's what's happening in your system.",
+    "role": "Company Manager",
     "nav": {
       "panel": "Manager Panel",
       "employees": "Employees",
-      "branches": "Branches"
+      "branches": "Branches",
+      "shifts": "Shifts",
+      "shiftSystems": "Shift Systems",
+      "shiftLogs": "Attendance",
+      "mainSection": "Main",
+      "shiftsSection": "Shifts"
     },
     "branches": {
       "title": "Branches",
@@ -434,7 +442,7 @@
       "title": "Employees",
       "subtitle": "Manage your company's employees.",
       "addBtn": "Add Employee",
-      "searchPlaceholder": "Search by phone…",
+      "searchPlaceholder": "Search by full phone (09XXXXXXXX)…",
       "loadError": "Failed to load employees",
       "noResults": "No employees found",
       "emptySearch": "Try a different search term.",
@@ -446,6 +454,7 @@
       "colCreated": "Created",
       "colActions": "Actions",
       "colStatus": "Status",
+      "attachmentsTitle": "Attachments",
       "editTitle": "Edit",
       "deleteTitle": "Delete",
       "page": "Page",
@@ -497,7 +506,13 @@
       "workEndTimeLabel": "Work End",
       "emergencyContactRelationLabel": "Emergency Relation",
       "emergencyContactPhoneLabel": "Emergency Phone",
-      "internalNotesLabel": "Internal Notes"
+      "internalNotesLabel": "Internal Notes",
+      "attachmentsTitle": "Attachments",
+      "viewFile": "View",
+      "uploadFile": "Upload",
+      "uploading": "Uploading…",
+      "fileTypeError": "Only JPG, PNG, WEBP and PDF are allowed.",
+      "fileSizeError": "File must be under 5 MB."
     },
     "deleteModal": {
       "title": "Delete Employee?",
@@ -611,6 +626,191 @@
       "result": "result",
       "prev": "Prev",
       "next": "Next"
+    },
+    "shifts": {
+      "title": "Shifts",
+      "subtitle": "Define reusable work shifts (morning, evening, night…)",
+      "addBtn": "Add Shift",
+      "searchPlaceholder": "Search by name…",
+      "typeAll": "All Types",
+      "loadError": "Failed to load shifts",
+      "noResults": "No shifts found",
+      "emptySearch": "Try a different search term.",
+      "emptyList": "Add your first shift to get started.",
+      "colName": "Shift Name",
+      "colStart": "Start",
+      "colEnd": "End",
+      "colType": "Type",
+      "colCreated": "Created",
+      "colActions": "Actions",
+      "editTitle": "Edit",
+      "deleteTitle": "Delete",
+      "page": "Page",
+      "results": "results",
+      "result": "result",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "addShift": {
+      "title": "Add Shift",
+      "nameLabel": "Shift Name",
+      "startTimeLabel": "Start Time",
+      "endTimeLabel": "End Time",
+      "typeLabel": "Type"
+    },
+    "editShift": {
+      "title": "Edit Shift",
+      "nameLabel": "Shift Name",
+      "startTimeLabel": "Start Time",
+      "endTimeLabel": "End Time",
+      "typeLabel": "Type"
+    },
+    "deleteShiftModal": {
+      "title": "Delete Shift?",
+      "message": "This action cannot be undone. The shift will be permanently removed."
+    },
+    "shiftTypes": {
+      "0": "Regular",
+      "1": "Overtime"
+    },
+    "shiftSystems": {
+      "title": "Shift Systems",
+      "subtitle": "Group shifts into weekly schedules (summer, Ramadan…)",
+      "addBtn": "Add System",
+      "searchPlaceholder": "Search by name…",
+      "loadError": "Failed to load shift systems",
+      "noResults": "No shift systems found",
+      "emptySearch": "Try a different search term.",
+      "emptyList": "Add your first shift system to get started.",
+      "colName": "System Name",
+      "colCreated": "Created",
+      "colActions": "Actions",
+      "configureDaysTitle": "Configure Days",
+      "editTitle": "Edit",
+      "deleteTitle": "Delete",
+      "page": "Page",
+      "results": "results",
+      "result": "result",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "addShiftSystem": {
+      "title": "Add Shift System",
+      "nameLabel": "System Name"
+    },
+    "editShiftSystem": {
+      "title": "Edit Shift System",
+      "nameLabel": "System Name"
+    },
+    "deleteShiftSystemModal": {
+      "title": "Delete Shift System?",
+      "message": "This action cannot be undone. All configured days will also be removed."
+    },
+    "shiftSystemDays": {
+      "title": "Configure Days",
+      "addBtn": "Add Day",
+      "loadError": "Failed to load days",
+      "colDay": "Day",
+      "colShift": "Shift",
+      "colTime": "Working Hours",
+      "colActions": "Actions",
+      "holiday": "Holiday",
+      "workDays": "Working Days",
+      "holidays": "Holidays"
+    },
+    "addShiftSystemDay": {
+      "title": "Add Working Day",
+      "dayLabel": "Day of Week",
+      "shiftLabel": "Shift",
+      "shiftPlaceholder": "Select a shift…"
+    },
+    "editShiftSystemDay": {
+      "title": "Edit Working Day",
+      "dayLabel": "Day of Week",
+      "shiftLabel": "Shift"
+    },
+    "deleteShiftDayModal": {
+      "title": "Remove Day?",
+      "message": "This day will be marked as a holiday in this shift system."
+    },
+    "dayOfWeek": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    },
+    "shiftLogs": {
+      "title": "Attendance Logs",
+      "subtitle": "Track employee check-in and check-out records.",
+      "addBtn": "Add Log",
+      "loadError": "Failed to load attendance logs",
+      "noResults": "No logs found",
+      "emptyList": "No attendance records yet.",
+      "filterEmployee": "Employee ID",
+      "filterEmployeePlaceholder": "Enter ID…",
+      "filterSystem": "Shift System",
+      "systemAll": "All Systems",
+      "filterFrom": "From Date",
+      "filterTo": "To Date",
+      "searchBtn": "Search",
+      "colEmployee": "Employee",
+      "colDate": "Date",
+      "colShift": "Shift",
+      "colCheckIn": "Check-in",
+      "colCheckOut": "Check-out",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "editTitle": "Edit",
+      "deleteTitle": "Delete",
+      "page": "Page",
+      "results": "results",
+      "result": "result",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "addShiftLog": {
+      "title": "Add Attendance Log",
+      "employeeIdLabel": "Employee ID",
+      "shiftLabel": "Shift",
+      "shiftPlaceholder": "Select a shift…",
+      "dateLabel": "Date",
+      "checkInLabel": "Check-in Time",
+      "notesLabel": "Notes"
+    },
+    "editShiftLog": {
+      "title": "Edit Log",
+      "checkOutLabel": "Check-out Time",
+      "statusLabel": "Status",
+      "notesLabel": "Notes"
+    },
+    "deleteShiftLogModal": {
+      "title": "Delete Log?",
+      "message": "This attendance record will be permanently removed."
+    },
+    "attendanceStatus": {
+      "0": "Present",
+      "1": "Absent",
+      "2": "Late",
+      "3": "Early Leave"
+    },
+    "shiftAssignment": {
+      "title": "Shift Assignment",
+      "currentSystem": "Current Shift System",
+      "noAssignment": "No shift system assigned",
+      "noAssignmentHint": "Assign a shift system to track this employee's schedule.",
+      "workingDays": "Working Days",
+      "assignBtn": "Assign System",
+      "changeBtn": "Change System",
+      "unassignBtn": "Remove Assignment",
+      "systemLabel": "Shift System",
+      "systemPlaceholder": "Select a shift system…",
+      "confirmAssign": "Confirm",
+      "loadError": "Failed to load shift assignment.",
+      "unassigning": "Removing…",
+      "assigning": "Assigning…"
     }
   },
   "companyTypes": {

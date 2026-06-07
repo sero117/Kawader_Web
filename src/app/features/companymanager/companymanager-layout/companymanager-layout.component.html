@@ -1,93 +1,189 @@
 <div class="flex h-screen overflow-hidden" style="background: var(--bg-page);">
 
   <!-- ── Sidebar ───────────────────────────────────────────────────────────── -->
-  <aside class="flex flex-col flex-shrink-0 transition-all duration-300 ease-in-out overflow-hidden"
-    [style.width]="collapsed() ? '68px' : '240px'"
-    style="background: var(--bg-surface); border-right: 1px solid var(--border);">
+  <aside class="flex flex-col flex-shrink-0 transition-all duration-300 ease-in-out"
+    [style.width]="collapsed() ? '60px' : '240px'"
+    [class.sidebar-collapsed]="collapsed()"
+    style="background: var(--bg-surface); border-inline-end: 1px solid var(--border); overflow: hidden;">
 
     <!-- Logo -->
-    <div class="h-16 flex items-center px-4 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center font-black text-sm"
-          style="background: var(--bg-subtle-md); color: var(--text-base);">K</div>
-        @if (!collapsed()) {
-          <div class="min-w-0 overflow-hidden">
-            <p class="font-bold text-sm leading-none truncate" style="color: var(--text-base);">{{ 'brand.name' | translate }}</p>
-            <p class="text-[10px] font-medium uppercase tracking-[0.15em] mt-0.5 truncate" style="color: var(--text-faint);">{{ 'manager.nav.panel' | translate }}</p>
-          </div>
-        }
-      </div>
+    <div class="flex items-center gap-3 px-5 flex-shrink-0"
+      style="height:64px; border-bottom: 1px solid var(--border);">
+      <svg class="flex-shrink-0" style="width:22px;height:22px;" viewBox="0 0 24 24" fill="currentColor"
+        [style.color]="'var(--text-base)'">
+        <path d="M11 2h2v7.27l6.29-3.63 1 1.73L14 11h7v2h-7l6.29 3.63-1 1.73L13 14.73V22h-2v-7.27l-6.29 3.63-1-1.73L10 13H3v-2h7L3.71 7.37l1-1.73L11 9.27V2z"/>
+      </svg>
+      @if (!collapsed()) {
+        <span class="font-bold text-sm truncate" style="color:var(--text-base);">
+          {{ 'brand.name' | translate }}
+        </span>
+      }
     </div>
 
     <!-- Nav -->
-    <nav class="flex-1 p-2 space-y-0.5 overflow-y-auto overflow-x-hidden">
+    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+
+      <!-- Section: Main -->
       @if (!collapsed()) {
-        <p class="text-[9px] font-bold uppercase tracking-[0.18em] px-3 pt-3 pb-1.5" style="color: var(--text-very-faint);">
-          {{ 'nav.sectionManagement' | translate }}
-        </p>
+        <p class="nav-section-label">{{ 'manager.nav.mainSection' | translate }}</p>
       }
 
-      <a routerLink="/dashboard/manager/branches" routerLinkActive="active-nav"
-        class="nav-item" [title]="collapsed() ? ('manager.nav.branches' | translate) : ''">
-        <svg class="nav-icon w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+      <!-- Branches -->
+      <a routerLink="/dashboard/manager/branches" routerLinkActive="active-nav" class="nav-item">
+        <svg style="width:16px;height:16px;flex-shrink:0;" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21" />
         </svg>
-        @if (!collapsed()) { <span>{{ 'manager.nav.branches' | translate }}</span> }
+        @if (!collapsed()) {
+          <span class="truncate">{{ 'manager.nav.branches' | translate }}</span>
+        }
+        @if (collapsed()) {
+          <span class="nav-tooltip">{{ 'manager.nav.branches' | translate }}</span>
+        }
       </a>
+
+      <!-- Section: Shifts -->
+      @if (!collapsed()) {
+        <p class="nav-section-label" style="margin-top:1.25rem;">{{ 'manager.nav.shiftsSection' | translate }}</p>
+      } @else {
+        <div style="height:10px;"></div>
+      }
+
+      <!-- Shifts -->
+      <a routerLink="/dashboard/manager/shifts" routerLinkActive="active-nav" class="nav-item">
+        <svg style="width:16px;height:16px;flex-shrink:0;" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        @if (!collapsed()) {
+          <span class="truncate">{{ 'manager.nav.shifts' | translate }}</span>
+        }
+        @if (collapsed()) {
+          <span class="nav-tooltip">{{ 'manager.nav.shifts' | translate }}</span>
+        }
+      </a>
+
+      <!-- Shift Systems -->
+      <a routerLink="/dashboard/manager/shift-systems" routerLinkActive="active-nav" class="nav-item">
+        <svg style="width:16px;height:16px;flex-shrink:0;" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+        </svg>
+        @if (!collapsed()) {
+          <span class="truncate">{{ 'manager.nav.shiftSystems' | translate }}</span>
+        }
+        @if (collapsed()) {
+          <span class="nav-tooltip">{{ 'manager.nav.shiftSystems' | translate }}</span>
+        }
+      </a>
+
+      <!-- Shift Logs -->
+      <a routerLink="/dashboard/manager/shift-logs" routerLinkActive="active-nav" class="nav-item">
+        <svg style="width:16px;height:16px;flex-shrink:0;" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+        </svg>
+        @if (!collapsed()) {
+          <span class="truncate">{{ 'manager.nav.shiftLogs' | translate }}</span>
+        }
+        @if (collapsed()) {
+          <span class="nav-tooltip">{{ 'manager.nav.shiftLogs' | translate }}</span>
+        }
+      </a>
+
     </nav>
 
-    <!-- Collapse toggle -->
-    <div class="p-2 flex-shrink-0" style="border-top: 1px solid var(--border);">
-      <button (click)="toggle()" class="nav-item w-full justify-center"
-        [title]="collapsed() ? ('nav.expand' | translate) : ('nav.collapse' | translate)">
-        <svg class="w-4 h-4 flex-shrink-0 transition-transform duration-300" [class.rotate-180]="collapsed()"
-          fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-        </svg>
-        @if (!collapsed()) { <span class="text-xs">{{ 'nav.collapse' | translate }}</span> }
-      </button>
+    <!-- Manager profile -->
+    <div class="flex-shrink-0" style="border-top: 1px solid var(--border);">
+      @if (!collapsed()) {
+        <div class="flex items-center gap-3 px-4 py-4">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black select-none flex-shrink-0"
+            style="background:#C9F558;color:#1a1a2e;" [title]="managerName()">
+            {{ managerName().charAt(0).toUpperCase() }}
+          </div>
+          <div class="min-w-0">
+            <p class="text-sm font-semibold truncate leading-none" style="color:var(--text-base);">
+              {{ managerName() }}
+            </p>
+            <p class="text-xs mt-1 truncate" style="color:var(--text-faint);">
+              {{ 'manager.role' | translate }}
+            </p>
+          </div>
+        </div>
+      } @else {
+        <div class="flex items-center justify-center py-3.5">
+          <div class="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black select-none"
+            style="background:#C9F558;color:#1a1a2e;" [title]="managerName()">
+            {{ managerName().charAt(0).toUpperCase() }}
+          </div>
+        </div>
+      }
     </div>
+
   </aside>
 
   <!-- ── Main area ─────────────────────────────────────────────────────────── -->
   <div class="flex-1 flex flex-col overflow-hidden min-w-0">
 
     <!-- Header -->
-    <header class="h-16 flex-shrink-0 flex items-center justify-between px-6"
-      style="background: var(--header-bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border);">
+    <header class="h-16 flex-shrink-0 flex items-center justify-between px-5"
+      style="background: var(--bg-surface); border-bottom: 1px solid var(--border);">
 
-      <div class="flex items-center gap-3">
-        <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="color: var(--text-very-faint);">{{ 'manager.nav.panel' | translate }}</span>
-        <span style="color: var(--text-ultra-faint);">/</span>
-        <span class="font-semibold text-sm" style="color: var(--text-base);">{{ 'nav.dashboard' | translate }}</span>
+      <!-- Left: hamburger + welcome -->
+      <div class="flex items-center gap-3 min-w-0">
+        <button (click)="toggle()"
+          class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors"
+          style="color:var(--text-faint);outline:none;"
+          onmouseover="this.style.background='var(--bg-subtle-sm)'"
+          onmouseout="this.style.background='transparent'">
+          <svg style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
+        <div class="min-w-0">
+          <h1 class="font-bold text-lg leading-none truncate" style="color:var(--text-base);">
+            {{ 'manager.welcome' | translate }}, {{ managerName() }}
+          </h1>
+          <p class="text-xs mt-0.5" style="color:var(--text-faint);">
+            {{ 'manager.headerSubtitle' | translate }}
+          </p>
+        </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-            style="background: var(--bg-subtle-md); color: var(--text-base);">
-            {{ managerName().charAt(0).toUpperCase() }}
-          </div>
-          <span class="hidden sm:block text-sm font-medium" style="color: var(--text-muted);">{{ managerName() }}</span>
-        </div>
+      <!-- Right: controls -->
+      <div class="flex items-center gap-1 flex-shrink-0">
 
+        <!-- Language -->
         <app-language-switcher />
+
+        <!-- Theme -->
         <app-theme-switcher />
 
-        <div class="h-5 w-px" style="background: var(--border);"></div>
+        <div class="w-px h-5 mx-1 flex-shrink-0" style="background:var(--border);"></div>
 
+        <!-- Sign out -->
         <button (click)="signOut()"
-          class="flex items-center gap-1.5 text-sm font-medium transition-colors duration-150"
-          style="color: var(--text-faint);" [title]="'nav.signOut' | translate">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-colors"
+          style="color:var(--text-faint);outline:none;" [title]="'nav.signOut' | translate"
+          onmouseover="this.style.background='var(--bg-subtle-sm)'"
+          onmouseout="this.style.background='transparent'">
+          <svg style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          <span class="hidden sm:inline">{{ 'nav.signOut' | translate }}</span>
         </button>
+
       </div>
     </header>
 
-    <!-- Scrollable content -->
+    <!-- Page content -->
     <main class="flex-1 overflow-y-auto auth-scroll p-6">
       <router-outlet />
     </main>

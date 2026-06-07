@@ -23,9 +23,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req.clone({ headers })).pipe(
     catchError((err: HttpErrorResponse) => {
-      const problem = err.error as ServiceProblemDetails | null;
-      const message = extractErrorMessage(problem) ?? language.t('errors.unexpected');
-      snackbar.show(message, 'error');
+      if (err.status !== 404) {
+        const problem = err.error as ServiceProblemDetails | null;
+        const message = extractErrorMessage(problem) ?? language.t('errors.unexpected');
+        snackbar.show(message, 'error');
+      }
       return throwError(() => err);
     }),
   );

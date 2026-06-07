@@ -20,15 +20,17 @@ export class EmployeeService {
     return this.api.get<any>(`${this.baseUrl}/${id}`);
   }
 
-  uploadAttachment(id: number, file: File, type: number): Observable<any> {
+  // Returns the uploaded file URL as a string
+  uploadAttachment(id: number, file: File, type: number): Observable<string> {
     const fd = new FormData();
     fd.append('file', file);
     fd.append('type', type.toString());
-    return this.api.post<any>(`${this.baseUrl}/${id}/attachments`, fd);
+    return this.api.post<string>(`${this.baseUrl}/${id}/attachments`, fd);
   }
 
-  deleteAttachment(id: number, type: number): Observable<any> {
-    return this.api.delete<any>(`${this.baseUrl}/${id}/attachments/${type}`);
+  // Returns 204 No Content on success, 404 if attachment never uploaded
+  deleteAttachment(id: number, type: number): Observable<void> {
+    return this.api.delete<void>(`${this.baseUrl}/${id}/attachments/${type}`);
   }
 
   getAll(params?: GetEmployeesParams): Observable<any> {
@@ -40,15 +42,15 @@ export class EmployeeService {
     return this.api.get<any>(this.baseUrl, p);
   }
 
-  create(payload: CreateEmployeeRequest): Observable<any> {
-    return this.api.post<any>(this.baseUrl, payload);
+  create(payload: CreateEmployeeRequest): Observable<{ id: number }> {
+    return this.api.post<{ id: number }>(this.baseUrl, payload);
   }
 
-  update(id: number, payload: UpdateEmployeeRequest): Observable<ApiResponse<unknown>> {
-    return this.api.put<ApiResponse<unknown>>(`${this.baseUrl}/${id}`, payload);
+  update(id: number, payload: UpdateEmployeeRequest): Observable<{ id: number }> {
+    return this.api.put<{ id: number }>(`${this.baseUrl}/${id}`, payload);
   }
 
-  delete(id: number): Observable<ApiResponse<unknown>> {
-    return this.api.delete<ApiResponse<unknown>>(`${this.baseUrl}/${id}`);
+  delete(id: number): Observable<{ id: number }> {
+    return this.api.delete<{ id: number }>(`${this.baseUrl}/${id}`);
   }
 }

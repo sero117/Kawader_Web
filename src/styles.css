@@ -6,21 +6,24 @@
 
 :root {
   /* Dashboard tokens */
-  --bg-page:          #f0f2f7;
+  --bg-page:          #EDEAE5;
   --bg-surface:       #ffffff;
   --bg-surface-2:     #f8f9fc;
   --bg-subtle-sm:     rgba(0, 0, 0, 0.05);
   --bg-subtle-md:     rgba(0, 0, 0, 0.09);
-  --header-bg:        rgba(240, 242, 247, 0.90);
+  --header-bg:        rgba(237, 234, 229, 0.90);
   --border:           rgba(0, 0, 0, 0.07);
   --text-base:        #0d0c1e;
   --text-muted:       rgba(13, 12, 30, 0.65);
   --text-faint:       rgba(13, 12, 30, 0.40);
   --text-very-faint:  rgba(13, 12, 30, 0.25);
   --text-ultra-faint: rgba(13, 12, 30, 0.12);
+  --nav-active-bg:    #C9F558;
+  --nav-active-text:  #131313;
+  --card-shadow:      rgba(0, 0, 0, 0.055);
 
   /* Auth page tokens */
-  --auth-bg:                #eeedfa;
+  --auth-bg:                var(--bg-page);
   --auth-card:              #ffffff;
   --auth-card-bdr:          rgba(0, 0, 0, 0.08);
   --auth-fg:                rgba(13, 12, 30, 0.92);
@@ -62,6 +65,9 @@
   --text-faint:       rgba(255, 255, 255, 0.40);
   --text-very-faint:  rgba(255, 255, 255, 0.25);
   --text-ultra-faint: rgba(255, 255, 255, 0.10);
+  --nav-active-bg:    rgba(255, 255, 255, 0.12);
+  --nav-active-text:  #ffffff;
+  --card-shadow:      rgba(0, 0, 0, 0.2);
 
   /* Auth page tokens */
   --auth-bg:                #0d0c1e;
@@ -315,11 +321,11 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.625rem 0.875rem;
-  border-radius: 0.75rem;
-  font-size: 0.875rem;
+  padding: 0.55rem 0.875rem;
+  border-radius: 0.625rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--text-faint);
+  color: var(--text-muted);
   transition: background 0.15s, color 0.15s;
   text-decoration: none;
   white-space: nowrap;
@@ -328,45 +334,172 @@
   border: none;
   background: transparent;
   width: 100%;
-  text-align: left;
+  text-align: start;
+  outline: none;
 }
 
-.nav-item:hover { background: var(--bg-subtle-sm); color: var(--text-muted); }
-.nav-item.active-nav { background: var(--bg-subtle-md); color: var(--text-base); }
-.nav-item.active-nav .nav-icon { color: var(--text-base); }
+.nav-item:focus { outline: none; }
+.nav-item:hover { background: var(--bg-subtle-sm); color: var(--text-base); }
+.nav-item.active-nav { background: var(--nav-active-bg); color: var(--nav-active-text); font-weight: 600; }
 
-/* ── Admin data table ─────────────────────────────────────────────── */
+/* ── Nav section label ────────────────────────────────────────────── */
 
-.data-table { width: 100%; border-collapse: collapse; }
+.nav-section-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: var(--text-very-faint);
+  padding: 0 0.875rem;
+  margin-bottom: 0.25rem;
+}
 
-.data-table th {
-  padding: 0.75rem 1rem;
-  text-align: left;
+/* ── Nav icon box (kept for collapsed tooltip anchor) ─────────────── */
+
+.nav-icon-box {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--bg-subtle-sm);
+  transition: background 0.15s;
+}
+
+/* Collapsed sidebar — center icons + enable tooltip overflow */
+.sidebar-collapsed .nav-item {
+  justify-content: center;
+  padding-inline: 0.5rem;
+  position: relative;
+  overflow: visible;
+}
+
+.sidebar-collapsed .nav-section-label { display: none; }
+
+/* Allow tooltip to escape the sidebar on hover */
+.sidebar-collapsed:has(.nav-item:hover) {
+  overflow: visible !important;
+}
+.sidebar-collapsed:has(.nav-item:hover) nav {
+  overflow: visible !important;
+}
+
+/* ── Nav tooltip bubble ───────────────────────────────────────────── */
+
+.nav-tooltip {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  inset-inline-start: calc(100% + 10px);
+  background: var(--bg-surface);
+  color: var(--text-base);
+  padding: 0.35rem 0.875rem;
+  border-radius: 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13), 0 1px 6px rgba(0,0,0,0.07);
+  border: 1px solid var(--border);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 200;
+  transition: opacity 0.15s 0.1s;
+}
+
+.sidebar-collapsed .nav-item:hover .nav-tooltip {
+  opacity: 1;
+}
+
+/* ── Admin data table (card-row style) ───────────────────────────── */
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 5px;
+}
+
+.data-table thead th {
+  padding: 0.375rem 1rem;
+  text-align: start;
   font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--text-faint);
-  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
 }
 
-.data-table td {
+.data-table tbody td {
   padding: 0.875rem 1rem;
   font-size: 0.875rem;
   color: var(--text-muted);
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
+  text-align: start;
+  transition: background 0.15s;
 }
 
-.data-table tr:last-child td { border-bottom: none; }
-.data-table tr:hover td { background: var(--bg-subtle-sm); }
+.data-table tbody td:first-child {
+  border-inline-start: 1px solid var(--border);
+  border-start-start-radius: 12px;
+  border-end-start-radius: 12px;
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.data-table tbody td:last-child {
+  border-inline-end: 1px solid var(--border);
+  border-start-end-radius: 12px;
+  border-end-end-radius: 12px;
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+}
+
+.data-table tbody tr:hover td { background: var(--bg-surface-2); }
 
 /* ── Admin card ───────────────────────────────────────────────────── */
 
 .admin-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
+  background: transparent;
   border-radius: 1rem;
+}
+
+/* ── Primary action button ────────────────────────────────────────── */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.125rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: var(--bg-surface);
+  color: var(--text-base);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.btn-primary:hover:not(:disabled) { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.btn-primary:active:not(:disabled) { transform: scale(0.97); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── RTL search icon + input fix ─────────────────────────────────── */
+
+[dir="rtl"] input[class*="pl-9"] {
+  padding-left: 1rem !important;
+  padding-right: 2.25rem !important;
+}
+
+[dir="rtl"] .relative > svg.absolute.pointer-events-none {
+  left: auto !important;
+  right: 0.75rem;
 }
 
 /* ── Scrollbar ────────────────────────────────────────────────────── */

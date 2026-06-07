@@ -342,10 +342,18 @@
     "activating": "جارٍ التفعيل…"
   },
   "manager": {
+    "welcome": "مرحباً",
+    "headerSubtitle": "هنا ما يحدث في نظامك.",
+    "role": "مدير الشركة",
     "nav": {
       "panel": "لوحة المدير",
       "employees": "الموظفون",
-      "branches": "الفروع"
+      "branches": "الفروع",
+      "shifts": "الورديات",
+      "shiftSystems": "أنظمة الورديات",
+      "shiftLogs": "الحضور",
+      "mainSection": "الرئيسية",
+      "shiftsSection": "الورديات"
     },
     "branches": {
       "title": "الفروع",
@@ -434,7 +442,7 @@
       "title": "الموظفون",
       "subtitle": "إدارة موظفي شركتك.",
       "addBtn": "إضافة موظف",
-      "searchPlaceholder": "بحث برقم الهاتف…",
+      "searchPlaceholder": "رقم هاتف كامل (09XXXXXXXX)…",
       "loadError": "فشل تحميل الموظفين",
       "noResults": "لا يوجد موظفون",
       "emptySearch": "جرب مصطلح بحث مختلف.",
@@ -446,6 +454,7 @@
       "colCreated": "تاريخ الإنشاء",
       "colActions": "الإجراءات",
       "colStatus": "الحالة",
+      "attachmentsTitle": "المرفقات",
       "editTitle": "تعديل",
       "deleteTitle": "حذف",
       "page": "الصفحة",
@@ -497,7 +506,13 @@
       "workEndTimeLabel": "نهاية الدوام",
       "emergencyContactRelationLabel": "صلة الاتصال الطارئ",
       "emergencyContactPhoneLabel": "هاتف الطوارئ",
-      "internalNotesLabel": "ملاحظات داخلية"
+      "internalNotesLabel": "ملاحظات داخلية",
+      "attachmentsTitle": "المرفقات",
+      "viewFile": "عرض",
+      "uploadFile": "رفع",
+      "uploading": "جارٍ الرفع…",
+      "fileTypeError": "يُسمح فقط بـ JPG و PNG و WEBP و PDF.",
+      "fileSizeError": "يجب أن يكون الملف أقل من 5 ميغابايت."
     },
     "deleteModal": {
       "title": "حذف الموظف؟",
@@ -611,6 +626,191 @@
       "result": "نتيجة",
       "prev": "السابق",
       "next": "التالي"
+    },
+    "shifts": {
+      "title": "الورديات",
+      "subtitle": "تعريف الورديات القابلة لإعادة الاستخدام (صباح، مساء، ليل…)",
+      "addBtn": "إضافة وردية",
+      "searchPlaceholder": "بحث بالاسم…",
+      "typeAll": "جميع الأنواع",
+      "loadError": "فشل تحميل الورديات",
+      "noResults": "لا توجد ورديات",
+      "emptySearch": "جرب مصطلح بحث مختلف.",
+      "emptyList": "أضف أول وردية للبدء.",
+      "colName": "اسم الوردية",
+      "colStart": "البداية",
+      "colEnd": "النهاية",
+      "colType": "النوع",
+      "colCreated": "تاريخ الإنشاء",
+      "colActions": "الإجراءات",
+      "editTitle": "تعديل",
+      "deleteTitle": "حذف",
+      "page": "الصفحة",
+      "results": "نتائج",
+      "result": "نتيجة",
+      "prev": "السابق",
+      "next": "التالي"
+    },
+    "addShift": {
+      "title": "إضافة وردية",
+      "nameLabel": "اسم الوردية",
+      "startTimeLabel": "وقت البداية",
+      "endTimeLabel": "وقت النهاية",
+      "typeLabel": "النوع"
+    },
+    "editShift": {
+      "title": "تعديل الوردية",
+      "nameLabel": "اسم الوردية",
+      "startTimeLabel": "وقت البداية",
+      "endTimeLabel": "وقت النهاية",
+      "typeLabel": "النوع"
+    },
+    "deleteShiftModal": {
+      "title": "حذف الوردية؟",
+      "message": "لا يمكن التراجع عن هذا الإجراء. ستُحذف الوردية بشكل دائم."
+    },
+    "shiftTypes": {
+      "0": "عادية",
+      "1": "إضافية"
+    },
+    "shiftSystems": {
+      "title": "أنظمة الورديات",
+      "subtitle": "تجميع الورديات في جداول أسبوعية (صيفي، رمضاني…)",
+      "addBtn": "إضافة نظام",
+      "searchPlaceholder": "بحث بالاسم…",
+      "loadError": "فشل تحميل أنظمة الورديات",
+      "noResults": "لا توجد أنظمة ورديات",
+      "emptySearch": "جرب مصطلح بحث مختلف.",
+      "emptyList": "أضف أول نظام ورديات للبدء.",
+      "colName": "اسم النظام",
+      "colCreated": "تاريخ الإنشاء",
+      "colActions": "الإجراءات",
+      "configureDaysTitle": "تكوين الأيام",
+      "editTitle": "تعديل",
+      "deleteTitle": "حذف",
+      "page": "الصفحة",
+      "results": "نتائج",
+      "result": "نتيجة",
+      "prev": "السابق",
+      "next": "التالي"
+    },
+    "addShiftSystem": {
+      "title": "إضافة نظام وردية",
+      "nameLabel": "اسم النظام"
+    },
+    "editShiftSystem": {
+      "title": "تعديل نظام الوردية",
+      "nameLabel": "اسم النظام"
+    },
+    "deleteShiftSystemModal": {
+      "title": "حذف نظام الوردية؟",
+      "message": "لا يمكن التراجع عن هذا الإجراء. ستُحذف جميع الأيام المُكوَّنة أيضاً."
+    },
+    "shiftSystemDays": {
+      "title": "تكوين الأيام",
+      "addBtn": "إضافة يوم",
+      "loadError": "فشل تحميل الأيام",
+      "colDay": "اليوم",
+      "colShift": "الوردية",
+      "colTime": "ساعات العمل",
+      "colActions": "الإجراءات",
+      "holiday": "عطلة",
+      "workDays": "أيام العمل",
+      "holidays": "أيام الراحة"
+    },
+    "addShiftSystemDay": {
+      "title": "إضافة يوم عمل",
+      "dayLabel": "يوم الأسبوع",
+      "shiftLabel": "الوردية",
+      "shiftPlaceholder": "اختر وردية…"
+    },
+    "editShiftSystemDay": {
+      "title": "تعديل يوم العمل",
+      "dayLabel": "يوم الأسبوع",
+      "shiftLabel": "الوردية"
+    },
+    "deleteShiftDayModal": {
+      "title": "إزالة اليوم؟",
+      "message": "سيتم تحديد هذا اليوم كعطلة في نظام الوردية هذا."
+    },
+    "dayOfWeek": {
+      "0": "الأحد",
+      "1": "الاثنين",
+      "2": "الثلاثاء",
+      "3": "الأربعاء",
+      "4": "الخميس",
+      "5": "الجمعة",
+      "6": "السبت"
+    },
+    "shiftLogs": {
+      "title": "سجل الحضور",
+      "subtitle": "تتبع تسجيل دخول وخروج الموظفين.",
+      "addBtn": "تسجيل حضور",
+      "loadError": "فشل تحميل سجل الحضور",
+      "noResults": "لا توجد سجلات",
+      "emptyList": "لا توجد سجلات حضور بعد.",
+      "filterEmployee": "رقم الموظف",
+      "filterEmployeePlaceholder": "أدخل الرقم…",
+      "filterSystem": "نظام الوردية",
+      "systemAll": "جميع الأنظمة",
+      "filterFrom": "من تاريخ",
+      "filterTo": "إلى تاريخ",
+      "searchBtn": "بحث",
+      "colEmployee": "الموظف",
+      "colDate": "التاريخ",
+      "colShift": "الوردية",
+      "colCheckIn": "دخول",
+      "colCheckOut": "خروج",
+      "colStatus": "الحالة",
+      "colActions": "الإجراءات",
+      "editTitle": "تعديل",
+      "deleteTitle": "حذف",
+      "page": "الصفحة",
+      "results": "نتائج",
+      "result": "نتيجة",
+      "prev": "السابق",
+      "next": "التالي"
+    },
+    "addShiftLog": {
+      "title": "تسجيل حضور",
+      "employeeIdLabel": "رقم الموظف",
+      "shiftLabel": "الوردية",
+      "shiftPlaceholder": "اختر وردية…",
+      "dateLabel": "التاريخ",
+      "checkInLabel": "وقت الدخول",
+      "notesLabel": "ملاحظات"
+    },
+    "editShiftLog": {
+      "title": "تعديل السجل",
+      "checkOutLabel": "وقت الخروج",
+      "statusLabel": "الحالة",
+      "notesLabel": "ملاحظات"
+    },
+    "deleteShiftLogModal": {
+      "title": "حذف السجل؟",
+      "message": "سيتم حذف سجل الحضور هذا بشكل دائم."
+    },
+    "attendanceStatus": {
+      "0": "حضور",
+      "1": "غياب",
+      "2": "متأخر",
+      "3": "انصراف مبكر"
+    },
+    "shiftAssignment": {
+      "title": "إسناد الوردية",
+      "currentSystem": "نظام الوردية الحالي",
+      "noAssignment": "لم يُسنَد نظام وردية",
+      "noAssignmentHint": "أسند نظام وردية لتتبع جدول الموظف.",
+      "workingDays": "أيام العمل",
+      "assignBtn": "إسناد نظام",
+      "changeBtn": "تغيير النظام",
+      "unassignBtn": "إلغاء الإسناد",
+      "systemLabel": "نظام الوردية",
+      "systemPlaceholder": "اختر نظام وردية…",
+      "confirmAssign": "تأكيد",
+      "loadError": "فشل تحميل الإسناد.",
+      "unassigning": "جارٍ الإلغاء…",
+      "assigning": "جارٍ الإسناد…"
     }
   },
   "companyTypes": {

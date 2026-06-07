@@ -1,26 +1,31 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
+import { DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { EmployeeStatusService } from '../../../core/services/employee-status.service';
+import { ShiftSystemService } from '../../../core/services/shift-system.service';
 import {
-  Employee, EmployeeType, EmployeeStatus, GenderType, ContractType, RelationType,
+  Employee, EmployeeType, EmployeeStatus, AttachmentType,
+  GenderType, ContractType, RelationType,
   EmployeeStatusHistory, CreateStatusHistoryRequest, UpdateStatusHistoryRequest,
   GetEmployeesParams,
 } from '../../../core/models/employee.models';
+import { EmployeeShiftSystem, ShiftSystem, DayOfWeek } from '../../../core/models/shift.models';
 
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, RouterLink],
+  imports: [ReactiveFormsModule, TranslatePipe, RouterLink, DecimalPipe],
   templateUrl: './employees.component.html',
 })
 export class EmployeesComponent implements OnInit {
   private readonly employeeService       = inject(EmployeeService);
   private readonly employeeStatusService = inject(EmployeeStatusService);
+  private readonly shiftSystemService    = inject(ShiftSystemService);
   private readonly fb                    = inject(FormBuilder);
   private readonly lang                  = inject(LanguageService);
   private readonly route                 = inject(ActivatedRoute);
@@ -54,6 +59,31 @@ export class EmployeesComponent implements OnInit {
   showDeleteModal  = signal(false);
   selectedEmployee = signal<Employee | null>(null);
   deleteTargetId   = signal<number | null>(null);
+
+  // ── View modal ────────────────────────────────────────────────────────────
+  showViewModal      = signal(false);
+  viewEmployee       = signal<Employee | null>(null);
+  viewLoading        = signal(false);
+
+  // ── Attachments modal ─────────────────────────────────────────────────────
+  showAttachModal    = signal(false);
+  attachModalLoading = signal(false);
+  editEmployeeDetail = signal<Employee | null>(null);
+  pendingAttachType  = signal<AttachmentType | null>(null);
+  uploadingType      = signal<AttachmentType | null>(null);
+  deletingAttachType = signal<AttachmentType | null>(null);
+  attachmentError    = signal<string | null>(null);
+
+  // ── Shift Assignment modal ────────────────────────────────────────────────────
+  showShiftModal      = signal(false);
+  shiftEmployee       = signal<Employee | null>(null);
+  shiftLoading        = signal(false);
+  employeeShiftSystem = signal<EmployeeShiftSystem | null>(null);
+  shiftError          = signal<string | null>(null);
+  showAssignForm      = signal(false);
+  shiftSubmitting     = signal(false);
+  availableSystems    = signal<ShiftSystem[]>([]);
+  selectedSystemId    = signal<number | null>(null);
 
   // ── Status History modal ───────────────────────────────────────────────────
   showHistoryModal       = signal(false);
@@ -89,9 +119,20 @@ export class EmployeesComponent implements OnInit {
 
   readonly EmployeeType   = EmployeeType;
   readonly EmployeeStatus = EmployeeStatus;
+  readonly AttachmentType = AttachmentType;
   readonly GenderType     = GenderType;
   readonly ContractType   = ContractType;
   readonly RelationType   = RelationType;
+
+  readonly attachmentList: { type: AttachmentType; labelKey: string }[] = [
+    { type: AttachmentType.IdentityPhoto,       labelKey: 'manager.attachmentTypes.0' },
+    { type: AttachmentType.PersonalPhoto,       labelKey: 'manager.attachmentTypes.1' },
+    { type: AttachmentType.WorkContract,        labelKey: 'manager.attachmentTypes.2' },
+    { type: AttachmentType.Certificate,         labelKey: 'manager.attachmentTypes.3' },
+    { type: AttachmentType.Qualifications,      labelKey: 'manager.attachmentTypes.4' },
+    { type: AttachmentType.HealthCard,          labelKey: 'manager.attachmentTypes.5' },
+    { type: AttachmentType.ProfessionalLicense, labelKey: 'manager.attachmentTypes.6' },
+  ];
 
   addForm = this.fb.group({
     phoneNumber:               ['', [Validators.required, Validators.pattern(this.phonePattern)]],
@@ -188,7 +229,8 @@ export class EmployeesComponent implements OnInit {
     this.loading.set(true);
     const { search, pageNumber, pageSize } = this.filter.value();
     const params: GetEmployeesParams = { pageSize, pageNumber };
-    if (search.trim()) params.phoneNumber = search.trim();
+    const phone = search.trim();
+    if (/^09\d{8}$/.test(phone)) params.phoneNumber = phone;
 
     this.employeeService.getAll(params).subscribe({
       next: (res: any) => {
@@ -267,23 +309,18 @@ export class EmployeesComponent implements OnInit {
       hireDate:                 v.hireDate!,
       contractType:             v.contractType!,
       baseSalary:               v.baseSalary!,
-      workStartTime:            v.workStartTime!,
-      workEndTime:              v.workEndTime!,
+      workStartTime:            this.toTimeString(v.workStartTime!),
+      workEndTime:              this.toTimeString(v.workEndTime!),
       emergencyContactRelation: v.emergencyContactRelation!,
       emergencyContactPhone:    v.emergencyContactPhone!,
       internalNotes:            v.internalNotes || undefined,
     }).subscribe({
-      next: (res: any) => {
+      next: () => {
         this.submitting.set(false);
-        if (res?.isSuccess === false) { this.modalError.set(res.message || 'Failed to add employee.'); return; }
-        if (res?.data != null || res?.id != null || res?.isSuccess === true) {
-          this.showAddModal.set(false);
-          this.flash('Employee added successfully!');
-          this.filter.patch({ pageNumber: 1 });
-          this.loadEmployees();
-        } else {
-          this.modalError.set(res?.message || 'Failed to add employee.');
-        }
+        this.showAddModal.set(false);
+        this.flash('Employee added successfully!');
+        this.filter.patch({ pageNumber: 1 });
+        this.loadEmployees();
       },
       error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add employee.')); },
     });
@@ -354,8 +391,8 @@ export class EmployeesComponent implements OnInit {
       hireDate:                 v.hireDate     || undefined,
       contractType:             v.contractType ?? ContractType.FullTime,
       baseSalary:               v.baseSalary   ?? undefined,
-      workStartTime:            v.workStartTime || undefined,
-      workEndTime:              v.workEndTime   || undefined,
+      workStartTime:            v.workStartTime ? this.toTimeString(v.workStartTime) : undefined,
+      workEndTime:              v.workEndTime   ? this.toTimeString(v.workEndTime)   : undefined,
       emergencyContactRelation: v.emergencyContactRelation ?? RelationType.Father,
       emergencyContactPhone:    v.emergencyContactPhone    || undefined,
       internalNotes:            v.internalNotes || undefined,
@@ -389,6 +426,142 @@ export class EmployeesComponent implements OnInit {
         this.flash('Employee deleted.');
       },
       error: () => { this.submitting.set(false); this.showDeleteModal.set(false); },
+    });
+  }
+
+  // ── View modal ────────────────────────────────────────────────────────────
+  openView(emp: Employee): void {
+    this.viewEmployee.set(emp);
+    this.viewLoading.set(true);
+    this.showViewModal.set(true);
+    this.employeeService.getById(emp.id).subscribe({
+      next: (res: any) => {
+        this.viewLoading.set(false);
+        this.viewEmployee.set((res?.data ?? res) as Employee);
+      },
+      error: () => this.viewLoading.set(false),
+    });
+  }
+
+  // ── Shift Assignment ──────────────────────────────────────────────────────────
+  openShift(emp: Employee, event: Event): void {
+    event.stopPropagation();
+    this.shiftEmployee.set(emp);
+    this.shiftError.set(null);
+    this.showAssignForm.set(false);
+    this.selectedSystemId.set(null);
+    this.employeeShiftSystem.set(null);
+    this.showShiftModal.set(true);
+    this.shiftLoading.set(true);
+
+    this.shiftSystemService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+      next: (res: any) => {
+        const raw  = res?.data ?? res;
+        const list: ShiftSystem[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
+        this.availableSystems.set(list);
+      },
+      error: () => {},
+    });
+
+    this.shiftSystemService.getEmployeeShiftSystem(emp.id).subscribe({
+      next: (res: any) => {
+        this.shiftLoading.set(false);
+        this.employeeShiftSystem.set(res?.data ?? res);
+      },
+      error: (err) => {
+        this.shiftLoading.set(false);
+        if (err?.status === 404) {
+          this.employeeShiftSystem.set(null);
+        } else {
+          this.shiftError.set(this.apiErr(err, 'Failed to load shift assignment.'));
+        }
+      },
+    });
+  }
+
+  openAssignForm(): void {
+    this.selectedSystemId.set(null);
+    this.showAssignForm.set(true);
+    this.shiftSubmitting.set(true);
+    const emp = this.shiftEmployee();
+    if (!emp) return;
+    this.shiftSystemService.unassignEmployee(emp.id).subscribe({
+      next: () => {
+        this.shiftSubmitting.set(false);
+        this.employeeShiftSystem.set(null);
+      },
+      error: (err) => {
+        this.shiftSubmitting.set(false);
+        this.shiftError.set(this.apiErr(err, 'Failed to unassign.'));
+        this.showAssignForm.set(false);
+      },
+    });
+  }
+
+  submitAssign(): void {
+    const systemId = this.selectedSystemId();
+    const emp      = this.shiftEmployee();
+    if (!systemId || !emp) return;
+    this.shiftSubmitting.set(true);
+    this.shiftError.set(null);
+    this.shiftSystemService.assignEmployee(emp.id, {
+      shiftSystemId:  systemId,
+      idempotencyKey: crypto.randomUUID(),
+    }).subscribe({
+      next: () => {
+        this.shiftSubmitting.set(false);
+        this.showAssignForm.set(false);
+        this.selectedSystemId.set(null);
+        this.shiftLoading.set(true);
+        this.shiftSystemService.getEmployeeShiftSystem(emp.id).subscribe({
+          next: (res: any) => { this.shiftLoading.set(false); this.employeeShiftSystem.set(res?.data ?? res); },
+          error: ()         => { this.shiftLoading.set(false); },
+        });
+        this.flash('Shift system assigned.');
+      },
+      error: (err) => {
+        this.shiftSubmitting.set(false);
+        this.shiftError.set(this.apiErr(err, 'Failed to assign shift system.'));
+      },
+    });
+  }
+
+  executeUnassign(): void {
+    const emp = this.shiftEmployee();
+    if (!emp) return;
+    this.shiftSubmitting.set(true);
+    this.shiftError.set(null);
+    this.shiftSystemService.unassignEmployee(emp.id).subscribe({
+      next: () => {
+        this.shiftSubmitting.set(false);
+        this.employeeShiftSystem.set(null);
+        this.flash('Shift assignment removed.');
+      },
+      error: (err) => {
+        this.shiftSubmitting.set(false);
+        this.shiftError.set(this.apiErr(err, 'Failed to remove assignment.'));
+      },
+    });
+  }
+
+  dayLabel(dow: DayOfWeek): string {
+    return this.lang.t(`manager.dayOfWeek.${dow}`);
+  }
+
+  // ── Attachments modal open ─────────────────────────────────────────────────
+  openAttach(emp: Employee, event: Event): void {
+    event.stopPropagation();
+    this.editEmployeeDetail.set(emp);
+    this.attachmentError.set(null);
+    this.attachModalLoading.set(true);
+    this.showAttachModal.set(true);
+
+    this.employeeService.getById(emp.id).subscribe({
+      next: (res: any) => {
+        this.attachModalLoading.set(false);
+        this.editEmployeeDetail.set((res?.data ?? res) as Employee);
+      },
+      error: () => this.attachModalLoading.set(false),
     });
   }
 
@@ -527,6 +700,114 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
+  // ── Attachments ────────────────────────────────────────────────────────────
+  triggerAttachmentUpload(type: AttachmentType): void {
+    this.pendingAttachType.set(type);
+    this.attachmentError.set(null);
+    const input = document.getElementById('emp-att-input') as HTMLInputElement | null;
+    if (input) { input.value = ''; input.click(); }
+  }
+
+  onAttachmentFile(event: Event): void {
+    const type = this.pendingAttachType();
+    if (type === null) return;
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+    if (!allowed.includes(file.type)) {
+      this.attachmentError.set(this.lang.t('manager.editEmployee.fileTypeError'));
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.attachmentError.set(this.lang.t('manager.editEmployee.fileSizeError'));
+      return;
+    }
+
+    const empId = this.editEmployeeDetail()?.id;
+    if (!empId) return;
+    this.uploadingType.set(type);
+    this.attachmentError.set(null);
+
+    this.employeeService.uploadAttachment(empId, file, type).subscribe({
+      next: (url: string) => {
+        this.uploadingType.set(null);
+        this.editEmployeeDetail.update(emp =>
+          emp ? { ...emp, ...this.attachUrlPatch(type, url) } : emp
+        );
+      },
+      error: err => {
+        this.uploadingType.set(null);
+        this.attachmentError.set(this.apiErr(err, 'Failed to upload file.'));
+      },
+    });
+  }
+
+  removeAttachment(type: AttachmentType): void {
+    const empId = this.editEmployeeDetail()?.id;
+    if (!empId) return;
+    this.deletingAttachType.set(type);
+    this.attachmentError.set(null);
+
+    this.employeeService.deleteAttachment(empId, type).subscribe({
+      next: () => {
+        this.deletingAttachType.set(null);
+        this.editEmployeeDetail.update(emp =>
+          emp ? { ...emp, ...this.attachUrlPatch(type, undefined) } : emp
+        );
+      },
+      error: err => {
+        this.deletingAttachType.set(null);
+        this.attachmentError.set(this.apiErr(err, 'Failed to delete file.'));
+      },
+    });
+  }
+
+  getAttachmentUrl(type: AttachmentType): string | undefined {
+    const emp = this.editEmployeeDetail();
+    if (!emp) return undefined;
+    const map: Record<AttachmentType, keyof Employee> = {
+      [AttachmentType.IdentityPhoto]:       'identityPhotoUrl',
+      [AttachmentType.PersonalPhoto]:       'personalPhotoUrl',
+      [AttachmentType.WorkContract]:        'workContractUrl',
+      [AttachmentType.Certificate]:         'certificateUrl',
+      [AttachmentType.Qualifications]:      'qualificationsUrl',
+      [AttachmentType.HealthCard]:          'healthCardUrl',
+      [AttachmentType.ProfessionalLicense]: 'professionalLicenseUrl',
+    };
+    return emp[map[type]] as string | undefined;
+  }
+
+  isPdf(url: string): boolean {
+    return url.toLowerCase().includes('.pdf');
+  }
+
+  getAttachmentUrlFromEmployee(emp: Employee, type: AttachmentType): string | undefined {
+    const map: Record<AttachmentType, keyof Employee> = {
+      [AttachmentType.IdentityPhoto]:       'identityPhotoUrl',
+      [AttachmentType.PersonalPhoto]:       'personalPhotoUrl',
+      [AttachmentType.WorkContract]:        'workContractUrl',
+      [AttachmentType.Certificate]:         'certificateUrl',
+      [AttachmentType.Qualifications]:      'qualificationsUrl',
+      [AttachmentType.HealthCard]:          'healthCardUrl',
+      [AttachmentType.ProfessionalLicense]: 'professionalLicenseUrl',
+    };
+    return emp[map[type]] as string | undefined;
+  }
+
+  private attachUrlPatch(type: AttachmentType, url: string | undefined): Partial<Employee> {
+    const map: Record<AttachmentType, keyof Employee> = {
+      [AttachmentType.IdentityPhoto]:       'identityPhotoUrl',
+      [AttachmentType.PersonalPhoto]:       'personalPhotoUrl',
+      [AttachmentType.WorkContract]:        'workContractUrl',
+      [AttachmentType.Certificate]:         'certificateUrl',
+      [AttachmentType.Qualifications]:      'qualificationsUrl',
+      [AttachmentType.HealthCard]:          'healthCardUrl',
+      [AttachmentType.ProfessionalLicense]: 'professionalLicenseUrl',
+    };
+    return { [map[type]]: url };
+  }
+
   // ── Helpers ────────────────────────────────────────────────────────────────
   employeeTypeLabel(type: EmployeeType): string {
     return this.lang.t(`manager.employeeTypes.${type}`);
@@ -544,6 +825,11 @@ export class EmployeesComponent implements OnInit {
   formatDate(dateStr?: string): string {
     if (!dateStr) return '—';
     return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  // Ensures time is sent as HH:mm:ss (API requirement)
+  private toTimeString(t: string): string {
+    return t.length === 5 ? `${t}:00` : t;
   }
 
   private flash(msg: string): void {

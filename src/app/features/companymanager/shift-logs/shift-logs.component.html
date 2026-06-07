@@ -1,0 +1,431 @@
+<!-- Page heading -->
+<div class="flex items-center justify-between mb-7">
+  <div>
+    <h1 class="font-bold text-2xl mb-0.5" style="color: var(--text-base);">{{ 'manager.shiftLogs.title' | translate }}</h1>
+    <p class="text-sm" style="color: var(--text-faint);">{{ 'manager.shiftLogs.subtitle' | translate }}</p>
+  </div>
+  <button (click)="openAdd()" class="btn-primary">
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
+    {{ 'manager.shiftLogs.addBtn' | translate }}
+  </button>
+</div>
+
+<!-- Success toast -->
+@if (successMsg()) {
+  <div class="flex items-center gap-2.5 rounded-xl px-4 py-3 mb-5" style="background: var(--bg-subtle-sm); border: 1px solid var(--border);">
+    <svg class="w-4 h-4 flex-shrink-0" style="color: var(--text-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span class="text-sm" style="color: var(--text-muted);">{{ successMsg() }}</span>
+  </div>
+}
+
+<!-- Table card -->
+<div class="admin-card">
+
+  <!-- Filters -->
+  <div class="p-5 pb-4 space-y-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <!-- Employee ID -->
+      <div>
+        <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+          {{ 'manager.shiftLogs.filterEmployee' | translate }}
+        </label>
+        <input type="number" min="1"
+          [placeholder]="'manager.shiftLogs.filterEmployeePlaceholder' | translate"
+          class="w-full px-3 py-2.5 rounded-xl text-sm"
+          style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
+          [value]="filter.value().employeeId"
+          (input)="filter.patch({ employeeId: $any($event.target).value })"
+          onfocus="this.style.borderColor='rgba(128,128,128,0.35)'"
+          onblur="this.style.borderColor='var(--border)'" />
+      </div>
+      <!-- Shift System -->
+      <div>
+        <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+          {{ 'manager.shiftLogs.filterSystem' | translate }}
+        </label>
+        <select class="w-full px-3 py-2.5 rounded-xl text-sm"
+          style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none; appearance: none; -webkit-appearance: none;"
+          [value]="filter.value().shiftSystemId"
+          (change)="filter.patch({ shiftSystemId: $any($event.target).value })">
+          <option value="">{{ 'manager.shiftLogs.systemAll' | translate }}</option>
+          @for (sys of allSystems(); track sys.id) {
+            <option [value]="sys.id">{{ sys.name }}</option>
+          }
+        </select>
+      </div>
+      <!-- From date -->
+      <div>
+        <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+          {{ 'manager.shiftLogs.filterFrom' | translate }}
+        </label>
+        <input type="date"
+          class="w-full px-3 py-2.5 rounded-xl text-sm"
+          style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
+          [value]="filter.value().fromDate"
+          (input)="filter.patch({ fromDate: $any($event.target).value })"
+          onfocus="this.style.borderColor='rgba(128,128,128,0.35)'"
+          onblur="this.style.borderColor='var(--border)'" />
+      </div>
+      <!-- To date -->
+      <div>
+        <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+          {{ 'manager.shiftLogs.filterTo' | translate }}
+        </label>
+        <input type="date"
+          class="w-full px-3 py-2.5 rounded-xl text-sm"
+          style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
+          [value]="filter.value().toDate"
+          (input)="filter.patch({ toDate: $any($event.target).value })"
+          onfocus="this.style.borderColor='rgba(128,128,128,0.35)'"
+          onblur="this.style.borderColor='var(--border)'" />
+      </div>
+    </div>
+    <div class="flex justify-end">
+      <button (click)="applyFilter()"
+        class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold"
+        style="background: var(--bg-subtle-md); color: var(--text-muted);">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+        {{ 'manager.shiftLogs.searchBtn' | translate }}
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="px-5 pb-5 space-y-3">
+      @for (_ of [1,2,3,4,5]; track $index) {
+        <div class="h-14 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+      }
+    </div>
+  } @else if (listError()) {
+    <div class="p-12 text-center">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: rgba(239,68,68,0.1);">
+        <svg class="w-6 h-6" style="color: rgba(239,68,68,0.7);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+      </div>
+      <p class="font-medium mb-1" style="color: var(--text-base);">{{ 'manager.shiftLogs.loadError' | translate }}</p>
+      <p class="text-sm mb-4" style="color: var(--text-faint);">{{ listError() }}</p>
+      <button (click)="loadLogs()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold" style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+        {{ 'common.retry' | translate }}
+      </button>
+    </div>
+  } @else if (logs().length === 0) {
+    <div class="p-16 text-center">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: var(--bg-subtle-sm);">
+        <svg class="w-7 h-7" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+        </svg>
+      </div>
+      <p class="font-medium mb-1" style="color: var(--text-base);">{{ 'manager.shiftLogs.noResults' | translate }}</p>
+      <p class="text-sm" style="color: var(--text-faint);">{{ 'manager.shiftLogs.emptyList' | translate }}</p>
+    </div>
+  } @else {
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ 'manager.shiftLogs.colEmployee' | translate }}</th>
+            <th>{{ 'manager.shiftLogs.colDate' | translate }}</th>
+            <th>{{ 'manager.shiftLogs.colShift' | translate }}</th>
+            <th>{{ 'manager.shiftLogs.colCheckIn' | translate }}</th>
+            <th>{{ 'manager.shiftLogs.colCheckOut' | translate }}</th>
+            <th>{{ 'manager.shiftLogs.colStatus' | translate }}</th>
+            <th style="text-align: right;">{{ 'manager.shiftLogs.colActions' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of logs(); track log.id) {
+            <tr>
+              <td class="font-mono text-sm" style="color: var(--text-faint);">#{{ log.employeeId }}</td>
+              <td style="color: var(--text-muted);">{{ formatDate(log.date) }}</td>
+              <td class="text-sm" style="color: var(--text-base);">{{ log.shiftName }}</td>
+              <td class="font-mono text-sm" style="color: var(--text-muted);">{{ formatTime(log.checkInTime) }}</td>
+              <td class="font-mono text-sm" style="color: var(--text-muted);">{{ formatTime(log.checkOutTime) }}</td>
+              <td>
+                <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
+                  [style.color]="statusColor(log.status)"
+                  [style.background]="statusBg(log.status)"
+                  [style.border]="'1px solid ' + statusBorder(log.status)">
+                  {{ statusLabel(log.status) }}
+                </span>
+              </td>
+              <td>
+                <div class="flex items-center justify-end gap-1.5">
+                  <button (click)="openEdit(log, $event)"
+                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                    style="color: var(--text-faint); background: var(--bg-subtle-sm);"
+                    [title]="'manager.shiftLogs.editTitle' | translate">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                    </svg>
+                  </button>
+                  <button (click)="confirmDelete(log, $event)"
+                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                    style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);"
+                    [title]="'manager.shiftLogs.deleteTitle' | translate">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-between px-5 py-4" style="border-top: 1px solid var(--border);">
+      <p class="text-xs" style="color: var(--text-faint);">
+        {{ 'manager.shiftLogs.page' | translate }} {{ filter.value().pageNumber }}
+        @if (logs().length > 0) {
+          · {{ logs().length }} {{ logs().length !== 1 ? ('manager.shiftLogs.results' | translate) : ('manager.shiftLogs.result' | translate) }}
+        }
+      </p>
+      <div class="flex items-center gap-2">
+        <button (click)="prevPage()" [disabled]="filter.value().pageNumber === 1"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
+          [style.opacity]="filter.value().pageNumber === 1 ? '0.3' : '1'"
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+          {{ 'manager.shiftLogs.prev' | translate }}
+        </button>
+        <span class="w-8 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
+          style="background: var(--bg-subtle-md); color: var(--text-base);">
+          {{ filter.value().pageNumber }}
+        </span>
+        <button (click)="nextPage()" [disabled]="!hasMore()"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
+          [style.opacity]="!hasMore() ? '0.3' : '1'"
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+          {{ 'manager.shiftLogs.next' | translate }}
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
+
+<!-- ══ ADD LOG MODAL ══ -->
+@if (showAddModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);" (click)="showAddModal.set(false)">
+    <div class="w-full max-w-md rounded-2xl flex flex-col" style="background: var(--bg-surface-2); border: 1px solid var(--border); max-height: 90vh;"
+      (click)="$event.stopPropagation()">
+
+      <div class="flex items-center justify-between px-6 pt-6 pb-5 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
+        <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.addShiftLog.title' | translate }}</h2>
+        <button (click)="showAddModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+          style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="px-6 py-5 overflow-y-auto flex-1">
+        @if (modalError()) {
+          <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
+            style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
+            <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgba(239,68,68,0.8);" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+            </svg>
+            <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ modalError() }}</span>
+          </div>
+        }
+
+        <form [formGroup]="addForm" (ngSubmit)="submitAdd()" class="space-y-4" novalidate>
+
+          <!-- Employee ID -->
+          <div>
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              {{ 'manager.addShiftLog.employeeIdLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+            </label>
+            <input formControlName="employeeId" type="number" min="1" class="modal-input"
+              [class.is-invalid]="addForm.get('employeeId')!.invalid && addForm.get('employeeId')!.touched" />
+            @if (addForm.get('employeeId')!.invalid && addForm.get('employeeId')!.touched) {
+              <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+            }
+          </div>
+
+          <!-- Shift -->
+          <div>
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              {{ 'manager.addShiftLog.shiftLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+            </label>
+            <select formControlName="shiftId" class="modal-input" style="appearance:none; -webkit-appearance:none;"
+              [class.is-invalid]="addForm.get('shiftId')!.invalid && addForm.get('shiftId')!.touched">
+              <option [ngValue]="null" disabled>{{ 'manager.addShiftLog.shiftPlaceholder' | translate }}</option>
+              @for (shift of allShifts(); track shift.id) {
+                <option [ngValue]="shift.id">{{ shift.name }} ({{ shift.startTime.substring(0,5) }} – {{ shift.endTime.substring(0,5) }})</option>
+              }
+            </select>
+            @if (addForm.get('shiftId')!.invalid && addForm.get('shiftId')!.touched) {
+              <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+            }
+          </div>
+
+          <!-- Date + Check-in -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addShiftLog.dateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="date" type="date" class="modal-input"
+                [class.is-invalid]="addForm.get('date')!.invalid && addForm.get('date')!.touched" />
+              @if (addForm.get('date')!.invalid && addForm.get('date')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+              }
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addShiftLog.checkInLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="checkInTime" type="time" class="modal-input"
+                [class.is-invalid]="addForm.get('checkInTime')!.invalid && addForm.get('checkInTime')!.touched" />
+              @if (addForm.get('checkInTime')!.invalid && addForm.get('checkInTime')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+              }
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div>
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              {{ 'manager.addShiftLog.notesLabel' | translate }}
+              <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+            </label>
+            <textarea formControlName="notes" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
+          </div>
+
+          <div class="flex gap-3 pt-1">
+            <button type="button" (click)="showAddModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+              style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+            <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+              style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
+              {{ submitting() ? ('common.saving' | translate) : ('manager.shiftLogs.addBtn' | translate) }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ══ EDIT LOG MODAL (add check-out) ══ -->
+@if (showEditModal() && selectedLog()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);" (click)="showEditModal.set(false)">
+    <div class="w-full max-w-md rounded-2xl" style="background: var(--bg-surface-2); border: 1px solid var(--border);"
+      (click)="$event.stopPropagation()">
+
+      <div class="flex items-center justify-between px-6 pt-6 pb-5" style="border-bottom: 1px solid var(--border);">
+        <div>
+          <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.editShiftLog.title' | translate }}</h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-faint);">
+            {{ selectedLog()!.shiftName }} · {{ formatDate(selectedLog()!.date) }}
+          </p>
+        </div>
+        <button (click)="showEditModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+          style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="px-6 py-5">
+        @if (modalError()) {
+          <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
+            style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
+            <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgba(239,68,68,0.8);" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+            </svg>
+            <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ modalError() }}</span>
+          </div>
+        }
+
+        <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
+
+          <!-- Check-out -->
+          <div>
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              {{ 'manager.editShiftLog.checkOutLabel' | translate }}
+              <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+            </label>
+            <input formControlName="checkOutTime" type="time" class="modal-input" />
+          </div>
+
+          <!-- Status -->
+          <div>
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              {{ 'manager.editShiftLog.statusLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+            </label>
+            <select formControlName="status" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+              @for (s of statusList; track s) {
+                <option [ngValue]="s">{{ statusLabel(s) }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Notes -->
+          <div>
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              {{ 'manager.editShiftLog.notesLabel' | translate }}
+              <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+            </label>
+            <textarea formControlName="notes" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
+          </div>
+
+          <div class="flex gap-3 pt-1">
+            <button type="button" (click)="showEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+              style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+            <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+              style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
+              {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ══ DELETE CONFIRM MODAL ══ -->
+@if (showDeleteModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);" (click)="showDeleteModal.set(false)">
+    <div class="w-full max-w-sm rounded-2xl p-6" style="background: var(--bg-surface-2); border: 1px solid var(--border);"
+      (click)="$event.stopPropagation()">
+      <div class="w-11 h-11 rounded-2xl flex items-center justify-center mb-4" style="background: rgba(239,68,68,0.1);">
+        <svg class="w-5 h-5" style="color: rgba(239,68,68,0.8);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+        </svg>
+      </div>
+      <h3 class="font-bold text-base mb-1" style="color: var(--text-base);">{{ 'manager.deleteShiftLogModal.title' | translate }}</h3>
+      <p class="text-sm mb-5" style="color: var(--text-faint);">{{ 'manager.deleteShiftLogModal.message' | translate }}</p>
+      <div class="flex gap-3">
+        <button (click)="showDeleteModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+        <button (click)="executeDelete()" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+          style="background: rgba(239,68,68,0.9); color: #fff;" [style.opacity]="submitting() ? '0.5' : '1'">
+          {{ submitting() ? ('common.deleting' | translate) : ('common.delete' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

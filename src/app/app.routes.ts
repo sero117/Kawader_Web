@@ -87,6 +87,26 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/companymanager/employees/employees.component').then(m => m.EmployeesComponent),
       },
+      {
+        path: 'shifts',
+        loadComponent: () =>
+          import('./features/companymanager/shifts/shifts.component').then(m => m.ShiftsComponent),
+      },
+      {
+        path: 'shift-systems',
+        loadComponent: () =>
+          import('./features/companymanager/shift-systems/shift-systems.component').then(m => m.ShiftSystemsComponent),
+      },
+      {
+        path: 'shift-systems/:shiftSystemId/days',
+        loadComponent: () =>
+          import('./features/companymanager/shift-system-days/shift-system-days.component').then(m => m.ShiftSystemDaysComponent),
+      },
+      {
+        path: 'shift-logs',
+        loadComponent: () =>
+          import('./features/companymanager/shift-logs/shift-logs.component').then(m => m.ShiftLogsComponent),
+      },
     ],
   },
 
