@@ -1634,7 +1634,13 @@
       <!-- Header -->
       <div class="flex items-center justify-between px-6 pt-6 pb-4 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
         <div>
-          <h3 class="font-bold text-base" style="color: var(--text-base);">{{ 'manager.shiftLogs.title' | translate }}</h3>
+          <h3 class="font-bold text-base" style="color: var(--text-base);">
+            @if (logsView() === 'add') {
+              {{ 'manager.shiftLogs.addTitle' | translate }}
+            } @else {
+              {{ 'manager.shiftLogs.title' | translate }}
+            }
+          </h3>
           @if (logsEmployee()) {
             <p class="text-xs mt-0.5" style="color: var(--text-faint);">
               {{ logsEmployee()!.firstName }} {{ logsEmployee()!.lastName }}
@@ -1642,19 +1648,111 @@
             </p>
           }
         </div>
-        <button (click)="showLogsModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
-          style="background: var(--bg-subtle-sm); color: var(--text-faint);">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        <div class="flex items-center gap-2">
+          @if (logsView() === 'list') {
+            <button (click)="openAddLog()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold"
+              style="background: rgba(249,115,22,0.12); color: rgba(249,115,22,0.9); border: 1px solid rgba(249,115,22,0.25);">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              {{ 'manager.shiftLogs.addBtn' | translate }}
+            </button>
+          }
+          <button (click)="showLogsModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+            style="background: var(--bg-subtle-sm); color: var(--text-faint);">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Scrollable body -->
       <div class="overflow-y-auto flex-1 p-6">
 
+      <!-- Add Attendance Form -->
+      @if (logsView() === 'add') {
+        <form [formGroup]="logsAddForm" (ngSubmit)="submitAddLog()" class="space-y-4">
+
+          <!-- Shift selector -->
+          <div>
+            <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
+              {{ 'manager.shiftLogs.shiftLabel' | translate }}
+            </label>
+            <select formControlName="shiftId" class="auth-input w-full text-sm">
+              <option [ngValue]="null" disabled>{{ 'manager.shiftLogs.shiftPlaceholder' | translate }}</option>
+              @for (s of availableShifts(); track s.id) {
+                <option [ngValue]="s.id">{{ s.name }}</option>
+              }
+            </select>
+            @if (logsAddForm.get('shiftId')?.invalid && logsAddForm.get('shiftId')?.touched) {
+              <p class="text-[11px] mt-1" style="color: rgba(239,68,68,0.8);">{{ 'common.required' | translate }}</p>
+            }
+          </div>
+
+          <!-- Date -->
+          <div>
+            <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
+              {{ 'manager.shiftLogs.dateLabel' | translate }}
+            </label>
+            <input type="date" formControlName="date" class="auth-input w-full text-sm" />
+            @if (logsAddForm.get('date')?.invalid && logsAddForm.get('date')?.touched) {
+              <p class="text-[11px] mt-1" style="color: rgba(239,68,68,0.8);">{{ 'common.required' | translate }}</p>
+            }
+          </div>
+
+          <!-- Check-in time -->
+          <div>
+            <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
+              {{ 'manager.shiftLogs.checkInLabel' | translate }}
+            </label>
+            <input type="time" formControlName="checkInTime" class="auth-input w-full text-sm" />
+            @if (logsAddForm.get('checkInTime')?.invalid && logsAddForm.get('checkInTime')?.touched) {
+              <p class="text-[11px] mt-1" style="color: rgba(239,68,68,0.8);">{{ 'common.required' | translate }}</p>
+            }
+          </div>
+
+          <!-- Notes -->
+          <div>
+            <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
+              {{ 'manager.shiftLogs.notesLabel' | translate }}
+            </label>
+            <textarea formControlName="notes" rows="3" class="auth-input w-full text-sm resize-none"
+              [placeholder]="'manager.shiftLogs.notesPlaceholder' | translate"></textarea>
+          </div>
+
+          <!-- Error -->
+          @if (logsModalError()) {
+            <div class="px-3 py-2.5 rounded-xl text-xs" style="background: rgba(239,68,68,0.08); color: rgba(239,68,68,0.85); border: 1px solid rgba(239,68,68,0.2);">
+              {{ logsModalError() }}
+            </div>
+          }
+
+          <!-- Actions -->
+          <div class="flex gap-2 pt-1">
+            <button type="submit" [disabled]="logsSubmitting()"
+              class="flex-1 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2"
+              style="background: rgba(249,115,22,0.9); color: #fff;"
+              [style.opacity]="logsSubmitting() ? '0.6' : '1'">
+              @if (logsSubmitting()) {
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+              }
+              {{ 'manager.shiftLogs.submitBtn' | translate }}
+            </button>
+            <button type="button" (click)="cancelAddLog()" [disabled]="logsSubmitting()"
+              class="px-4 py-2.5 rounded-xl text-sm font-semibold"
+              style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+              {{ 'common.cancel' | translate }}
+            </button>
+          </div>
+
+        </form>
+
       <!-- Loading -->
-      @if (logsLoading()) {
+      } @else if (logsLoading()) {
         <div class="space-y-2.5">
           @for (_ of [1,2,3,4,5]; track $index) {
             <div class="h-10 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>

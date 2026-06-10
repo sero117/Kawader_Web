@@ -9,13 +9,14 @@ import { EmployeeService } from '../../../core/services/employee.service';
 import { EmployeeStatusService } from '../../../core/services/employee-status.service';
 import { ShiftSystemService } from '../../../core/services/shift-system.service';
 import { ShiftLogService } from '../../../core/services/shift-log.service';
+import { ShiftService } from '../../../core/services/shift.service';
 import {
   Employee, EmployeeType, EmployeeStatus, AttachmentType,
   GenderType, ContractType, RelationType,
   EmployeeStatusHistory, CreateStatusHistoryRequest, UpdateStatusHistoryRequest,
   GetEmployeesParams,
 } from '../../../core/models/employee.models';
-import { EmployeeShiftSystem, ShiftSystem, DayOfWeek, ShiftLog, AttendanceStatus } from '../../../core/models/shift.models';
+import { EmployeeShiftSystem, ShiftSystem, DayOfWeek, ShiftLog, AttendanceStatus, Shift, CreateShiftLogRequest } from '../../../core/models/shift.models';
 
 @Component({
   selector: 'app-employees',
@@ -28,6 +29,7 @@ export class EmployeesComponent implements OnInit {
   private readonly employeeStatusService = inject(EmployeeStatusService);
   private readonly shiftSystemService    = inject(ShiftSystemService);
   private readonly shiftLogService       = inject(ShiftLogService);
+  private readonly shiftService          = inject(ShiftService);
   private readonly fb                    = inject(FormBuilder);
   private readonly lang                  = inject(LanguageService);
   private readonly route                 = inject(ActivatedRoute);
@@ -125,13 +127,24 @@ export class EmployeesComponent implements OnInit {
   readonly AttendanceStatus = AttendanceStatus;
 
   // ── Shift Logs modal ───────────────────────────────────────────────────────
-  showLogsModal = signal(false);
-  logsEmployee  = signal<Employee | null>(null);
-  shiftLogsList = signal<ShiftLog[]>([]);
-  logsLoading   = signal(false);
-  logsError     = signal<string | null>(null);
-  logsHasMore   = signal(false);
-  logsPage      = signal(1);
+  showLogsModal  = signal(false);
+  logsEmployee   = signal<Employee | null>(null);
+  shiftLogsList  = signal<ShiftLog[]>([]);
+  logsLoading    = signal(false);
+  logsError      = signal<string | null>(null);
+  logsHasMore    = signal(false);
+  logsPage       = signal(1);
+  logsView       = signal<'list' | 'add'>('list');
+  logsSubmitting = signal(false);
+  logsModalError = signal<string | null>(null);
+  availableShifts = signal<Shift[]>([]);
+
+  logsAddForm = this.fb.group({
+    shiftId:      [null as number | null, [Validators.required]],
+    date:         ['', [Validators.required]],
+    checkInTime:  ['', [Validators.required]],
+    notes:        [''],
+  });
   readonly GenderType     = GenderType;
   readonly ContractType   = ContractType;
   readonly RelationType   = RelationType;
@@ -841,9 +854,54 @@ export class EmployeesComponent implements OnInit {
     this.logsEmployee.set(emp);
     this.logsPage.set(1);
     this.logsError.set(null);
+    this.logsView.set('list');
     this.shiftLogsList.set([]);
     this.showLogsModal.set(true);
     this.loadShiftLogs();
+    this.shiftService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+      next: (res: any) => {
+        const raw = res?.data ?? res;
+        this.availableShifts.set(Array.isArray(raw) ? raw : (raw?.items ?? []));
+      },
+      error: () => {},
+    });
+  }
+
+  openAddLog(): void {
+    this.logsAddForm.reset();
+    this.logsModalError.set(null);
+    this.logsView.set('add');
+  }
+
+  cancelAddLog(): void { this.logsView.set('list'); }
+
+  submitAddLog(): void {
+    if (this.logsAddForm.invalid) { this.logsAddForm.markAllAsTouched(); return; }
+    const empId = this.logsEmployee()?.id;
+    if (!empId) return;
+    this.logsSubmitting.set(true);
+    this.logsModalError.set(null);
+    const v = this.logsAddForm.value;
+    const payload: CreateShiftLogRequest = {
+      shiftId:        v.shiftId!,
+      date:           v.date!,
+      checkInTime:    this.toTimeString(v.checkInTime!),
+      notes:          v.notes || null,
+      idempotencyKey: crypto.randomUUID(),
+    };
+    this.shiftLogService.create(empId, payload).subscribe({
+      next: () => {
+        this.logsSubmitting.set(false);
+        this.logsView.set('list');
+        this.logsPage.set(1);
+        this.loadShiftLogs();
+        this.flash('Attendance recorded.');
+      },
+      error: err => {
+        this.logsSubmitting.set(false);
+        this.logsModalError.set(this.apiErr(err, 'Failed to record attendance.'));
+      },
+    });
   }
 
   loadShiftLogs(): void {
