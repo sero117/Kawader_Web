@@ -1,4 +1,4 @@
-<div class="relative min-h-screen overflow-hidden" style="background: var(--auth-bg); transition: background 0.25s;">
+<div class="relative min-h-screen overflow-x-hidden" style="background: var(--auth-bg); transition: background 0.25s;">
 
   <!-- Blob shapes -->
   @for (b of blobs; track $index) {
@@ -28,8 +28,8 @@
   }
 
   <!-- Page content (centered, scrollable) -->
-  <div class="relative z-10 min-h-screen flex flex-col items-center px-4 py-10 overflow-y-auto auth-scroll">
-    <div [@routeAnim]="routeAnim()" class="w-full flex items-center justify-center my-auto">
+  <div class="relative z-10 flex flex-col items-center px-4 py-8" style="min-height: 100dvh;">
+    <div [@routeAnim]="routeAnim()" class="w-full flex flex-col items-center justify-center flex-1">
       <router-outlet />
     </div>
   </div>

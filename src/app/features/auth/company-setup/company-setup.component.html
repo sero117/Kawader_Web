@@ -1,11 +1,11 @@
 <div class="w-full max-w-[440px] flex flex-col items-center">
 
   <!-- Brand -->
-  <div class="mb-6 sm:mb-8 text-center">
-    <h1 class="font-bold text-[2rem] sm:text-[2.5rem] leading-none tracking-tight" style="color: var(--auth-fg);">
+  <div class="mb-5 text-center">
+    <h1 class="font-bold text-[1.85rem] sm:text-[2.5rem] leading-none tracking-tight" style="color: var(--auth-fg);">
       <span class="auth-word" style="animation-delay: 0.04s">{{ 'brand.name' | translate }}</span>
     </h1>
-    <p class="text-[10px] font-medium uppercase tracking-[0.22em] mt-2" style="color: var(--auth-fg-25);">
+    <p class="text-[10px] font-medium uppercase tracking-[0.22em] mt-1.5" style="color: var(--auth-fg-25);">
       <span class="auth-word" style="animation-delay: 0.22s">{{ 'brand.tagline' | translate }}</span>
     </p>
   </div>
@@ -14,7 +14,7 @@
   <div class="auth-card-enter w-full rounded-2xl p-4 sm:p-7" style="background: var(--auth-card); border: 1px solid var(--auth-card-bdr);">
 
     <!-- Step indicator -->
-    <div class="flex items-center justify-center gap-2 mb-6">
+    <div class="flex items-center justify-center gap-2 mb-4 sm:mb-6">
       @for (s of [1, 2, 3]; track s) {
         <div class="flex items-center gap-2" [class.opacity-40]="step() < s">
           <div
@@ -40,9 +40,9 @@
     @if (step() === 1) {
       <div>
         <h2 class="font-semibold text-base mb-0.5" style="color: var(--auth-fg);">{{ 'setup.step1Title' | translate }}</h2>
-        <p class="text-xs mb-5" style="color: var(--auth-fg-35);">{{ 'setup.step1Subtitle' | translate }}</p>
+        <p class="text-xs mb-4" style="color: var(--auth-fg-35);">{{ 'setup.step1Subtitle' | translate }}</p>
 
-        <form [formGroup]="step1Form" (ngSubmit)="submitStep1()" class="space-y-4" novalidate>
+        <form [formGroup]="step1Form" (ngSubmit)="submitStep1()" class="space-y-3" novalidate>
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
               {{ 'setup.phoneLabel' | translate }}
@@ -93,9 +93,9 @@
     @if (step() === 2) {
       <div>
         <h2 class="font-semibold text-base mb-0.5" style="color: var(--auth-fg);">{{ 'setup.step2Title' | translate }}</h2>
-        <p class="text-xs mb-5" style="color: var(--auth-fg-35);">{{ 'setup.step2Subtitle' | translate }}</p>
+        <p class="text-xs mb-4" style="color: var(--auth-fg-35);">{{ 'setup.step2Subtitle' | translate }}</p>
 
-        <form [formGroup]="step2Form" (ngSubmit)="submitStep2()" class="space-y-4" novalidate>
+        <form [formGroup]="step2Form" (ngSubmit)="submitStep2()" class="space-y-3" novalidate>
 
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
@@ -370,7 +370,7 @@
   </div>
 
   <!-- Back to login -->
-  <p class="mt-6 text-sm">
+  <p class="mt-4 text-sm">
     <a routerLink="/auth/login" class="auth-link">{{ 'setup.backToLogin' | translate }}</a>
   </p>
 
