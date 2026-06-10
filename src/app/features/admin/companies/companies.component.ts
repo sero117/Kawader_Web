@@ -20,6 +20,18 @@ export class CompaniesComponent implements OnInit {
   private readonly fb             = inject(FormBuilder);
   private readonly lang           = inject(LanguageService);
 
+  // ── Frozen IDs persisted in localStorage (API list doesn't return isFrozen) ─
+  private readonly FROZEN_KEY = 'kawader_frozen_companies';
+  private getFrozenIds(): Set<number> {
+    try { return new Set(JSON.parse(localStorage.getItem(this.FROZEN_KEY) ?? '[]')); }
+    catch { return new Set(); }
+  }
+  private saveFrozenId(id: number, frozen: boolean): void {
+    const ids = this.getFrozenIds();
+    frozen ? ids.add(id) : ids.delete(id);
+    localStorage.setItem(this.FROZEN_KEY, JSON.stringify([...ids]));
+  }
+
   // ── Filter (synced with URL) ───────────────────────────────────────────────
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     search:      '',
@@ -32,6 +44,7 @@ export class CompaniesComponent implements OnInit {
   companies           = signal<Company[]>([]);
   loading             = signal(true);
   hasMore             = signal(false);
+  frozenCount         = computed(() => this.companies().filter(c => c.isFrozen === true).length);
   companiesWithStatus = computed(() =>
     this.filter.filterItems(this.companies(), 'emailSearch', (c, term) =>
       (c.email?.toLowerCase() ?? '').includes(term) ||
@@ -96,7 +109,19 @@ export class CompaniesComponent implements OnInit {
           ? raw
           : (raw?.items ?? raw?.data ?? raw?.companies ?? []);
 
-        this.companies.set(items);
+        // Normalize PascalCase fields from .NET API + localStorage for frozen
+        const frozenIds = this.getFrozenIds();
+        const normalized = items.map((c: any) => ({
+          ...c,
+          isActive:    c.isActive    !== undefined ? c.isActive    : c.IsActive,
+          isCompleted: c.isCompleted !== undefined ? c.isCompleted : c.IsCompleted,
+          isFrozen: !!c.isFrozen || !!c.IsFrozen
+            || (c.frozenAt != null && c.frozenAt !== '')
+            || (c.FrozenAt != null && c.FrozenAt !== '')
+            || frozenIds.has(c.id),
+        }));
+
+        this.companies.set(normalized);
         this.hasMore.set(items.length >= this.filter.value().pageSize);
         this.loading.set(false);
       },
@@ -176,7 +201,17 @@ export class CompaniesComponent implements OnInit {
 
     this.companyService.getById(company.id).subscribe({
       next: res => {
-        if (res.isSuccess && res.data) this.selectedCompany.set(res.data);
+        if (res.isSuccess && res.data) {
+          const d: any = res.data;
+          this.selectedCompany.set({
+            ...d,
+            isActive:    d.isActive    !== undefined ? d.isActive    : d.IsActive,
+            isCompleted: d.isCompleted !== undefined ? d.isCompleted : d.IsCompleted,
+            isFrozen: !!d.isFrozen || !!d.IsFrozen
+              || (d.frozenAt != null && d.frozenAt !== '')
+              || (d.FrozenAt != null && d.FrozenAt !== ''),
+          });
+        }
         this.viewLoading.set(false);
       },
       error: () => this.viewLoading.set(false),
@@ -239,6 +274,7 @@ export class CompaniesComponent implements OnInit {
     this.submitting.set(true);
     this.companyService.freeze(id).subscribe({
       next: () => {
+        this.saveFrozenId(id, true);
         this.submitting.set(false);
         this.showFreezeModal.set(false);
         this.companies.update(list => list.map(c => c.id === id ? { ...c, isFrozen: true } : c));
@@ -246,8 +282,14 @@ export class CompaniesComponent implements OnInit {
       },
       error: err => {
         this.submitting.set(false);
-        this.showFreezeModal.set(false);
-        this.flash(this.apiErr(err, 'Failed to freeze company.'));
+        if (err?.status === 400) {
+          // 400 = already frozen → sync UI and persist
+          this.saveFrozenId(id, true);
+          this.companies.update(list => list.map(c => c.id === id ? { ...c, isFrozen: true } : c));
+          this.showFreezeModal.set(false);
+        } else {
+          this.modalError.set(this.apiErr(err, 'Failed to freeze company.'));
+        }
       },
     });
   }
@@ -258,6 +300,7 @@ export class CompaniesComponent implements OnInit {
     this.submitting.set(true);
     this.companyService.unfreeze(id).subscribe({
       next: () => {
+        this.saveFrozenId(id, false);
         this.submitting.set(false);
         this.showUnfreezeModal.set(false);
         this.companies.update(list => list.map(c => c.id === id ? { ...c, isFrozen: false } : c));
@@ -265,8 +308,7 @@ export class CompaniesComponent implements OnInit {
       },
       error: err => {
         this.submitting.set(false);
-        this.showUnfreezeModal.set(false);
-        this.flash(this.apiErr(err, 'Failed to unfreeze company.'));
+        this.modalError.set(this.apiErr(err, 'Failed to unfreeze company.'));
       },
     });
   }

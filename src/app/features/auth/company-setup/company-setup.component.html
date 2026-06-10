@@ -201,18 +201,18 @@
     @if (step() === 3) {
       <div>
         <h2 class="font-semibold text-base mb-0.5" style="color: var(--auth-fg);">{{ 'setup.step3Title' | translate }}</h2>
-        <p class="text-xs mb-5" style="color: var(--auth-fg-35);">{{ 'setup.step3Subtitle' | translate }}</p>
+        <p class="text-xs mb-4" style="color: var(--auth-fg-35);">{{ 'setup.step3Subtitle' | translate }}</p>
 
         <form [formGroup]="step3Form" (ngSubmit)="submitStep3()" novalidate>
 
           <!-- Top row: logo + company name -->
-          <div class="flex gap-4 mb-4">
+          <div class="flex gap-3 mb-3">
             <div class="flex-shrink-0">
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
                 {{ 'setup.logoLabel' | translate }} <span class="text-red-400/80">*</span>
               </label>
               <label class="cursor-pointer block">
-                <div class="w-[88px] h-[88px] rounded-xl flex flex-col items-center justify-center transition-all duration-150 overflow-hidden"
+                <div class="w-[72px] h-[72px] rounded-xl flex flex-col items-center justify-center transition-all duration-150 overflow-hidden"
                   style="border: 1.5px dashed var(--auth-fg-25); background: var(--auth-input-bg);">
                   @if (logoPreview()) {
                     <img [src]="logoPreview()!" class="w-full h-full object-cover" alt="logo" />
@@ -226,7 +226,7 @@
                 <input #logoInput type="file" accept="image/jpeg,image/png,image/webp" class="hidden" (change)="onLogoChange($event)" />
               </label>
               @if (logoError()) {
-                <p class="text-red-400/75 text-[10px] mt-1 w-[88px] leading-tight">{{ logoError()! | translate }}</p>
+                <p class="text-red-400/75 text-[10px] mt-1 w-[72px] leading-tight">{{ logoError()! | translate }}</p>
               }
             </div>
 
@@ -241,7 +241,7 @@
               @if (cname.invalid && cname.touched) {
                 <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.max200' | translate }}</p>
               }
-              <div class="mt-3">
+              <div class="mt-2">
                 <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
                   {{ 'setup.companyTypeLabel' | translate }}
                   <span class="ml-1 text-[9px] normal-case" style="color: var(--auth-fg-20);">{{ 'common.optional' | translate }}</span>
@@ -256,7 +256,7 @@
             </div>
           </div>
 
-          <div class="mb-4">
+          <div class="mb-3">
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
               {{ 'setup.addressLabel' | translate }}
               <span class="ml-1 text-[9px] normal-case" style="color: var(--auth-fg-20);">{{ 'common.optional' | translate }}</span>
@@ -268,7 +268,7 @@
             }
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div class="grid grid-cols-2 gap-3 mb-3">
             <div>
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
                 {{ 'setup.landlineLabel' | translate }}
@@ -296,7 +296,7 @@
           </div>
 
           <!-- Currency + UTC Offset (required) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div class="grid grid-cols-2 gap-3 mb-3">
             <div>
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
                 {{ 'setup.currencyLabel' | translate }} <span class="text-red-400/80">*</span>
@@ -319,7 +319,7 @@
           </div>
 
           <!-- Lat + Lng (optional) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+          <div class="grid grid-cols-2 gap-3 mb-4">
             <div>
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
                 {{ 'setup.latLabel' | translate }}

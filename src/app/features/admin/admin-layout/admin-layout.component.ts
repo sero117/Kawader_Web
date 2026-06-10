@@ -15,7 +15,7 @@ export class AdminLayoutComponent {
   private readonly router      = inject(Router);
   private readonly authService = inject(AuthService);
 
-  collapsed  = signal(false);
+  collapsed  = signal(window.innerWidth < 640);
   adminName  = signal(this.authService.getDisplayName());
 
   toggle(): void { this.collapsed.update(v => !v); }

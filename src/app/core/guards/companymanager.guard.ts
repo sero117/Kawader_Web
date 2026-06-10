@@ -15,7 +15,9 @@ export const companyManagerGuard: CanActivateFn = () => {
 
   return companyService.getStatus().pipe(
     map((res: any) => {
-      const isCompleted: boolean = res?.data?.isCompleted ?? res?.isCompleted ?? false;
+      const isCompleted: boolean =
+        res?.data?.isCompleted ?? res?.data?.IsCompleted ??
+        res?.isCompleted ?? res?.IsCompleted ?? false;
       if (!isCompleted) {
         return router.createUrlTree(['/auth/company-setup']);
       }

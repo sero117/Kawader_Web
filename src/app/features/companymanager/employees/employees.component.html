@@ -41,12 +41,12 @@
   <!-- Search -->
   <div class="p-5 pb-4">
     <div class="relative max-w-sm">
-      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
       </svg>
       <input type="tel" inputmode="numeric" maxlength="10"
         [placeholder]="'manager.employees.searchPlaceholder' | translate"
-        class="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm"
+        class="w-full ps-9 pe-4 py-2.5 rounded-xl text-sm"
         style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
         [value]="filter.value().search"
         (input)="onSearch($any($event.target).value)"
@@ -128,18 +128,35 @@
               <td class="font-medium" style="color: var(--text-muted);">{{ emp.phoneNumber }}</td>
               <td style="color: var(--text-faint);">{{ emp.email ?? '—' }}</td>
               <td>
-                @if (emp.employeeType === EmployeeType.HumanResourceManager) {
-                  <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
-                    style="color: rgba(139,92,246,0.9); background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2);">
-                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(139,92,246,0.8);"></span>
-                    {{ employeeTypeLabel(emp.employeeType) }}
-                  </span>
-                } @else {
-                  <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
-                    style="color: var(--text-faint); background: var(--bg-subtle-sm); border: 1px solid var(--border);">
-                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: var(--text-very-faint);"></span>
-                    {{ employeeTypeLabel(emp.employeeType) }}
-                  </span>
+                @switch (emp.employeeType) {
+                  @case (EmployeeType.Employee) {
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
+                      style="color: rgba(99,102,241,0.9); background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2);">
+                      <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(99,102,241,0.8);"></span>
+                      {{ employeeTypeLabel(emp.employeeType) }}
+                    </span>
+                  }
+                  @case (EmployeeType.HumanResourceManager) {
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
+                      style="color: rgba(139,92,246,0.9); background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2);">
+                      <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(139,92,246,0.8);"></span>
+                      {{ employeeTypeLabel(emp.employeeType) }}
+                    </span>
+                  }
+                  @case (EmployeeType.DepartmentManager) {
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
+                      style="color: rgba(16,185,129,0.9); background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);">
+                      <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(16,185,129,0.8);"></span>
+                      {{ employeeTypeLabel(emp.employeeType) }}
+                    </span>
+                  }
+                  @case (EmployeeType.BranchManager) {
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
+                      style="color: rgba(245,158,11,0.9); background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);">
+                      <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(245,158,11,0.8);"></span>
+                      {{ employeeTypeLabel(emp.employeeType) }}
+                    </span>
+                  }
                 }
               </td>
               <td>

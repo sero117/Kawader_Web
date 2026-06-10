@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { companyManagerGuard } from './core/guards/companymanager.guard';
+import { employeeGuard } from './core/guards/employee.guard';
 
 export const routes: Routes = [
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -34,6 +35,11 @@ export const routes: Routes = [
         path: 'employee-activation',
         loadComponent: () =>
           import('./features/auth/employee-activation/employee-activation.component').then(m => m.EmployeeActivationComponent),
+      },
+      {
+        path: 'forgot-password',
+        loadComponent: () =>
+          import('./features/auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
       },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],
@@ -110,7 +116,45 @@ export const routes: Routes = [
     ],
   },
 
-  // ── Employee / Manager dashboard (placeholder) ────────────────────────────
+  // ── Employee dashboards (one per EmployeeType) ────────────────────────────
+  {
+    path: 'dashboard/employee',
+    canActivate: [employeeGuard],
+    loadComponent: () =>
+      import('./features/employee/employee-layout/employee-layout.component').then(m => m.EmployeeLayoutComponent),
+    children: [
+      { path: '', loadComponent: () => import('./features/employee/employee-overview/employee-overview.component').then(m => m.EmployeeOverviewComponent) },
+    ],
+  },
+  {
+    path: 'dashboard/hr',
+    canActivate: [employeeGuard],
+    loadComponent: () =>
+      import('./features/employee/employee-layout/employee-layout.component').then(m => m.EmployeeLayoutComponent),
+    children: [
+      { path: '', loadComponent: () => import('./features/employee/employee-overview/employee-overview.component').then(m => m.EmployeeOverviewComponent) },
+    ],
+  },
+  {
+    path: 'dashboard/dept',
+    canActivate: [employeeGuard],
+    loadComponent: () =>
+      import('./features/employee/employee-layout/employee-layout.component').then(m => m.EmployeeLayoutComponent),
+    children: [
+      { path: '', loadComponent: () => import('./features/employee/employee-overview/employee-overview.component').then(m => m.EmployeeOverviewComponent) },
+    ],
+  },
+  {
+    path: 'dashboard/branch',
+    canActivate: [employeeGuard],
+    loadComponent: () =>
+      import('./features/employee/employee-layout/employee-layout.component').then(m => m.EmployeeLayoutComponent),
+    children: [
+      { path: '', loadComponent: () => import('./features/employee/employee-overview/employee-overview.component').then(m => m.EmployeeOverviewComponent) },
+    ],
+  },
+
+  // ── Fallback dashboard placeholder ────────────────────────────────────────
   {
     path: 'dashboard',
     loadComponent: () =>

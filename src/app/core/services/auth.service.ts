@@ -14,6 +14,7 @@ import {
   AuthTokenResponse,
   ApiResponse,
   Role,
+  EmployeeType,
 } from '../models/auth.models';
 
 @Injectable({ providedIn: 'root' })
@@ -71,11 +72,30 @@ export class AuthService {
     );
   }
 
+  getEmployeeTypeFromToken(): EmployeeType {
+    const token = this.getAccessToken();
+    if (!token) return EmployeeType.Employee;
+    try {
+      const claims = JSON.parse(atob(token.split('.')[1])) as Record<string, unknown>;
+      const et = claims['EmployeeType'] ?? claims['employeeType'] ?? claims['employee_type'];
+      if (et !== undefined) return Number(et) as EmployeeType;
+    } catch { /* invalid token */ }
+    return EmployeeType.Employee;
+  }
+
   getHomeRoute(role: Role | number | undefined): string {
     switch (Number(role)) {
       case Role.Admin:          return '/dashboard/admin';
       case Role.CompanyManager: return '/dashboard/manager';
-      default:                  return '/dashboard';
+      case Role.Employee: {
+        switch (this.getEmployeeTypeFromToken()) {
+          case EmployeeType.HumanResourceManager: return '/dashboard/hr';
+          case EmployeeType.DepartmentManager:    return '/dashboard/dept';
+          case EmployeeType.BranchManager:        return '/dashboard/branch';
+          default:                                return '/dashboard/employee';
+        }
+      }
+      default: return '/dashboard';
     }
   }
 

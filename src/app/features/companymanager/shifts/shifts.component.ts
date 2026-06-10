@@ -206,7 +206,12 @@ export class ShiftsComponent implements OnInit {
   }
 
   formatTime(t?: string): string {
-    return t ? t.substring(0, 5) : '—';
+    if (!t) return '—';
+    const [hourStr, min] = t.split(':');
+    const hour = parseInt(hourStr, 10);
+    const ampm = hour < 12 ? 'AM' : 'PM';
+    const h12 = hour % 12 || 12;
+    return `${h12.toString().padStart(2, '0')}:${min} ${ampm}`;
   }
 
   formatDate(d?: string): string {

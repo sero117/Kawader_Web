@@ -645,6 +645,7 @@ export class EmployeesComponent implements OnInit {
         this.historyView.set('list');
         this.historyPage.set(1);
         this.loadHistory();
+        this.refreshEmployeeStatus(empId);
       },
       error: err => {
         this.historySubmitting.set(false);
@@ -672,6 +673,7 @@ export class EmployeesComponent implements OnInit {
         this.historySubmitting.set(false);
         this.historyView.set('list');
         this.loadHistory();
+        this.refreshEmployeeStatus(empId);
       },
       error: err => {
         this.historySubmitting.set(false);
@@ -695,6 +697,7 @@ export class EmployeesComponent implements OnInit {
         this.historySubmitting.set(false);
         this.showHistoryDeleteModal.set(false);
         this.historyRecords.update(list => list.filter(r => r.id !== recordId));
+        this.refreshEmployeeStatus(empId);
       },
       error: () => { this.historySubmitting.set(false); this.showHistoryDeleteModal.set(false); },
     });
@@ -806,6 +809,18 @@ export class EmployeesComponent implements OnInit {
       [AttachmentType.ProfessionalLicense]: 'professionalLicenseUrl',
     };
     return { [map[type]]: url };
+  }
+
+  private refreshEmployeeStatus(empId: number): void {
+    this.employeeService.getById(empId).subscribe({
+      next: (res: any) => {
+        const updated = res?.data ?? res as Employee;
+        this.employees.update(list =>
+          list.map(e => e.id === empId ? { ...e, status: updated.status } : e)
+        );
+      },
+      error: () => {},
+    });
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────

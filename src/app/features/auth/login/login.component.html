@@ -46,7 +46,7 @@
             formControlName="password"
             [type]="showPassword() ? 'text' : 'password'"
             placeholder="••••••••"
-            class="auth-input pr-11"
+            class="auth-input pe-11"
             [class.is-invalid]="password.invalid && password.touched"
           />
           <button type="button" (click)="togglePassword()" class="auth-pw-toggle"
@@ -104,7 +104,7 @@
 
     <!-- Forgot password -->
     <p class="text-center mt-5">
-      <a href="#" class="auth-link-faint text-[10px] font-semibold uppercase tracking-[0.16em]">
+      <a routerLink="/auth/forgot-password" class="auth-link-faint text-[10px] font-semibold uppercase tracking-[0.16em]">
         {{ 'auth.forgotPassword' | translate }}
       </a>
     </p>
