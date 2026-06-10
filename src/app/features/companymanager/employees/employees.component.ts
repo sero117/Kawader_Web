@@ -8,13 +8,14 @@ import { UrlFilter } from '../../../core/utils/url-filter';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { EmployeeStatusService } from '../../../core/services/employee-status.service';
 import { ShiftSystemService } from '../../../core/services/shift-system.service';
+import { ShiftLogService } from '../../../core/services/shift-log.service';
 import {
   Employee, EmployeeType, EmployeeStatus, AttachmentType,
   GenderType, ContractType, RelationType,
   EmployeeStatusHistory, CreateStatusHistoryRequest, UpdateStatusHistoryRequest,
   GetEmployeesParams,
 } from '../../../core/models/employee.models';
-import { EmployeeShiftSystem, ShiftSystem, DayOfWeek } from '../../../core/models/shift.models';
+import { EmployeeShiftSystem, ShiftSystem, DayOfWeek, ShiftLog, AttendanceStatus } from '../../../core/models/shift.models';
 
 @Component({
   selector: 'app-employees',
@@ -26,6 +27,7 @@ export class EmployeesComponent implements OnInit {
   private readonly employeeService       = inject(EmployeeService);
   private readonly employeeStatusService = inject(EmployeeStatusService);
   private readonly shiftSystemService    = inject(ShiftSystemService);
+  private readonly shiftLogService       = inject(ShiftLogService);
   private readonly fb                    = inject(FormBuilder);
   private readonly lang                  = inject(LanguageService);
   private readonly route                 = inject(ActivatedRoute);
@@ -117,9 +119,19 @@ export class EmployeesComponent implements OnInit {
 
   private readonly phonePattern = /^09\d{8}$/;
 
-  readonly EmployeeType   = EmployeeType;
-  readonly EmployeeStatus = EmployeeStatus;
-  readonly AttachmentType = AttachmentType;
+  readonly EmployeeType     = EmployeeType;
+  readonly EmployeeStatus   = EmployeeStatus;
+  readonly AttachmentType   = AttachmentType;
+  readonly AttendanceStatus = AttendanceStatus;
+
+  // ── Shift Logs modal ───────────────────────────────────────────────────────
+  showLogsModal = signal(false);
+  logsEmployee  = signal<Employee | null>(null);
+  shiftLogsList = signal<ShiftLog[]>([]);
+  logsLoading   = signal(false);
+  logsError     = signal<string | null>(null);
+  logsHasMore   = signal(false);
+  logsPage      = signal(1);
   readonly GenderType     = GenderType;
   readonly ContractType   = ContractType;
   readonly RelationType   = RelationType;
@@ -821,6 +833,53 @@ export class EmployeesComponent implements OnInit {
       },
       error: () => {},
     });
+  }
+
+  // ── Shift Logs modal methods ───────────────────────────────────────────────
+  openLogs(emp: Employee, event: Event): void {
+    event.stopPropagation();
+    this.logsEmployee.set(emp);
+    this.logsPage.set(1);
+    this.logsError.set(null);
+    this.shiftLogsList.set([]);
+    this.showLogsModal.set(true);
+    this.loadShiftLogs();
+  }
+
+  loadShiftLogs(): void {
+    const empId = this.logsEmployee()?.id;
+    if (!empId) return;
+    this.logsLoading.set(true);
+    this.shiftLogService.getAll({
+      pageNumber: this.logsPage(),
+      pageSize: 10,
+      employeeId: empId,
+    }).subscribe({
+      next: (res: any) => {
+        const raw   = res?.data ?? res;
+        const items: ShiftLog[] = Array.isArray(raw) ? raw : (raw?.items ?? raw?.data ?? []);
+        const total = raw?.totalCount ?? items.length;
+        this.shiftLogsList.set(items);
+        this.logsHasMore.set(this.logsPage() * 10 < total);
+        this.logsLoading.set(false);
+      },
+      error: err => {
+        this.logsLoading.set(false);
+        this.logsError.set(this.apiErr(err, 'Failed to load attendance logs.'));
+      },
+    });
+  }
+
+  logsPrev(): void {
+    if (this.logsPage() <= 1) return;
+    this.logsPage.update(p => p - 1);
+    this.loadShiftLogs();
+  }
+
+  logsNext(): void {
+    if (!this.logsHasMore()) return;
+    this.logsPage.update(p => p + 1);
+    this.loadShiftLogs();
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
