@@ -3,7 +3,8 @@
     "allow": [
       "Bash(findstr -i \"material\\\\|translate\\\\|snack\\\\|toast\\\\|i18n\\\\|ngx\")",
       "Bash(npx tsc *)",
-      "Bash(npx ng *)"
+      "Bash(npx ng *)",
+      "Bash(cd /mnt/c/Users/ASUS/hrms-pro && cat package.json | grep -E '\"scripts|\"build|\"angular|\"name\"' -A 5 | head -30)"
     ]
   }
 }

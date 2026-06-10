@@ -204,12 +204,16 @@
   background: var(--auth-input-bg);
   border: 1.5px solid transparent;
   border-radius: 0.75rem;
-  padding: 0.8rem 1rem;
+  padding: 0.65rem 0.75rem;
   color: var(--auth-fg);
   font-size: 0.875rem;
   line-height: 1.5;
   outline: none;
   transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+@media (min-width: 640px) {
+  .auth-input { padding: 0.8rem 1rem; }
 }
 
 .auth-input::placeholder { color: var(--auth-input-placeholder); }
