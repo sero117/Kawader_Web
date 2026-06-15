@@ -126,7 +126,7 @@ export class ShiftLogsComponent implements OnInit {
   }
 
   private loadEmployees(): void {
-    this.employeeService.getAll({ pageNumber: 1, pageSize: 200 }).subscribe({
+    this.employeeService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
       next: (res: any) => {
         const raw  = res?.data ?? res;
         const list: Employee[] = Array.isArray(raw)
