@@ -116,6 +116,8 @@ export interface AssignShiftSystemRequest {
 export interface ShiftLog {
   id: number;
   employeeId: number;
+  employeeFirstName?: string;
+  employeeLastName?: string;
   shiftId: number;
   shiftName: string;
   date: string;

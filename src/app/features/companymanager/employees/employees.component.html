@@ -1637,6 +1637,8 @@
           <h3 class="font-bold text-base" style="color: var(--text-base);">
             @if (logsView() === 'add') {
               {{ 'manager.shiftLogs.addTitle' | translate }}
+            } @else if (logsView() === 'edit') {
+              {{ 'manager.shiftLogs.editTitle' | translate }}
             } @else {
               {{ 'manager.shiftLogs.title' | translate }}
             }
@@ -1656,6 +1658,24 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
               {{ 'manager.shiftLogs.addBtn' | translate }}
+            </button>
+          } @else if (logsView() === 'add') {
+            <button (click)="cancelAddLog()" type="button"
+              class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs"
+              style="background: var(--bg-subtle-sm); color: var(--text-faint);">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+              {{ 'common.back' | translate }}
+            </button>
+          } @else if (logsView() === 'edit') {
+            <button (click)="cancelLogsEdit()" type="button"
+              class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs"
+              style="background: var(--bg-subtle-sm); color: var(--text-faint);">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+              {{ 'common.back' | translate }}
             </button>
           }
           <button (click)="showLogsModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
@@ -1751,6 +1771,74 @@
 
         </form>
 
+      <!-- Edit Attendance Form -->
+      } @else if (logsView() === 'edit') {
+        <form [formGroup]="logsEditForm" (ngSubmit)="submitLogsEdit()" class="space-y-4">
+
+          @if (logsEditTarget()) {
+            <div class="px-3 py-2 rounded-xl text-xs mb-1" style="background: var(--bg-subtle-sm); color: var(--text-faint);">
+              {{ logsEditTarget()!.shiftName }} · {{ formatDate(logsEditTarget()!.date) }}
+            </div>
+          }
+
+          <!-- Check-out -->
+          <div>
+            <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
+              {{ 'manager.shiftLogs.checkOutLabel' | translate }}
+              <span class="font-normal" style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+            </label>
+            <input type="time" formControlName="checkOutTime" class="auth-input w-full text-sm" />
+          </div>
+
+          <!-- Status -->
+          <div>
+            <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
+              {{ 'manager.shiftLogs.colStatus' | translate }}
+            </label>
+            <select formControlName="status" class="auth-input w-full text-sm">
+              @for (s of statusList; track s) {
+                <option [ngValue]="s">{{ logsStatusLabel(s) }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Notes -->
+          <div>
+            <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
+              {{ 'manager.shiftLogs.notesLabel' | translate }}
+            </label>
+            <textarea formControlName="notes" rows="3" class="auth-input w-full text-sm resize-none"
+              [placeholder]="'manager.shiftLogs.notesPlaceholder' | translate"></textarea>
+          </div>
+
+          @if (logsModalError()) {
+            <div class="px-3 py-2.5 rounded-xl text-xs" style="background: rgba(239,68,68,0.08); color: rgba(239,68,68,0.85); border: 1px solid rgba(239,68,68,0.2);">
+              {{ logsModalError() }}
+            </div>
+          }
+
+          <div class="flex gap-2 pt-1">
+            <button type="submit" [disabled]="logsSubmitting()"
+              class="flex-1 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2"
+              style="background: var(--text-base); color: var(--bg-surface);"
+              [style.opacity]="logsSubmitting() ? '0.6' : '1'">
+              @if (logsSubmitting()) {
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+              }
+              {{ 'common.save' | translate }}
+            </button>
+            <button type="button" (click)="cancelLogsEdit()" [disabled]="logsSubmitting()"
+              class="px-4 py-2.5 rounded-xl text-sm font-semibold"
+              style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+              {{ 'common.cancel' | translate }}
+            </button>
+          </div>
+
+        </form>
+
       <!-- Loading -->
       } @else if (logsLoading()) {
         <div class="space-y-2.5">
@@ -1790,6 +1878,7 @@
                 <th>{{ 'manager.shiftLogs.colCheckIn' | translate }}</th>
                 <th>{{ 'manager.shiftLogs.colCheckOut' | translate }}</th>
                 <th>{{ 'manager.shiftLogs.colStatus' | translate }}</th>
+                <th style="text-align: end;"></th>
               </tr>
             </thead>
             <tbody>
@@ -1827,6 +1916,22 @@
                       }
                     }
                   </td>
+                  <td>
+                    <div class="flex items-center justify-end gap-1">
+                      <button (click)="openLogsEdit(log)" class="w-7 h-7 rounded-lg flex items-center justify-center"
+                        style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                        </svg>
+                      </button>
+                      <button (click)="openLogsDelete(log)" class="w-7 h-7 rounded-lg flex items-center justify-center"
+                        style="color: rgba(239,68,68,0.6); background: rgba(239,68,68,0.07);">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               }
             </tbody>
@@ -1856,6 +1961,36 @@
       }
 
       </div><!-- end scrollable body -->
+    </div>
+  </div>
+}
+
+<!-- ══ DELETE ATTENDANCE CONFIRM ══ -->
+@if (showLogsDeleteConfirm()) {
+  <div class="fixed inset-0 z-[60] flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);" (click)="cancelLogsDelete()">
+    <div class="w-full max-w-sm rounded-2xl p-6" style="background: var(--bg-surface-2); border: 1px solid var(--border);"
+      (click)="$event.stopPropagation()">
+      <div class="w-11 h-11 rounded-2xl flex items-center justify-center mb-4" style="background: rgba(239,68,68,0.1);">
+        <svg class="w-5 h-5" style="color: rgba(239,68,68,0.8);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+        </svg>
+      </div>
+      <h3 class="font-bold text-base mb-1" style="color: var(--text-base);">{{ 'manager.deleteShiftLogModal.title' | translate }}</h3>
+      @if (logsDeleteTarget()) {
+        <p class="text-xs mb-1" style="color: var(--text-faint);">
+          {{ logsDeleteTarget()!.shiftName }} · {{ formatDate(logsDeleteTarget()!.date) }}
+        </p>
+      }
+      <p class="text-sm mb-5" style="color: var(--text-faint);">{{ 'manager.deleteShiftLogModal.message' | translate }}</p>
+      <div class="flex gap-3">
+        <button (click)="cancelLogsDelete()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+        <button (click)="executeLogsDelete()" [disabled]="logsSubmitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+          style="background: rgba(239,68,68,0.9); color: #fff;" [style.opacity]="logsSubmitting() ? '0.5' : '1'">
+          {{ logsSubmitting() ? ('common.deleting' | translate) : ('common.delete' | translate) }}
+        </button>
+      </div>
     </div>
   </div>
 }

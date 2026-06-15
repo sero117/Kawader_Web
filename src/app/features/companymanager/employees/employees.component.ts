@@ -134,10 +134,13 @@ export class EmployeesComponent implements OnInit {
   logsError      = signal<string | null>(null);
   logsHasMore    = signal(false);
   logsPage       = signal(1);
-  logsView       = signal<'list' | 'add'>('list');
+  logsView       = signal<'list' | 'add' | 'edit'>('list');
   logsSubmitting = signal(false);
   logsModalError = signal<string | null>(null);
   availableShifts = signal<Shift[]>([]);
+  logsEditTarget  = signal<ShiftLog | null>(null);
+  logsDeleteTarget = signal<ShiftLog | null>(null);
+  showLogsDeleteConfirm = signal(false);
 
   logsAddForm = this.fb.group({
     shiftId:      [null as number | null, [Validators.required]],
@@ -145,6 +148,20 @@ export class EmployeesComponent implements OnInit {
     checkInTime:  ['', [Validators.required]],
     notes:        [''],
   });
+
+  logsEditForm = this.fb.group({
+    checkOutTime: [''],
+    status:       [AttendanceStatus.Present, Validators.required],
+    notes:        [''],
+  });
+
+  readonly statusList = [
+    AttendanceStatus.Present,
+    AttendanceStatus.Absent,
+    AttendanceStatus.Late,
+    AttendanceStatus.EarlyLeave,
+  ];
+
   readonly GenderType     = GenderType;
   readonly ContractType   = ContractType;
   readonly RelationType   = RelationType;
@@ -938,6 +955,75 @@ export class EmployeesComponent implements OnInit {
     if (!this.logsHasMore()) return;
     this.logsPage.update(p => p + 1);
     this.loadShiftLogs();
+  }
+
+  openLogsEdit(log: ShiftLog): void {
+    this.logsEditTarget.set(log);
+    this.logsEditForm.patchValue({
+      checkOutTime: log.checkOutTime ? log.checkOutTime.substring(0, 5) : '',
+      status:       log.status,
+      notes:        log.notes ?? '',
+    });
+    this.logsModalError.set(null);
+    this.logsView.set('edit');
+  }
+
+  cancelLogsEdit(): void { this.logsView.set('list'); }
+
+  submitLogsEdit(): void {
+    if (this.logsEditForm.invalid) { this.logsEditForm.markAllAsTouched(); return; }
+    const log   = this.logsEditTarget();
+    const empId = this.logsEmployee()?.id;
+    if (!log || !empId) return;
+    this.logsSubmitting.set(true);
+    this.logsModalError.set(null);
+    const v = this.logsEditForm.value;
+    this.shiftLogService.update(empId, log.id, {
+      checkOutTime: v.checkOutTime ? this.toTimeString(v.checkOutTime) : null,
+      status:       v.status!,
+      notes:        v.notes || null,
+    }).subscribe({
+      next: () => {
+        this.logsSubmitting.set(false);
+        this.logsView.set('list');
+        this.loadShiftLogs();
+        this.flash('Attendance updated.');
+      },
+      error: err => {
+        this.logsSubmitting.set(false);
+        this.logsModalError.set(this.apiErr(err, 'Update failed.'));
+      },
+    });
+  }
+
+  openLogsDelete(log: ShiftLog): void {
+    this.logsDeleteTarget.set(log);
+    this.showLogsDeleteConfirm.set(true);
+  }
+
+  cancelLogsDelete(): void { this.showLogsDeleteConfirm.set(false); }
+
+  executeLogsDelete(): void {
+    const log   = this.logsDeleteTarget();
+    const empId = this.logsEmployee()?.id;
+    if (!log || !empId) return;
+    this.logsSubmitting.set(true);
+    this.shiftLogService.delete(empId, log.id).subscribe({
+      next: () => {
+        this.logsSubmitting.set(false);
+        this.showLogsDeleteConfirm.set(false);
+        this.shiftLogsList.update(list => list.filter(l => l.id !== log.id));
+        this.flash('Attendance deleted.');
+      },
+      error: () => {
+        this.logsSubmitting.set(false);
+        this.showLogsDeleteConfirm.set(false);
+      },
+    });
+  }
+
+  logsStatusLabel(s: AttendanceStatus): string {
+    return this.lang.t(`manager.attendanceStatus.${s}`);
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
