@@ -11,6 +11,8 @@ import {
   ShiftLog, Shift, ShiftSystem,
   AttendanceStatus, GetShiftLogsParams,
 } from '../../../core/models/shift.models';
+import { EmployeeService } from '../../../core/services/employee.service';
+import { Employee } from '../../../core/models/employee.models';
 
 @Component({
   selector: 'app-shift-logs',
@@ -19,9 +21,10 @@ import {
   templateUrl: './shift-logs.component.html',
 })
 export class ShiftLogsComponent implements OnInit {
-  private readonly logService    = inject(ShiftLogService);
-  private readonly shiftService  = inject(ShiftService);
-  private readonly systemService = inject(ShiftSystemService);
+  private readonly logService      = inject(ShiftLogService);
+  private readonly shiftService    = inject(ShiftService);
+  private readonly systemService   = inject(ShiftSystemService);
+  private readonly employeeService = inject(EmployeeService);
   private readonly fb            = inject(FormBuilder);
   private readonly lang          = inject(LanguageService);
 
@@ -35,9 +38,10 @@ export class ShiftLogsComponent implements OnInit {
   });
 
   // ── Data ─────────────────────────────────────────────────────────────────────
-  logs         = signal<ShiftLog[]>([]);
-  allShifts    = signal<Shift[]>([]);
-  allSystems   = signal<ShiftSystem[]>([]);
+  logs          = signal<ShiftLog[]>([]);
+  allShifts     = signal<Shift[]>([]);
+  allSystems    = signal<ShiftSystem[]>([]);
+  allEmployees  = signal<Employee[]>([]);
   loading      = signal(true);
   hasMore      = signal(false);
 
@@ -81,6 +85,7 @@ export class ShiftLogsComponent implements OnInit {
     this.loadLogs();
     this.loadShifts();
     this.loadSystems();
+    this.loadEmployees();
   }
 
   loadLogs(): void {
@@ -115,6 +120,17 @@ export class ShiftLogsComponent implements OnInit {
         const raw  = res?.data ?? res;
         const list: Shift[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
         this.allShifts.set(list);
+      },
+      error: () => {},
+    });
+  }
+
+  private loadEmployees(): void {
+    this.employeeService.getAll({ pageNumber: 1, pageSize: 200 }).subscribe({
+      next: (res: any) => {
+        const raw  = res?.data ?? res;
+        const list: Employee[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
+        this.allEmployees.set(list);
       },
       error: () => {},
     });

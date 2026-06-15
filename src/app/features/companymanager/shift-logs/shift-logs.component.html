@@ -142,7 +142,14 @@
         <tbody>
           @for (log of logs(); track log.id) {
             <tr>
-              <td class="font-mono text-sm" style="color: var(--text-faint);">#{{ log.employeeId }}</td>
+              <td>
+                @if (log.employeeFirstName || log.employeeLastName) {
+                  <span class="text-sm font-medium" style="color: var(--text-base);">{{ log.employeeFirstName }} {{ log.employeeLastName }}</span>
+                  <span class="block font-mono text-[10px] mt-0.5" style="color: var(--text-very-faint);">#{{ log.employeeId }}</span>
+                } @else {
+                  <span class="font-mono text-sm" style="color: var(--text-faint);">#{{ log.employeeId }}</span>
+                }
+              </td>
               <td style="color: var(--text-muted);">{{ formatDate(log.date) }}</td>
               <td class="text-sm" style="color: var(--text-base);">{{ log.shiftName }}</td>
               <td class="font-mono text-sm" style="color: var(--text-muted);">{{ formatTime(log.checkInTime) }}</td>
@@ -248,13 +255,18 @@
 
         <form [formGroup]="addForm" (ngSubmit)="submitAdd()" class="space-y-4" novalidate>
 
-          <!-- Employee ID -->
+          <!-- Employee Dropdown -->
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.addShiftLog.employeeIdLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="employeeId" type="number" min="1" class="modal-input"
-              [class.is-invalid]="addForm.get('employeeId')!.invalid && addForm.get('employeeId')!.touched" />
+            <select formControlName="employeeId" class="modal-input" style="appearance:none; -webkit-appearance:none;"
+              [class.is-invalid]="addForm.get('employeeId')!.invalid && addForm.get('employeeId')!.touched">
+              <option [ngValue]="null" disabled>{{ 'manager.addShiftLog.employeePlaceholder' | translate }}</option>
+              @for (emp of allEmployees(); track emp.id) {
+                <option [ngValue]="emp.id">{{ emp.firstName }} {{ emp.lastName }} — #{{ emp.id }}</option>
+              }
+            </select>
             @if (addForm.get('employeeId')!.invalid && addForm.get('employeeId')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }
