@@ -351,7 +351,8 @@
       "shiftLogs": "الحضور",
       "incentivesDeductions": "الحوافز والخصومات",
       "mainSection": "الرئيسية",
-      "shiftsSection": "الورديات"
+      "shiftsSection": "الورديات",
+      "payrollSection": "الرواتب"
     },
     "branches": {
       "title": "الفروع",
@@ -818,6 +819,10 @@
       "subtitle": "إدارة حوافز وخصومات الموظفين.",
       "employeeLabel": "الموظف",
       "employeePlaceholder": "اختر موظفاً…",
+      "employeeSearchPlaceholder": "ابحث بالاسم أو الرقم…",
+      "employeesLoading": "جاري تحميل الموظفين…",
+      "noEmployeeMatch": "لا يوجد موظفون مطابقون.",
+      "refineSearchHint": "يوجد نتائج أكثر — تابع الكتابة لتضييق البحث.",
       "selectEmployeePrompt": "لم يتم اختيار موظف",
       "selectEmployeeHint": "اختر موظفاً أعلاه لعرض حوافزه وخصوماته.",
       "incentivesTab": "الحوافز",

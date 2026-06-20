@@ -351,7 +351,8 @@
       "shiftLogs": "Attendance",
       "incentivesDeductions": "Incentives & Deductions",
       "mainSection": "Main",
-      "shiftsSection": "Shifts"
+      "shiftsSection": "Shifts",
+      "payrollSection": "Payroll"
     },
     "branches": {
       "title": "Branches",
@@ -818,6 +819,10 @@
       "subtitle": "Manage employee incentives and deductions.",
       "employeeLabel": "Employee",
       "employeePlaceholder": "Select an employee…",
+      "employeeSearchPlaceholder": "Search by name or ID…",
+      "employeesLoading": "Loading employees…",
+      "noEmployeeMatch": "No matching employees.",
+      "refineSearchHint": "More results available — keep typing to narrow down.",
       "selectEmployeePrompt": "No employee selected",
       "selectEmployeeHint": "Choose an employee above to view their incentives and deductions.",
       "incentivesTab": "Incentives",

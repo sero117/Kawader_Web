@@ -1,5 +1,7 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { EmployeeService } from '../../../core/services/employee.service';
@@ -42,10 +44,46 @@ export class IncentivesDeductionsComponent implements OnInit {
   readonly incentiveTypeList = [IncentiveType.Performance, IncentiveType.Bonus];
   readonly deductionTypeList = [DeductionType.Late, DeductionType.Absence, DeductionType.Advance];
 
-  // ── Employee selection ──────────────────────────────────────────────────────
-  allEmployees       = signal<Employee[]>([]);
-  selectedEmployeeId = signal<number | null>(null);
-  activeTab          = signal<Tab>('incentives');
+  // ── Employee selection (searchable combobox) ─────────────────────────────────
+  private readonly EMPLOYEE_PAGE_SIZE = 100;
+  private readonly MAX_DROPDOWN_RESULTS = 50;
+
+  allEmployees        = signal<Employee[]>([]);
+  employeesLoading     = signal(false);
+  employeesLoadError   = signal<string | null>(null);
+  selectedEmployeeId  = signal<number | null>(null);
+  employeeSearchTerm  = signal('');
+  employeeDropdownOpen = signal(false);
+  activeTab           = signal<Tab>('incentives');
+
+  filteredEmployees = computed(() => {
+    const term = this.employeeSearchTerm().trim().toLowerCase();
+    const list = this.allEmployees();
+    if (!term) return list.slice(0, this.MAX_DROPDOWN_RESULTS);
+    const matches = list.filter(e => {
+      const fullName = `${e.firstName} ${e.lastName}`.toLowerCase();
+      return fullName.includes(term)
+        || (e.employeeNumber ?? '').toLowerCase().includes(term)
+        || String(e.id).includes(term);
+    });
+    return matches.slice(0, this.MAX_DROPDOWN_RESULTS);
+  });
+
+  filteredEmployeesTruncated = computed(() =>
+    this.filteredEmployeesCount() > this.MAX_DROPDOWN_RESULTS
+  );
+
+  private filteredEmployeesCount = computed(() => {
+    const term = this.employeeSearchTerm().trim().toLowerCase();
+    const list = this.allEmployees();
+    if (!term) return list.length;
+    return list.filter(e => {
+      const fullName = `${e.firstName} ${e.lastName}`.toLowerCase();
+      return fullName.includes(term)
+        || (e.employeeNumber ?? '').toLowerCase().includes(term)
+        || String(e.id).includes(term);
+    }).length;
+  });
 
   // ── Incentives tab state ─────────────────────────────────────────────────────
   incentives           = signal<Incentive[]>([]);
@@ -105,28 +143,89 @@ export class IncentivesDeductionsComponent implements OnInit {
     this.loadEmployees();
   }
 
+  /**
+   * Loads every employee into memory so the combobox can filter instantly
+   * client-side. The Employees API caps pageSize at 100 and has no name-search
+   * param, so the only way to get a complete, searchable list today is to pull
+   * all pages once (page 1 sequentially, then the rest in parallel).
+   */
   private loadEmployees(): void {
-    this.employeeService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+    this.employeesLoading.set(true);
+    this.employeesLoadError.set(null);
+
+    this.employeeService.getAll({ pageNumber: 1, pageSize: this.EMPLOYEE_PAGE_SIZE }).subscribe({
       next: (res: any) => {
         const raw  = res?.data ?? res;
-        const list: Employee[] = Array.isArray(raw)
+        const firstPage: Employee[] = Array.isArray(raw)
           ? raw
           : (raw?.items ?? raw?.data ?? raw?.employees ?? []);
-        this.allEmployees.set(list);
+        const total: number = Array.isArray(raw) ? firstPage.length : (raw?.totalCount ?? firstPage.length);
+        const totalPages = Math.ceil(total / this.EMPLOYEE_PAGE_SIZE);
+
+        if (totalPages <= 1) {
+          this.allEmployees.set(firstPage);
+          this.employeesLoading.set(false);
+          return;
+        }
+
+        const remaining = Array.from({ length: totalPages - 1 }, (_, i) => i + 2).map(page =>
+          this.employeeService.getAll({ pageNumber: page, pageSize: this.EMPLOYEE_PAGE_SIZE }).pipe(
+            map((r: any) => {
+              const rawPage = r?.data ?? r;
+              return (Array.isArray(rawPage) ? rawPage : (rawPage?.items ?? [])) as Employee[];
+            }),
+            catchError(() => of([] as Employee[])),
+          )
+        );
+
+        forkJoin(remaining).subscribe(pages => {
+          this.allEmployees.set([firstPage, ...pages].flat());
+          this.employeesLoading.set(false);
+        });
       },
-      error: () => {},
+      error: err => {
+        this.employeesLoading.set(false);
+        this.employeesLoadError.set(this.apiErr(err, 'Failed to load employees.'));
+      },
     });
   }
 
-  // ── Employee / tab switching ─────────────────────────────────────────────────
-  onEmployeeChange(id: string): void {
-    const empId = id ? Number(id) : null;
-    this.selectedEmployeeId.set(empId);
+  // ── Employee combobox ────────────────────────────────────────────────────────
+  onEmployeeSearchInput(value: string): void {
+    this.employeeSearchTerm.set(value);
+    this.employeeDropdownOpen.set(true);
+    if (!value.trim() && this.selectedEmployeeId() !== null) {
+      this.clearEmployeeSelection();
+    }
+  }
+
+  openEmployeeDropdown(): void {
+    this.employeeDropdownOpen.set(true);
+  }
+
+  closeEmployeeDropdown(): void {
+    this.employeeDropdownOpen.set(false);
+  }
+
+  selectEmployee(emp: Employee): void {
+    this.selectedEmployeeId.set(emp.id);
+    this.employeeSearchTerm.set(`${emp.firstName} ${emp.lastName}`);
+    this.employeeDropdownOpen.set(false);
+    this.resetForNewEmployee();
+  }
+
+  clearEmployeeSelection(): void {
+    this.selectedEmployeeId.set(null);
+    this.employeeSearchTerm.set('');
+    this.resetForNewEmployee();
+  }
+
+  private resetForNewEmployee(): void {
     this.incentives.set([]);
     this.deductions.set([]);
     this.incentivesListError.set(null);
     this.deductionsListError.set(null);
-    if (!empId) return;
+    if (!this.selectedEmployeeId()) return;
     if (this.activeTab() === 'incentives') this.loadIncentives();
     else this.loadDeductions();
   }
