@@ -70,7 +70,12 @@
           [title]="adminName()">
           {{ adminName().charAt(0).toUpperCase() }}
         </div>
-        <span class="sidebar-user-name">{{ adminName() }}</span>
+        <div class="sidebar-user-name-block">
+          <span class="sidebar-user-name">{{ adminName() }}</span>
+          @if (adminId()) {
+            <span class="sidebar-user-id">#{{ adminId() }}</span>
+          }
+        </div>
         <button (click)="signOut()" class="sidebar-user-action"
           [title]="'nav.signOut' | translate">
           <svg style="width:13px;height:13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

@@ -117,6 +117,7 @@ export class AuthService {
   private readonly REFRESH_TOKEN_KEY = 'kawader_refresh_token';
   private readonly USER_ID_KEY = 'kawader_user_id';
   private readonly TENANT_ID_KEY = 'kawader_tenant_id';
+  private readonly LOGIN_PHONE_KEY = 'kawader_login_phone';
 
   saveTokens(tokens: AuthTokenResponse): void {
     const access = tokens.accessToken ?? tokens.token;
@@ -140,11 +141,21 @@ export class AuthService {
     return id ? parseInt(id, 10) : null;
   }
 
+  /** The phone number used for the last successful sign-in — used to look up the account's own name. */
+  setLoginPhone(phone: string): void {
+    localStorage.setItem(this.LOGIN_PHONE_KEY, phone);
+  }
+
+  getLoginPhone(): string | null {
+    return localStorage.getItem(this.LOGIN_PHONE_KEY);
+  }
+
   clearTokens(): void {
     localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.USER_ID_KEY);
     localStorage.removeItem(this.TENANT_ID_KEY);
+    localStorage.removeItem(this.LOGIN_PHONE_KEY);
   }
 
   // ── Tenant resolution (multi-company employees) ─────────────────────────────

@@ -104,6 +104,7 @@ export class LoginComponent implements OnInit {
 
         if (hasToken) {
           this.authService.saveTokens(tokenData);
+          this.authService.setLoginPhone(payload.phoneNumber);
           const next = this.authService.needsCompanySelection()
             ? '/auth/select-company'
             : this.authService.getHomeRoute(tokenData?.role);

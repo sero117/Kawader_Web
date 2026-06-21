@@ -39,6 +39,7 @@ export class CompanyManagerLayoutComponent implements OnInit {
   collapsed       = signal(window.innerWidth < 640);
   shiftsOpen      = signal(true);
   managerName     = signal(this.authService.getDisplayName());
+  managerId       = signal(this.authService.getUserId());
   showWelcome     = signal(false);
   welcomeActions  = MANAGER_WELCOME_ACTIONS;
 

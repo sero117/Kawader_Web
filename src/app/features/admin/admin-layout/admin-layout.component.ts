@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { AccountService } from '../../../core/services/account.service';
 import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
@@ -28,11 +29,13 @@ const ADMIN_WELCOME_ACTIONS: WelcomeAction[] = [
   templateUrl: './admin-layout.component.html',
 })
 export class AdminLayoutComponent implements OnInit {
-  private readonly router      = inject(Router);
-  private readonly authService = inject(AuthService);
+  private readonly router        = inject(Router);
+  private readonly authService   = inject(AuthService);
+  private readonly accountService = inject(AccountService);
 
   collapsed      = signal(window.innerWidth < 640);
   adminName      = signal(this.authService.getDisplayName());
+  adminId        = signal(this.authService.getUserId());
   showWelcome    = signal(false);
   welcomeActions = ADMIN_WELCOME_ACTIONS;
 
@@ -41,6 +44,28 @@ export class AdminLayoutComponent implements OnInit {
       sessionStorage.removeItem(WELCOME_FLAG_KEY);
       this.showWelcome.set(true);
     }
+    this.resolveRealName();
+  }
+
+  /**
+   * The JWT often doesn't carry given/family name claims, so fall back to
+   * looking the account up by the phone number used at login (matched
+   * against the user id from the sign-in response, since phone search can
+   * return more than one row).
+   */
+  private resolveRealName(): void {
+    const phone = this.authService.getLoginPhone();
+    const id    = this.authService.getUserId();
+    if (!phone || !id) return;
+
+    this.accountService.getAll({ phoneNumber: phone, pageNumber: 1, pageSize: 10 }).subscribe({
+      next: res => {
+        const items = res?.data?.items ?? [];
+        const match = items.find(a => a.id === id);
+        if (match) this.adminName.set(`${match.firstName} ${match.lastName}`.trim());
+      },
+      error: () => { /* keep JWT-derived fallback */ },
+    });
   }
 
   toggle(): void { this.collapsed.update(v => !v); }
