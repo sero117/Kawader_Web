@@ -1,5 +1,12 @@
 <div class="flex h-screen overflow-hidden" style="background: var(--bg-page);">
 
+  <!-- Welcome overlay -->
+  @if (showWelcome()) {
+    <app-welcome-overlay [userName]="adminName()" [actions]="welcomeActions"
+      (dismissed)="showWelcome.set(false)"
+      (navigate)="onWelcomeNavigate($event)" />
+  }
+
   <!-- Mobile backdrop -->
   <div class="sidebar-backdrop" [class.open]="!collapsed()" (click)="toggle()"></div>
 

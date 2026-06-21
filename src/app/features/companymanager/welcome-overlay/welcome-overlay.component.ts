@@ -1,6 +1,12 @@
 import { Component, signal, computed, Input, Output, EventEmitter } from '@angular/core';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 
+export interface WelcomeAction {
+  path: string;
+  labelKey: string;
+  iconD: string;
+}
+
 @Component({
   selector: 'app-welcome-overlay',
   standalone: true,
@@ -8,7 +14,8 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
   templateUrl: './welcome-overlay.component.html',
 })
 export class WelcomeOverlayComponent {
-  @Input() managerName = '';
+  @Input() userName = '';
+  @Input() actions: WelcomeAction[] = [];
   @Output() dismissed = new EventEmitter<void>();
   @Output() navigate  = new EventEmitter<string>();
 

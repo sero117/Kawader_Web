@@ -22,51 +22,27 @@
 
     <h1 class="welcome-title">
       <span class="auth-word" style="animation-delay:.08s">{{ greetingKey() | translate }}</span>
-      @if (managerName) {
-        <span class="auth-word" style="animation-delay:.2s">{{ managerName }}</span>
+      @if (userName) {
+        <span class="auth-word" style="animation-delay:.2s">{{ userName }}</span>
       }
     </h1>
 
     <p class="welcome-subtitle auth-word" style="animation-delay:.32s">{{ 'manager.welcomeScreen.subtitle' | translate }}</p>
 
     <div class="welcome-actions auth-word" style="animation-delay:.44s">
-      <button (click)="go('/dashboard/manager/branches')" class="welcome-action-card">
-        <span class="welcome-action-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
+      @for (a of actions; track a.path) {
+        <button (click)="go(a.path)" class="welcome-action-card">
+          <span class="welcome-action-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="a.iconD" />
+            </svg>
+          </span>
+          <span class="welcome-action-label">{{ a.labelKey | translate }}</span>
+          <svg class="welcome-action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
           </svg>
-        </span>
-        <span class="welcome-action-label">{{ 'manager.nav.branches' | translate }}</span>
-        <svg class="welcome-action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-
-      <button (click)="go('/dashboard/manager/shifts')" class="welcome-action-card">
-        <span class="welcome-action-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-          </svg>
-        </span>
-        <span class="welcome-action-label">{{ 'manager.nav.shifts' | translate }}</span>
-        <svg class="welcome-action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-
-      <button (click)="go('/dashboard/manager/company-holidays')" class="welcome-action-card">
-        <span class="welcome-action-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-6.364-.386 1.591-1.591M3 12h2.25m.386-6.364 1.591 1.591M12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5Z"/>
-          </svg>
-        </span>
-        <span class="welcome-action-label">{{ 'manager.nav.companyHolidays' | translate }}</span>
-        <svg class="welcome-action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+        </button>
+      }
     </div>
 
     <button (click)="close()" class="welcome-skip auth-word" style="animation-delay:.54s">

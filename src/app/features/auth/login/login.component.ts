@@ -100,7 +100,7 @@ export class LoginComponent implements OnInit {
           const next = this.authService.needsCompanySelection()
             ? '/auth/select-company'
             : this.authService.getHomeRoute(tokenData?.role);
-          if (next === '/dashboard/manager') {
+          if (next === '/dashboard/manager' || next === '/dashboard/admin') {
             sessionStorage.setItem('kawader_show_welcome', '1');
           }
           this.router.navigate([next]);
