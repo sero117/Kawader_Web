@@ -27,6 +27,10 @@
       }
     </h1>
 
+    @if (userId) {
+      <p class="welcome-user-id auth-word" style="animation-delay:.26s">#{{ userId }}</p>
+    }
+
     <p class="welcome-subtitle auth-word" style="animation-delay:.32s">{{ 'manager.welcomeScreen.subtitle' | translate }}</p>
 
     <div class="welcome-actions auth-word" style="animation-delay:.44s">

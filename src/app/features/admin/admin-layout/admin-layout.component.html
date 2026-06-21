@@ -2,7 +2,7 @@
 
   <!-- Welcome overlay -->
   @if (showWelcome()) {
-    <app-welcome-overlay [userName]="adminName()" [actions]="welcomeActions"
+    <app-welcome-overlay [userName]="adminName()" [userId]="adminId()" [actions]="welcomeActions"
       (dismissed)="showWelcome.set(false)"
       (navigate)="onWelcomeNavigate($event)" />
   }

@@ -256,6 +256,14 @@
   margin-bottom: 0.5rem;
 }
 
+.welcome-user-id {
+  font-size: 0.7rem;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  color: var(--auth-fg-25);
+  margin-top: -0.25rem;
+  margin-bottom: 0.5rem;
+}
+
 .welcome-subtitle {
   font-size: 0.85rem;
   color: var(--auth-fg-45);
