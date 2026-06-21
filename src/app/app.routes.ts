@@ -118,6 +118,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/companymanager/shift-logs/shift-logs.component').then(m => m.ShiftLogsComponent),
       },
+      {
+        path: 'company-holidays',
+        loadComponent: () =>
+          import('./features/companymanager/company-holidays/company-holidays.component').then(m => m.CompanyHolidaysComponent),
+      },
     ],
   },
 

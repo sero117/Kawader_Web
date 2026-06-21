@@ -309,7 +309,12 @@ export class ShiftLogsComponent implements OnInit {
     const body = err?.error;
     if (!body) return fallback;
     if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
+    if (body.errors && typeof body.errors === 'object') {
+      const m = (Object.values(body.errors) as unknown[])
+        .filter((s): s is string => typeof s === 'string').join('. ');
+      if (m) return m;
+    }
+    for (const key of ['title', 'message', 'detail', 'error']) {
       const v = body[key];
       if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
     }
