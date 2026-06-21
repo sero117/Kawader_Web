@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { AccountService } from '../../../core/services/account.service';
 import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
@@ -33,8 +34,9 @@ const MANAGER_WELCOME_ACTIONS: WelcomeAction[] = [
   templateUrl: './companymanager-layout.component.html',
 })
 export class CompanyManagerLayoutComponent implements OnInit {
-  private readonly router      = inject(Router);
-  private readonly authService = inject(AuthService);
+  private readonly router        = inject(Router);
+  private readonly authService   = inject(AuthService);
+  private readonly accountService = inject(AccountService);
 
   collapsed       = signal(window.innerWidth < 640);
   shiftsOpen      = signal(true);
@@ -48,6 +50,26 @@ export class CompanyManagerLayoutComponent implements OnInit {
       sessionStorage.removeItem(WELCOME_FLAG_KEY);
       this.showWelcome.set(true);
     }
+    this.resolveRealName();
+  }
+
+  /** Best-effort: the JWT often has no name claims, so look the account up by
+   * login phone + id. Marked silent so a 403 (if this endpoint turns out to
+   * be admin-only) doesn't force-logout the manager — it just keeps the
+   * JWT-derived fallback name. */
+  private resolveRealName(): void {
+    const phone = this.authService.getLoginPhone();
+    const id    = this.authService.getUserId();
+    if (!phone || !id) return;
+
+    this.accountService.getAll({ phoneNumber: phone, pageNumber: 1, pageSize: 10 }, true).subscribe({
+      next: res => {
+        const items = res?.data?.items ?? [];
+        const match = items.find(a => a.id === id);
+        if (match) this.managerName.set(`${match.firstName} ${match.lastName}`.trim());
+      },
+      error: () => { /* keep JWT-derived fallback, silently */ },
+    });
   }
 
   toggle(): void { this.collapsed.update(v => !v); }

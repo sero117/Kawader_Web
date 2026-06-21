@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
 export class ApiService {
   private readonly http = inject(HttpClient);
 
-  get<T>(url: string, params?: HttpParams): Observable<T> {
-    return this.http.get<T>(url, { params });
+  get<T>(url: string, params?: HttpParams, headers?: HttpHeaders): Observable<T> {
+    return this.http.get<T>(url, { params, headers });
   }
 
   post<T>(url: string, body: unknown): Observable<T> {

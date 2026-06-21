@@ -16,7 +16,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const snackbar = inject(SnackbarService);
   const router = inject(Router);
 
+  const silent = req.headers.has('X-Silent');
   let headers = req.headers.set('language', language.getLanguage());
+  if (silent) headers = headers.delete('X-Silent');
 
   if (!req.headers.has('Authorization')) {
     const token = auth.getAccessToken();
@@ -34,6 +36,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req.clone({ headers })).pipe(
     catchError((err: HttpErrorResponse) => {
+      if (silent) {
+        return throwError(() => err);
+      }
       if (err.status === 403 && auth.isAuthenticated()) {
         // Account locked / company frozen / employee access denied, etc. —
         // the user no longer has valid access, so kick them out instead of
