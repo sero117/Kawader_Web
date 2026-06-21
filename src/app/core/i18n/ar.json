@@ -354,10 +354,8 @@
       "shifts": "الورديات",
       "shiftSystems": "أنظمة الورديات",
       "shiftLogs": "الحضور",
-      "incentivesDeductions": "الحوافز والخصومات",
       "mainSection": "الرئيسية",
-      "shiftsSection": "الورديات",
-      "payrollSection": "الرواتب"
+      "shiftsSection": "الورديات"
     },
     "branches": {
       "title": "الفروع",

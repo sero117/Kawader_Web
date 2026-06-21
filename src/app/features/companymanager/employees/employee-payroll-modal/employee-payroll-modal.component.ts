@@ -1,19 +1,16 @@
-import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { TranslatePipe } from '../../../core/pipes/translate.pipe';
-import { LanguageService } from '../../../core/services/language.service';
-import { EmployeeService } from '../../../core/services/employee.service';
-import { Employee } from '../../../core/models/employee.models';
-import { IncentiveService } from '../../../core/services/incentive.service';
-import { DeductionService } from '../../../core/services/deduction.service';
+import { TranslatePipe } from '../../../../core/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
+import { Employee } from '../../../../core/models/employee.models';
+import { IncentiveService } from '../../../../core/services/incentive.service';
+import { DeductionService } from '../../../../core/services/deduction.service';
 import {
   Incentive, IncentiveType, GetIncentivesParams,
-} from '../../../core/models/incentive.models';
+} from '../../../../core/models/incentive.models';
 import {
   Deduction, DeductionType, GetDeductionsParams,
-} from '../../../core/models/deduction.models';
+} from '../../../../core/models/deduction.models';
 
 type Tab = 'incentives' | 'deductions';
 
@@ -25,13 +22,15 @@ interface DateFilter {
 }
 
 @Component({
-  selector: 'app-incentives-deductions',
+  selector: 'app-employee-payroll-modal',
   standalone: true,
   imports: [ReactiveFormsModule, TranslatePipe],
-  templateUrl: './incentives-deductions.component.html',
+  templateUrl: './employee-payroll-modal.component.html',
 })
-export class IncentivesDeductionsComponent implements OnInit {
-  private readonly employeeService  = inject(EmployeeService);
+export class EmployeePayrollModalComponent implements OnInit {
+  @Input({ required: true }) employee!: Employee;
+  @Output() closed = new EventEmitter<void>();
+
   private readonly incentiveService = inject(IncentiveService);
   private readonly deductionService = inject(DeductionService);
   private readonly fb               = inject(FormBuilder);
@@ -44,46 +43,7 @@ export class IncentivesDeductionsComponent implements OnInit {
   readonly incentiveTypeList = [IncentiveType.Performance, IncentiveType.Bonus];
   readonly deductionTypeList = [DeductionType.Late, DeductionType.Absence, DeductionType.Advance];
 
-  // ── Employee selection (searchable combobox) ─────────────────────────────────
-  private readonly EMPLOYEE_PAGE_SIZE = 100;
-  private readonly MAX_DROPDOWN_RESULTS = 50;
-
-  allEmployees        = signal<Employee[]>([]);
-  employeesLoading     = signal(false);
-  employeesLoadError   = signal<string | null>(null);
-  selectedEmployeeId  = signal<number | null>(null);
-  employeeSearchTerm  = signal('');
-  employeeDropdownOpen = signal(false);
-  activeTab           = signal<Tab>('incentives');
-
-  filteredEmployees = computed(() => {
-    const term = this.employeeSearchTerm().trim().toLowerCase();
-    const list = this.allEmployees();
-    if (!term) return list.slice(0, this.MAX_DROPDOWN_RESULTS);
-    const matches = list.filter(e => {
-      const fullName = `${e.firstName} ${e.lastName}`.toLowerCase();
-      return fullName.includes(term)
-        || (e.employeeNumber ?? '').toLowerCase().includes(term)
-        || String(e.id).includes(term);
-    });
-    return matches.slice(0, this.MAX_DROPDOWN_RESULTS);
-  });
-
-  filteredEmployeesTruncated = computed(() =>
-    this.filteredEmployeesCount() > this.MAX_DROPDOWN_RESULTS
-  );
-
-  private filteredEmployeesCount = computed(() => {
-    const term = this.employeeSearchTerm().trim().toLowerCase();
-    const list = this.allEmployees();
-    if (!term) return list.length;
-    return list.filter(e => {
-      const fullName = `${e.firstName} ${e.lastName}`.toLowerCase();
-      return fullName.includes(term)
-        || (e.employeeNumber ?? '').toLowerCase().includes(term)
-        || String(e.id).includes(term);
-    }).length;
-  });
+  activeTab = signal<Tab>('incentives');
 
   // ── Incentives tab state ─────────────────────────────────────────────────────
   incentives           = signal<Incentive[]>([]);
@@ -140,107 +100,21 @@ export class IncentivesDeductionsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadEmployees();
+    this.loadIncentives();
   }
 
-  /**
-   * Loads every employee into memory so the combobox can filter instantly
-   * client-side. The Employees API caps pageSize at 100 and has no name-search
-   * param, so the only way to get a complete, searchable list today is to pull
-   * all pages once (page 1 sequentially, then the rest in parallel).
-   */
-  private loadEmployees(): void {
-    this.employeesLoading.set(true);
-    this.employeesLoadError.set(null);
-
-    this.employeeService.getAll({ pageNumber: 1, pageSize: this.EMPLOYEE_PAGE_SIZE }).subscribe({
-      next: (res: any) => {
-        const raw  = res?.data ?? res;
-        const firstPage: Employee[] = Array.isArray(raw)
-          ? raw
-          : (raw?.items ?? raw?.data ?? raw?.employees ?? []);
-        const total: number = Array.isArray(raw) ? firstPage.length : (raw?.totalCount ?? firstPage.length);
-        const totalPages = Math.ceil(total / this.EMPLOYEE_PAGE_SIZE);
-
-        if (totalPages <= 1) {
-          this.allEmployees.set(firstPage);
-          this.employeesLoading.set(false);
-          return;
-        }
-
-        const remaining = Array.from({ length: totalPages - 1 }, (_, i) => i + 2).map(page =>
-          this.employeeService.getAll({ pageNumber: page, pageSize: this.EMPLOYEE_PAGE_SIZE }).pipe(
-            map((r: any) => {
-              const rawPage = r?.data ?? r;
-              return (Array.isArray(rawPage) ? rawPage : (rawPage?.items ?? [])) as Employee[];
-            }),
-            catchError(() => of([] as Employee[])),
-          )
-        );
-
-        forkJoin(remaining).subscribe(pages => {
-          this.allEmployees.set([firstPage, ...pages].flat());
-          this.employeesLoading.set(false);
-        });
-      },
-      error: err => {
-        this.employeesLoading.set(false);
-        this.employeesLoadError.set(this.apiErr(err, 'Failed to load employees.'));
-      },
-    });
-  }
-
-  // ── Employee combobox ────────────────────────────────────────────────────────
-  onEmployeeSearchInput(value: string): void {
-    this.employeeSearchTerm.set(value);
-    this.employeeDropdownOpen.set(true);
-    if (!value.trim() && this.selectedEmployeeId() !== null) {
-      this.clearEmployeeSelection();
-    }
-  }
-
-  openEmployeeDropdown(): void {
-    this.employeeDropdownOpen.set(true);
-  }
-
-  closeEmployeeDropdown(): void {
-    this.employeeDropdownOpen.set(false);
-  }
-
-  selectEmployee(emp: Employee): void {
-    this.selectedEmployeeId.set(emp.id);
-    this.employeeSearchTerm.set(`${emp.firstName} ${emp.lastName}`);
-    this.employeeDropdownOpen.set(false);
-    this.resetForNewEmployee();
-  }
-
-  clearEmployeeSelection(): void {
-    this.selectedEmployeeId.set(null);
-    this.employeeSearchTerm.set('');
-    this.resetForNewEmployee();
-  }
-
-  private resetForNewEmployee(): void {
-    this.incentives.set([]);
-    this.deductions.set([]);
-    this.incentivesListError.set(null);
-    this.deductionsListError.set(null);
-    if (!this.selectedEmployeeId()) return;
-    if (this.activeTab() === 'incentives') this.loadIncentives();
-    else this.loadDeductions();
+  close(): void {
+    this.closed.emit();
   }
 
   setTab(tab: Tab): void {
     this.activeTab.set(tab);
-    if (!this.selectedEmployeeId()) return;
-    if (tab === 'incentives') this.loadIncentives();
-    else this.loadDeductions();
+    if (tab === 'incentives' && this.incentives().length === 0 && !this.incentivesListError()) this.loadIncentives();
+    if (tab === 'deductions' && this.deductions().length === 0 && !this.deductionsListError()) this.loadDeductions();
   }
 
   // ── Incentives: load / filter / paginate ─────────────────────────────────────
   loadIncentives(): void {
-    const empId = this.selectedEmployeeId();
-    if (!empId) return;
     const f = this.incentivesFilter();
     if (f.fromDate && f.toDate && f.toDate < f.fromDate) {
       this.incentivesFilterErr.set(this.lang.t('manager.incentivesDeductions.dateRangeError'));
@@ -253,7 +127,7 @@ export class IncentivesDeductionsComponent implements OnInit {
     if (f.toDate)   params.toDate   = f.toDate;
     if (f.type !== null) params.type = f.type;
 
-    this.incentiveService.getAll(empId, params).subscribe({
+    this.incentiveService.getAll(this.employee.id, params).subscribe({
       next: (res: any) => {
         this.incentivesListError.set(null);
         const raw   = res?.data ?? res;
@@ -297,8 +171,6 @@ export class IncentivesDeductionsComponent implements OnInit {
 
   // ── Deductions: load / filter / paginate ─────────────────────────────────────
   loadDeductions(): void {
-    const empId = this.selectedEmployeeId();
-    if (!empId) return;
     const f = this.deductionsFilter();
     if (f.fromDate && f.toDate && f.toDate < f.fromDate) {
       this.deductionsFilterErr.set(this.lang.t('manager.incentivesDeductions.dateRangeError'));
@@ -311,7 +183,7 @@ export class IncentivesDeductionsComponent implements OnInit {
     if (f.toDate)   params.toDate   = f.toDate;
     if (f.type !== null) params.type = f.type;
 
-    this.deductionService.getAll(empId, params).subscribe({
+    this.deductionService.getAll(this.employee.id, params).subscribe({
       next: (res: any) => {
         this.deductionsListError.set(null);
         const raw   = res?.data ?? res;
@@ -355,7 +227,6 @@ export class IncentivesDeductionsComponent implements OnInit {
 
   // ── Incentive: Add ───────────────────────────────────────────────────────────
   openAddIncentive(): void {
-    if (!this.selectedEmployeeId()) return;
     this.incentiveForm.reset();
     this.modalError.set(null);
     this.showIncentiveAddModal.set(true);
@@ -363,12 +234,10 @@ export class IncentivesDeductionsComponent implements OnInit {
 
   submitAddIncentive(): void {
     if (this.incentiveForm.invalid) { this.incentiveForm.markAllAsTouched(); return; }
-    const empId = this.selectedEmployeeId();
-    if (!empId) return;
     this.submitting.set(true);
     this.modalError.set(null);
     const v = this.incentiveForm.value;
-    this.incentiveService.create(empId, {
+    this.incentiveService.create(this.employee.id, {
       incentiveType:  v.incentiveType!,
       amount:         Number(v.amount),
       date:           v.date!,
@@ -402,13 +271,12 @@ export class IncentivesDeductionsComponent implements OnInit {
 
   submitEditIncentive(): void {
     if (this.incentiveForm.invalid) { this.incentiveForm.markAllAsTouched(); return; }
-    const empId = this.selectedEmployeeId();
-    const inc   = this.selectedIncentive();
-    if (!empId || !inc) return;
+    const inc = this.selectedIncentive();
+    if (!inc) return;
     this.submitting.set(true);
     this.modalError.set(null);
     const v = this.incentiveForm.value;
-    this.incentiveService.update(empId, inc.id, {
+    this.incentiveService.update(this.employee.id, inc.id, {
       incentiveType: v.incentiveType!,
       amount:        Number(v.amount),
       date:          v.date!,
@@ -432,11 +300,10 @@ export class IncentivesDeductionsComponent implements OnInit {
   }
 
   executeDeleteIncentive(): void {
-    const empId = this.selectedEmployeeId();
-    const id    = this.deleteIncentiveTarget();
-    if (!empId || !id) return;
+    const id = this.deleteIncentiveTarget();
+    if (!id) return;
     this.submitting.set(true);
-    this.incentiveService.delete(empId, id).subscribe({
+    this.incentiveService.delete(this.employee.id, id).subscribe({
       next: () => {
         this.submitting.set(false);
         this.showIncentiveDeleteModal.set(false);
@@ -449,7 +316,6 @@ export class IncentivesDeductionsComponent implements OnInit {
 
   // ── Deduction: Add ───────────────────────────────────────────────────────────
   openAddDeduction(): void {
-    if (!this.selectedEmployeeId()) return;
     this.deductionForm.reset();
     this.modalError.set(null);
     this.showDeductionAddModal.set(true);
@@ -457,12 +323,10 @@ export class IncentivesDeductionsComponent implements OnInit {
 
   submitAddDeduction(): void {
     if (this.deductionForm.invalid) { this.deductionForm.markAllAsTouched(); return; }
-    const empId = this.selectedEmployeeId();
-    if (!empId) return;
     this.submitting.set(true);
     this.modalError.set(null);
     const v = this.deductionForm.value;
-    this.deductionService.create(empId, {
+    this.deductionService.create(this.employee.id, {
       deductionType:  v.deductionType!,
       amount:         Number(v.amount),
       date:           v.date!,
@@ -496,13 +360,12 @@ export class IncentivesDeductionsComponent implements OnInit {
 
   submitEditDeduction(): void {
     if (this.deductionForm.invalid) { this.deductionForm.markAllAsTouched(); return; }
-    const empId = this.selectedEmployeeId();
-    const ded   = this.selectedDeduction();
-    if (!empId || !ded) return;
+    const ded = this.selectedDeduction();
+    if (!ded) return;
     this.submitting.set(true);
     this.modalError.set(null);
     const v = this.deductionForm.value;
-    this.deductionService.update(empId, ded.id, {
+    this.deductionService.update(this.employee.id, ded.id, {
       deductionType: v.deductionType!,
       amount:        Number(v.amount),
       date:          v.date!,
@@ -526,11 +389,10 @@ export class IncentivesDeductionsComponent implements OnInit {
   }
 
   executeDeleteDeduction(): void {
-    const empId = this.selectedEmployeeId();
-    const id    = this.deleteDeductionTarget();
-    if (!empId || !id) return;
+    const id = this.deleteDeductionTarget();
+    if (!id) return;
     this.submitting.set(true);
-    this.deductionService.delete(empId, id).subscribe({
+    this.deductionService.delete(this.employee.id, id).subscribe({
       next: () => {
         this.submitting.set(false);
         this.showDeductionDeleteModal.set(false);

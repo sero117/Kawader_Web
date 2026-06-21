@@ -88,22 +88,6 @@
         </a>
       }
 
-      <!-- Payroll section -->
-      @if (!collapsed()) {
-        <div class="sidebar-section">
-          <span class="sidebar-section-label">{{ 'manager.nav.payrollSection' | translate }}</span>
-        </div>
-      }
-
-      <!-- Incentives & Deductions -->
-      <a routerLink="/dashboard/manager/incentives-deductions" routerLinkActive="sidebar-active" class="sidebar-link">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M12 6v12m-3-2.818c0 1.04 1.007 1.818 2.25 1.818h1.5c1.243 0 2.25-.815 2.25-1.818 0-.97-.92-1.687-2.25-1.93-1.33-.243-2.25-.96-2.25-1.93 0-1.003 1.007-1.818 2.25-1.818h1.5c1.243 0 2.25.778 2.25 1.818M21 12a9 9 0 11-18 0 9 9 0 0118 0Z"/>
-        </svg>
-        <span class="sidebar-link-label">{{ 'manager.nav.incentivesDeductions' | translate }}</span>
-      </a>
-
     </nav>
 
     <!-- Footer -->

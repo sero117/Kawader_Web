@@ -17,11 +17,12 @@ import {
   GetEmployeesParams,
 } from '../../../core/models/employee.models';
 import { EmployeeShiftSystem, ShiftSystem, DayOfWeek, ShiftLog, AttendanceStatus, Shift, CreateShiftLogRequest } from '../../../core/models/shift.models';
+import { EmployeePayrollModalComponent } from './employee-payroll-modal/employee-payroll-modal.component';
 
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, RouterLink, DecimalPipe],
+  imports: [ReactiveFormsModule, TranslatePipe, RouterLink, DecimalPipe, EmployeePayrollModalComponent],
   templateUrl: './employees.component.html',
 })
 export class EmployeesComponent implements OnInit {
@@ -49,6 +50,14 @@ export class EmployeesComponent implements OnInit {
   employees = signal<Employee[]>([]);
   loading   = signal(true);
   hasMore   = signal(false);
+
+  // ── Payroll modal (incentives & deductions) ──────────────────────────────────
+  payrollEmployee = signal<Employee | null>(null);
+
+  openPayroll(emp: Employee, event: Event): void {
+    event.stopPropagation();
+    this.payrollEmployee.set(emp);
+  }
 
   // ── Flash / error ──────────────────────────────────────────────────────────
   successMsg = signal<string | null>(null);

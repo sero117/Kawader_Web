@@ -354,10 +354,8 @@
       "shifts": "Shifts",
       "shiftSystems": "Shift Systems",
       "shiftLogs": "Attendance",
-      "incentivesDeductions": "Incentives & Deductions",
       "mainSection": "Main",
-      "shiftsSection": "Shifts",
-      "payrollSection": "Payroll"
+      "shiftsSection": "Shifts"
     },
     "branches": {
       "title": "Branches",
