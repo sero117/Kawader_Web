@@ -9,6 +9,7 @@ import {
   CreateEmployeeRequest,
   UpdateEmployeeRequest,
   GetEmployeesParams,
+  EmployeeCompany,
 } from '../models/employee.models';
 
 @Injectable({ providedIn: 'root' })
@@ -18,6 +19,11 @@ export class EmployeeService {
 
   getById(id: number): Observable<any> {
     return this.api.get<any>(`${this.baseUrl}/${id}`);
+  }
+
+  /** Companies the authenticated employee belongs to — used to resolve tenant context. */
+  getMyCompanies(): Observable<any> {
+    return this.api.get<any>(`${this.baseUrl}/my-companies`);
   }
 
   // Returns the uploaded file URL as a string

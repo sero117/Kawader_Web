@@ -134,6 +134,14 @@ export interface GetEmployeesParams {
   phoneNumber?: string;
 }
 
+// ── My Companies (multi-tenant employee context) ────────────────────────────────
+
+export interface EmployeeCompany {
+  companyName: string;
+  companyId: number;
+  tenantId: string;
+}
+
 // ── Status History ────────────────────────────────────────────────────────────
 
 export interface EmployeeStatusHistory {

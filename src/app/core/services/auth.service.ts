@@ -20,24 +20,24 @@ import {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}/accounts`;
+  private readonly baseUrl = `${environment.apiUrl}/Identity`;
 
   signIn(payload: SignInRequest): Observable<ApiResponse<AuthTokenResponse>> {
     return this.http.post<ApiResponse<AuthTokenResponse>>(
-      `${this.baseUrl}/SignIn`,
+      `${this.baseUrl}/signin`,
       payload
     );
   }
 
   signUp(payload: SignUpRequest): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.baseUrl}/SignUp`, payload);
+    return this.http.post<ApiResponse>(`${this.baseUrl}/signup`, payload);
   }
 
   refreshToken(
     payload: RefreshTokenRequest
   ): Observable<ApiResponse<AuthTokenResponse>> {
     return this.http.post<ApiResponse<AuthTokenResponse>>(
-      `${this.baseUrl}/RefreshToken`,
+      `${this.baseUrl}/refresh-token`,
       payload
     );
   }
@@ -51,7 +51,7 @@ export class AuthService {
 
   confirmCode(payload: ConfirmCodeRequest): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(
-      `${this.baseUrl}/ConfirmCode`,
+      `${this.baseUrl}/confirm-code`,
       payload
     );
   }
@@ -83,6 +83,18 @@ export class AuthService {
     return EmployeeType.Employee;
   }
 
+  getRoleFromToken(): Role | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+    try {
+      const claims = JSON.parse(atob(token.split('.')[1])) as Record<string, unknown>;
+      const roleVal = claims['role'] ??
+        claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+      if (roleVal !== undefined) return Number(roleVal) as Role;
+    } catch { /* invalid token */ }
+    return null;
+  }
+
   getHomeRoute(role: Role | number | undefined): string {
     switch (Number(role)) {
       case Role.Admin:          return '/dashboard/admin';
@@ -104,6 +116,7 @@ export class AuthService {
   private readonly ACCESS_TOKEN_KEY = 'kawader_access_token';
   private readonly REFRESH_TOKEN_KEY = 'kawader_refresh_token';
   private readonly USER_ID_KEY = 'kawader_user_id';
+  private readonly TENANT_ID_KEY = 'kawader_tenant_id';
 
   saveTokens(tokens: AuthTokenResponse): void {
     const access = tokens.accessToken ?? tokens.token;
@@ -131,6 +144,40 @@ export class AuthService {
     localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.USER_ID_KEY);
+    localStorage.removeItem(this.TENANT_ID_KEY);
+  }
+
+  // ── Tenant resolution (multi-company employees) ─────────────────────────────
+
+  /** Reads the `tenantId` claim embedded in the JWT, if any. */
+  getTenantIdFromToken(): string | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+    try {
+      const claims = JSON.parse(atob(token.split('.')[1])) as Record<string, unknown>;
+      const tid = claims['tenantId'] ?? claims['TenantId'] ?? claims['tenant_id'];
+      return typeof tid === 'string' && tid ? tid : null;
+    } catch { /* invalid token */ }
+    return null;
+  }
+
+  getSelectedTenantId(): string | null {
+    return localStorage.getItem(this.TENANT_ID_KEY);
+  }
+
+  setSelectedTenantId(tenantId: string): void {
+    localStorage.setItem(this.TENANT_ID_KEY, tenantId);
+  }
+
+  /** The header to send with API requests: token claim takes priority, then the manually selected company. */
+  getEffectiveTenantId(): string | null {
+    return this.getTenantIdFromToken() ?? this.getSelectedTenantId();
+  }
+
+  /** True when the employee's token has no tenant pinned and they haven't picked a company yet. */
+  needsCompanySelection(): boolean {
+    if (this.getRoleFromToken() !== Role.Employee) return false;
+    return !this.getTenantIdFromToken() && !this.getSelectedTenantId();
   }
 
   isAuthenticated(): boolean {

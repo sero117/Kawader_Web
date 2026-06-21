@@ -1,0 +1,72 @@
+<div class="w-full max-w-[440px] flex flex-col items-center">
+
+  <!-- Brand -->
+  <div class="mb-5 text-center">
+    <h1 class="font-bold text-[1.85rem] sm:text-[2.5rem] leading-none tracking-tight" style="color: var(--auth-fg);">
+      <span class="auth-word" style="animation-delay: 0.04s">{{ 'brand.name' | translate }}</span>
+    </h1>
+    <p class="text-[10px] font-medium uppercase tracking-[0.22em] mt-1.5" style="color: var(--auth-fg-25);">
+      <span class="auth-word" style="animation-delay: 0.22s">{{ 'brand.tagline' | translate }}</span>
+    </p>
+  </div>
+
+  <!-- Card -->
+  <div class="auth-card-enter w-full rounded-2xl overflow-hidden" style="background: var(--auth-card); border: 1px solid var(--auth-card-bdr);">
+    <div class="px-4 sm:px-7 pt-5 sm:pt-7 pb-5 sm:pb-7">
+
+      <h2 class="font-semibold text-base mb-0.5" style="color: var(--auth-fg);">{{ 'selectCompany.title' | translate }}</h2>
+      <p class="text-xs mb-4" style="color: var(--auth-fg-35);">{{ 'selectCompany.subtitle' | translate }}</p>
+
+      @if (loading()) {
+        <div class="space-y-2.5">
+          @for (_ of [1,2,3]; track $index) {
+            <div class="h-14 rounded-xl animate-pulse" style="background: var(--auth-input-bg);"></div>
+          }
+        </div>
+      } @else if (errorMsg()) {
+        <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);">
+          <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgba(239,68,68,0.8);" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+          </svg>
+          <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ errorMsg() }}</span>
+        </div>
+        <button (click)="loadCompanies()" class="w-full py-2.5 rounded-xl text-sm font-semibold" style="background: var(--auth-input-bg); color: var(--auth-fg);">
+          {{ 'common.retry' | translate }}
+        </button>
+      } @else if (companies().length === 0) {
+        <p class="text-sm py-6 text-center" style="color: var(--auth-fg-45);">{{ 'selectCompany.empty' | translate }}</p>
+      } @else {
+        <div class="space-y-2.5">
+          @for (c of companies(); track c.companyId) {
+            <button type="button" (click)="choose(c)" [disabled]="selectingId() !== null"
+              class="w-full flex items-center gap-3 text-start px-4 py-3.5 rounded-xl transition-colors"
+              style="background: var(--auth-input-bg); border: 1px solid transparent;"
+              [style.opacity]="selectingId() !== null && selectingId() !== c.companyId ? '0.45' : '1'">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-sm"
+                style="background: var(--auth-step-active); color: var(--auth-step-active-text);">
+                {{ c.companyName.charAt(0).toUpperCase() }}
+              </div>
+              <span class="flex-1 font-medium text-sm" style="color: var(--auth-fg);">{{ c.companyName }}</span>
+              @if (selectingId() === c.companyId) {
+                <svg class="w-4 h-4 animate-spin flex-shrink-0" style="color: var(--auth-fg-45);" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+              } @else {
+                <svg class="w-4 h-4 flex-shrink-0" style="color: var(--auth-fg-25);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              }
+            </button>
+          }
+        </div>
+      }
+
+      <button (click)="signOut()" class="w-full mt-5 text-xs font-medium text-center" style="color: var(--auth-fg-35);">
+        {{ 'nav.signOut' | translate }}
+      </button>
+
+    </div>
+  </div>
+
+</div>

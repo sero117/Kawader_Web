@@ -96,7 +96,10 @@ export class EmployeeActivationComponent {
           return;
         }
         this.authService.saveTokens(tokenData);
-        this.router.navigate([this.authService.getHomeRoute(tokenData?.role)]);
+        const next = this.authService.needsCompanySelection()
+          ? '/auth/select-company'
+          : this.authService.getHomeRoute(tokenData?.role);
+        this.router.navigate([next]);
       },
       error: err => {
         this.submitting.set(false);

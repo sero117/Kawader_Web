@@ -14,7 +14,7 @@ export interface SetupCompleteAccountPayload {
 @Injectable({ providedIn: 'root' })
 export class CompanySetupService {
   private readonly http        = inject(HttpClient);
-  private readonly accountsUrl = `${environment.apiUrl}/accounts`;
+  private readonly accountsUrl = `${environment.apiUrl}/Identity`;
   private readonly companiesUrl = `${environment.apiUrl}/Companies`;
 
   generateCode(phoneNumber: string): Observable<any> {

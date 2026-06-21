@@ -21,6 +21,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }
   }
 
+  if (!req.headers.has('X-Tenant-Id')) {
+    const tenantId = auth.getSelectedTenantId();
+    if (tenantId) {
+      headers = headers.set('X-Tenant-Id', tenantId);
+    }
+  }
+
   return next(req.clone({ headers })).pipe(
     catchError((err: HttpErrorResponse) => {
       if (err.status !== 404) {

@@ -23,5 +23,9 @@ export const employeeGuard: CanActivateFn = () => {
     }
   } catch { /* invalid token — let it through, server will reject */ }
 
+  if (authService.needsCompanySelection()) {
+    return router.createUrlTree(['/auth/select-company']);
+  }
+
   return true;
 };

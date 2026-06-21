@@ -273,6 +273,11 @@
     "modulesTitle": "Modules coming soon",
     "modulesSubtitle": "Employees, Payroll, Attendance, and other HR modules will appear here as they are built."
   },
+  "selectCompany": {
+    "title": "Choose a Company",
+    "subtitle": "You belong to more than one company. Pick which one to manage.",
+    "empty": "You're not linked to any company yet."
+  },
   "setup": {
     "step1Title": "Your Phone Number",
     "step1Subtitle": "Enter your phone number to receive a verification code.",

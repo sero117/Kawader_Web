@@ -9,7 +9,7 @@ import { ApiResponse } from '../models/auth.models';
 @Injectable({ providedIn: 'root' })
 export class AccountService {
   private readonly api     = inject(ApiService);
-  private readonly baseUrl = `${environment.apiUrl}/accounts`;
+  private readonly baseUrl = `${environment.apiUrl}/Identity`;
 
   getAll(params: GetAccountsParams): Observable<ApiResponse<{ items: Account[]; totalCount: number; pageNumber: number; pageSize: number }>> {
     let p = new HttpParams()

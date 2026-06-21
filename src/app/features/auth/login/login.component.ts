@@ -97,7 +97,10 @@ export class LoginComponent implements OnInit {
 
         if (hasToken) {
           this.authService.saveTokens(tokenData);
-          this.router.navigate([this.authService.getHomeRoute(tokenData?.role)]);
+          const next = this.authService.needsCompanySelection()
+            ? '/auth/select-company'
+            : this.authService.getHomeRoute(tokenData?.role);
+          this.router.navigate([next]);
         } else if ((response as any).isSuccess === false) {
           this.errorMessage.set((response as any).message || 'Sign in failed.');
         } else {

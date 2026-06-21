@@ -37,6 +37,11 @@ export const routes: Routes = [
           import('./features/auth/employee-activation/employee-activation.component').then(m => m.EmployeeActivationComponent),
       },
       {
+        path: 'select-company',
+        loadComponent: () =>
+          import('./features/auth/select-company/select-company.component').then(m => m.SelectCompanyComponent),
+      },
+      {
         path: 'forgot-password',
         loadComponent: () =>
           import('./features/auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
