@@ -186,16 +186,45 @@ export class AuthService {
 
   getDisplayName(): string {
     const token = this.getAccessToken();
-    if (!token) return 'Admin';
+    if (!token) return 'User';
     try {
       const claims = JSON.parse(atob(token.split('.')[1])) as Record<string, unknown>;
-      const given  = claims['given_name']  as string | undefined;
-      const family = claims['family_name'] as string | undefined;
-      const name   = claims['name']        as string | undefined;
+      const str = (...keys: string[]): string | undefined => {
+        for (const k of keys) {
+          const v = claims[k];
+          if (typeof v === 'string' && v.trim()) return v.trim();
+        }
+        return undefined;
+      };
+
+      const given = str(
+        'given_name', 'GivenName',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname',
+      );
+      const family = str(
+        'family_name', 'FamilyName', 'Surname',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname',
+      );
+      const name = str(
+        'name', 'Name', 'unique_name', 'FullName',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',
+      );
+      const phone = str(
+        'phoneNumber', 'PhoneNumber', 'phone_number',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone',
+      );
+
       if (given && family) return `${given} ${family}`;
       if (given)  return given;
       if (name)   return name;
+      if (phone)  return phone;
     } catch { /* invalid token */ }
-    return 'Admin';
+
+    switch (this.getRoleFromToken()) {
+      case Role.Admin:          return 'Admin';
+      case Role.CompanyManager: return 'Manager';
+      case Role.Employee:       return 'Employee';
+      default:                  return 'User';
+    }
   }
 }
