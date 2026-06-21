@@ -345,6 +345,12 @@
   },
   "manager": {
     "welcome": "مرحباً",
+    "welcomeScreen": {
+      "morning": "صباح الخير،",
+      "evening": "مساء الخير،",
+      "subtitle": "وين بدك تبلش؟",
+      "skip": "تخطي إلى لوحة التحكم"
+    },
     "headerSubtitle": "هنا ما يحدث في نظامك.",
     "role": "مدير الشركة",
     "nav": {

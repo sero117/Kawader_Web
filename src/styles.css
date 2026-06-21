@@ -198,6 +198,150 @@
   animation: blob-drift ease-in-out infinite;
 }
 
+/* ── Welcome overlay (post-login greeting) ───────────────────────── */
+
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  overflow: hidden;
+  background: var(--auth-bg);
+  opacity: 1;
+  transition: opacity 0.28s ease;
+}
+
+.welcome-overlay.closing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.welcome-overlay.closing .welcome-card {
+  transform: translateY(-12px) scale(0.96);
+  opacity: 0;
+}
+
+.welcome-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 460px;
+  text-align: center;
+  padding: 2.25rem 2rem 2rem;
+  border-radius: 1.5rem;
+  background: var(--auth-card);
+  border: 1px solid var(--auth-card-bdr);
+  box-shadow: 0 24px 60px -16px rgba(0,0,0,0.28);
+  transition: transform 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease;
+}
+
+.welcome-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.welcome-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4em;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--auth-fg);
+  margin-bottom: 0.5rem;
+}
+
+.welcome-subtitle {
+  font-size: 0.85rem;
+  color: var(--auth-fg-45);
+  margin-bottom: 1.75rem;
+}
+
+.welcome-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-bottom: 1.5rem;
+}
+
+.welcome-action-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.875rem 1.125rem;
+  border-radius: 1rem;
+  background: var(--auth-input-bg);
+  border: 1px solid transparent;
+  color: var(--auth-fg);
+  cursor: pointer;
+  text-align: start;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s;
+}
+
+.welcome-action-card:hover {
+  background: var(--auth-input-hover);
+  border-color: var(--auth-input-focus-bdr);
+  transform: translateY(-1px);
+}
+
+.welcome-action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, var(--nav-accent) 0%, #7c3aed 100%);
+  color: #fff;
+}
+
+.welcome-action-icon svg { width: 18px; height: 18px; }
+
+.welcome-action-label {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.welcome-action-arrow {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--auth-fg-25);
+  transition: transform 0.18s;
+}
+
+.welcome-action-card:hover .welcome-action-arrow {
+  transform: translateX(3px);
+}
+
+[dir="rtl"] .welcome-action-card:hover .welcome-action-arrow {
+  transform: translateX(-3px) scaleX(-1);
+}
+
+[dir="rtl"] .welcome-action-arrow {
+  transform: scaleX(-1);
+}
+
+.welcome-skip {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--auth-fg-35);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.welcome-skip:hover {
+  color: var(--auth-fg-80);
+}
+
 /* ── Input (theme-aware auth style) ──────────────────────────────── */
 
 .auth-input {

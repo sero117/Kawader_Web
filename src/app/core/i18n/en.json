@@ -345,6 +345,12 @@
   },
   "manager": {
     "welcome": "Welcome back",
+    "welcomeScreen": {
+      "morning": "Good morning,",
+      "evening": "Good evening,",
+      "subtitle": "Where would you like to start?",
+      "skip": "Skip to dashboard"
+    },
     "headerSubtitle": "Here's what's happening in your system.",
     "role": "Company Manager",
     "nav": {
