@@ -147,6 +147,8 @@ export class CompanySetupComponent {
           refreshToken: res?.data?.refreshToken ?? '',
           userId:       res?.data?.userId       ?? res?.userId,
         });
+        this.authService.setLoginPhone(this._managerPhone);
+        this.authService.setKnownName(this._managerPhone, firstName!, lastName!);
         this.step.set(3);
       },
       error: err => {

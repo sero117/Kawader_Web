@@ -118,6 +118,7 @@ export class AuthService {
   private readonly USER_ID_KEY = 'kawader_user_id';
   private readonly TENANT_ID_KEY = 'kawader_tenant_id';
   private readonly LOGIN_PHONE_KEY = 'kawader_login_phone';
+  private readonly KNOWN_NAME_KEY = 'kawader_known_name';
 
   saveTokens(tokens: AuthTokenResponse): void {
     const access = tokens.accessToken ?? tokens.token;
@@ -150,12 +151,38 @@ export class AuthService {
     return localStorage.getItem(this.LOGIN_PHONE_KEY);
   }
 
+  /**
+   * Cached at account-creation time (the only point we reliably have the
+   * person's real name — the JWT carries no name claim and the accounts
+   * lookup API is admin-only). Keyed by phone number so multiple accounts
+   * signing in on the same browser don't bleed into each other.
+   */
+  setKnownName(phone: string, firstName: string, lastName: string): void {
+    const name = `${firstName} ${lastName}`.trim();
+    if (!phone || !name) return;
+    const map = this.readKnownNames();
+    map[phone] = name;
+    localStorage.setItem(this.KNOWN_NAME_KEY, JSON.stringify(map));
+  }
+
+  getKnownName(): string | null {
+    const phone = this.getLoginPhone();
+    if (!phone) return null;
+    return this.readKnownNames()[phone] ?? null;
+  }
+
+  private readKnownNames(): Record<string, string> {
+    try { return JSON.parse(localStorage.getItem(this.KNOWN_NAME_KEY) ?? '{}'); }
+    catch { return {}; }
+  }
+
   clearTokens(): void {
     localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.USER_ID_KEY);
     localStorage.removeItem(this.TENANT_ID_KEY);
     localStorage.removeItem(this.LOGIN_PHONE_KEY);
+    localStorage.removeItem(this.KNOWN_NAME_KEY);
   }
 
   // ── Tenant resolution (multi-company employees) ─────────────────────────────
@@ -196,6 +223,9 @@ export class AuthService {
   }
 
   getDisplayName(): string {
+    const known = this.getKnownName();
+    if (known) return known;
+
     const token = this.getAccessToken();
     if (!token) return 'User';
     try {
