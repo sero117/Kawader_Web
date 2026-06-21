@@ -56,7 +56,14 @@ export class LoginComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router      = inject(Router);
 
-  ngOnInit(): void { this.authService.clearTokens(); }
+  ngOnInit(): void {
+    const forcedLogoutMsg = sessionStorage.getItem('kawader_auth_error');
+    this.authService.clearTokens();
+    if (forcedLogoutMsg) {
+      sessionStorage.removeItem('kawader_auth_error');
+      this.errorMessage.set(forcedLogoutMsg);
+    }
+  }
 
   loading      = signal(false);
   errorMessage = signal<string | null>(null);
