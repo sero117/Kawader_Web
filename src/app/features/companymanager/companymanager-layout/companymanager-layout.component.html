@@ -21,19 +21,6 @@
       <span class="sidebar-brand-name">{{ 'brand.name' | translate }}</span>
     </div>
 
-    <!-- Company name badge -->
-    @if (!collapsed() && companyName()) {
-      <div class="px-3 pt-3">
-        <div class="company-badge w-full justify-center">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
-          </svg>
-          <span>{{ companyName() }}</span>
-        </div>
-      </div>
-    }
-
     <!-- Nav -->
     <nav class="sidebar-nav">
 
@@ -172,20 +159,25 @@
 
   <!-- ── Main content ─────────────────────────────────────────────────────── -->
   <main class="flex-1 min-w-0 overflow-y-auto overflow-x-hidden auth-scroll flex flex-col">
-    <!-- Mobile topbar -->
-    <div class="sm:hidden flex items-center gap-3 px-4 h-14 flex-shrink-0 sticky top-0 z-10"
-      style="background: var(--bg-surface); border-bottom: 1px solid var(--border);">
+    <!-- Header (all screen sizes) -->
+    <div class="flex items-center gap-3 px-4 sm:px-6 h-14 flex-shrink-0 sticky top-0 z-10"
+      style="background: var(--bg-page);">
       <button (click)="toggle()"
-        class="w-9 h-9 inline-flex items-center justify-center rounded-xl flex-shrink-0"
+        class="sm:hidden w-9 h-9 inline-flex items-center justify-center rounded-xl flex-shrink-0"
         style="background: var(--bg-subtle-sm); color: var(--text-faint);">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
         </svg>
       </button>
-      <img src="assets/logo.png" alt="Kawader" style="width:28px;height:28px;border-radius:8px;object-fit:cover;flex-shrink:0;" />
-      <span class="font-bold text-sm" style="color: var(--text-base);">{{ 'brand.name' | translate }}</span>
+      <img src="assets/logo.png" alt="Kawader" style="width:28px;height:28px;border-radius:8px;object-fit:cover;flex-shrink:0;" class="sm:hidden" />
+      <span class="font-bold text-sm sm:hidden" style="color: var(--text-base);">{{ 'brand.name' | translate }}</span>
+
       @if (companyName()) {
-        <div class="company-badge ms-auto" style="max-width: 140px;">
+        <div class="company-badge-header ms-auto sm:mx-auto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
+          </svg>
           <span>{{ companyName() }}</span>
         </div>
       }
