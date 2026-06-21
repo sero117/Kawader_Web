@@ -1,6 +1,8 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { CompanyService } from '../../../core/services/company.service';
+import { VisitTrackingService } from '../../../core/services/visit-tracking.service';
 import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
@@ -33,21 +35,36 @@ const MANAGER_WELCOME_ACTIONS: WelcomeAction[] = [
   templateUrl: './companymanager-layout.component.html',
 })
 export class CompanyManagerLayoutComponent implements OnInit {
-  private readonly router      = inject(Router);
-  private readonly authService = inject(AuthService);
+  private readonly router        = inject(Router);
+  private readonly authService   = inject(AuthService);
+  private readonly companyService = inject(CompanyService);
+  private readonly visitTracking = inject(VisitTrackingService);
 
   collapsed       = signal(window.innerWidth < 640);
   shiftsOpen      = signal(true);
   managerName     = signal(this.authService.getDisplayName());
   managerId       = signal(this.authService.getUserId());
+  companyName     = signal<string | null>(null);
   showWelcome     = signal(false);
   welcomeActions  = MANAGER_WELCOME_ACTIONS;
+  lastVisitText   = signal<string | null>(null);
 
   ngOnInit(): void {
     if (sessionStorage.getItem(WELCOME_FLAG_KEY)) {
       sessionStorage.removeItem(WELCOME_FLAG_KEY);
       this.showWelcome.set(true);
     }
+
+    const previousVisit = this.visitTracking.recordAccountVisit();
+    if (previousVisit) this.lastVisitText.set(this.visitTracking.formatTimeAgo(previousVisit));
+
+    this.companyService.getStatus().subscribe({
+      next: (res: any) => {
+        const name = res?.data?.companyName ?? res?.companyName;
+        if (name) this.companyName.set(name);
+      },
+      error: () => { /* badge just stays hidden */ },
+    });
   }
 
   toggle(): void { this.collapsed.update(v => !v); }

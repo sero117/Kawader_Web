@@ -16,6 +16,7 @@ export interface WelcomeAction {
 export class WelcomeOverlayComponent {
   @Input() userName = '';
   @Input() userId: number | null = null;
+  @Input() lastVisitText: string | null = null;
   @Input() actions: WelcomeAction[] = [];
   @Output() dismissed = new EventEmitter<void>();
   @Output() navigate  = new EventEmitter<string>();

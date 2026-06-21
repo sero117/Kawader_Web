@@ -15,7 +15,16 @@
     "required": "This field is required",
     "required_mark": "*",
     "saving": "Saving…",
-    "deleting": "Deleting…"
+    "deleting": "Deleting…",
+    "justNow": "Just now",
+    "neverVisited": "Never visited",
+    "timeUnits": {
+      "minute": "minute", "minutes": "minutes",
+      "hour": "hour", "hours": "hours",
+      "day": "day", "days": "days",
+      "month": "month", "months": "months",
+      "year": "year", "years": "years"
+    }
   },
   "nav": {
     "signOut": "Sign out",
@@ -349,7 +358,8 @@
       "morning": "Good morning,",
       "evening": "Good evening,",
       "subtitle": "Where would you like to start?",
-      "skip": "Skip to dashboard"
+      "skip": "Skip to dashboard",
+      "lastVisit": "Last visit:"
     },
     "headerSubtitle": "Here's what's happening in your system.",
     "role": "Company Manager",
@@ -383,6 +393,7 @@
       "viewSections": "View sections",
       "editTitle": "Edit",
       "deleteTitle": "Delete",
+      "lastVisit": "Last visit:",
       "page": "Page",
       "results": "results",
       "result": "result",

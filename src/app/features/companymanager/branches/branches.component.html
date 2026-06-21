@@ -116,6 +116,9 @@
                   <div>
                     <p class="text-sm font-medium leading-tight" style="color: var(--text-base);">{{ b.name }}</p>
                     <p class="text-[10px] font-mono" style="color: var(--text-ultra-faint);">#{{ b.id }}</p>
+                    <p class="text-[10px] mt-0.5" style="color: var(--text-very-faint);">
+                      {{ 'manager.branches.lastVisit' | translate }} {{ lastVisitLabel(b.id) }}
+                    </p>
                   </div>
                 </div>
               </td>

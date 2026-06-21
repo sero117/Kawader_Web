@@ -2,7 +2,7 @@
 
   <!-- Welcome overlay -->
   @if (showWelcome()) {
-    <app-welcome-overlay [userName]="managerName()" [userId]="managerId()" [actions]="welcomeActions"
+    <app-welcome-overlay [userName]="managerName()" [userId]="managerId()" [lastVisitText]="lastVisitText()" [actions]="welcomeActions"
       (dismissed)="showWelcome.set(false)"
       (navigate)="onWelcomeNavigate($event)" />
   }
@@ -20,6 +20,19 @@
       </div>
       <span class="sidebar-brand-name">{{ 'brand.name' | translate }}</span>
     </div>
+
+    <!-- Company name badge -->
+    @if (!collapsed() && companyName()) {
+      <div class="px-3 pt-3">
+        <div class="company-badge w-full justify-center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
+          </svg>
+          <span>{{ companyName() }}</span>
+        </div>
+      </div>
+    }
 
     <!-- Nav -->
     <nav class="sidebar-nav">
@@ -171,6 +184,11 @@
       </button>
       <img src="assets/logo.png" alt="Kawader" style="width:28px;height:28px;border-radius:8px;object-fit:cover;flex-shrink:0;" />
       <span class="font-bold text-sm" style="color: var(--text-base);">{{ 'brand.name' | translate }}</span>
+      @if (companyName()) {
+        <div class="company-badge ms-auto" style="max-width: 140px;">
+          <span>{{ companyName() }}</span>
+        </div>
+      }
     </div>
     <div class="p-4 sm:p-6 flex-1">
       <router-outlet />

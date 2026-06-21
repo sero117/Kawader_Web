@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { BranchService } from '../../../core/services/branch.service';
+import { VisitTrackingService } from '../../../core/services/visit-tracking.service';
 import { Branch, GetBranchesParams } from '../../../core/models/branch.models';
 
 @Component({
@@ -13,9 +14,10 @@ import { Branch, GetBranchesParams } from '../../../core/models/branch.models';
   templateUrl: './branches.component.html',
 })
 export class BranchesComponent implements OnInit {
-  private readonly branchService = inject(BranchService);
-  private readonly fb            = inject(FormBuilder);
-  private readonly router        = inject(Router);
+  private readonly branchService  = inject(BranchService);
+  private readonly visitTracking  = inject(VisitTrackingService);
+  private readonly fb             = inject(FormBuilder);
+  private readonly router         = inject(Router);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     name:       '',
@@ -105,7 +107,12 @@ export class BranchesComponent implements OnInit {
   }
 
   viewSections(branch: Branch): void {
+    this.visitTracking.recordBranchVisit(branch.id);
     this.router.navigate(['/dashboard/manager/branches', branch.id, 'sections']);
+  }
+
+  lastVisitLabel(branchId: number): string {
+    return this.visitTracking.formatTimeAgo(this.visitTracking.getLastBranchVisit(branchId));
   }
 
   openAdd(): void {

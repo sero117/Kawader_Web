@@ -15,7 +15,16 @@
     "required": "هذا الحقل مطلوب",
     "required_mark": "*",
     "saving": "جارٍ الحفظ…",
-    "deleting": "جارٍ الحذف…"
+    "deleting": "جارٍ الحذف…",
+    "justNow": "الآن",
+    "neverVisited": "لم تتم زيارته بعد",
+    "timeUnits": {
+      "minute": "دقيقة", "minutes": "دقائق",
+      "hour": "ساعة", "hours": "ساعات",
+      "day": "يوم", "days": "أيام",
+      "month": "شهر", "months": "أشهر",
+      "year": "سنة", "years": "سنوات"
+    }
   },
   "nav": {
     "signOut": "تسجيل الخروج",
@@ -349,7 +358,8 @@
       "morning": "صباح الخير،",
       "evening": "مساء الخير،",
       "subtitle": "من أين تودّ أن تبدأ؟",
-      "skip": "تخطي إلى لوحة التحكم"
+      "skip": "تخطي إلى لوحة التحكم",
+      "lastVisit": "آخر زيارة:"
     },
     "headerSubtitle": "هنا ما يحدث في نظامك.",
     "role": "مدير الشركة",
@@ -383,6 +393,7 @@
       "viewSections": "عرض الأقسام",
       "editTitle": "تعديل",
       "deleteTitle": "حذف",
+      "lastVisit": "آخر زيارة:",
       "page": "الصفحة",
       "results": "نتائج",
       "result": "نتيجة",
