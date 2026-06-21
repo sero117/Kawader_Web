@@ -362,7 +362,8 @@
       "shiftLogs": "Attendance",
       "companyHolidays": "Holidays",
       "mainSection": "Main",
-      "shiftsSection": "Shifts"
+      "shiftsSection": "Shifts",
+      "holidaysSection": "Holidays"
     },
     "branches": {
       "title": "Branches",

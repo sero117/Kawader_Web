@@ -348,7 +348,7 @@
     "welcomeScreen": {
       "morning": "صباح الخير،",
       "evening": "مساء الخير،",
-      "subtitle": "وين بدك تبلش؟",
+      "subtitle": "من أين تودّ أن تبدأ؟",
       "skip": "تخطي إلى لوحة التحكم"
     },
     "headerSubtitle": "هنا ما يحدث في نظامك.",
@@ -362,7 +362,8 @@
       "shiftLogs": "الحضور",
       "companyHolidays": "العطل الرسمية",
       "mainSection": "الرئيسية",
-      "shiftsSection": "الورديات"
+      "shiftsSection": "الورديات",
+      "holidaysSection": "العطل"
     },
     "branches": {
       "title": "الفروع",
