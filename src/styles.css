@@ -811,8 +811,7 @@ select option {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--bg-surface);
-  border-inline-end: 1px solid var(--border);
+  background: var(--bg-page);
   transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   position: relative;
@@ -909,8 +908,8 @@ select option {
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  padding: 0.5rem 0.625rem;
-  border-radius: 0.625rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 999px;
   font-size: 0.8125rem;
   font-weight: 500;
   color: var(--text-faint);
@@ -975,8 +974,8 @@ select option {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.4rem 0.5rem 0.4rem 0.875rem;
-  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem 0.4rem 0.875rem;
+  border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-faint);
