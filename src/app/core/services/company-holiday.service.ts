@@ -10,14 +10,14 @@ import {
 @Injectable({ providedIn: 'root' })
 export class CompanyHolidayService {
   private readonly api     = inject(ApiService);
-  private readonly baseUrl = `${environment.apiUrl}/company-holidays`;
+  private readonly baseUrl = `${environment.apiUrl}/CompanyHolidays`;
 
   getAll(params: GetCompanyHolidaysParams): Observable<any> {
     let p = new HttpParams()
-      .set('pageNumber', params.pageNumber)
-      .set('pageSize',   params.pageSize);
-    if (params.name) p = p.set('name', params.name);
-    if (params.year) p = p.set('year', params.year);
+      .set('PageNumber', params.pageNumber)
+      .set('PageSize',   params.pageSize);
+    if (params.name) p = p.set('Name', params.name);
+    if (params.year) p = p.set('Year', params.year);
     return this.api.get<any>(this.baseUrl, p);
   }
 
