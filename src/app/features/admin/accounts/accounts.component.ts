@@ -39,6 +39,7 @@ export class AccountsComponent implements OnInit {
   showUnlockModal = signal(false);
   targetId        = signal<number | null>(null);
 
+
   // ── Lifecycle ──────────────────────────────────────────────────────────────
   ngOnInit(): void { this.loadAccounts(); }
 

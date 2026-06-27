@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { AccountService } from '../../../core/services/account.service';
 import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
@@ -31,6 +32,7 @@ const ADMIN_WELCOME_ACTIONS: WelcomeAction[] = [
 export class AdminLayoutComponent implements OnInit {
   private readonly router        = inject(Router);
   private readonly authService   = inject(AuthService);
+  private readonly notificationService = inject(NotificationService);
   private readonly accountService = inject(AccountService);
 
   collapsed      = signal(window.innerWidth < 640);
@@ -76,6 +78,7 @@ export class AdminLayoutComponent implements OnInit {
   }
 
   signOut(): void {
+    this.notificationService.disconnect();
     this.authService.clearTokens();
     this.router.navigate(['/auth/login']);
   }

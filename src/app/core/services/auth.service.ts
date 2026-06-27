@@ -83,6 +83,15 @@ export class AuthService {
     return EmployeeType.Employee;
   }
 
+  /** Prefers the role saved from the sign-in response body — falls back to the
+   *  JWT claim only for sessions that predate this storage (e.g. still in localStorage
+   *  from before this field existed). */
+  getStoredRole(): Role | null {
+    const stored = localStorage.getItem(this.ROLE_KEY);
+    if (stored !== null) return Number(stored) as Role;
+    return this.getRoleFromToken();
+  }
+
   getRoleFromToken(): Role | null {
     const token = this.getAccessToken();
     if (!token) return null;
@@ -119,6 +128,7 @@ export class AuthService {
   private readonly TENANT_ID_KEY = 'kawader_tenant_id';
   private readonly LOGIN_PHONE_KEY = 'kawader_login_phone';
   private readonly KNOWN_NAME_KEY = 'kawader_known_name';
+  private readonly ROLE_KEY = 'kawader_role';
 
   saveTokens(tokens: AuthTokenResponse): void {
     const access = tokens.accessToken ?? tokens.token;
@@ -126,6 +136,12 @@ export class AuthService {
     if (tokens.refreshToken) localStorage.setItem(this.REFRESH_TOKEN_KEY, tokens.refreshToken);
     if (tokens.userId !== undefined) {
       localStorage.setItem(this.USER_ID_KEY, tokens.userId.toString());
+    }
+    // The sign-in response body's `role` is the proven-reliable source (it's what
+    // getHomeRoute() already uses right after login) — the JWT's own role claim
+    // shape has never actually been verified for CompanyManager, only Employee.
+    if (tokens.role !== undefined) {
+      localStorage.setItem(this.ROLE_KEY, String(tokens.role));
     }
   }
 
@@ -183,6 +199,7 @@ export class AuthService {
     localStorage.removeItem(this.TENANT_ID_KEY);
     localStorage.removeItem(this.LOGIN_PHONE_KEY);
     localStorage.removeItem(this.KNOWN_NAME_KEY);
+    localStorage.removeItem(this.ROLE_KEY);
   }
 
   // ── Tenant resolution (multi-company employees) ─────────────────────────────

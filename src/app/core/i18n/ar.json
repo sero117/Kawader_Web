@@ -16,6 +16,11 @@
     "required_mark": "*",
     "saving": "جارٍ الحفظ…",
     "deleting": "جارٍ الحذف…",
+    "success": {
+      "added": "تمت الإضافة بنجاح",
+      "updated": "تم التحديث بنجاح",
+      "deleted": "تم الحذف بنجاح"
+    },
     "justNow": "الآن",
     "neverVisited": "لم تتم زيارته بعد",
     "timeUnits": {
@@ -40,6 +45,7 @@
     "accounts": "الحسابات"
   },
   "auth": {
+    "loginSuccess": "أهلاً وسهلاً",
     "forgotPassword": "نسيت كلمة المرور؟",
     "noAccount": "ليس لديك حساب؟",
     "createAccount": "إنشاء حساب",
@@ -371,9 +377,11 @@
       "shiftSystems": "أنظمة الورديات",
       "shiftLogs": "الحضور",
       "companyHolidays": "العطل الرسمية",
+      "payroll": "الرواتب",
       "mainSection": "الرئيسية",
       "shiftsSection": "الورديات",
-      "holidaysSection": "العطل"
+      "holidaysSection": "العطل",
+      "payrollSection": "المالية"
     },
     "branches": {
       "title": "الفروع",
@@ -532,6 +540,8 @@
       "viewFile": "عرض",
       "uploadFile": "رفع",
       "uploading": "جارٍ الرفع…",
+      "removeFile": "حذف",
+      "deleting": "جارٍ الحذف…",
       "fileTypeError": "يُسمح فقط بـ JPG و PNG و WEBP و PDF.",
       "fileSizeError": "يجب أن يكون الملف أقل من 5 ميغابايت."
     },
@@ -614,6 +624,18 @@
       "prev": "السابق",
       "next": "التالي"
     },
+    "emergencyContacts": {
+      "title": "جهات الاتصال للطوارئ",
+      "addBtn": "إضافة جهة اتصال",
+      "addTitle": "إضافة جهة اتصال للطوارئ",
+      "editTitle": "تعديل جهة الاتصال",
+      "nameLabel": "الاسم الكامل",
+      "phoneLabel": "رقم الهاتف",
+      "relationLabel": "صلة القرابة",
+      "priorityLabel": "الأولوية",
+      "empty": "لا توجد جهات اتصال للطوارئ.",
+      "deleteConfirm": "هل تريد حذف جهة الاتصال هذه؟"
+    },
     "accounts": {
       "title": "الحسابات",
       "subtitle": "إدارة جميع حسابات المستخدمين على المنصة.",
@@ -646,7 +668,16 @@
       "results": "نتائج",
       "result": "نتيجة",
       "prev": "السابق",
-      "next": "التالي"
+      "next": "التالي",
+      "viewCompanies": "عرض الشركات",
+      "companiesModal": {
+        "title": "الشركات المسجّلة",
+        "subtitle": "الشركات المسجل فيها هذا الحساب",
+        "noCompanies": "لا توجد شركات مسجلة لهذا الحساب.",
+        "colCompany": "الشركة",
+        "colId": "المعرف",
+        "colRole": "الدور"
+      }
     },
     "shifts": {
       "title": "الورديات",
@@ -955,8 +986,14 @@
       "fromYear": "من سنة",
       "toYear": "إلى سنة",
       "carryOverHint": "ينقل الرصيد المتبقي من سنة إلى رصيد \"المرحّل\" بسنة أخرى.",
+      "deleteBtn": "حذف الرصيد",
+      "deleteModal": {
+        "title": "حذف رصيد الإجازات؟",
+        "message": "سيتم حذف سجل رصيد الإجازات لهذه السنة نهائياً."
+      },
       "added": "تم إنشاء رصيد الإجازات.",
       "updated": "تم تحديث رصيد الإجازات.",
+      "deleted": "تم حذف رصيد الإجازات.",
       "carriedOver": "تم ترحيل الرصيد."
     },
     "shiftAssignment": {
@@ -974,6 +1011,82 @@
       "loadError": "فشل تحميل الإسناد.",
       "unassigning": "جارٍ الإلغاء…",
       "assigning": "جارٍ الإسناد…"
+    },
+    "payroll": {
+      "title": "الرواتب",
+      "subtitle": "إنشاء كشوف الرواتب واحتساب رواتب الموظفين.",
+      "createBtn": "إنشاء كشف رواتب",
+      "filterStatus": "الحالة",
+      "statusAll": "كل الحالات",
+      "colPeriod": "الفترة",
+      "colStatus": "الحالة",
+      "colProcessing": "الاحتساب",
+      "colPayslips": "عدد الموظفين",
+      "colCreated": "تاريخ الإنشاء",
+      "colActions": "إجراءات",
+      "loadError": "فشل تحميل كشوف الرواتب",
+      "noResults": "لا توجد كشوف رواتب",
+      "emptyList": "لم يتم إنشاء أي كشف رواتب بعد.",
+      "page": "صفحة",
+      "prev": "السابق",
+      "next": "التالي",
+      "periodStartLabel": "بداية الفترة",
+      "periodEndLabel": "نهاية الفترة",
+      "periodRangeError": "يجب أن تكون نهاية الفترة بعد أو تساوي بدايتها.",
+      "createSuccess": "تم إنشاء كشف الرواتب.",
+      "periodOverlapError": "هذه الفترة متداخلة مع كشف رواتب موجود.",
+      "deleteRunTitle": "حذف كشف الرواتب؟",
+      "deleteRunMsg": "سيتم حذف هذا الكشف وكل كشوفات الموظفين فيه نهائياً.",
+      "runDeleted": "تم حذف كشف الرواتب.",
+      "status": { "Draft": "مسودة", "Approved": "معتمد", "Paid": "مدفوع" },
+      "processingStatus": { "Idle": "خامل", "Processing": "جارٍ الاحتساب", "Completed": "اكتمل", "Failed": "فشل" },
+      "backToList": "العودة لكشوف الرواتب",
+      "runTitle": "كشف الرواتب",
+      "processingBanner": "جارٍ احتساب الرواتب… قد يستغرق هذا بعض الوقت. لا يمكن إجراء أي تعديل لحين الانتهاء.",
+      "processingFailedBanner": "فشلت آخر عملية احتساب:",
+      "updatePeriodBtn": "تعديل الفترة",
+      "addEmployeesBtn": "إضافة موظفين",
+      "approveBtn": "اعتماد",
+      "payBtn": "تحويل لمدفوع",
+      "deleteRunBtn": "حذف الكشف",
+      "approveConfirmTitle": "اعتماد كشف الرواتب؟",
+      "approveConfirmMsg": "بعد الاعتماد، لا يمكن تعديل هذا الكشف.",
+      "payConfirmTitle": "تحويل لمدفوع؟",
+      "payConfirmMsg": "سيتم تحويل كشف الرواتب لمدفوع ولا يمكن التراجع عن ذلك.",
+      "approved": "تم اعتماد كشف الرواتب.",
+      "paid": "تم تحويل كشف الرواتب لمدفوع.",
+      "updatePeriodSuccess": "تم تعديل الفترة.",
+      "addEmployeesTitle": "إضافة موظفين",
+      "employeeSearchPlaceholder": "ابحث بالاسم أو رقم الموظف أو رقم الهاتف…",
+      "noActiveEmployees": "لا يوجد موظفون نشطون.",
+      "selectedCount": "محدد",
+      "addSelectedBtn": "إضافة المحدد",
+      "addEmployeesSuccess": "تمت إضافة الموظفين — جارٍ احتساب الرواتب.",
+      "stillProcessingError": "لسا في عملية احتساب شغالة، استنى لحتى تخلص.",
+      "colEmployee": "الموظف",
+      "colBaseSalary": "الراتب الأساسي",
+      "colHours": "الساعات (فعلي / متوقع)",
+      "colShortage": "النقص",
+      "colOvertime": "الإضافي",
+      "colIncentives": "الحوافز",
+      "colDeductions": "الخصومات",
+      "colNetSalary": "صافي الراتب",
+      "colAdjusted": "معدّل يدوياً",
+      "employeeNameFilter": "فلتر باسم الموظف…",
+      "emptyPayslips": "لم تتم إضافة أي موظف لهذا الكشف بعد.",
+      "adjustTitle": "تعديل كشف الراتب",
+      "netSalaryLabel": "صافي الراتب",
+      "adjustmentNotesLabel": "ملاحظات التعديل",
+      "adjustmentNotesMaxError": "الملاحظات يجب ألا تتجاوز 500 حرف.",
+      "adjustSuccess": "تم تعديل كشف الراتب.",
+      "deletePayslipTitle": "حذف كشف الراتب؟",
+      "deletePayslipMsg": "سيتم حذف كشف راتب هذا الموظف من الكشف.",
+      "payslipDeleted": "تم حذف كشف الراتب.",
+      "loadDetailError": "فشل تحميل كشف الرواتب",
+      "notFoundError": "غير موجود — ربما تم حذفه.",
+      "employeeNotInCompanyError": "هذا الموظف لم يعد ضمن هذه الشركة.",
+      "hrCardTitle": "الرواتب",
+      "hrCardSubtitle": "إنشاء وإدارة كشوف الرواتب."
     }
   },
   "companyTypes": {

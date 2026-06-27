@@ -6,6 +6,9 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { SignInRequest, AuthTokenResponse } from '../../../core/models/auth.models';
 
@@ -53,8 +56,11 @@ function extractErrorMessage(err: any): string {
 })
 export class LoginComponent implements OnInit {
   private readonly fb          = inject(FormBuilder);
-  private readonly authService = inject(AuthService);
-  private readonly router      = inject(Router);
+  private readonly authService          = inject(AuthService);
+  private readonly notificationService  = inject(NotificationService);
+  private readonly snackbar             = inject(SnackbarService);
+  private readonly lang                 = inject(LanguageService);
+  private readonly router               = inject(Router);
 
   ngOnInit(): void {
     const forcedLogoutMsg = sessionStorage.getItem('kawader_auth_error');
@@ -104,7 +110,14 @@ export class LoginComponent implements OnInit {
 
         if (hasToken) {
           this.authService.saveTokens(tokenData);
+          this.notificationService.connect();
           this.authService.setLoginPhone(payload.phoneNumber);
+          const name = this.authService.getDisplayName();
+          this.snackbar.show(
+            `${this.lang.t('auth.loginSuccess')}، ${name}`,
+            'success',
+            3500,
+          );
           const next = this.authService.needsCompanySelection()
             ? '/auth/select-company'
             : this.authService.getHomeRoute(tokenData?.role);

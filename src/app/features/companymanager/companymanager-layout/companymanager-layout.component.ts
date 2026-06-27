@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { CompanyService } from '../../../core/services/company.service';
 import { VisitTrackingService } from '../../../core/services/visit-tracking.service';
 import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
@@ -37,6 +38,7 @@ const MANAGER_WELCOME_ACTIONS: WelcomeAction[] = [
 export class CompanyManagerLayoutComponent implements OnInit {
   private readonly router        = inject(Router);
   private readonly authService   = inject(AuthService);
+  private readonly notificationService = inject(NotificationService);
   private readonly companyService = inject(CompanyService);
   private readonly visitTracking = inject(VisitTrackingService);
 
@@ -76,6 +78,7 @@ export class CompanyManagerLayoutComponent implements OnInit {
   }
 
   signOut(): void {
+    this.notificationService.disconnect();
     this.authService.clearTokens();
     this.router.navigate(['/auth/login']);
   }

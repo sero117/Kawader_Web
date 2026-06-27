@@ -128,33 +128,33 @@
               <td class="font-medium" style="color: var(--text-muted);">{{ emp.phoneNumber }}</td>
               <td style="color: var(--text-faint);">{{ emp.email ?? '—' }}</td>
               <td>
-                @switch (emp.employeeType) {
+                @switch (emp.employeeRole) {
                   @case (EmployeeType.Employee) {
                     <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
                       style="color: rgba(99,102,241,0.9); background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2);">
                       <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(99,102,241,0.8);"></span>
-                      {{ employeeTypeLabel(emp.employeeType) }}
+                      {{ employeeTypeLabel(emp.employeeRole) }}
                     </span>
                   }
                   @case (EmployeeType.HumanResourceManager) {
                     <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
                       style="color: rgba(139,92,246,0.9); background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2);">
                       <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(139,92,246,0.8);"></span>
-                      {{ employeeTypeLabel(emp.employeeType) }}
+                      {{ employeeTypeLabel(emp.employeeRole) }}
                     </span>
                   }
                   @case (EmployeeType.DepartmentManager) {
                     <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
                       style="color: rgba(16,185,129,0.9); background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);">
                       <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(16,185,129,0.8);"></span>
-                      {{ employeeTypeLabel(emp.employeeType) }}
+                      {{ employeeTypeLabel(emp.employeeRole) }}
                     </span>
                   }
                   @case (EmployeeType.BranchManager) {
                     <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
                       style="color: rgba(245,158,11,0.9); background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);">
                       <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(245,158,11,0.8);"></span>
-                      {{ employeeTypeLabel(emp.employeeType) }}
+                      {{ employeeTypeLabel(emp.employeeRole) }}
                     </span>
                   }
                 }
@@ -317,15 +317,6 @@
       </div>
 
       <div class="px-6 py-5 overflow-y-auto flex-1">
-        @if (modalError()) {
-          <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
-            style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
-            <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgba(239,68,68,0.8);" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-            </svg>
-            <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ modalError() }}</span>
-          </div>
-        }
 
         <form [formGroup]="addForm" (ngSubmit)="submitAdd()" class="space-y-4" novalidate>
 
@@ -440,13 +431,13 @@
             }
           </div>
 
-          <!-- Employee Type + Contract Type -->
+          <!-- Employee Role + Contract Type -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addEmployee.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <select formControlName="employeeType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+              <select formControlName="employeeRole" class="modal-input" style="appearance:none; -webkit-appearance:none;">
                 <option [ngValue]="EmployeeType.Employee">{{ 'manager.employeeTypes.0' | translate }}</option>
                 <option [ngValue]="EmployeeType.HumanResourceManager">{{ 'manager.employeeTypes.1' | translate }}</option>
                 <option [ngValue]="EmployeeType.DepartmentManager">{{ 'manager.employeeTypes.2' | translate }}</option>
@@ -537,37 +528,6 @@
             </div>
           </div>
 
-          <!-- Emergency Relation + Phone -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-                {{ 'manager.addEmployee.emergencyContactRelationLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
-              </label>
-              <select formControlName="emergencyContactRelation" class="modal-input" style="appearance:none; -webkit-appearance:none;">
-                <option [ngValue]="RelationType.Father">{{ 'manager.relationTypes.0' | translate }}</option>
-                <option [ngValue]="RelationType.Mother">{{ 'manager.relationTypes.1' | translate }}</option>
-                <option [ngValue]="RelationType.Brother">{{ 'manager.relationTypes.2' | translate }}</option>
-                <option [ngValue]="RelationType.Sister">{{ 'manager.relationTypes.3' | translate }}</option>
-                <option [ngValue]="RelationType.Husband">{{ 'manager.relationTypes.4' | translate }}</option>
-                <option [ngValue]="RelationType.Wife">{{ 'manager.relationTypes.5' | translate }}</option>
-                <option [ngValue]="RelationType.Son">{{ 'manager.relationTypes.6' | translate }}</option>
-                <option [ngValue]="RelationType.Daughter">{{ 'manager.relationTypes.7' | translate }}</option>
-                <option [ngValue]="RelationType.CloseRelative">{{ 'manager.relationTypes.8' | translate }}</option>
-                <option [ngValue]="RelationType.Other">{{ 'manager.relationTypes.9' | translate }}</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-                {{ 'manager.addEmployee.emergencyContactPhoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
-              </label>
-              <input formControlName="emergencyContactPhone" type="tel" inputmode="numeric" maxlength="10" class="modal-input"
-                [class.is-invalid]="addForm.get('emergencyContactPhone')!.invalid && addForm.get('emergencyContactPhone')!.touched" />
-              @if (addForm.get('emergencyContactPhone')!.invalid && addForm.get('emergencyContactPhone')!.touched) {
-                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.phone10only' | translate }}</p>
-              }
-            </div>
-          </div>
-
           <!-- Internal Notes -->
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
@@ -626,16 +586,6 @@
             }
           </div>
         } @else {
-          @if (modalError()) {
-            <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
-              style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
-              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgba(239,68,68,0.8);" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-              </svg>
-              <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ modalError() }}</span>
-            </div>
-          }
-
           <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
 
             <!-- First + Last name -->
@@ -731,13 +681,13 @@
               <input formControlName="email" type="text" placeholder="employee@company.com" class="modal-input" />
             </div>
 
-            <!-- Employee Type + Contract Type -->
+            <!-- Employee Role + Contract Type -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <select formControlName="employeeType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                <select formControlName="employeeRole" class="modal-input" style="appearance:none; -webkit-appearance:none;">
                   <option [ngValue]="EmployeeType.Employee">{{ 'manager.employeeTypes.0' | translate }}</option>
                   <option [ngValue]="EmployeeType.HumanResourceManager">{{ 'manager.employeeTypes.1' | translate }}</option>
                   <option [ngValue]="EmployeeType.DepartmentManager">{{ 'manager.employeeTypes.2' | translate }}</option>
@@ -822,37 +772,6 @@
                   [class.is-invalid]="editForm.get('workEndTime')!.invalid && editForm.get('workEndTime')!.touched" />
                 @if (editForm.get('workEndTime')!.invalid && editForm.get('workEndTime')!.touched) {
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
-                }
-              </div>
-            </div>
-
-            <!-- Emergency Relation + Phone -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-                  {{ 'manager.editEmployee.emergencyContactRelationLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
-                </label>
-                <select formControlName="emergencyContactRelation" class="modal-input" style="appearance:none; -webkit-appearance:none;">
-                  <option [ngValue]="RelationType.Father">{{ 'manager.relationTypes.0' | translate }}</option>
-                  <option [ngValue]="RelationType.Mother">{{ 'manager.relationTypes.1' | translate }}</option>
-                  <option [ngValue]="RelationType.Brother">{{ 'manager.relationTypes.2' | translate }}</option>
-                  <option [ngValue]="RelationType.Sister">{{ 'manager.relationTypes.3' | translate }}</option>
-                  <option [ngValue]="RelationType.Husband">{{ 'manager.relationTypes.4' | translate }}</option>
-                  <option [ngValue]="RelationType.Wife">{{ 'manager.relationTypes.5' | translate }}</option>
-                  <option [ngValue]="RelationType.Son">{{ 'manager.relationTypes.6' | translate }}</option>
-                  <option [ngValue]="RelationType.Daughter">{{ 'manager.relationTypes.7' | translate }}</option>
-                  <option [ngValue]="RelationType.CloseRelative">{{ 'manager.relationTypes.8' | translate }}</option>
-                  <option [ngValue]="RelationType.Other">{{ 'manager.relationTypes.9' | translate }}</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-                  {{ 'manager.editEmployee.emergencyContactPhoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
-                </label>
-                <input formControlName="emergencyContactPhone" type="tel" inputmode="numeric" maxlength="10" class="modal-input"
-                  [class.is-invalid]="editForm.get('emergencyContactPhone')!.invalid && editForm.get('emergencyContactPhone')!.touched" />
-                @if (editForm.get('emergencyContactPhone')!.invalid && editForm.get('emergencyContactPhone')!.touched) {
-                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.phone10only' | translate }}</p>
                 }
               </div>
             </div>
@@ -942,7 +861,7 @@
             }
             <span class="inline-flex items-center text-[10px] font-bold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
               style="color: rgba(139,92,246,0.9); background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2);">
-              {{ employeeTypeLabel(viewEmployee()!.employeeType) }}
+              {{ employeeTypeLabel(viewEmployee()!.employeeRole) }}
             </span>
           </div>
 
@@ -1028,18 +947,6 @@
               <p class="text-sm" style="color: var(--text-muted);">{{ e.sectionId ?? '—' }}</p>
             </div>
 
-            <!-- Emergency Relation -->
-            <div>
-              <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.emergencyContactRelationLabel' | translate }}</p>
-              <p class="text-sm" style="color: var(--text-muted);">{{ e.emergencyContactRelation != null ? ('manager.relationTypes.' + e.emergencyContactRelation | translate) : '—' }}</p>
-            </div>
-
-            <!-- Emergency Phone -->
-            <div>
-              <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.emergencyContactPhoneLabel' | translate }}</p>
-              <p class="text-sm font-medium" style="color: var(--text-muted);">{{ e.emergencyContactPhone || '—' }}</p>
-            </div>
-
           </div>
 
           <!-- Internal Notes -->
@@ -1050,54 +957,160 @@
             </div>
           }
 
-          <!-- Attachments — always shown -->
+          <!-- Emergency Contacts CRUD -->
           <div class="pt-1">
-            <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-3" style="color: var(--text-very-faint);">{{ 'manager.editEmployee.attachmentsTitle' | translate }}</p>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              @for (att of attachmentList; track att.type) {
-                @let url = getAttachmentUrlFromEmployee(e, att.type);
-                @if (url) {
-                  <!-- Has file -->
-                  <a [href]="url" target="_blank" rel="noopener" class="group block relative rounded-xl overflow-hidden"
-                    style="border: 1px solid var(--border);">
-                    @if (isPdf(url)) {
-                      <div class="h-28 flex flex-col items-center justify-center gap-1.5"
-                        style="background: var(--bg-subtle-sm);">
-                        <svg class="w-9 h-9" style="color: rgba(239,68,68,0.6);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                        </svg>
-                        <span class="text-[10px] font-bold uppercase" style="color: rgba(239,68,68,0.7);">PDF</span>
-                      </div>
-                    } @else {
-                      <img [src]="url" [alt]="att.labelKey | translate" class="w-full h-28 object-cover block" />
-                    }
-                    <!-- Label -->
-                    <div class="absolute inset-x-0 bottom-0 px-2 py-1.5 text-[10px] font-semibold truncate"
-                      style="background: rgba(0,0,0,0.6); color: #fff; backdrop-filter: blur(4px);">
-                      {{ att.labelKey | translate }}
-                    </div>
-                    <!-- Hover -->
-                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      style="background: rgba(0,0,0,0.3);">
-                      <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                      </svg>
-                    </div>
-                  </a>
-                } @else {
-                  <!-- Empty slot -->
-                  <div class="relative rounded-xl h-28 flex flex-col items-center justify-center gap-1.5"
-                    style="background: var(--bg-subtle-sm); border: 1px dashed var(--border);">
-                    <svg class="w-6 h-6" style="color: var(--text-ultra-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
-                    </svg>
-                    <span class="text-[10px] font-medium px-2 text-center leading-tight" style="color: var(--text-ultra-faint);">
-                      {{ att.labelKey | translate }}
-                    </span>
-                  </div>
-                }
+            <div class="flex items-center justify-between mb-3">
+              <p class="text-[10px] font-semibold uppercase tracking-[0.15em]" style="color: var(--text-very-faint);">{{ 'manager.emergencyContacts.title' | translate }}</p>
+              @if (emContactsView() === 'list') {
+                <button (click)="openEmContactAdd()"
+                  class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold"
+                  style="background: var(--text-base); color: var(--bg-surface);">
+                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                  {{ 'manager.emergencyContacts.addBtn' | translate }}
+                </button>
               }
             </div>
+
+            <!-- Error -->
+            @if (emContactsError()) {
+              <p class="text-xs mb-3" style="color: rgba(239,68,68,0.7);">{{ emContactsError() }}</p>
+            }
+
+            @if (emContactsView() === 'list') {
+              @if (emContactsLoading()) {
+                <div class="space-y-2">
+                  @for (_ of [1,2]; track $index) {
+                    <div class="h-12 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+                  }
+                </div>
+              } @else if (emContacts().length === 0) {
+                <p class="text-xs py-4 text-center" style="color: var(--text-very-faint);">{{ 'manager.emergencyContacts.empty' | translate }}</p>
+              } @else {
+                <div class="space-y-2">
+                  @for (c of emContacts(); track c.id) {
+                    <div class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl"
+                      style="background: var(--bg-subtle-sm); border: 1px solid var(--border);">
+                      <div class="min-w-0">
+                        <p class="text-sm font-medium truncate" style="color: var(--text-base);">{{ c.name }}</p>
+                        <p class="text-[11px]" style="color: var(--text-faint);">
+                          {{ c.phone }} · {{ 'manager.relationTypes.' + c.relation | translate }}
+                        </p>
+                      </div>
+                      <div class="flex items-center gap-1 flex-shrink-0">
+                        <button (click)="openEmContactEdit(c)"
+                          class="w-7 h-7 rounded-lg flex items-center justify-center"
+                          style="color: var(--text-faint); background: var(--bg-subtle-md);">
+                          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                          </svg>
+                        </button>
+                        <button (click)="openEmContactDelete(c.id)"
+                          class="w-7 h-7 rounded-lg flex items-center justify-center"
+                          style="color: rgba(239,68,68,0.6); background: rgba(239,68,68,0.07);">
+                          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Delete confirm -->
+              @if (showEmDeleteModal()) {
+                <div class="mt-3 p-3 rounded-xl text-center" style="background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15);">
+                  <p class="text-sm mb-3" style="color: var(--text-base);">{{ 'manager.emergencyContacts.deleteConfirm' | translate }}</p>
+                  <div class="flex gap-2">
+                    <button (click)="showEmDeleteModal.set(false)" class="flex-1 py-1.5 rounded-lg text-xs font-semibold"
+                      style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+                    <button (click)="executeEmContactDelete()" [disabled]="emContactsSubmitting()" class="flex-1 py-1.5 rounded-lg text-xs font-bold"
+                      style="background: rgba(239,68,68,0.8); color: #fff;" [style.opacity]="emContactsSubmitting() ? '0.5' : '1'">
+                      {{ 'common.delete' | translate }}
+                    </button>
+                  </div>
+                </div>
+              }
+            }
+
+            @if (emContactsView() === 'add' || emContactsView() === 'edit') {
+              <div class="flex items-center gap-2 mb-4">
+                <button (click)="emContactsView.set('list')" class="w-7 h-7 rounded-lg flex items-center justify-center"
+                  style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                  </svg>
+                </button>
+                <p class="text-sm font-semibold" style="color: var(--text-base);">
+                  {{ (emContactsView() === 'add' ? 'manager.emergencyContacts.addTitle' : 'manager.emergencyContacts.editTitle') | translate }}
+                </p>
+              </div>
+
+
+              <form [formGroup]="emContactForm"
+                (ngSubmit)="emContactsView() === 'add' ? submitEmContactAdd() : submitEmContactEdit()"
+                class="space-y-3" novalidate>
+
+                <!-- Name -->
+                <div>
+                  <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                    {{ 'manager.emergencyContacts.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                  </label>
+                  <input formControlName="name" type="text" maxlength="100" class="modal-input"
+                    [class.is-invalid]="emContactForm.get('name')!.invalid && emContactForm.get('name')!.touched" />
+                </div>
+
+                <!-- Phone + Priority -->
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                      {{ 'manager.emergencyContacts.phoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                    </label>
+                    <input formControlName="phone" type="tel" inputmode="numeric" maxlength="10" class="modal-input"
+                      [class.is-invalid]="emContactForm.get('phone')!.invalid && emContactForm.get('phone')!.touched" />
+                    @if (emContactForm.get('phone')!.invalid && emContactForm.get('phone')!.touched) {
+                      <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.phone10only' | translate }}</p>
+                    }
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                      {{ 'manager.emergencyContacts.priorityLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                    </label>
+                    <input formControlName="priority" type="number" min="1" step="1" class="modal-input" />
+                  </div>
+                </div>
+
+                <!-- Relation -->
+                <div>
+                  <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                    {{ 'manager.emergencyContacts.relationLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                  </label>
+                  <select formControlName="relation" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                    <option [ngValue]="RelationType.Father">{{ 'manager.relationTypes.0' | translate }}</option>
+                    <option [ngValue]="RelationType.Mother">{{ 'manager.relationTypes.1' | translate }}</option>
+                    <option [ngValue]="RelationType.Brother">{{ 'manager.relationTypes.2' | translate }}</option>
+                    <option [ngValue]="RelationType.Sister">{{ 'manager.relationTypes.3' | translate }}</option>
+                    <option [ngValue]="RelationType.Husband">{{ 'manager.relationTypes.4' | translate }}</option>
+                    <option [ngValue]="RelationType.Wife">{{ 'manager.relationTypes.5' | translate }}</option>
+                    <option [ngValue]="RelationType.Son">{{ 'manager.relationTypes.6' | translate }}</option>
+                    <option [ngValue]="RelationType.Daughter">{{ 'manager.relationTypes.7' | translate }}</option>
+                    <option [ngValue]="RelationType.CloseRelative">{{ 'manager.relationTypes.8' | translate }}</option>
+                    <option [ngValue]="RelationType.Other">{{ 'manager.relationTypes.9' | translate }}</option>
+                  </select>
+                </div>
+
+                <div class="flex gap-2 pt-1">
+                  <button type="button" (click)="emContactsView.set('list')" class="flex-1 py-2 rounded-xl text-xs font-semibold"
+                    style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+                  <button type="submit" [disabled]="emContactsSubmitting()" class="flex-1 py-2 rounded-xl text-xs font-bold"
+                    style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="emContactsSubmitting() ? '0.5' : '1'">
+                    {{ emContactsSubmitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
+                  </button>
+                </div>
+              </form>
+            }
           </div>
 
         }
@@ -1269,16 +1282,6 @@
             </h3>
           </div>
 
-          @if (historyModalError()) {
-            <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
-              style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
-              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgba(239,68,68,0.8);" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-              </svg>
-              <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ historyModalError() }}</span>
-            </div>
-          }
-
           <form [formGroup]="historyForm" (ngSubmit)="historyView() === 'add' ? submitHistoryAdd() : submitHistoryEdit()" class="space-y-4" novalidate>
 
             <!-- Status -->
@@ -1405,17 +1408,10 @@
                 <!-- Icon + Label -->
                 <div class="flex items-center gap-2.5 min-w-0">
                   <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                    [style.background]="getAttachmentUrl(att.type) ? 'rgba(234,179,8,0.1)' : 'var(--bg-subtle-md)'"
-                    [style.color]="getAttachmentUrl(att.type) ? 'rgba(234,179,8,0.9)' : 'var(--text-very-faint)'">
-                    @if (getAttachmentUrl(att.type)) {
-                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
-                      </svg>
-                    } @else {
-                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
-                      </svg>
-                    }
+                    style="background: var(--bg-subtle-md); color: var(--text-very-faint);">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
+                    </svg>
                   </div>
                   <span class="text-sm font-medium truncate" style="color: var(--text-muted);">
                     {{ att.labelKey | translate }}
@@ -1424,31 +1420,8 @@
 
                 <!-- Actions -->
                 <div class="flex items-center gap-1.5 flex-shrink-0">
-                  @if (getAttachmentUrl(att.type)) {
-                    <a [href]="getAttachmentUrl(att.type)" target="_blank" rel="noopener"
-                      class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold"
-                      style="color: rgba(99,102,241,0.9); background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2);">
-                      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                      </svg>
-                      {{ 'manager.editEmployee.viewFile' | translate }}
-                    </a>
-                    <button type="button" (click)="removeAttachment(att.type)"
-                      [disabled]="deletingAttachType() === att.type"
-                      class="w-7 h-7 rounded-lg flex items-center justify-center"
-                      style="color: rgba(239,68,68,0.65); background: rgba(239,68,68,0.07);">
-                      @if (deletingAttachType() === att.type) {
-                        <svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                        </svg>
-                      } @else {
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                        </svg>
-                      }
-                    </button>
-                  } @else {
+                  @if (!attachedTypes().has(att.type)) {
+                    <!-- Upload button — visible when no file uploaded yet this session -->
                     <button type="button" (click)="triggerAttachmentUpload(att.type)"
                       [disabled]="uploadingType() === att.type"
                       class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold"
@@ -1464,6 +1437,25 @@
                           <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                         </svg>
                         {{ 'manager.editEmployee.uploadFile' | translate }}
+                      }
+                    </button>
+                  } @else {
+                    <!-- Delete button — visible after a file is uploaded this session -->
+                    <button type="button" (click)="removeAttachment(att.type)"
+                      [disabled]="deletingAttachType() === att.type"
+                      class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold"
+                      style="color: rgba(239,68,68,0.8); background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.15);">
+                      @if (deletingAttachType() === att.type) {
+                        <svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                        {{ 'manager.editEmployee.deleting' | translate }}
+                      } @else {
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                        {{ 'manager.editEmployee.removeFile' | translate }}
                       }
                     </button>
                   }
@@ -1511,16 +1503,6 @@
             }
           </div>
         } @else {
-
-          @if (shiftError()) {
-            <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
-              style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
-              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgba(239,68,68,0.8);" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-              </svg>
-              <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ shiftError() }}</span>
-            </div>
-          }
 
           <!-- Current assignment -->
           @if (employeeShiftSystem()) {
@@ -1750,13 +1732,6 @@
             <textarea formControlName="notes" rows="3" class="auth-input w-full text-sm resize-none"
               [placeholder]="'manager.shiftLogs.notesPlaceholder' | translate"></textarea>
           </div>
-
-          <!-- Error -->
-          @if (logsModalError()) {
-            <div class="px-3 py-2.5 rounded-xl text-xs" style="background: rgba(239,68,68,0.08); color: rgba(239,68,68,0.85); border: 1px solid rgba(239,68,68,0.2);">
-              {{ logsModalError() }}
-            </div>
-          }
 
           <!-- Actions -->
           <div class="flex gap-2 pt-1">

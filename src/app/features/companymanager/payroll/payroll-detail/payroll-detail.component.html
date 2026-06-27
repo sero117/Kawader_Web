@@ -1,0 +1,478 @@
+<!-- Back link -->
+<a routerLink="/dashboard/manager/payroll" class="inline-flex items-center gap-1.5 text-xs font-semibold mb-4" style="color: var(--text-faint);">
+  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+  </svg>
+  {{ 'manager.payroll.backToList' | translate }}
+</a>
+
+@if (loading()) {
+  <div class="space-y-3">
+    @for (_ of [1,2,3]; track $index) {
+      <div class="h-16 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+    }
+  </div>
+} @else if (loadError()) {
+  <div class="admin-card p-12 text-center">
+    <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: rgba(239,68,68,0.1);">
+      <svg class="w-6 h-6" style="color: rgba(239,68,68,0.7);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+      </svg>
+    </div>
+    <p class="font-medium mb-1" style="color: var(--text-base);">{{ 'manager.payroll.loadDetailError' | translate }}</p>
+    <p class="text-sm mb-4" style="color: var(--text-faint);">{{ loadError() }}</p>
+    <button (click)="loadRun()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold" style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+      {{ 'common.retry' | translate }}
+    </button>
+  </div>
+} @else if (run(); as r) {
+
+  <!-- Header -->
+  <div class="flex items-start justify-between flex-wrap gap-4 mb-5">
+    <div>
+      <div class="flex items-center gap-2.5 mb-1.5">
+        <h1 class="font-bold text-2xl" style="color: var(--text-base);">{{ formatDate(r.periodStart) }} – {{ formatDate(r.periodEnd) }}</h1>
+        <span class="inline-flex items-center text-[10px] font-bold uppercase tracking-[0.1em] px-2 py-0.5 rounded-md"
+          [style.background]="r.status === 'Paid' ? 'rgba(16,185,129,0.1)' : r.status === 'Approved' ? 'rgba(99,102,241,0.1)' : 'var(--bg-subtle-sm)'"
+          [style.color]="r.status === 'Paid' ? 'rgba(16,185,129,0.9)' : r.status === 'Approved' ? 'rgba(99,102,241,0.9)' : 'var(--text-muted)'"
+          [style.border]="r.status === 'Paid' || r.status === 'Approved' ? 'none' : '1px solid var(--border)'">
+          {{ ('manager.payroll.status.' + r.status) | translate }}
+        </span>
+      </div>
+      <p class="text-xs font-mono" style="color: var(--text-ultra-faint);">#{{ r.id }}</p>
+    </div>
+
+    <div class="flex items-center gap-2 flex-wrap">
+      @if (canMutate()) {
+        <button (click)="openUpdatePeriod()" class="px-3.5 py-2 rounded-xl text-xs font-semibold" style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+          {{ 'manager.payroll.updatePeriodBtn' | translate }}
+        </button>
+        <button (click)="openAddEmployees()" class="btn-primary">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          {{ 'manager.payroll.addEmployeesBtn' | translate }}
+        </button>
+        <button (click)="confirmDeleteRun()" class="w-9 h-9 rounded-xl flex items-center justify-center"
+          style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);"
+          [title]="'manager.payroll.deleteRunBtn' | translate">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+          </svg>
+        </button>
+      }
+      @if (canApprove()) {
+        <button (click)="confirmApprove()" class="px-3.5 py-2 rounded-xl text-xs font-bold" style="background: rgba(99,102,241,0.9); color: #fff;">
+          {{ 'manager.payroll.approveBtn' | translate }}
+        </button>
+      }
+      @if (canPay()) {
+        <button (click)="confirmPay()" class="px-3.5 py-2 rounded-xl text-xs font-bold" style="background: rgba(16,185,129,0.9); color: #fff;">
+          {{ 'manager.payroll.payBtn' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Success toast -->
+  @if (successMsg()) {
+    <div class="flex items-center gap-2.5 rounded-xl px-4 py-3 mb-5" style="background: var(--bg-subtle-sm); border: 1px solid var(--border);">
+      <svg class="w-4 h-4 flex-shrink-0" style="color: var(--text-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span class="text-sm" style="color: var(--text-muted);">{{ successMsg() }}</span>
+    </div>
+  }
+
+  <!-- Processing / failed banner -->
+  @if (processingStatus() === 'Processing') {
+    <div class="flex items-center gap-2.5 rounded-xl px-4 py-3 mb-5" style="background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25);">
+      <span class="w-2 h-2 rounded-full animate-pulse flex-shrink-0" style="background: rgba(217,119,6,0.9);"></span>
+      <span class="text-sm" style="color: rgba(180,83,9,0.95);">{{ 'manager.payroll.processingBanner' | translate }}</span>
+    </div>
+  } @else if (processingStatus() === 'Failed') {
+    <div class="flex items-start gap-2.5 rounded-xl px-4 py-3 mb-5" style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
+      <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgba(239,68,68,0.8);" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+      </svg>
+      <span class="text-sm" style="color: rgba(239,68,68,0.9);">
+        {{ 'manager.payroll.processingFailedBanner' | translate }}
+        @if (r.processingError) { {{ r.processingError }} }
+      </span>
+    </div>
+  }
+
+  <!-- Payslips table card -->
+  <div class="admin-card">
+    <div class="p-5 pb-4 flex items-center justify-between flex-wrap gap-3">
+      <div class="relative flex-1" style="max-width: 280px;">
+        <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+        <input type="text" [placeholder]="'manager.payroll.employeeNameFilter' | translate"
+          class="w-full ps-9 pe-4 py-2.5 rounded-xl text-sm"
+          style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
+          [value]="payslipNameFilter()"
+          (input)="payslipNameFilter.set($any($event.target).value)" />
+      </div>
+    </div>
+
+    @if (filteredPayslips().length === 0) {
+      <div class="p-16 text-center">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: var(--bg-subtle-sm);">
+          <svg class="w-7 h-7" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+          </svg>
+        </div>
+        <p class="text-sm" style="color: var(--text-faint);">{{ 'manager.payroll.emptyPayslips' | translate }}</p>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>{{ 'manager.payroll.colEmployee' | translate }}</th>
+              <th>{{ 'manager.payroll.colBaseSalary' | translate }}</th>
+              <th>{{ 'manager.payroll.colHours' | translate }}</th>
+              <th>{{ 'manager.payroll.colShortage' | translate }}</th>
+              <th>{{ 'manager.payroll.colOvertime' | translate }}</th>
+              <th>{{ 'manager.payroll.colIncentives' | translate }}</th>
+              <th>{{ 'manager.payroll.colDeductions' | translate }}</th>
+              <th>{{ 'manager.payroll.colNetSalary' | translate }}</th>
+              <th style="text-align: right;">{{ 'manager.payroll.colActions' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of filteredPayslips(); track p.id) {
+              <tr>
+                <td>
+                  <p class="text-sm font-medium" style="color: var(--text-base);">{{ p.employeeName }}</p>
+                  @if (p.isManuallyAdjusted) {
+                    <span class="text-[10px] font-semibold" style="color: rgba(245,158,11,0.9);">{{ 'manager.payroll.colAdjusted' | translate }}</span>
+                  }
+                </td>
+                <td style="color: var(--text-faint);">{{ formatAmount(p.baseSalary) }}</td>
+                <td style="color: var(--text-faint);">{{ p.totalActualHours }} / {{ p.totalExpectedHours }}</td>
+                <td style="color: var(--text-faint);">{{ p.shortageHours > 0 ? '-' + formatAmount(p.shortageDeduction) : '—' }}</td>
+                <td style="color: var(--text-faint);">{{ p.overtimeHours > 0 ? '+' + formatAmount(p.overtimeAmount) : '—' }}</td>
+                <td style="color: rgba(16,185,129,0.85);">{{ p.totalIncentives > 0 ? '+' + formatAmount(p.totalIncentives) : '—' }}</td>
+                <td style="color: rgba(239,68,68,0.8);">{{ p.totalDeductions > 0 ? '-' + formatAmount(p.totalDeductions) : '—' }}</td>
+                <td class="font-bold" style="color: var(--text-base);">{{ formatAmount(p.netSalary) }}</td>
+                <td>
+                  <div class="flex items-center justify-end gap-1.5">
+                    @if (canMutate()) {
+                      <button (click)="openAdjust(p, $event)"
+                        class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                        style="color: var(--text-faint); background: var(--bg-subtle-sm);"
+                        [title]="'manager.payroll.adjustTitle' | translate">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                        </svg>
+                      </button>
+                      <button (click)="confirmDeletePayslip(p, $event)"
+                        class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                        style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);"
+                        [title]="'manager.payroll.deletePayslipTitle' | translate">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+}
+
+
+<!-- ══ UPDATE PERIOD MODAL ══ -->
+@if (showUpdatePeriodModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);" (click)="showUpdatePeriodModal.set(false)">
+    <div class="w-full max-w-lg rounded-2xl" style="background: var(--bg-surface-2); border: 1px solid var(--border);"
+      (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between px-6 pt-6 pb-5" style="border-bottom: 1px solid var(--border);">
+        <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.payroll.updatePeriodBtn' | translate }}</h2>
+        <button (click)="showUpdatePeriodModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+          style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="px-6 py-5">
+        @if (modalError()) {
+          <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
+            style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
+            <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ modalError() }}</span>
+          </div>
+        }
+        <form [formGroup]="updatePeriodForm" (ngSubmit)="submitUpdatePeriod()" class="space-y-4" novalidate>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.payroll.periodStartLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="periodStart" type="date" class="modal-input" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.payroll.periodEndLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="periodEnd" type="date" class="modal-input" />
+            </div>
+          </div>
+          @if (updatePeriodForm.hasError('periodRange') && updatePeriodForm.get('periodEnd')!.touched) {
+            <p class="text-xs" style="color: rgba(239,68,68,0.75);">{{ 'manager.payroll.periodRangeError' | translate }}</p>
+          }
+          <div class="flex gap-3 pt-1">
+            <button type="button" (click)="showUpdatePeriodModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+              style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+            <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+              style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
+              {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ══ ADD EMPLOYEES MODAL ══ -->
+@if (showAddEmployeesModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);" (click)="showAddEmployeesModal.set(false)">
+    <div class="w-full max-w-lg rounded-2xl" style="background: var(--bg-surface-2); border: 1px solid var(--border);"
+      (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between px-6 pt-6 pb-5" style="border-bottom: 1px solid var(--border);">
+        <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.payroll.addEmployeesTitle' | translate }}</h2>
+        <button (click)="showAddEmployeesModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+          style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="px-6 py-5">
+        @if (modalError()) {
+          <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
+            style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
+            <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ modalError() }}</span>
+          </div>
+        }
+
+        <div class="relative mb-3">
+          <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+          <input type="text" [placeholder]="'manager.payroll.employeeSearchPlaceholder' | translate"
+            class="w-full ps-9 pe-4 py-2.5 rounded-xl text-sm"
+            style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
+            [value]="employeeFilter()"
+            (input)="onEmployeeFilterChange($any($event.target).value)" />
+        </div>
+
+        @if (activeEmployeesLoading()) {
+          <div class="space-y-2">
+            @for (_ of [1,2,3]; track $index) {
+              <div class="h-12 rounded-lg animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+            }
+          </div>
+        } @else if (activeEmployeesError()) {
+          <p class="text-sm text-center py-6" style="color: rgba(239,68,68,0.8);">{{ activeEmployeesError() }}</p>
+        } @else if (pickableEmployees().length === 0) {
+          <p class="text-sm text-center py-6" style="color: var(--text-faint);">{{ 'manager.payroll.noActiveEmployees' | translate }}</p>
+        } @else {
+          <div class="max-h-64 overflow-y-auto space-y-1 pe-1">
+            @for (e of pickableEmployees(); track e.id) {
+              <label class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer" style="background: var(--bg-subtle-sm);">
+                <input type="checkbox" [checked]="selectedEmployeeIds().has(e.id)" (change)="toggleEmployeeSelected(e.id)" />
+                <div>
+                  <p class="text-sm font-medium" style="color: var(--text-base);">{{ e.fullName }}</p>
+                  <p class="text-xs" style="color: var(--text-faint);">{{ e.phoneNumber }}</p>
+                </div>
+              </label>
+            }
+          </div>
+        }
+
+        <div class="flex items-center justify-between gap-3 pt-4">
+          <span class="text-xs" style="color: var(--text-faint);">{{ selectedEmployeeIds().size }} {{ 'manager.payroll.selectedCount' | translate }}</span>
+          <div class="flex gap-3">
+            <button type="button" (click)="showAddEmployeesModal.set(false)" class="px-4 py-2.5 rounded-xl text-sm font-semibold"
+              style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+            <button type="button" (click)="submitAddEmployees()" [disabled]="submitting() || selectedEmployeeIds().size === 0" class="px-4 py-2.5 rounded-xl text-sm font-bold"
+              style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="(submitting() || selectedEmployeeIds().size === 0) ? '0.5' : '1'">
+              {{ submitting() ? ('common.saving' | translate) : ('manager.payroll.addSelectedBtn' | translate) }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ══ ADJUST PAYSLIP MODAL ══ -->
+@if (showAdjustModal() && selectedPayslip(); as p) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);" (click)="showAdjustModal.set(false)">
+    <div class="w-full max-w-md rounded-2xl p-6" style="background: var(--bg-surface-2); border: 1px solid var(--border);"
+      (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.payroll.adjustTitle' | translate }}</h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ p.employeeName }}</p>
+        </div>
+        <button (click)="showAdjustModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+          style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      @if (modalError()) {
+        <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4"
+          style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
+          <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ modalError() }}</span>
+        </div>
+      }
+      <form [formGroup]="adjustForm" (ngSubmit)="submitAdjust()" class="space-y-4" novalidate>
+        <div>
+          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            {{ 'manager.payroll.netSalaryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+          </label>
+          <input formControlName="netSalary" type="number" step="0.01" class="modal-input" />
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            {{ 'manager.payroll.adjustmentNotesLabel' | translate }}
+          </label>
+          <textarea formControlName="adjustmentNotes" rows="3" maxlength="500" class="modal-input"></textarea>
+          @if (adjustForm.get('adjustmentNotes')!.invalid && adjustForm.get('adjustmentNotes')!.touched) {
+            <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'manager.payroll.adjustmentNotesMaxError' | translate }}</p>
+          }
+        </div>
+        <div class="flex gap-3 pt-1">
+          <button type="button" (click)="showAdjustModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+            style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+          <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+            style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
+            {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+
+<!-- ══ DELETE PAYSLIP MODAL ══ -->
+@if (showDeletePayslipModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);" (click)="showDeletePayslipModal.set(false)">
+    <div class="w-full max-w-sm rounded-2xl p-6 text-center"
+      style="background: var(--bg-surface-2); border: 1px solid var(--border);" (click)="$event.stopPropagation()">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: rgba(239,68,68,0.1);">
+        <svg class="w-6 h-6" style="color: rgba(239,68,68,0.8);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+        </svg>
+      </div>
+      <h2 class="font-bold text-lg mb-1" style="color: var(--text-base);">{{ 'manager.payroll.deletePayslipTitle' | translate }}</h2>
+      <p class="text-sm mb-6" style="color: var(--text-faint);">{{ 'manager.payroll.deletePayslipMsg' | translate }}</p>
+      <div class="flex gap-3">
+        <button (click)="showDeletePayslipModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+        <button (click)="executeDeletePayslip()" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+          style="background: rgba(239,68,68,0.8); color: #fff;" [style.opacity]="submitting() ? '0.5' : '1'">
+          {{ submitting() ? ('common.deleting' | translate) : ('common.delete' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ══ DELETE RUN MODAL ══ -->
+@if (showDeleteRunModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);" (click)="showDeleteRunModal.set(false)">
+    <div class="w-full max-w-sm rounded-2xl p-6 text-center"
+      style="background: var(--bg-surface-2); border: 1px solid var(--border);" (click)="$event.stopPropagation()">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: rgba(239,68,68,0.1);">
+        <svg class="w-6 h-6" style="color: rgba(239,68,68,0.8);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+        </svg>
+      </div>
+      <h2 class="font-bold text-lg mb-1" style="color: var(--text-base);">{{ 'manager.payroll.deleteRunTitle' | translate }}</h2>
+      <p class="text-sm mb-6" style="color: var(--text-faint);">{{ 'manager.payroll.deleteRunMsg' | translate }}</p>
+      <div class="flex gap-3">
+        <button (click)="showDeleteRunModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+        <button (click)="executeDeleteRun()" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+          style="background: rgba(239,68,68,0.8); color: #fff;" [style.opacity]="submitting() ? '0.5' : '1'">
+          {{ submitting() ? ('common.deleting' | translate) : ('common.delete' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ══ APPROVE MODAL ══ -->
+@if (showApproveModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);" (click)="showApproveModal.set(false)">
+    <div class="w-full max-w-sm rounded-2xl p-6 text-center"
+      style="background: var(--bg-surface-2); border: 1px solid var(--border);" (click)="$event.stopPropagation()">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: rgba(99,102,241,0.1);">
+        <svg class="w-6 h-6" style="color: rgba(99,102,241,0.8);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h2 class="font-bold text-lg mb-1" style="color: var(--text-base);">{{ 'manager.payroll.approveConfirmTitle' | translate }}</h2>
+      <p class="text-sm mb-6" style="color: var(--text-faint);">{{ 'manager.payroll.approveConfirmMsg' | translate }}</p>
+      <div class="flex gap-3">
+        <button (click)="showApproveModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+        <button (click)="executeApprove()" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+          style="background: rgba(99,102,241,0.9); color: #fff;" [style.opacity]="submitting() ? '0.5' : '1'">
+          {{ submitting() ? ('common.saving' | translate) : ('manager.payroll.approveBtn' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ══ PAY MODAL ══ -->
+@if (showPayModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);" (click)="showPayModal.set(false)">
+    <div class="w-full max-w-sm rounded-2xl p-6 text-center"
+      style="background: var(--bg-surface-2); border: 1px solid var(--border);" (click)="$event.stopPropagation()">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: rgba(16,185,129,0.1);">
+        <svg class="w-6 h-6" style="color: rgba(16,185,129,0.8);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3M3.75 18h16.5a1.5 1.5 0 0 0 1.5-1.5V7.5a1.5 1.5 0 0 0-1.5-1.5H3.75a1.5 1.5 0 0 0-1.5 1.5v9a1.5 1.5 0 0 0 1.5 1.5Z" />
+        </svg>
+      </div>
+      <h2 class="font-bold text-lg mb-1" style="color: var(--text-base);">{{ 'manager.payroll.payConfirmTitle' | translate }}</h2>
+      <p class="text-sm mb-6" style="color: var(--text-faint);">{{ 'manager.payroll.payConfirmMsg' | translate }}</p>
+      <div class="flex gap-3">
+        <button (click)="showPayModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+        <button (click)="executePay()" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+          style="background: rgba(16,185,129,0.9); color: #fff;" [style.opacity]="submitting() ? '0.5' : '1'">
+          {{ submitting() ? ('common.saving' | translate) : ('manager.payroll.payBtn' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

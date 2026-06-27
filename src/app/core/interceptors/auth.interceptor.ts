@@ -1,14 +1,32 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { LanguageService } from '../services/language.service';
 import { SnackbarService } from '../services/snackbar.service';
 import { ServiceProblemDetails, extractErrorMessage } from '../models/problem-details.model';
 
 const AUTH_ERROR_KEY = 'kawader_auth_error';
+
+const SUCCESS_KEY: Record<string, string> = {
+  POST:   'common.success.added',
+  PUT:    'common.success.updated',
+  DELETE: 'common.success.deleted',
+  PATCH:  'common.success.updated',
+};
+
+const AUTH_URL_FRAGMENTS = [
+  '/Account/', '/auth/',
+  '/Identity/signin',
+  '/Identity/signup',
+  '/Identity/refresh-token',
+  '/Identity/generate-code',
+  '/Identity/confirm-code',
+  '/Identity/reset-password',
+  '/Identity/complete-company-info',
+];
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
@@ -34,16 +52,22 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }
   }
 
+  const isMutation = req.method in SUCCESS_KEY;
+  const isAuthUrl  = AUTH_URL_FRAGMENTS.some(f => req.url.includes(f));
+
   return next(req.clone({ headers })).pipe(
+    tap(event => {
+      if (silent || !isMutation || isAuthUrl) return;
+      if (event instanceof HttpResponse && event.status >= 200 && event.status < 300) {
+        snackbar.show(language.t(SUCCESS_KEY[req.method]), 'success');
+      }
+    }),
     catchError((err: HttpErrorResponse) => {
       if (silent) {
         return throwError(() => err);
       }
       if (err.status === 403 && auth.isAuthenticated()) {
-        // Account locked / company frozen / employee access denied, etc. —
-        // the user no longer has valid access, so kick them out instead of
-        // leaving them stuck on a half-working dashboard behind a toast
-        // that disappears in a few seconds.
+        // Account locked / company frozen / employee access denied — kick out.
         const problem = err.error as ServiceProblemDetails | null;
         const message = extractErrorMessage(problem) ?? language.t('errors.unexpected');
         sessionStorage.setItem(AUTH_ERROR_KEY, message);

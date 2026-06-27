@@ -51,7 +51,7 @@ export interface Employee {
   firstName: string;
   lastName: string;
   email?: string;
-  employeeType: EmployeeType;
+  employeeRole: EmployeeType;
   isVerified?: boolean;
   createdAt?: string;
   // List response fields
@@ -69,17 +69,8 @@ export interface Employee {
   lastSalaryModifiedAt?: string;
   workStartTime?: string;
   workEndTime?: string;
-  emergencyContactRelation?: RelationType;
-  emergencyContactPhone?: string;
   internalNotes?: string;
   status?: EmployeeStatus;
-  identityPhotoUrl?: string;
-  personalPhotoUrl?: string;
-  workContractUrl?: string;
-  certificateUrl?: string;
-  qualificationsUrl?: string;
-  healthCardUrl?: string;
-  professionalLicenseUrl?: string;
 }
 
 export interface CreateEmployeeRequest {
@@ -87,7 +78,7 @@ export interface CreateEmployeeRequest {
   firstName: string;
   lastName: string;
   email?: string;
-  employeeType: EmployeeType;
+  employeeRole: EmployeeType;
   birthDate: string;
   gender: GenderType;
   nationality?: string;
@@ -100,8 +91,6 @@ export interface CreateEmployeeRequest {
   baseSalary: number;
   workStartTime: string;
   workEndTime: string;
-  emergencyContactRelation: RelationType;
-  emergencyContactPhone: string;
   internalNotes?: string;
 }
 
@@ -109,7 +98,7 @@ export interface UpdateEmployeeRequest {
   firstName?: string;
   lastName?: string;
   email?: string;
-  employeeType?: EmployeeType;
+  employeeRole?: EmployeeType;
   birthDate?: string;
   gender?: GenderType;
   nationality?: string;
@@ -122,8 +111,6 @@ export interface UpdateEmployeeRequest {
   baseSalary?: number;
   workStartTime?: string;
   workEndTime?: string;
-  emergencyContactRelation?: RelationType;
-  emergencyContactPhone?: string;
   internalNotes?: string;
 }
 
@@ -132,6 +119,14 @@ export interface GetEmployeesParams {
   pageSize?: number;
   tenantId?: string;
   phoneNumber?: string;
+}
+
+// ── Active employees (for payroll/employee pickers) ─────────────────────────────
+
+export interface ActiveEmployee {
+  id: number;
+  fullName: string;
+  phoneNumber: string;
 }
 
 // ── My Companies (multi-tenant employee context) ────────────────────────────────
@@ -171,4 +166,28 @@ export interface GetStatusHistoryParams {
   pageNumber: number;
   pageSize: number;
   status?: EmployeeStatus;
+}
+
+// ── Emergency Contacts ────────────────────────────────────────────────────────
+
+export interface EmergencyContact {
+  id: number;
+  name: string;
+  phone: string;
+  relation: RelationType;
+  priority: number;
+}
+
+export interface CreateEmergencyContactRequest {
+  name: string;
+  phone: string;
+  relation: RelationType;
+  priority: number;
+}
+
+export interface UpdateEmergencyContactRequest {
+  name: string;
+  phone: string;
+  relation: RelationType;
+  priority: number;
 }

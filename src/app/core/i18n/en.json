@@ -16,6 +16,11 @@
     "required_mark": "*",
     "saving": "Saving…",
     "deleting": "Deleting…",
+    "success": {
+      "added": "Added successfully",
+      "updated": "Updated successfully",
+      "deleted": "Deleted successfully"
+    },
     "justNow": "Just now",
     "neverVisited": "Never visited",
     "timeUnits": {
@@ -40,6 +45,7 @@
     "accounts": "Accounts"
   },
   "auth": {
+    "loginSuccess": "Welcome back",
     "forgotPassword": "Forgot your password?",
     "noAccount": "Don't have an account?",
     "createAccount": "Create account",
@@ -371,9 +377,11 @@
       "shiftSystems": "Shift Systems",
       "shiftLogs": "Attendance",
       "companyHolidays": "Holidays",
+      "payroll": "Payroll",
       "mainSection": "Main",
       "shiftsSection": "Shifts",
-      "holidaysSection": "Holidays"
+      "holidaysSection": "Holidays",
+      "payrollSection": "Finance"
     },
     "branches": {
       "title": "Branches",
@@ -532,6 +540,8 @@
       "viewFile": "View",
       "uploadFile": "Upload",
       "uploading": "Uploading…",
+      "removeFile": "Delete",
+      "deleting": "Deleting…",
       "fileTypeError": "Only JPG, PNG, WEBP and PDF are allowed.",
       "fileSizeError": "File must be under 5 MB."
     },
@@ -614,6 +624,18 @@
       "prev": "Prev",
       "next": "Next"
     },
+    "emergencyContacts": {
+      "title": "Emergency Contacts",
+      "addBtn": "Add Contact",
+      "addTitle": "Add Emergency Contact",
+      "editTitle": "Edit Emergency Contact",
+      "nameLabel": "Full Name",
+      "phoneLabel": "Phone",
+      "relationLabel": "Relation",
+      "priorityLabel": "Priority",
+      "empty": "No emergency contacts added.",
+      "deleteConfirm": "Delete this emergency contact?"
+    },
     "accounts": {
       "title": "Accounts",
       "subtitle": "Manage all user accounts on the platform.",
@@ -646,7 +668,16 @@
       "results": "results",
       "result": "result",
       "prev": "Prev",
-      "next": "Next"
+      "next": "Next",
+      "viewCompanies": "View companies",
+      "companiesModal": {
+        "title": "Enrolled Companies",
+        "subtitle": "Companies this account is enrolled in",
+        "noCompanies": "No companies found for this account.",
+        "colCompany": "Company",
+        "colId": "ID",
+        "colRole": "Role"
+      }
     },
     "shifts": {
       "title": "Shifts",
@@ -955,8 +986,14 @@
       "fromYear": "From Year",
       "toYear": "To Year",
       "carryOverHint": "Moves the remaining balance from one year into another year's carried-over days.",
+      "deleteBtn": "Delete balance",
+      "deleteModal": {
+        "title": "Delete Leave Balance?",
+        "message": "This will permanently remove the leave balance record for this year."
+      },
       "added": "Leave balance created.",
       "updated": "Leave balance updated.",
+      "deleted": "Leave balance deleted.",
       "carriedOver": "Balance carried over."
     },
     "shiftAssignment": {
@@ -974,6 +1011,82 @@
       "loadError": "Failed to load shift assignment.",
       "unassigning": "Removing…",
       "assigning": "Assigning…"
+    },
+    "payroll": {
+      "title": "Payroll",
+      "subtitle": "Create payroll runs and process employee salaries.",
+      "createBtn": "Create Payroll Run",
+      "filterStatus": "Status",
+      "statusAll": "All Statuses",
+      "colPeriod": "Period",
+      "colStatus": "Status",
+      "colProcessing": "Processing",
+      "colPayslips": "Payslips",
+      "colCreated": "Created",
+      "colActions": "Actions",
+      "loadError": "Failed to load payroll runs",
+      "noResults": "No payroll runs found",
+      "emptyList": "No payroll runs created yet.",
+      "page": "Page",
+      "prev": "Prev",
+      "next": "Next",
+      "periodStartLabel": "Period Start",
+      "periodEndLabel": "Period End",
+      "periodRangeError": "Period end must be on or after period start.",
+      "createSuccess": "Payroll run created.",
+      "periodOverlapError": "This period overlaps an existing payroll run.",
+      "deleteRunTitle": "Delete Payroll Run?",
+      "deleteRunMsg": "This payroll run and all its payslips will be permanently removed.",
+      "runDeleted": "Payroll run deleted.",
+      "status": { "Draft": "Draft", "Approved": "Approved", "Paid": "Paid" },
+      "processingStatus": { "Idle": "Idle", "Processing": "Processing", "Completed": "Completed", "Failed": "Failed" },
+      "backToList": "Back to Payroll",
+      "runTitle": "Payroll Run",
+      "processingBanner": "Calculating salaries… this may take a moment. You can't make changes until it finishes.",
+      "processingFailedBanner": "The last calculation failed:",
+      "updatePeriodBtn": "Update Period",
+      "addEmployeesBtn": "Add Employees",
+      "approveBtn": "Approve",
+      "payBtn": "Mark as Paid",
+      "deleteRunBtn": "Delete Run",
+      "approveConfirmTitle": "Approve Payroll Run?",
+      "approveConfirmMsg": "Once approved, this run can no longer be edited.",
+      "payConfirmTitle": "Mark as Paid?",
+      "payConfirmMsg": "This marks the payroll run as paid and cannot be undone.",
+      "approved": "Payroll run approved.",
+      "paid": "Payroll run marked as paid.",
+      "updatePeriodSuccess": "Period updated.",
+      "addEmployeesTitle": "Add Employees",
+      "employeeSearchPlaceholder": "Search by name, employee number, or phone…",
+      "noActiveEmployees": "No active employees found.",
+      "selectedCount": "selected",
+      "addSelectedBtn": "Add Selected",
+      "addEmployeesSuccess": "Employees added — calculating salaries.",
+      "stillProcessingError": "Still calculating the previous change — please wait a moment.",
+      "colEmployee": "Employee",
+      "colBaseSalary": "Base Salary",
+      "colHours": "Hours (Actual / Expected)",
+      "colShortage": "Shortage",
+      "colOvertime": "Overtime",
+      "colIncentives": "Incentives",
+      "colDeductions": "Deductions",
+      "colNetSalary": "Net Salary",
+      "colAdjusted": "Adjusted",
+      "employeeNameFilter": "Filter by employee name…",
+      "emptyPayslips": "No employees added to this run yet.",
+      "adjustTitle": "Adjust Payslip",
+      "netSalaryLabel": "Net Salary",
+      "adjustmentNotesLabel": "Adjustment Notes",
+      "adjustmentNotesMaxError": "Notes must be 500 characters or fewer.",
+      "adjustSuccess": "Payslip adjusted.",
+      "deletePayslipTitle": "Remove Payslip?",
+      "deletePayslipMsg": "This employee's payslip will be removed from the run.",
+      "payslipDeleted": "Payslip removed.",
+      "loadDetailError": "Failed to load payroll run",
+      "notFoundError": "Not found — it may have been removed.",
+      "employeeNotInCompanyError": "That employee is no longer in this company.",
+      "hrCardTitle": "Payroll",
+      "hrCardSubtitle": "Create and manage payroll runs."
     }
   },
   "companyTypes": {

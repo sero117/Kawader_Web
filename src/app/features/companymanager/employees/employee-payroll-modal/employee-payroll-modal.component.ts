@@ -107,6 +107,7 @@ export class EmployeePayrollModalComponent implements OnInit {
 
   showBalanceAddModal    = signal(false);
   showBalanceEditModal   = signal(false);
+  showBalanceDeleteModal = signal(false);
   showCarryOverModal     = signal(false);
 
   balanceAddForm = this.fb.group({
@@ -620,15 +621,17 @@ export class EmployeePayrollModalComponent implements OnInit {
     this.balanceNotFound.set(false);
     this.leaveBalanceService.getByYear(this.employee.id, this.balanceYear()).subscribe({
       next: (res: any) => {
-        const raw = res?.data ?? res;
-        this.balance.set(raw ?? null);
+        const raw   = res?.data ?? res;
+        const items = Array.isArray(raw) ? raw : (raw?.items ?? []);
+        const found = items[0] ?? null;
+        this.balance.set(found);
+        this.balanceNotFound.set(!found);
         this.balanceLoading.set(false);
       },
       error: err => {
         this.balanceLoading.set(false);
         this.balance.set(null);
-        if (err?.status === 404) this.balanceNotFound.set(true);
-        else this.balanceError.set(this.apiErr(err, 'Failed to load leave balance.'));
+        this.balanceError.set(this.apiErr(err, 'Failed to load leave balance.'));
       },
     });
   }
@@ -686,6 +689,26 @@ export class EmployeePayrollModalComponent implements OnInit {
         this.loadBalance();
       },
       error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to update leave balance.')); },
+    });
+  }
+
+  confirmDeleteBalance(): void {
+    this.showBalanceDeleteModal.set(true);
+  }
+
+  executeDeleteBalance(): void {
+    const b = this.balance();
+    if (!b) return;
+    this.submitting.set(true);
+    this.leaveBalanceService.delete(this.employee.id, b.id).subscribe({
+      next: () => {
+        this.submitting.set(false);
+        this.showBalanceDeleteModal.set(false);
+        this.balance.set(null);
+        this.balanceNotFound.set(true);
+        this.flash(this.lang.t('manager.leaveBalance.deleted'));
+      },
+      error: () => { this.submitting.set(false); this.showBalanceDeleteModal.set(false); },
     });
   }
 

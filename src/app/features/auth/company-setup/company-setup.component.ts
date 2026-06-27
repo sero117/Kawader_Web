@@ -9,7 +9,9 @@ import {
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { CompanySetupService } from '../../../core/services/company-setup.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { CurrencyType } from '../../../core/models/company.models';
+import { Role } from '../../../core/models/auth.models';
 
 // ── Validators ────────────────────────────────────────────────────────────────
 
@@ -37,6 +39,7 @@ function passwordsMatch(group: AbstractControl): ValidationErrors | null {
 export class CompanySetupComponent {
   private readonly setupService = inject(CompanySetupService);
   private readonly authService  = inject(AuthService);
+  private readonly notificationService = inject(NotificationService);
   private readonly fb           = inject(FormBuilder);
   private readonly router       = inject(Router);
 
@@ -146,7 +149,11 @@ export class CompanySetupComponent {
           accessToken:  token,
           refreshToken: res?.data?.refreshToken ?? '',
           userId:       res?.data?.userId       ?? res?.userId,
+          // This flow is exclusively the company-manager setup journey — role
+          // is implied, not something the response body reliably carries here.
+          role:         Role.CompanyManager,
         });
+        this.notificationService.connect();
         this.authService.setLoginPhone(this._managerPhone);
         this.authService.setKnownName(this._managerPhone, firstName!, lastName!);
         this.step.set(3);

@@ -15,6 +15,7 @@ import {
   GenderType, ContractType, RelationType,
   EmployeeStatusHistory, CreateStatusHistoryRequest, UpdateStatusHistoryRequest,
   GetEmployeesParams,
+  EmergencyContact, CreateEmergencyContactRequest,
 } from '../../../core/models/employee.models';
 import { EmployeeShiftSystem, ShiftSystem, DayOfWeek, ShiftLog, AttendanceStatus, Shift, CreateShiftLogRequest } from '../../../core/models/shift.models';
 import { EmployeePayrollModalComponent } from './employee-payroll-modal/employee-payroll-modal.component';
@@ -78,6 +79,24 @@ export class EmployeesComponent implements OnInit {
   viewEmployee       = signal<Employee | null>(null);
   viewLoading        = signal(false);
 
+  // ── Emergency Contacts (inside view modal) ────────────────────────────────
+  emContacts         = signal<EmergencyContact[]>([]);
+  emContactsLoading  = signal(false);
+  emContactsError    = signal<string | null>(null);
+  emContactsView     = signal<'list' | 'add' | 'edit'>('list');
+  emContactsSubmitting = signal(false);
+  emContactsModalError = signal<string | null>(null);
+  emEditContact      = signal<EmergencyContact | null>(null);
+  emDeleteTargetId   = signal<number | null>(null);
+  showEmDeleteModal  = signal(false);
+
+  emContactForm = this.fb.group({
+    name:     ['', [Validators.required, Validators.maxLength(100)]],
+    phone:    ['', [Validators.required, Validators.pattern(/^09\d{8}$/)]],
+    relation: [RelationType.Father, Validators.required],
+    priority: [1, [Validators.required, Validators.min(1)]],
+  });
+
   // ── Attachments modal ─────────────────────────────────────────────────────
   showAttachModal    = signal(false);
   attachModalLoading = signal(false);
@@ -86,6 +105,9 @@ export class EmployeesComponent implements OnInit {
   uploadingType      = signal<AttachmentType | null>(null);
   deletingAttachType = signal<AttachmentType | null>(null);
   attachmentError    = signal<string | null>(null);
+  attachedTypes      = signal<Set<AttachmentType>>(new Set());
+  // Cache persists for the lifetime of the component (page session)
+  private readonly attachCache = new Map<number, Set<AttachmentType>>();
 
   // ── Shift Assignment modal ────────────────────────────────────────────────────
   showShiftModal      = signal(false);
@@ -186,48 +208,44 @@ export class EmployeesComponent implements OnInit {
   ];
 
   addForm = this.fb.group({
-    phoneNumber:               ['', [Validators.required, Validators.pattern(this.phonePattern)]],
-    firstName:                 ['', [Validators.required, Validators.maxLength(50)]],
-    lastName:                  ['', [Validators.required, Validators.maxLength(50)]],
-    email:                     ['', [Validators.email]],
-    employeeType:              [EmployeeType.Employee, Validators.required],
-    employeeNumber:            ['', [Validators.required, Validators.maxLength(50)]],
-    jobTitle:                  ['', [Validators.required, Validators.maxLength(100)]],
-    birthDate:                 ['', [Validators.required]],
-    gender:                    [GenderType.Male, Validators.required],
-    nationality:               ['', [Validators.maxLength(100)]],
-    branchId:                  [null as number | null, [Validators.min(1)]],
-    sectionId:                 [null as number | null, [Validators.min(1)]],
-    hireDate:                  ['', [Validators.required]],
-    contractType:              [ContractType.FullTime, Validators.required],
-    baseSalary:                [null as number | null, [Validators.required, Validators.min(0.01)]],
-    workStartTime:             ['', [Validators.required]],
-    workEndTime:               ['', [Validators.required]],
-    emergencyContactRelation:  [RelationType.Father, Validators.required],
-    emergencyContactPhone:     ['', [Validators.required, Validators.pattern(/^09\d{8}$/)]],
-    internalNotes:             ['', [Validators.maxLength(1000)]],
+    phoneNumber:    ['', [Validators.required, Validators.pattern(this.phonePattern)]],
+    firstName:      ['', [Validators.required, Validators.maxLength(50)]],
+    lastName:       ['', [Validators.required, Validators.maxLength(50)]],
+    email:          ['', [Validators.email]],
+    employeeRole:   [EmployeeType.Employee, Validators.required],
+    employeeNumber: ['', [Validators.required, Validators.maxLength(50)]],
+    jobTitle:       ['', [Validators.required, Validators.maxLength(100)]],
+    birthDate:      ['', [Validators.required]],
+    gender:         [GenderType.Male, Validators.required],
+    nationality:    ['', [Validators.maxLength(100)]],
+    branchId:       [null as number | null, [Validators.min(1)]],
+    sectionId:      [null as number | null, [Validators.min(1)]],
+    hireDate:       ['', [Validators.required]],
+    contractType:   [ContractType.FullTime, Validators.required],
+    baseSalary:     [null as number | null, [Validators.required, Validators.min(0.01)]],
+    workStartTime:  ['', [Validators.required]],
+    workEndTime:    ['', [Validators.required]],
+    internalNotes:  ['', [Validators.maxLength(1000)]],
   });
 
   editForm = this.fb.group({
-    firstName:                 ['', [Validators.required, Validators.maxLength(50)]],
-    lastName:                  ['', [Validators.required, Validators.maxLength(50)]],
-    email:                     ['', [Validators.email]],
-    employeeType:              [EmployeeType.Employee, Validators.required],
-    employeeNumber:            ['', [Validators.required, Validators.maxLength(50)]],
-    jobTitle:                  ['', [Validators.required, Validators.maxLength(100)]],
-    birthDate:                 ['', [Validators.required]],
-    gender:                    [GenderType.Male, Validators.required],
-    nationality:               ['', [Validators.maxLength(100)]],
-    branchId:                  [null as number | null, [Validators.min(1)]],
-    sectionId:                 [null as number | null, [Validators.min(1)]],
-    hireDate:                  ['', [Validators.required]],
-    contractType:              [ContractType.FullTime, Validators.required],
-    baseSalary:                [null as number | null, [Validators.required, Validators.min(0.01)]],
-    workStartTime:             ['', [Validators.required]],
-    workEndTime:               ['', [Validators.required]],
-    emergencyContactRelation:  [RelationType.Father, Validators.required],
-    emergencyContactPhone:     ['', [Validators.required, Validators.pattern(/^09\d{8}$/)]],
-    internalNotes:             ['', [Validators.maxLength(1000)]],
+    firstName:      ['', [Validators.required, Validators.maxLength(50)]],
+    lastName:       ['', [Validators.required, Validators.maxLength(50)]],
+    email:          ['', [Validators.email]],
+    employeeRole:   [EmployeeType.Employee, Validators.required],
+    employeeNumber: ['', [Validators.required, Validators.maxLength(50)]],
+    jobTitle:       ['', [Validators.required, Validators.maxLength(100)]],
+    birthDate:      ['', [Validators.required]],
+    gender:         [GenderType.Male, Validators.required],
+    nationality:    ['', [Validators.maxLength(100)]],
+    branchId:       [null as number | null, [Validators.min(1)]],
+    sectionId:      [null as number | null, [Validators.min(1)]],
+    hireDate:       ['', [Validators.required]],
+    contractType:   [ContractType.FullTime, Validators.required],
+    baseSalary:     [null as number | null, [Validators.required, Validators.min(0.01)]],
+    workStartTime:  ['', [Validators.required]],
+    workEndTime:    ['', [Validators.required]],
+    internalNotes:  ['', [Validators.maxLength(1000)]],
   });
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
@@ -239,8 +257,8 @@ export class EmployeesComponent implements OnInit {
     if (this.branchId && this.sectionId) {
       this.backUrl.set(`/dashboard/manager/branches/${this.branchId}/sections`);
     }
-    this.watchEmployeeType(this.addForm.get('employeeType')!, this.addForm);
-    this.watchEmployeeType(this.editForm.get('employeeType')!, this.editForm);
+    this.watchEmployeeType(this.addForm.get('employeeRole')!, this.addForm);
+    this.watchEmployeeType(this.editForm.get('employeeRole')!, this.editForm);
     this.loadEmployees();
   }
 
@@ -329,10 +347,9 @@ export class EmployeesComponent implements OnInit {
   // ── Add ────────────────────────────────────────────────────────────────────
   openAdd(): void {
     this.addForm.reset({
-      employeeType:             EmployeeType.Employee,
-      gender:                   GenderType.Male,
-      contractType:             ContractType.FullTime,
-      emergencyContactRelation: RelationType.Father,
+      employeeRole: EmployeeType.Employee,
+      gender:       GenderType.Male,
+      contractType: ContractType.FullTime,
     });
     this.modalError.set(null);
     this.showAddModal.set(true);
@@ -345,26 +362,24 @@ export class EmployeesComponent implements OnInit {
 
     const v = this.addForm.value;
     this.employeeService.create({
-      phoneNumber:              v.phoneNumber!,
-      firstName:                v.firstName!,
-      lastName:                 v.lastName!,
-      email:                    v.email    || undefined,
-      employeeType:             v.employeeType!,
-      employeeNumber:           v.employeeNumber!,
-      jobTitle:                 v.jobTitle!,
-      birthDate:                v.birthDate!,
-      gender:                   v.gender!,
-      nationality:              v.nationality || undefined,
-      branchId:                 v.branchId  ?? undefined,
-      sectionId:                v.sectionId ?? undefined,
-      hireDate:                 v.hireDate!,
-      contractType:             v.contractType!,
-      baseSalary:               v.baseSalary!,
-      workStartTime:            this.toTimeString(v.workStartTime!),
-      workEndTime:              this.toTimeString(v.workEndTime!),
-      emergencyContactRelation: v.emergencyContactRelation!,
-      emergencyContactPhone:    v.emergencyContactPhone!,
-      internalNotes:            v.internalNotes || undefined,
+      phoneNumber:    v.phoneNumber!,
+      firstName:      v.firstName!,
+      lastName:       v.lastName!,
+      email:          v.email    || undefined,
+      employeeRole:   v.employeeRole!,
+      employeeNumber: v.employeeNumber!,
+      jobTitle:       v.jobTitle!,
+      birthDate:      v.birthDate!,
+      gender:         v.gender!,
+      nationality:    v.nationality || undefined,
+      branchId:       v.branchId  ?? undefined,
+      sectionId:      v.sectionId ?? undefined,
+      hireDate:       v.hireDate!,
+      contractType:   v.contractType!,
+      baseSalary:     v.baseSalary!,
+      workStartTime:  this.toTimeString(v.workStartTime!),
+      workEndTime:    this.toTimeString(v.workEndTime!),
+      internalNotes:  v.internalNotes || undefined,
     }).subscribe({
       next: () => {
         this.submitting.set(false);
@@ -373,7 +388,7 @@ export class EmployeesComponent implements OnInit {
         this.filter.patch({ pageNumber: 1 });
         this.loadEmployees();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add employee.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -391,31 +406,26 @@ export class EmployeesComponent implements OnInit {
         this.editLoading.set(false);
         const e = res?.data ?? res;
         this.editForm.patchValue({
-          firstName:                e.firstName,
-          lastName:                 e.lastName,
-          email:                    e.email              ?? '',
-          employeeType:             e.employeeType       ?? EmployeeType.Employee,
-          employeeNumber:           e.employeeNumber     ?? '',
-          jobTitle:                 e.jobTitle           ?? '',
-          birthDate:                e.birthDate          ? e.birthDate.substring(0, 10)      : '',
-          gender:                   e.gender             ?? GenderType.Male,
-          nationality:              e.nationality        ?? '',
-          branchId:                 e.branchId           ?? null,
-          sectionId:                e.sectionId          ?? null,
-          hireDate:                 e.hireDate           ? e.hireDate.substring(0, 10)       : '',
-          contractType:             e.contractType       ?? ContractType.FullTime,
-          baseSalary:               e.baseSalary         ?? null,
-          workStartTime:            e.workStartTime      ? e.workStartTime.substring(0, 5)   : '',
-          workEndTime:              e.workEndTime        ? e.workEndTime.substring(0, 5)     : '',
-          emergencyContactRelation: e.emergencyContactRelation ?? RelationType.Father,
-          emergencyContactPhone:    e.emergencyContactPhone    ?? '',
-          internalNotes:            e.internalNotes      ?? '',
+          firstName:      e.firstName,
+          lastName:       e.lastName,
+          email:          e.email          ?? '',
+          employeeRole:   e.employeeRole   ?? EmployeeType.Employee,
+          employeeNumber: e.employeeNumber ?? '',
+          jobTitle:       e.jobTitle       ?? '',
+          birthDate:      e.birthDate      ? e.birthDate.substring(0, 10)    : '',
+          gender:         e.gender         ?? GenderType.Male,
+          nationality:    e.nationality    ?? '',
+          branchId:       e.branchId       ?? null,
+          sectionId:      e.sectionId      ?? null,
+          hireDate:       e.hireDate       ? e.hireDate.substring(0, 10)     : '',
+          contractType:   e.contractType   ?? ContractType.FullTime,
+          baseSalary:     e.baseSalary     ?? null,
+          workStartTime:  e.workStartTime  ? e.workStartTime.substring(0, 5) : '',
+          workEndTime:    e.workEndTime    ? e.workEndTime.substring(0, 5)   : '',
+          internalNotes:  e.internalNotes  ?? '',
         });
       },
-      error: err => {
-        this.editLoading.set(false);
-        this.modalError.set(this.apiErr(err, 'Failed to load employee data.'));
-      },
+      error: () => { this.editLoading.set(false); },
     });
   }
 
@@ -428,25 +438,23 @@ export class EmployeesComponent implements OnInit {
 
     const v = this.editForm.value;
     this.employeeService.update(id, {
-      firstName:                v.firstName    || undefined,
-      lastName:                 v.lastName     || undefined,
-      email:                    v.email        || undefined,
-      employeeType:             v.employeeType ?? EmployeeType.Employee,
-      employeeNumber:           v.employeeNumber || undefined,
-      jobTitle:                 v.jobTitle     || undefined,
-      birthDate:                v.birthDate    || undefined,
-      gender:                   v.gender       ?? GenderType.Male,
-      nationality:              v.nationality  || undefined,
-      branchId:                 v.branchId     ?? undefined,
-      sectionId:                v.sectionId    ?? undefined,
-      hireDate:                 v.hireDate     || undefined,
-      contractType:             v.contractType ?? ContractType.FullTime,
-      baseSalary:               v.baseSalary   ?? undefined,
-      workStartTime:            v.workStartTime ? this.toTimeString(v.workStartTime) : undefined,
-      workEndTime:              v.workEndTime   ? this.toTimeString(v.workEndTime)   : undefined,
-      emergencyContactRelation: v.emergencyContactRelation ?? RelationType.Father,
-      emergencyContactPhone:    v.emergencyContactPhone    || undefined,
-      internalNotes:            v.internalNotes || undefined,
+      firstName:      v.firstName      || undefined,
+      lastName:       v.lastName       || undefined,
+      email:          v.email          || undefined,
+      employeeRole:   v.employeeRole   ?? EmployeeType.Employee,
+      employeeNumber: v.employeeNumber || undefined,
+      jobTitle:       v.jobTitle       || undefined,
+      birthDate:      v.birthDate      || undefined,
+      gender:         v.gender         ?? GenderType.Male,
+      nationality:    v.nationality    || undefined,
+      branchId:       v.branchId       ?? undefined,
+      sectionId:      v.sectionId      ?? undefined,
+      hireDate:       v.hireDate       || undefined,
+      contractType:   v.contractType   ?? ContractType.FullTime,
+      baseSalary:     v.baseSalary     ?? undefined,
+      workStartTime:  v.workStartTime  ? this.toTimeString(v.workStartTime) : undefined,
+      workEndTime:    v.workEndTime    ? this.toTimeString(v.workEndTime)   : undefined,
+      internalNotes:  v.internalNotes  || undefined,
     }).subscribe({
       next: () => {
         this.submitting.set(false);
@@ -454,7 +462,7 @@ export class EmployeesComponent implements OnInit {
         this.flash('Employee updated.');
         this.loadEmployees();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Update failed.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -485,12 +493,124 @@ export class EmployeesComponent implements OnInit {
     this.viewEmployee.set(emp);
     this.viewLoading.set(true);
     this.showViewModal.set(true);
+    this.emContacts.set([]);
+    this.emContactsView.set('list');
+    this.emContactsError.set(null);
     this.employeeService.getById(emp.id).subscribe({
       next: (res: any) => {
         this.viewLoading.set(false);
         this.viewEmployee.set((res?.data ?? res) as Employee);
       },
       error: () => this.viewLoading.set(false),
+    });
+    this.loadEmContacts(emp.id);
+  }
+
+  // ── Emergency Contacts CRUD ───────────────────────────────────────────────
+  loadEmContacts(empId: number): void {
+    this.emContactsLoading.set(true);
+    this.emContactsError.set(null);
+    this.employeeService.getEmergencyContacts(empId).subscribe({
+      next: (res: any) => {
+        this.emContactsLoading.set(false);
+        const raw = res?.data ?? res;
+        this.emContacts.set(Array.isArray(raw) ? raw : (raw?.items ?? []));
+      },
+      error: err => {
+        this.emContactsLoading.set(false);
+        if (err?.status === 404) {
+          this.emContacts.set([]);
+        } else {
+          this.emContactsError.set(this.apiErr(err, 'Failed to load emergency contacts.'));
+        }
+      },
+    });
+  }
+
+  openEmContactAdd(): void {
+    this.emContactForm.reset({ relation: RelationType.Father, priority: this.emContacts().length + 1 });
+    this.emContactsModalError.set(null);
+    this.emContactsView.set('add');
+  }
+
+  submitEmContactAdd(): void {
+    if (this.emContactForm.invalid) { this.emContactForm.markAllAsTouched(); return; }
+    const empId = this.viewEmployee()?.id;
+    if (!empId) return;
+    this.emContactsSubmitting.set(true);
+    this.emContactsModalError.set(null);
+    const v = this.emContactForm.value;
+    const payload: CreateEmergencyContactRequest = {
+      name:     v.name!,
+      phone:    v.phone!,
+      relation: v.relation!,
+      priority: v.priority!,
+    };
+    this.employeeService.createEmergencyContact(empId, payload).subscribe({
+      next: () => {
+        this.emContactsSubmitting.set(false);
+        this.emContactsView.set('list');
+        this.loadEmContacts(empId);
+      },
+      error: () => { this.emContactsSubmitting.set(false); },
+    });
+  }
+
+  openEmContactEdit(contact: EmergencyContact): void {
+    this.emEditContact.set(contact);
+    this.emContactForm.patchValue({
+      name:     contact.name,
+      phone:    contact.phone,
+      relation: contact.relation,
+      priority: contact.priority,
+    });
+    this.emContactsModalError.set(null);
+    this.emContactsView.set('edit');
+  }
+
+  submitEmContactEdit(): void {
+    if (this.emContactForm.invalid) { this.emContactForm.markAllAsTouched(); return; }
+    const empId     = this.viewEmployee()?.id;
+    const contactId = this.emEditContact()?.id;
+    if (!empId || !contactId) return;
+    this.emContactsSubmitting.set(true);
+    this.emContactsModalError.set(null);
+    const v = this.emContactForm.value;
+    this.employeeService.updateEmergencyContact(empId, contactId, {
+      name:     v.name!,
+      phone:    v.phone!,
+      relation: v.relation!,
+      priority: v.priority!,
+    }).subscribe({
+      next: () => {
+        this.emContactsSubmitting.set(false);
+        this.emContactsView.set('list');
+        this.loadEmContacts(empId);
+      },
+      error: () => { this.emContactsSubmitting.set(false); },
+    });
+  }
+
+  openEmContactDelete(id: number): void {
+    this.emDeleteTargetId.set(id);
+    this.showEmDeleteModal.set(true);
+  }
+
+  executeEmContactDelete(): void {
+    const empId     = this.viewEmployee()?.id;
+    const contactId = this.emDeleteTargetId();
+    if (!empId || contactId === null) return;
+    this.emContactsSubmitting.set(true);
+    this.employeeService.deleteEmergencyContact(empId, contactId).subscribe({
+      next: () => {
+        this.emContactsSubmitting.set(false);
+        this.showEmDeleteModal.set(false);
+        this.emContacts.update(list => list.filter(c => c.id !== contactId));
+      },
+      error: () => {
+        this.emContactsSubmitting.set(false);
+        this.showEmDeleteModal.set(false);
+      },
     });
   }
 
@@ -521,11 +641,7 @@ export class EmployeesComponent implements OnInit {
       },
       error: (err) => {
         this.shiftLoading.set(false);
-        if (err?.status === 404) {
-          this.employeeShiftSystem.set(null);
-        } else {
-          this.shiftError.set(this.apiErr(err, 'Failed to load shift assignment.'));
-        }
+        if (err?.status === 404) this.employeeShiftSystem.set(null);
       },
     });
   }
@@ -541,11 +657,7 @@ export class EmployeesComponent implements OnInit {
         this.shiftSubmitting.set(false);
         this.employeeShiftSystem.set(null);
       },
-      error: (err) => {
-        this.shiftSubmitting.set(false);
-        this.shiftError.set(this.apiErr(err, 'Failed to unassign.'));
-        this.showAssignForm.set(false);
-      },
+      error: () => { this.shiftSubmitting.set(false); this.showAssignForm.set(false); },
     });
   }
 
@@ -570,10 +682,7 @@ export class EmployeesComponent implements OnInit {
         });
         this.flash('Shift system assigned.');
       },
-      error: (err) => {
-        this.shiftSubmitting.set(false);
-        this.shiftError.set(this.apiErr(err, 'Failed to assign shift system.'));
-      },
+      error: () => { this.shiftSubmitting.set(false); },
     });
   }
 
@@ -588,10 +697,7 @@ export class EmployeesComponent implements OnInit {
         this.employeeShiftSystem.set(null);
         this.flash('Shift assignment removed.');
       },
-      error: (err) => {
-        this.shiftSubmitting.set(false);
-        this.shiftError.set(this.apiErr(err, 'Failed to remove assignment.'));
-      },
+      error: () => { this.shiftSubmitting.set(false); },
     });
   }
 
@@ -604,16 +710,8 @@ export class EmployeesComponent implements OnInit {
     event.stopPropagation();
     this.editEmployeeDetail.set(emp);
     this.attachmentError.set(null);
-    this.attachModalLoading.set(true);
+    this.attachedTypes.set(new Set(this.attachCache.get(emp.id) ?? []));
     this.showAttachModal.set(true);
-
-    this.employeeService.getById(emp.id).subscribe({
-      next: (res: any) => {
-        this.attachModalLoading.set(false);
-        this.editEmployeeDetail.set((res?.data ?? res) as Employee);
-      },
-      error: () => this.attachModalLoading.set(false),
-    });
   }
 
   // ── Status History ─────────────────────────────────────────────────────────
@@ -698,10 +796,7 @@ export class EmployeesComponent implements OnInit {
         this.loadHistory();
         this.refreshEmployeeStatus(empId);
       },
-      error: err => {
-        this.historySubmitting.set(false);
-        this.historyModalError.set(this.apiErr(err, 'Failed to add status.'));
-      },
+      error: () => { this.historySubmitting.set(false); },
     });
   }
 
@@ -726,10 +821,7 @@ export class EmployeesComponent implements OnInit {
         this.loadHistory();
         this.refreshEmployeeStatus(empId);
       },
-      error: err => {
-        this.historySubmitting.set(false);
-        this.historyModalError.set(this.apiErr(err, 'Failed to update status.'));
-      },
+      error: () => { this.historySubmitting.set(false); },
     });
   }
 
@@ -784,16 +876,13 @@ export class EmployeesComponent implements OnInit {
     this.attachmentError.set(null);
 
     this.employeeService.uploadAttachment(empId, file, type).subscribe({
-      next: (url: string) => {
+      next: () => {
         this.uploadingType.set(null);
-        this.editEmployeeDetail.update(emp =>
-          emp ? { ...emp, ...this.attachUrlPatch(type, url) } : emp
-        );
+        this.attachedTypes.update(s => new Set([...s, type]));
+        if (!this.attachCache.has(empId)) this.attachCache.set(empId, new Set());
+        this.attachCache.get(empId)!.add(type);
       },
-      error: err => {
-        this.uploadingType.set(null);
-        this.attachmentError.set(this.apiErr(err, 'Failed to upload file.'));
-      },
+      error: () => { this.uploadingType.set(null); },
     });
   }
 
@@ -806,60 +895,11 @@ export class EmployeesComponent implements OnInit {
     this.employeeService.deleteAttachment(empId, type).subscribe({
       next: () => {
         this.deletingAttachType.set(null);
-        this.editEmployeeDetail.update(emp =>
-          emp ? { ...emp, ...this.attachUrlPatch(type, undefined) } : emp
-        );
+        this.attachedTypes.update(s => { const n = new Set(s); n.delete(type); return n; });
+        this.attachCache.get(empId)?.delete(type);
       },
-      error: err => {
-        this.deletingAttachType.set(null);
-        this.attachmentError.set(this.apiErr(err, 'Failed to delete file.'));
-      },
+      error: () => { this.deletingAttachType.set(null); },
     });
-  }
-
-  getAttachmentUrl(type: AttachmentType): string | undefined {
-    const emp = this.editEmployeeDetail();
-    if (!emp) return undefined;
-    const map: Record<AttachmentType, keyof Employee> = {
-      [AttachmentType.IdentityPhoto]:       'identityPhotoUrl',
-      [AttachmentType.PersonalPhoto]:       'personalPhotoUrl',
-      [AttachmentType.WorkContract]:        'workContractUrl',
-      [AttachmentType.Certificate]:         'certificateUrl',
-      [AttachmentType.Qualifications]:      'qualificationsUrl',
-      [AttachmentType.HealthCard]:          'healthCardUrl',
-      [AttachmentType.ProfessionalLicense]: 'professionalLicenseUrl',
-    };
-    return emp[map[type]] as string | undefined;
-  }
-
-  isPdf(url: string): boolean {
-    return url.toLowerCase().includes('.pdf');
-  }
-
-  getAttachmentUrlFromEmployee(emp: Employee, type: AttachmentType): string | undefined {
-    const map: Record<AttachmentType, keyof Employee> = {
-      [AttachmentType.IdentityPhoto]:       'identityPhotoUrl',
-      [AttachmentType.PersonalPhoto]:       'personalPhotoUrl',
-      [AttachmentType.WorkContract]:        'workContractUrl',
-      [AttachmentType.Certificate]:         'certificateUrl',
-      [AttachmentType.Qualifications]:      'qualificationsUrl',
-      [AttachmentType.HealthCard]:          'healthCardUrl',
-      [AttachmentType.ProfessionalLicense]: 'professionalLicenseUrl',
-    };
-    return emp[map[type]] as string | undefined;
-  }
-
-  private attachUrlPatch(type: AttachmentType, url: string | undefined): Partial<Employee> {
-    const map: Record<AttachmentType, keyof Employee> = {
-      [AttachmentType.IdentityPhoto]:       'identityPhotoUrl',
-      [AttachmentType.PersonalPhoto]:       'personalPhotoUrl',
-      [AttachmentType.WorkContract]:        'workContractUrl',
-      [AttachmentType.Certificate]:         'certificateUrl',
-      [AttachmentType.Qualifications]:      'qualificationsUrl',
-      [AttachmentType.HealthCard]:          'healthCardUrl',
-      [AttachmentType.ProfessionalLicense]: 'professionalLicenseUrl',
-    };
-    return { [map[type]]: url };
   }
 
   private refreshEmployeeStatus(empId: number): void {
@@ -923,10 +963,7 @@ export class EmployeesComponent implements OnInit {
         this.loadShiftLogs();
         this.flash('Attendance recorded.');
       },
-      error: err => {
-        this.logsSubmitting.set(false);
-        this.logsModalError.set(this.apiErr(err, 'Failed to record attendance.'));
-      },
+      error: () => { this.logsSubmitting.set(false); },
     });
   }
 
@@ -998,10 +1035,7 @@ export class EmployeesComponent implements OnInit {
         this.loadShiftLogs();
         this.flash('Attendance updated.');
       },
-      error: err => {
-        this.logsSubmitting.set(false);
-        this.logsModalError.set(this.apiErr(err, 'Update failed.'));
-      },
+      error: () => { this.logsSubmitting.set(false); },
     });
   }
 

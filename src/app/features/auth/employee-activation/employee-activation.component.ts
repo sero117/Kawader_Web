@@ -6,6 +6,7 @@ import {
 } from '@angular/forms';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 function passwordComplexity(ctrl: AbstractControl): ValidationErrors | null {
   const v: string = ctrl.value ?? '';
@@ -28,6 +29,7 @@ function passwordsMatch(group: AbstractControl): ValidationErrors | null {
 })
 export class EmployeeActivationComponent {
   private readonly authService = inject(AuthService);
+  private readonly notificationService = inject(NotificationService);
   private readonly fb          = inject(FormBuilder);
   private readonly router      = inject(Router);
 
@@ -96,6 +98,7 @@ export class EmployeeActivationComponent {
           return;
         }
         this.authService.saveTokens(tokenData);
+        this.notificationService.connect();
         const next = this.authService.needsCompanySelection()
           ? '/auth/select-company'
           : this.authService.getHomeRoute(tokenData?.role);

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { companyManagerGuard } from './core/guards/companymanager.guard';
 import { employeeGuard } from './core/guards/employee.guard';
+import { payrollAccessGuard } from './core/guards/payroll-access.guard';
 
 export const routes: Routes = [
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -122,6 +123,18 @@ export const routes: Routes = [
         path: 'company-holidays',
         loadComponent: () =>
           import('./features/companymanager/company-holidays/company-holidays.component').then(m => m.CompanyHolidaysComponent),
+      },
+      {
+        path: 'payroll',
+        canActivate: [payrollAccessGuard],
+        loadComponent: () =>
+          import('./features/companymanager/payroll/payroll-list/payroll-list.component').then(m => m.PayrollListComponent),
+      },
+      {
+        path: 'payroll/:payrollRunId',
+        canActivate: [payrollAccessGuard],
+        loadComponent: () =>
+          import('./features/companymanager/payroll/payroll-detail/payroll-detail.component').then(m => m.PayrollDetailComponent),
       },
     ],
   },

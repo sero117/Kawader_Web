@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiService } from './api.service';
@@ -10,15 +10,27 @@ import {
   UpdateEmployeeRequest,
   GetEmployeesParams,
   EmployeeCompany,
+  ActiveEmployee,
+  EmergencyContact,
+  CreateEmergencyContactRequest,
+  UpdateEmergencyContactRequest,
 } from '../models/employee.models';
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeService {
   private readonly api     = inject(ApiService);
+  private readonly http    = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/Employees`;
 
   getById(id: number): Observable<any> {
     return this.api.get<any>(`${this.baseUrl}/${id}`);
+  }
+
+  /** Active (Active + Probation) employees for the current tenant — used to pick employees onto a payroll run. */
+  getActive(filter?: string): Observable<ActiveEmployee[]> {
+    let p = new HttpParams();
+    if (filter) p = p.set('Filter', filter);
+    return this.api.get<ActiveEmployee[]>(`${this.baseUrl}/active`, p);
   }
 
   /** Companies the authenticated employee belongs to — used to resolve tenant context. */
@@ -31,7 +43,7 @@ export class EmployeeService {
     const fd = new FormData();
     fd.append('file', file);
     fd.append('type', type.toString());
-    return this.api.post<string>(`${this.baseUrl}/${id}/attachments`, fd);
+    return this.http.post(`${this.baseUrl}/${id}/attachments`, fd, { responseType: 'text' });
   }
 
   // Returns 204 No Content on success, 404 if attachment never uploaded
@@ -58,5 +70,21 @@ export class EmployeeService {
 
   delete(id: number): Observable<{ id: number }> {
     return this.api.delete<{ id: number }>(`${this.baseUrl}/${id}`);
+  }
+
+  getEmergencyContacts(empId: number): Observable<EmergencyContact[]> {
+    return this.api.get<EmergencyContact[]>(`${this.baseUrl}/${empId}/emergency-contacts`);
+  }
+
+  createEmergencyContact(empId: number, payload: CreateEmergencyContactRequest): Observable<{ id: number }> {
+    return this.api.post<{ id: number }>(`${this.baseUrl}/${empId}/emergency-contacts`, payload);
+  }
+
+  updateEmergencyContact(empId: number, contactId: number, payload: UpdateEmergencyContactRequest): Observable<{ id: number }> {
+    return this.api.put<{ id: number }>(`${this.baseUrl}/${empId}/emergency-contacts/${contactId}`, payload);
+  }
+
+  deleteEmergencyContact(empId: number, contactId: number): Observable<{ id: number }> {
+    return this.api.delete<{ id: number }>(`${this.baseUrl}/${empId}/emergency-contacts/${contactId}`);
   }
 }

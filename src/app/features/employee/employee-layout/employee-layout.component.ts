@@ -1,6 +1,7 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { EmployeeType } from '../../../core/models/auth.models';
 import { EmployeeCompany } from '../../../core/models/employee.models';
@@ -17,6 +18,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 export class EmployeeLayoutComponent implements OnInit {
   private readonly router          = inject(Router);
   private readonly authService     = inject(AuthService);
+  private readonly notificationService = inject(NotificationService);
   private readonly employeeService = inject(EmployeeService);
 
   readonly EmployeeType = EmployeeType;
@@ -73,6 +75,7 @@ export class EmployeeLayoutComponent implements OnInit {
   }
 
   signOut(): void {
+    this.notificationService.disconnect();
     this.authService.clearTokens();
     this.router.navigate(['/auth/login']);
   }

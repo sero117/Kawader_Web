@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 @Component({
@@ -11,9 +12,11 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
 })
 export class DashboardComponent {
   private readonly authService = inject(AuthService);
+  private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
 
   signOut(): void {
+    this.notificationService.disconnect();
     this.authService.clearTokens();
     this.router.navigate(['/auth/login']);
   }
