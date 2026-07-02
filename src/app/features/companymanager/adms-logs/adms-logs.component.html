@@ -1,0 +1,205 @@
+<!-- Page heading -->
+<div class="flex items-center justify-between mb-7">
+  <div>
+    <h1 class="font-bold text-2xl mb-1" style="color: var(--text-base);">{{ 'manager.admsLogs.title' | translate }}</h1>
+    <p class="text-sm" style="color: var(--text-faint);">{{ 'manager.admsLogs.subtitle' | translate }}</p>
+  </div>
+  <button (click)="loadLogs()" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold"
+    style="background: var(--bg-subtle-sm); color: var(--text-muted); border: 1px solid var(--border);">
+    <svg class="w-4 h-4" [class.animate-spin]="loading()" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+    </svg>
+    {{ 'common.retry' | translate }}
+  </button>
+</div>
+
+<!-- Filters -->
+<div class="admin-card mb-5">
+  <div class="p-5">
+    <div class="flex flex-wrap gap-3 items-end">
+      <!-- Search -->
+      <div class="flex-1 min-w-[200px]">
+        <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+          {{ 'manager.admsLogs.search' | translate }}
+        </label>
+        <div class="relative">
+          <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+          </svg>
+          <input type="text" class="modal-input ps-9"
+            [value]="searchQuery()"
+            (input)="searchQuery.set($any($event.target).value)"
+            [placeholder]="'manager.admsLogs.searchPlaceholder' | translate" />
+        </div>
+      </div>
+
+      <!-- From date -->
+      <div>
+        <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+          {{ 'manager.admsLogs.fromDate' | translate }}
+        </label>
+        <input type="date" class="modal-input"
+          [value]="fromDate()"
+          (change)="fromDate.set($any($event.target).value)" />
+      </div>
+
+      <!-- To date -->
+      <div>
+        <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+          {{ 'manager.admsLogs.toDate' | translate }}
+        </label>
+        <input type="date" class="modal-input"
+          [value]="toDate()"
+          (change)="toDate.set($any($event.target).value)" />
+      </div>
+
+      <!-- Clear -->
+      @if (searchQuery() || fromDate() || toDate()) {
+        <button (click)="clearFilters()"
+          class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold self-end"
+          style="background: rgba(239,68,68,0.07); color: rgba(239,68,68,0.7);">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+          {{ 'manager.admsLogs.clearFilters' | translate }}
+        </button>
+      }
+    </div>
+
+    <!-- Stats row -->
+    @if (!loading() && !listError()) {
+      <div class="flex items-center gap-4 mt-4 pt-4" style="border-top: 1px solid var(--border);">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full" style="background: rgba(99,102,241,0.7);"></span>
+          <span class="text-xs" style="color: var(--text-faint);">
+            {{ filtered().length }} {{ 'manager.admsLogs.records' | translate }}
+          </span>
+        </div>
+        @if (logs().length !== filtered().length) {
+          <span class="text-xs" style="color: var(--text-very-faint);">
+            ({{ 'manager.admsLogs.filteredFrom' | translate }} {{ logs().length }})
+          </span>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Logs table -->
+<div class="admin-card">
+
+  @if (loading()) {
+    <div class="p-5 space-y-3">
+      @for (_ of [1,2,3,4,5,6]; track $index) {
+        <div class="h-14 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+      }
+    </div>
+  } @else if (listError()) {
+    <div class="p-12 text-center">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: rgba(239,68,68,0.1);">
+        <svg class="w-6 h-6" style="color: rgba(239,68,68,0.7);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+        </svg>
+      </div>
+      <p class="font-medium mb-1" style="color: var(--text-base);">{{ 'manager.admsLogs.loadError' | translate }}</p>
+      <p class="text-sm mb-4" style="color: var(--text-faint);">{{ listError() }}</p>
+      <button (click)="loadLogs()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold"
+        style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+        </svg>
+        {{ 'common.retry' | translate }}
+      </button>
+    </div>
+  } @else if (filtered().length === 0) {
+    <div class="p-16 text-center">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: var(--bg-subtle-sm);">
+        <svg class="w-7 h-7" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"/>
+        </svg>
+      </div>
+      <p class="font-medium mb-1" style="color: var(--text-base);">
+        {{ (logs().length === 0 ? 'manager.admsLogs.emptyList' : 'manager.admsLogs.noMatch') | translate }}
+      </p>
+      <p class="text-sm" style="color: var(--text-faint);">
+        {{ (logs().length === 0 ? 'manager.admsLogs.emptyHint' : 'manager.admsLogs.noMatchHint') | translate }}
+      </p>
+    </div>
+  } @else {
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ 'manager.admsLogs.colEmployee' | translate }}</th>
+            <th>{{ 'manager.admsLogs.colDevice' | translate }}</th>
+            <th>{{ 'manager.admsLogs.colDate' | translate }}</th>
+            <th>{{ 'manager.admsLogs.colTime' | translate }}</th>
+            <th>{{ 'manager.admsLogs.colVerify' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of filtered(); track ($index)) {
+            <tr>
+              <!-- Employee -->
+              <td>
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0"
+                    style="background: linear-gradient(135deg, var(--nav-accent) 0%, #7c3aed 100%); color: #fff;">
+                    {{ (log.employeeName ?? '#').charAt(0).toUpperCase() }}
+                  </div>
+                  <div>
+                    @if (log.employeeName) {
+                      <p class="text-sm font-medium leading-tight" style="color: var(--text-base);">{{ log.employeeName }}</p>
+                    }
+                    <p class="text-[10px] font-mono" style="color: var(--text-ultra-faint);">
+                      {{ 'manager.admsLogs.deviceNo' | translate }} {{ empNumber(log) }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Device serial -->
+              <td>
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style="background: var(--bg-subtle-md);">
+                    <svg class="w-3 h-3" style="color: var(--text-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z"/>
+                    </svg>
+                  </div>
+                  <span class="font-mono text-xs" style="color: var(--text-faint);">{{ deviceSerial(log) }}</span>
+                </div>
+              </td>
+
+              <!-- Date -->
+              <td>
+                <span class="text-sm" style="color: var(--text-muted);">{{ punchDate(log) }}</span>
+              </td>
+
+              <!-- Time -->
+              <td>
+                <span class="font-mono text-sm font-semibold" style="color: var(--text-base);">{{ punchHour(log) }}</span>
+              </td>
+
+              <!-- Verify type -->
+              <td>
+                <span class="inline-flex items-center text-[10px] font-bold uppercase tracking-[0.08em] px-2 py-0.5 rounded-md"
+                  [style.background]="verifyBg(log)"
+                  [style.color]="verifyColor(log)">
+                  {{ verifyLabel(log) }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bottom count -->
+    <div class="px-5 py-3" style="border-top: 1px solid var(--border);">
+      <p class="text-xs" style="color: var(--text-very-faint);">
+        {{ filtered().length }} {{ 'manager.admsLogs.records' | translate }}
+      </p>
+    </div>
+  }
+</div>

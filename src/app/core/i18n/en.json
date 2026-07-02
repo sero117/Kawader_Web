@@ -381,6 +381,7 @@
       "companyHolidays": "Holidays",
       "payroll": "Payroll",
       "devices": "Device Management",
+      "admsLogs": "Punch Logs",
       "mainSection": "Main",
       "shiftsSection": "Shifts",
       "holidaysSection": "Holidays",
@@ -1143,6 +1144,28 @@
         "deleteTitle": "Remove Employee",
         "deleteMsg": "Are you sure you want to remove this employee from the device?"
       }
+    },
+    "admsLogs": {
+      "title": "Punch Logs",
+      "subtitle": "Attendance records received from fingerprint devices.",
+      "search": "Search",
+      "searchPlaceholder": "Search by name or serial number...",
+      "fromDate": "From date",
+      "toDate": "To date",
+      "clearFilters": "Clear filters",
+      "records": "record(s)",
+      "filteredFrom": "filtered from",
+      "loadError": "Failed to load punch logs",
+      "emptyList": "No logs yet",
+      "emptyHint": "Devices have not sent any records yet.",
+      "noMatch": "No matching records",
+      "noMatchHint": "Try adjusting your filters.",
+      "colEmployee": "Employee",
+      "colDevice": "Device",
+      "colDate": "Date",
+      "colTime": "Time",
+      "colVerify": "Verify Method",
+      "deviceNo": "Device #:"
     }
   },
   "companyTypes": {

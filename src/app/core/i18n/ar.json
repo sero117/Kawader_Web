@@ -381,6 +381,7 @@
       "companyHolidays": "العطل الرسمية",
       "payroll": "الرواتب",
       "devices": "إدارة الأجهزة",
+      "admsLogs": "سجلات البصمة",
       "mainSection": "الرئيسية",
       "shiftsSection": "الورديات",
       "holidaysSection": "العطل",
@@ -1143,6 +1144,28 @@
         "deleteTitle": "إلغاء تسجيل الموظف",
         "deleteMsg": "هل أنت متأكد من إلغاء تسجيل هذا الموظف من الجهاز؟"
       }
+    },
+    "admsLogs": {
+      "title": "سجلات البصمة",
+      "subtitle": "سجلات الحضور الواردة من أجهزة البصمة.",
+      "search": "بحث",
+      "searchPlaceholder": "ابحث بالاسم أو الرقم التسلسلي...",
+      "fromDate": "من تاريخ",
+      "toDate": "إلى تاريخ",
+      "clearFilters": "إلغاء الفلاتر",
+      "records": "سجل",
+      "filteredFrom": "مفلتر من",
+      "loadError": "تعذّر تحميل سجلات البصمة",
+      "emptyList": "لا توجد سجلات",
+      "emptyHint": "لم ترسل الأجهزة أي سجلات بعد.",
+      "noMatch": "لا نتائج مطابقة",
+      "noMatchHint": "جرّب تغيير الفلاتر.",
+      "colEmployee": "الموظف",
+      "colDevice": "الجهاز",
+      "colDate": "التاريخ",
+      "colTime": "الوقت",
+      "colVerify": "طريقة التحقق",
+      "deviceNo": "رقم الجهاز:"
     }
   },
   "companyTypes": {

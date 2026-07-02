@@ -141,6 +141,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/companymanager/devices/devices.component').then(m => m.DevicesComponent),
       },
+      {
+        path: 'adms-logs',
+        loadComponent: () =>
+          import('./features/companymanager/adms-logs/adms-logs.component').then(m => m.AdmsLogsComponent),
+      },
     ],
   },
 
