@@ -136,6 +136,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/companymanager/payroll/payroll-detail/payroll-detail.component').then(m => m.PayrollDetailComponent),
       },
+      {
+        path: 'devices',
+        loadComponent: () =>
+          import('./features/companymanager/devices/devices.component').then(m => m.DevicesComponent),
+      },
     ],
   },
 
