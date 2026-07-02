@@ -1601,3 +1601,76 @@ select option {
   font-size: 0.625rem;
   font-weight: 700;
 }
+
+/* ── Breadcrumb trail ─────────────────────────────────────────────── */
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.bc-link {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--nav-accent);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.bc-link:hover { opacity: 0.7; }
+
+.bc-sep {
+  font-size: 0.72rem;
+  color: var(--text-very-faint);
+  user-select: none;
+}
+
+.bc-current {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Print / PDF export ───────────────────────────────────────────── */
+
+.print-header { display: none; }
+
+.btn-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  background: var(--bg-subtle-sm);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.btn-print:hover {
+  background: var(--bg-subtle-md);
+  color: var(--text-base);
+}
+
+.btn-print svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+@media print {
+  .sidebar-shell, .layout-header,
+  .btn-primary, .btn-accent, .btn-print, .no-print { display: none !important; }
+  .layout-main { margin-inline-start: 0 !important; padding: 1.5rem !important; }
+  body { background: #fff !important; color: #000 !important; }
+  .admin-card { box-shadow: none !important; border: 1px solid #ddd !important; }
+  table { font-size: 11px; }
+  .print-header { display: block !important; margin-bottom: 1.25rem; }
+}

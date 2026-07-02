@@ -32,6 +32,11 @@ export class ManagerOverviewComponent implements OnInit {
   branchCount     = signal<number | null>(null);
   deviceCount     = signal<number | null>(null);
   todayPunchCount = signal<number | null>(null);
+
+  displayEmployee = signal(0);
+  displayBranch   = signal(0);
+  displayDevice   = signal(0);
+  displayPunch    = signal(0);
   recentLogs      = signal<AdmsLog[]>([]);
   chartDays       = signal<{ label: string; count: number; heightPx: number }[]>([]);
 
@@ -111,7 +116,22 @@ export class ManagerOverviewComponent implements OnInit {
       })));
 
       this.loading.set(false);
+      if (this.employeeCount()   !== null) this.countUp(v => this.displayEmployee.set(v), this.employeeCount()!);
+      if (this.branchCount()     !== null) this.countUp(v => this.displayBranch.set(v),   this.branchCount()!);
+      if (this.deviceCount()     !== null) this.countUp(v => this.displayDevice.set(v),   this.deviceCount()!);
+      if (this.todayPunchCount() !== null) this.countUp(v => this.displayPunch.set(v),    this.todayPunchCount()!);
     });
+  }
+
+  private countUp(setter: (v: number) => void, target: number, duration = 900): void {
+    if (target <= 0) { setter(0); return; }
+    const start = performance.now();
+    const step = (now: number) => {
+      const t = Math.min((now - start) / duration, 1);
+      setter(Math.round((1 - Math.pow(1 - t, 3)) * target));
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   }
 
   logTime(log: AdmsLog): string {

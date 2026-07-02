@@ -10,11 +10,11 @@
     </a>
     <div>
       <h1 class="font-bold text-2xl mb-0.5" style="color: var(--text-base);">{{ 'manager.sections.title' | translate }}</h1>
-      @if (branchName()) {
-        <p class="text-xs" style="color: var(--text-faint);">{{ branchName() }}</p>
-      } @else {
-        <p class="text-sm" style="color: var(--text-faint);">{{ 'manager.sections.subtitle' | translate }}</p>
-      }
+      <nav class="breadcrumb mt-0.5">
+        <a routerLink="/dashboard/manager/branches" class="bc-link">{{ 'manager.nav.branches' | translate }}</a>
+        <span class="bc-sep">›</span>
+        <span class="bc-current">{{ branchName() || ('manager.sections.subtitle' | translate) }}</span>
+      </nav>
     </div>
   </div>
   <button (click)="openAdd()" class="btn-primary">

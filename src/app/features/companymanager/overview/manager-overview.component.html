@@ -37,7 +37,7 @@
           </svg>
         </div>
         <div class="kpi-body">
-          <div class="kpi-value">{{ employeeCount() ?? '—' }}</div>
+          <div class="kpi-value">{{ employeeCount() !== null ? displayEmployee() : '—' }}</div>
           <div class="kpi-label">{{ 'manager.overview.employees' | translate }}</div>
         </div>
         <svg class="kpi-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -54,7 +54,7 @@
           </svg>
         </div>
         <div class="kpi-body">
-          <div class="kpi-value">{{ branchCount() ?? '—' }}</div>
+          <div class="kpi-value">{{ branchCount() !== null ? displayBranch() : '—' }}</div>
           <div class="kpi-label">{{ 'manager.overview.branches' | translate }}</div>
         </div>
         <svg class="kpi-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -71,7 +71,7 @@
           </svg>
         </div>
         <div class="kpi-body">
-          <div class="kpi-value">{{ deviceCount() ?? '—' }}</div>
+          <div class="kpi-value">{{ deviceCount() !== null ? displayDevice() : '—' }}</div>
           <div class="kpi-label">{{ 'manager.overview.devices' | translate }}</div>
         </div>
         <svg class="kpi-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -88,7 +88,7 @@
           </svg>
         </div>
         <div class="kpi-body">
-          <div class="kpi-value">{{ todayPunchCount() ?? '—' }}</div>
+          <div class="kpi-value">{{ todayPunchCount() !== null ? displayPunch() : '—' }}</div>
           <div class="kpi-label">{{ 'manager.overview.todayPunches' | translate }}</div>
         </div>
         <svg class="kpi-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

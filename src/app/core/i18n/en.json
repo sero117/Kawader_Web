@@ -11,6 +11,7 @@
     "back": "← Back",
     "next": "Next →",
     "retry": "Retry",
+    "print": "Print",
     "optional": "(optional)",
     "required": "This field is required",
     "required_mark": "*",
