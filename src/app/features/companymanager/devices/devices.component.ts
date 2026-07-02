@@ -25,35 +25,36 @@ export class DevicesComponent implements OnInit {
   pageNumber = signal(1);
   readonly pageSize = 10;
 
-  // ── Device Create/Edit modal ───────────────────────────────────────────────
+  // ── Device Create / Edit modal ────────────────────────────────────────────
   showDeviceModal = signal(false);
   editTarget      = signal<Device | null>(null);
   submitting      = signal(false);
   modalError      = signal<string | null>(null);
 
   deviceForm = this.fb.group({
-    serialNumber: ['', Validators.required],
-    name:         ['', Validators.required],
-    protocol:     [0,  Validators.required],
+    serialNumber: ['', [Validators.required, Validators.maxLength(100)]],
+    name:         ['', [Validators.required, Validators.maxLength(200)]],
   });
 
   get isEdit(): boolean { return this.editTarget() !== null; }
 
+  // ── New device secret (shown once after create or regenerate) ─────────────
+  showSecretModal = signal(false);
+  newSecret       = signal<string | null>(null);
+  secretCopied    = signal(false);
+
   // ── Delete device modal ───────────────────────────────────────────────────
-  showDeleteModal  = signal(false);
-  deleteTargetId   = signal<number | null>(null);
+  showDeleteModal = signal(false);
+  deleteTargetId  = signal<number | null>(null);
 
   // ── Regenerate secret modal ───────────────────────────────────────────────
   showRegenModal  = signal(false);
   regenTargetId   = signal<number | null>(null);
   regenSubmitting = signal(false);
-  regenSecret     = signal<string | null>(null);
-  regenCopied     = signal(false);
 
   // ── Employees dialog ──────────────────────────────────────────────────────
   showEmpDialog   = signal(false);
   empDialogDevice = signal<Device | null>(null);
-
   deviceEmployees = signal<DeviceEmployee[]>([]);
   empLoading      = signal(false);
   empError        = signal<string | null>(null);
@@ -62,15 +63,14 @@ export class DevicesComponent implements OnInit {
   readonly empPageSize = 10;
 
   // ── Add employee sub-modal ────────────────────────────────────────────────
-  showAddEmpModal = signal(false);
-  empSubmitting   = signal(false);
-  empModalError   = signal<string | null>(null);
-
+  showAddEmpModal  = signal(false);
+  empSubmitting    = signal(false);
+  empModalError    = signal<string | null>(null);
   activeEmployees  = signal<ActiveEmployee[]>([]);
   empSearchQuery   = signal('');
   showEmpDropdown  = signal(false);
   selectedEmployee = signal<ActiveEmployee | null>(null);
-  empNumber        = signal('');
+  addEmpNumber     = signal('');
 
   filteredEmployees = computed(() => {
     const q = this.empSearchQuery().toLowerCase();
@@ -79,22 +79,29 @@ export class DevicesComponent implements OnInit {
     );
   });
 
+  // ── Edit employee sub-modal ───────────────────────────────────────────────
+  showEditEmpModal = signal(false);
+  editEmpTarget    = signal<DeviceEmployee | null>(null);
+  editEmpNumber    = signal('');
+  editEmpError     = signal<string | null>(null);
+  editEmpSubmit    = signal(false);
+
   // ── Delete employee modal ─────────────────────────────────────────────────
-  showDeleteEmpModal  = signal(false);
-  deleteEmpTargetId   = signal<number | null>(null);
-  empDelSubmitting    = signal(false);
+  showDeleteEmpModal = signal(false);
+  deleteEmpTargetId  = signal<number | null>(null);
+  empDelSubmitting   = signal(false);
 
   ngOnInit(): void { this.loadDevices(); }
 
-  // ── Device CRUD ───────────────────────────────────────────────────────────
+  // ── Devices CRUD ──────────────────────────────────────────────────────────
   loadDevices(): void {
     this.loading.set(true);
     this.listError.set(null);
     this.deviceService.getAll(this.pageNumber(), this.pageSize).subscribe({
-      next: res => {
-        const items = (res as any)?.data?.items ?? (res as any)?.items ?? [];
+      next: (res: any) => {
+        const items = res?.data?.items ?? res?.items ?? [];
         this.devices.set(items);
-        this.hasMore.set((res as any)?.data?.hasNextPage ?? (res as any)?.hasNextPage ?? false);
+        this.hasMore.set(res?.data?.hasNextPage ?? res?.hasNextPage ?? false);
         this.loading.set(false);
       },
       error: err => {
@@ -118,7 +125,8 @@ export class DevicesComponent implements OnInit {
 
   openCreate(): void {
     this.editTarget.set(null);
-    this.deviceForm.reset({ serialNumber: '', name: '', protocol: 0 });
+    this.deviceForm.reset();
+    this.deviceForm.get('serialNumber')?.enable();
     this.modalError.set(null);
     this.showDeviceModal.set(true);
   }
@@ -128,7 +136,6 @@ export class DevicesComponent implements OnInit {
     this.editTarget.set(device);
     this.deviceForm.patchValue({ name: device.name });
     this.deviceForm.get('serialNumber')?.disable();
-    this.deviceForm.get('protocol')?.disable();
     this.modalError.set(null);
     this.showDeviceModal.set(true);
   }
@@ -136,7 +143,6 @@ export class DevicesComponent implements OnInit {
   closeDeviceModal(): void {
     this.showDeviceModal.set(false);
     this.deviceForm.get('serialNumber')?.enable();
-    this.deviceForm.get('protocol')?.enable();
   }
 
   submitDevice(): void {
@@ -154,21 +160,33 @@ export class DevicesComponent implements OnInit {
           );
           this.closeDeviceModal();
         },
-        error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'common.saveFailed')); },
+        error: err => {
+          this.submitting.set(false);
+          this.modalError.set(this.apiErr(err, 'common.saveFailed', { 409: 'manager.devices.nameTaken', 412: 'manager.devices.noChange' }));
+        },
       });
     } else {
       this.deviceService.create({
         serialNumber:   v.serialNumber!,
         name:           v.name!,
-        protocol:       Number(v.protocol),
+        protocol:       0,
         idempotencyKey: crypto.randomUUID(),
       }).subscribe({
-        next: () => {
+        next: (res: any) => {
           this.submitting.set(false);
           this.closeDeviceModal();
           this.loadDevices();
+          const secret = res?.data?.deviceSecret ?? res?.deviceSecret;
+          if (secret) {
+            this.newSecret.set(secret);
+            this.secretCopied.set(false);
+            this.showSecretModal.set(true);
+          }
         },
-        error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'common.saveFailed')); },
+        error: err => {
+          this.submitting.set(false);
+          this.modalError.set(this.apiErr(err, 'common.saveFailed', { 409: 'manager.devices.serialTaken' }));
+        },
       });
     }
   }
@@ -193,12 +211,20 @@ export class DevicesComponent implements OnInit {
     });
   }
 
+  // ── Secret modal ──────────────────────────────────────────────────────────
+  copySecret(): void {
+    const s = this.newSecret();
+    if (!s) return;
+    navigator.clipboard.writeText(s).then(() => {
+      this.secretCopied.set(true);
+      setTimeout(() => this.secretCopied.set(false), 2000);
+    });
+  }
+
   // ── Regenerate secret ─────────────────────────────────────────────────────
   openRegen(id: number, event: Event): void {
     event.stopPropagation();
     this.regenTargetId.set(id);
-    this.regenSecret.set(null);
-    this.regenCopied.set(false);
     this.showRegenModal.set(true);
   }
 
@@ -209,19 +235,15 @@ export class DevicesComponent implements OnInit {
     this.deviceService.regenerateSecret(id).subscribe({
       next: (res: any) => {
         this.regenSubmitting.set(false);
-        const secret = res?.data?.secret ?? res?.secret ?? res?.data ?? (typeof res === 'string' ? res : null);
-        this.regenSecret.set(secret);
+        this.showRegenModal.set(false);
+        const secret = res?.data?.deviceSecret ?? res?.deviceSecret;
+        if (secret) {
+          this.newSecret.set(secret);
+          this.secretCopied.set(false);
+          this.showSecretModal.set(true);
+        }
       },
       error: () => { this.regenSubmitting.set(false); this.showRegenModal.set(false); },
-    });
-  }
-
-  copySecret(): void {
-    const s = this.regenSecret();
-    if (!s) return;
-    navigator.clipboard.writeText(s).then(() => {
-      this.regenCopied.set(true);
-      setTimeout(() => this.regenCopied.set(false), 2000);
     });
   }
 
@@ -240,10 +262,10 @@ export class DevicesComponent implements OnInit {
     this.empLoading.set(true);
     this.empError.set(null);
     this.deviceService.getEmployees(device.id, this.empPage(), this.empPageSize).subscribe({
-      next: res => {
-        const items = (res as any)?.data?.items ?? (res as any)?.items ?? [];
+      next: (res: any) => {
+        const items = res?.data?.items ?? res?.items ?? [];
         this.deviceEmployees.set(items);
-        this.empHasMore.set((res as any)?.data?.hasNextPage ?? (res as any)?.hasNextPage ?? false);
+        this.empHasMore.set(res?.data?.hasNextPage ?? res?.hasNextPage ?? false);
         this.empLoading.set(false);
       },
       error: err => {
@@ -269,7 +291,7 @@ export class DevicesComponent implements OnInit {
   openAddEmp(): void {
     this.selectedEmployee.set(null);
     this.empSearchQuery.set('');
-    this.empNumber.set('');
+    this.addEmpNumber.set('');
     this.empModalError.set(null);
     this.showEmpDropdown.set(false);
     this.loadActiveEmployees();
@@ -279,7 +301,7 @@ export class DevicesComponent implements OnInit {
   loadActiveEmployees(): void {
     this.employeeService.getActive().subscribe({
       next: (list: any) => {
-        const items = Array.isArray(list) ? list : ((list as any)?.data ?? []);
+        const items = Array.isArray(list) ? list : (list?.data ?? []);
         this.activeEmployees.set(items);
       },
       error: () => {},
@@ -300,11 +322,8 @@ export class DevicesComponent implements OnInit {
 
   submitAddEmployee(): void {
     const emp = this.selectedEmployee();
-    const num = this.empNumber().trim();
-    if (!emp || !num) {
-      this.empModalError.set('يرجى اختيار موظف وإدخال رقم التسجيل');
-      return;
-    }
+    const num = this.addEmpNumber().trim();
+    if (!emp || !num) { this.empModalError.set('يرجى اختيار موظف وإدخال رقم التسجيل'); return; }
     const device = this.empDialogDevice();
     if (!device) return;
     this.empSubmitting.set(true);
@@ -315,7 +334,45 @@ export class DevicesComponent implements OnInit {
         this.showAddEmpModal.set(false);
         this.loadDeviceEmployees();
       },
-      error: err => { this.empSubmitting.set(false); this.empModalError.set(this.apiErr(err, 'common.saveFailed')); },
+      error: err => {
+        this.empSubmitting.set(false);
+        this.empModalError.set(this.apiErr(err, 'common.saveFailed', {
+          409: 'manager.devices.employees.conflict',
+        }));
+      },
+    });
+  }
+
+  // ── Edit employee ─────────────────────────────────────────────────────────
+  openEditEmp(emp: DeviceEmployee): void {
+    this.editEmpTarget.set(emp);
+    this.editEmpNumber.set(emp.number);
+    this.editEmpError.set(null);
+    this.showEditEmpModal.set(true);
+  }
+
+  submitEditEmployee(): void {
+    const emp    = this.editEmpTarget();
+    const device = this.empDialogDevice();
+    const num    = this.editEmpNumber().trim();
+    if (!emp || !device || !num) return;
+    this.editEmpSubmit.set(true);
+    this.editEmpError.set(null);
+    this.deviceService.updateEmployee(device.id, emp.id, { number: num }).subscribe({
+      next: () => {
+        this.editEmpSubmit.set(false);
+        this.showEditEmpModal.set(false);
+        this.deviceEmployees.update(list =>
+          list.map(e => e.id === emp.id ? { ...e, number: num } : e),
+        );
+      },
+      error: err => {
+        this.editEmpSubmit.set(false);
+        this.editEmpError.set(this.apiErr(err, 'common.saveFailed', {
+          409: 'manager.devices.employees.numberTaken',
+          412: 'manager.devices.noChange',
+        }));
+      },
     });
   }
 
@@ -341,8 +398,17 @@ export class DevicesComponent implements OnInit {
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
-  apiErr(err: any, fallback: string): string {
+  empFullName(emp: DeviceEmployee): string {
+    return `${emp.firstName ?? ''} ${emp.lastName ?? ''}`.trim() || '—';
+  }
+
+  empInitial(emp: DeviceEmployee): string {
+    return (emp.firstName ?? emp.lastName ?? '?').charAt(0).toUpperCase();
+  }
+
+  apiErr(err: any, fallback: string, statusMap: Record<number, string> = {}): string {
     if (err?.status === 0) return 'Cannot connect to server.';
+    if (statusMap[err?.status]) return statusMap[err.status];
     const body = err?.error;
     if (!body) return fallback;
     if (typeof body === 'string' && body.trim()) return body.trim();

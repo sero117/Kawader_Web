@@ -9,7 +9,8 @@ export interface Device {
 export interface DeviceEmployee {
   id: number;
   employeeId: number;
-  employeeName?: string;
+  firstName: string;
+  lastName: string;
   number: string;
 }
 
@@ -26,6 +27,10 @@ export interface UpdateDeviceRequest {
 
 export interface AddDeviceEmployeeRequest {
   employeeId: number;
+  number: string;
+}
+
+export interface UpdateDeviceEmployeeRequest {
   number: string;
 }
 
