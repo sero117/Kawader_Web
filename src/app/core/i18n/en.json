@@ -389,6 +389,12 @@
       "payrollSection": "Finance",
       "devicesSection": "Devices"
     },
+    "notifications": {
+      "title": "Notifications",
+      "connected": "Connected",
+      "empty": "No new notifications",
+      "emptyHint": "Payroll alerts and important updates will appear here"
+    },
     "overview": {
       "greeting": "Hello,",
       "subtitle": "Overview of your company",
@@ -403,7 +409,9 @@
       "qEmployees": "Manage Employees",
       "qShifts": "Shift Schedule",
       "qPayroll": "Payroll Runs",
-      "qDevices": "Fingerprint Devices"
+      "qDevices": "Fingerprint Devices",
+      "attendanceChart": "Attendance — Last 7 Days",
+      "dailyPunches": "Daily Punches"
     },
     "branches": {
       "title": "Branches",

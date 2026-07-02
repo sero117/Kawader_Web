@@ -389,6 +389,12 @@
       "payrollSection": "المالية",
       "devicesSection": "الأجهزة"
     },
+    "notifications": {
+      "title": "الإشعارات",
+      "connected": "متصل",
+      "empty": "لا توجد إشعارات جديدة",
+      "emptyHint": "ستظهر هنا تنبيهات الرواتب والتحديثات المهمة"
+    },
     "overview": {
       "greeting": "مرحباً،",
       "subtitle": "نظرة عامة على شركتك",
@@ -403,7 +409,9 @@
       "qEmployees": "إدارة الموظفين",
       "qShifts": "جدول المناوبات",
       "qPayroll": "كشوف الرواتب",
-      "qDevices": "أجهزة البصمة"
+      "qDevices": "أجهزة البصمة",
+      "attendanceChart": "الحضور — آخر 7 أيام",
+      "dailyPunches": "البصمات اليومية"
     },
     "branches": {
       "title": "الفروع",

@@ -1334,6 +1334,156 @@ select option {
   line-height: 1.6;
 }
 
+/* ── Notification bell ────────────────────────────────────────────── */
+
+.notif-bell-btn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--bg-subtle-sm);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.notif-bell-btn:hover {
+  background: var(--bg-subtle-md);
+  color: var(--text-muted);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.notif-bell-btn svg { width: 16px; height: 16px; }
+
+.notif-connected-dot {
+  position: absolute;
+  top: 7px;
+  inset-inline-end: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  border: 1.5px solid var(--bg-page);
+}
+
+.notif-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  width: 300px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+  z-index: 60;
+  overflow: hidden;
+  animation: page-fade-up 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dark .notif-panel {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+.notif-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.125rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.notif-panel-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-base);
+}
+
+.notif-connected-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #059669;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.notif-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: notif-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes notif-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.45; transform: scale(0.75); }
+}
+
+/* ── Attendance chart ─────────────────────────────────────────────── */
+
+@keyframes bar-grow-up {
+  from { clip-path: inset(100% 0 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+.chart-bars-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 110px;
+}
+
+.chart-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  height: 100%;
+}
+
+.chart-bar {
+  width: 100%;
+  border-radius: 5px 5px 0 0;
+  background: linear-gradient(to top, var(--nav-accent) 0%, #a855f7 100%);
+  animation: bar-grow-up 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+  min-height: 3px;
+}
+
+.chart-bar-count {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-faint);
+  min-height: 0.8rem;
+  line-height: 0.8rem;
+}
+
+.chart-bar-labels {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.chart-bar-label {
+  flex: 1;
+  text-align: center;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-very-faint);
+  white-space: nowrap;
+}
+
 /* ── Page tab bar ─────────────────────────────────────────────────── */
 
 .page-tabs {

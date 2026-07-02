@@ -42,14 +42,15 @@ export class CompanyManagerLayoutComponent implements OnInit {
   private readonly companyService = inject(CompanyService);
   private readonly visitTracking = inject(VisitTrackingService);
 
-  collapsed       = signal(window.innerWidth < 640);
-  shiftsOpen      = signal(true);
-  managerName     = signal(this.authService.getDisplayName());
-  managerId       = signal(this.authService.getUserId());
-  companyName     = signal<string | null>(null);
-  showWelcome     = signal(false);
-  welcomeActions  = MANAGER_WELCOME_ACTIONS;
-  lastVisitText   = signal<string | null>(null);
+  collapsed        = signal(window.innerWidth < 640);
+  shiftsOpen       = signal(true);
+  managerName      = signal(this.authService.getDisplayName());
+  managerId        = signal(this.authService.getUserId());
+  companyName      = signal<string | null>(null);
+  showWelcome      = signal(false);
+  welcomeActions   = MANAGER_WELCOME_ACTIONS;
+  lastVisitText    = signal<string | null>(null);
+  showNotifPanel   = signal(false);
 
   ngOnInit(): void {
     if (sessionStorage.getItem(WELCOME_FLAG_KEY)) {
@@ -71,6 +72,8 @@ export class CompanyManagerLayoutComponent implements OnInit {
 
   toggle(): void { this.collapsed.update(v => !v); }
   toggleShifts(): void { this.shiftsOpen.update(v => !v); }
+  toggleNotifPanel(): void { this.showNotifPanel.update(v => !v); }
+  closeNotifPanel(): void { this.showNotifPanel.set(false); }
 
   onWelcomeNavigate(path: string): void {
     this.showWelcome.set(false);

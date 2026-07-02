@@ -33,6 +33,7 @@ export class ManagerOverviewComponent implements OnInit {
   deviceCount     = signal<number | null>(null);
   todayPunchCount = signal<number | null>(null);
   recentLogs      = signal<AdmsLog[]>([]);
+  chartDays       = signal<{ label: string; count: number; heightPx: number }[]>([]);
 
   readonly quickActions = [
     {
@@ -86,6 +87,28 @@ export class ManagerOverviewComponent implements OnInit {
       );
       this.todayPunchCount.set(todayLogs.length);
       this.recentLogs.set([...todayLogs].reverse().slice(0, 6));
+
+      // Build 7-day chart
+      const last7 = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        return {
+          iso:   d.toISOString().split('T')[0],
+          label: d.toLocaleDateString('ar-SA', { weekday: 'short' }),
+          count: 0,
+        };
+      });
+      for (const log of allLogs) {
+        const t = log.punchTime ?? log.timestamp ?? log.time ?? '';
+        const slot = last7.find(d => t.startsWith(d.iso));
+        if (slot) slot.count++;
+      }
+      const maxCount = Math.max(1, ...last7.map(d => d.count));
+      this.chartDays.set(last7.map(d => ({
+        label:    d.label,
+        count:    d.count,
+        heightPx: d.count === 0 ? 3 : Math.max(8, Math.round((d.count / maxCount) * 100)),
+      })));
 
       this.loading.set(false);
     });
