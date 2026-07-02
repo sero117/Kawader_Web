@@ -14,8 +14,9 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class DeviceService {
-  private readonly api     = inject(ApiService);
-  private readonly baseUrl = `${environment.apiUrl}/Devices`;
+  private readonly api        = inject(ApiService);
+  private readonly baseUrl    = `${environment.apiUrl}/Devices`;
+  private readonly empBaseUrl = `${environment.apiUrl}/devices`;
 
   getAll(pageNumber: number, pageSize: number): Observable<PagedResult<Device>> {
     const p = new HttpParams()
@@ -48,14 +49,14 @@ export class DeviceService {
     const p = new HttpParams()
       .set('PageNumber', pageNumber)
       .set('PageSize',   pageSize);
-    return this.api.get<PagedResult<DeviceEmployee>>(`${this.baseUrl}/${deviceId}/employees`, p);
+    return this.api.get<PagedResult<DeviceEmployee>>(`${this.empBaseUrl}/${deviceId}/employees`, p);
   }
 
   addEmployee(deviceId: number, payload: AddDeviceEmployeeRequest): Observable<void> {
-    return this.api.post<void>(`${this.baseUrl}/${deviceId}/employees`, payload);
+    return this.api.post<void>(`${this.empBaseUrl}/${deviceId}/employees`, payload);
   }
 
   deleteEmployee(deviceId: number, employeeDeviceId: number): Observable<void> {
-    return this.api.delete<void>(`${this.baseUrl}/${deviceId}/employees/${employeeDeviceId}`);
+    return this.api.delete<void>(`${this.empBaseUrl}/${deviceId}/employees/${employeeDeviceId}`);
   }
 }
