@@ -18,7 +18,10 @@
       <div class="sidebar-logo" (click)="toggle()" style="cursor:pointer;">
         <img src="assets/logo.png" alt="Kawader" style="width:34px;height:34px;object-fit:cover;border-radius:10px;" />
       </div>
-      <span class="sidebar-brand-name">{{ 'brand.name' | translate }}</span>
+      <div class="sidebar-brand-text">
+        <span class="sidebar-brand-name">{{ 'brand.name' | translate }}</span>
+        <span class="sidebar-brand-tagline">{{ 'brand.tagline' | translate }}</span>
+      </div>
     </div>
 
     <!-- Nav -->

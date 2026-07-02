@@ -1,7 +1,7 @@
 {
   "brand": {
     "name": "كوادر",
-    "tagline": "نظام إدارة الموارد البشرية",
+    "tagline": "إدارة الموارد البشرية",
     "hrms": "HRMS"
   },
   "common": {
@@ -381,12 +381,29 @@
       "companyHolidays": "العطل الرسمية",
       "payroll": "الرواتب",
       "devices": "إدارة الأجهزة",
+      "overview": "الرئيسية",
       "admsLogs": "سجلات البصمة",
       "mainSection": "الرئيسية",
       "shiftsSection": "الورديات",
       "holidaysSection": "العطل",
       "payrollSection": "المالية",
       "devicesSection": "الأجهزة"
+    },
+    "overview": {
+      "greeting": "مرحباً،",
+      "subtitle": "نظرة عامة على شركتك",
+      "employees": "الموظفون النشطون",
+      "branches": "الفروع",
+      "devices": "الأجهزة",
+      "todayPunches": "بصمات اليوم",
+      "recentAttendance": "آخر سجلات الحضور",
+      "noLogsToday": "لا توجد بصمات اليوم",
+      "quickActions": "اختصارات سريعة",
+      "viewAll": "عرض الكل",
+      "qEmployees": "إدارة الموظفين",
+      "qShifts": "جدول المناوبات",
+      "qPayroll": "كشوف الرواتب",
+      "qDevices": "أجهزة البصمة"
     },
     "branches": {
       "title": "الفروع",
