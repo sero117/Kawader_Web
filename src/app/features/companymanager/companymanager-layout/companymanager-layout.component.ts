@@ -51,6 +51,8 @@ export class CompanyManagerLayoutComponent implements OnInit {
   welcomeActions   = MANAGER_WELCOME_ACTIONS;
   lastVisitText    = signal<string | null>(null);
   showNotifPanel   = signal(false);
+  showSearch       = signal(false);
+  searchQuery      = signal('');
 
   ngOnInit(): void {
     if (sessionStorage.getItem(WELCOME_FLAG_KEY)) {
@@ -74,6 +76,18 @@ export class CompanyManagerLayoutComponent implements OnInit {
   toggleShifts(): void { this.shiftsOpen.update(v => !v); }
   toggleNotifPanel(): void { this.showNotifPanel.update(v => !v); }
   closeNotifPanel(): void { this.showNotifPanel.set(false); }
+
+  openSearch(): void {
+    this.showSearch.set(true);
+    this.showNotifPanel.set(false);
+    setTimeout(() => (document.getElementById('header-search') as HTMLInputElement)?.focus(), 0);
+  }
+
+  closeSearch(): void { this.showSearch.set(false); this.searchQuery.set(''); }
+
+  onSearchKey(event: KeyboardEvent): void {
+    if (event.key === 'Escape') this.closeSearch();
+  }
 
   onWelcomeNavigate(path: string): void {
     this.showWelcome.set(false);

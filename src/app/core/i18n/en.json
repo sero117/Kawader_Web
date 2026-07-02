@@ -389,6 +389,10 @@
       "payrollSection": "Finance",
       "devicesSection": "Devices"
     },
+    "search": {
+      "placeholder": "Search here...",
+      "hint": "Search"
+    },
     "notifications": {
       "title": "Notifications",
       "connected": "Connected",

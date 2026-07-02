@@ -389,6 +389,10 @@
       "payrollSection": "المالية",
       "devicesSection": "الأجهزة"
     },
+    "search": {
+      "placeholder": "ابحث هنا...",
+      "hint": "بحث"
+    },
     "notifications": {
       "title": "الإشعارات",
       "connected": "متصل",
