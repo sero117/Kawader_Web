@@ -99,10 +99,14 @@
     </div>
   }
 
-  <!-- ── Today's Attendance Summary ──────────────────────────────────────────── -->
-  @if (!loading() && attendanceSummary()) {
-    <div class="admin-card p-5 mb-5">
-      <div class="flex items-center justify-between mb-5">
+  <!-- ── Main grid: Attendance (left) + Chart & Actions (right) ───────────── -->
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+
+    <!-- ── Attendance Today (3 cols) ───────────────────────────────────────── -->
+    <div class="lg:col-span-3 admin-card flex flex-col">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-5 pt-5 pb-4">
         <div>
           <h2 class="font-bold text-base" style="color: var(--text-base);">
             {{ 'manager.overview.todayAttendance' | translate }}
@@ -119,38 +123,56 @@
         </a>
       </div>
 
-      <!-- Stats row -->
-      <div class="attendance-stats-row mb-5">
-        <div class="attendance-stat">
-          <span class="attendance-stat-num present">{{ attendanceSummary()!.presentCount }}</span>
-          <span class="attendance-stat-label">{{ 'manager.overview.present' | translate }}</span>
-        </div>
-        <div class="attendance-stat">
-          <span class="attendance-stat-num late">{{ attendanceSummary()!.lateCount }}</span>
-          <span class="attendance-stat-label">{{ 'manager.overview.late' | translate }}</span>
-        </div>
-        <div class="attendance-stat">
-          <span class="attendance-stat-num absent">{{ attendanceSummary()!.absentCount }}</span>
-          <span class="attendance-stat-label">{{ 'manager.overview.absent' | translate }}</span>
-        </div>
-        <div class="attendance-bar-col">
-          <div class="attendance-bar-rate-label">{{ attendanceSummary()!.rate }}%</div>
-          <div class="attendance-bar-bg">
-            <div class="attendance-bar-fill" [style.width.%]="attendanceSummary()!.rate"></div>
+      <!-- Stats strip -->
+      @if (!loading() && attendanceSummary()) {
+        <div class="attendance-stats-row px-5 pb-4" style="border-bottom: 1px solid var(--border);">
+          <div class="attendance-stat">
+            <span class="attendance-stat-num present">{{ attendanceSummary()!.presentCount }}</span>
+            <span class="attendance-stat-label">{{ 'manager.overview.present' | translate }}</span>
+          </div>
+          <div class="attendance-stat">
+            <span class="attendance-stat-num late">{{ attendanceSummary()!.lateCount }}</span>
+            <span class="attendance-stat-label">{{ 'manager.overview.late' | translate }}</span>
+          </div>
+          <div class="attendance-stat">
+            <span class="attendance-stat-num absent">{{ attendanceSummary()!.absentCount }}</span>
+            <span class="attendance-stat-label">{{ 'manager.overview.absent' | translate }}</span>
+          </div>
+          <div class="attendance-bar-col">
+            <div class="attendance-bar-rate-label">{{ attendanceSummary()!.rate }}%</div>
+            <div class="attendance-bar-bg">
+              <div class="attendance-bar-fill" [style.width.%]="attendanceSummary()!.rate"></div>
+            </div>
           </div>
         </div>
-      </div>
+      }
 
-      <!-- Employee rows -->
-      @if (attendanceSummary()!.rows.length > 0) {
-        <div class="divide-y" style="border-color: var(--border);">
-          @for (row of attendanceSummary()!.rows; track row.name) {
-            <div class="flex items-center gap-3 py-2.5">
-              <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+      <!-- Rows -->
+      @if (loading()) {
+        <div class="px-5 py-4 space-y-3">
+          @for (_ of [1,2,3,4,5]; track $index) {
+            <div class="h-11 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+          }
+        </div>
+      } @else if (attendanceSummary()?.rows?.length === 0) {
+        <div class="empty-state py-8">
+          <div class="empty-state-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <p class="empty-state-title">{{ 'manager.overview.noLogsToday' | translate }}</p>
+        </div>
+      } @else {
+        <div class="divide-y flex-1" style="border-color: var(--border);">
+          @for (row of (attendanceSummary()?.rows ?? []); track row.name) {
+            <div class="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-[var(--bg-surface-2)]">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
                 style="background: linear-gradient(135deg, var(--nav-accent), #7c3aed); color: #fff;">
                 {{ row.name.charAt(0).toUpperCase() }}
               </div>
-              <span class="flex-1 text-sm font-medium truncate" style="color: var(--text-base);">
+              <span class="flex-1 text-sm font-semibold truncate" style="color: var(--text-base);">
                 {{ row.name }}
               </span>
               @if (row.isLate) {
@@ -167,126 +189,44 @@
             </div>
           }
         </div>
-      } @else {
-        <p class="text-sm text-center py-4" style="color: var(--text-faint);">
-          {{ 'manager.overview.noLogsToday' | translate }}
-        </p>
       }
     </div>
-  }
 
-  <!-- ── Attendance Chart ─────────────────────────────────────────────────────── -->
-  @if (!loading() && chartDays().length) {
-    <div class="admin-card p-5 mb-5">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h2 class="font-bold text-base" style="color: var(--text-base);">
+    <!-- ── Right column: Chart + Quick Actions (2 cols) ────────────────────── -->
+    <div class="lg:col-span-2 flex flex-col gap-5">
+
+      <!-- 7-day chart -->
+      @if (chartDays().length) {
+        <div class="admin-card p-5">
+          <h2 class="font-bold text-sm mb-1" style="color: var(--text-base);">
             {{ 'manager.overview.attendanceChart' | translate }}
           </h2>
-          <p class="text-xs mt-0.5" style="color: var(--text-faint);">
+          <p class="text-xs mb-4" style="color: var(--text-faint);">
             {{ 'manager.overview.dailyPunches' | translate }}
           </p>
-        </div>
-        <a routerLink="/dashboard/manager/adms-logs"
-          class="text-xs font-semibold flex items-center gap-1 transition-colors"
-          style="color: var(--nav-accent);">
-          {{ 'manager.overview.viewAll' | translate }}
-          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
-          </svg>
-        </a>
-      </div>
-
-      <!-- Bars -->
-      <div class="chart-bars-area">
-        @for (day of chartDays(); track day.label; let i = $index) {
-          <div class="chart-bar-col">
-            <span class="chart-bar-count">{{ day.count > 0 ? day.count : '' }}</span>
-            <div class="chart-bar"
-              [style.height.px]="day.heightPx"
-              [style.animation-delay]="(i * 60) + 'ms'"
-              [style.opacity]="day.count === 0 ? '0.25' : '1'">
-            </div>
+          <div class="chart-bars-area">
+            @for (day of chartDays(); track day.label; let i = $index) {
+              <div class="chart-bar-col">
+                <span class="chart-bar-count">{{ day.count > 0 ? day.count : '' }}</span>
+                <div class="chart-bar"
+                  [style.height.px]="day.heightPx"
+                  [style.animation-delay]="(i * 60) + 'ms'"
+                  [style.opacity]="day.count === 0 ? '0.25' : '1'">
+                </div>
+              </div>
+            }
           </div>
-        }
-      </div>
-
-      <!-- Day labels -->
-      <div class="chart-bar-labels">
-        @for (day of chartDays(); track day.label) {
-          <span class="chart-bar-label">{{ day.label }}</span>
-        }
-      </div>
-    </div>
-  }
-
-  <!-- ── Lower grid ─────────────────────────────────────────────────────────── -->
-  <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
-
-    <!-- Recent Attendance (3 cols) -->
-    <div class="lg:col-span-3 admin-card">
-      <div class="flex items-center justify-between px-5 pt-5 pb-3">
-        <div>
-          <h2 class="font-bold text-base" style="color: var(--text-base);">
-            {{ 'manager.overview.recentAttendance' | translate }}
-          </h2>
-          <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ todayDate }}</p>
-        </div>
-        <a routerLink="/dashboard/manager/adms-logs"
-          class="text-xs font-semibold flex items-center gap-1 transition-colors"
-          style="color: var(--nav-accent);">
-          {{ 'manager.overview.viewAll' | translate }}
-          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
-          </svg>
-        </a>
-      </div>
-
-      @if (loading()) {
-        <div class="px-5 pb-5 space-y-3">
-          @for (_ of [1,2,3,4]; track $index) {
-            <div class="h-12 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
-          }
-        </div>
-      } @else if (recentLogs().length === 0) {
-        <div class="empty-state pb-8">
-          <div class="empty-state-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
+          <div class="chart-bar-labels">
+            @for (day of chartDays(); track day.label) {
+              <span class="chart-bar-label">{{ day.label }}</span>
+            }
           </div>
-          <p class="empty-state-title">{{ 'manager.overview.noLogsToday' | translate }}</p>
-        </div>
-      } @else {
-        <div class="divide-y" style="border-color: var(--border);">
-          @for (log of recentLogs(); track $index) {
-            <div class="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-[var(--bg-surface-2)]">
-              <!-- Avatar initial -->
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                style="background: linear-gradient(135deg, var(--nav-accent), #7c3aed); color: #fff;">
-                {{ (logName(log)).charAt(0).toUpperCase() }}
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold truncate" style="color: var(--text-base);">{{ logName(log) }}</p>
-                <p class="text-xs truncate" style="color: var(--text-faint);">
-                  {{ log.deviceName ?? log.deviceSerial ?? log.serialNumber ?? '—' }}
-                </p>
-              </div>
-              <div class="text-xs font-mono font-semibold flex-shrink-0 px-2.5 py-1 rounded-lg"
-                style="background: rgba(16,185,129,0.1); color: #059669;">
-                {{ logTime(log) }}
-              </div>
-            </div>
-          }
         </div>
       }
-    </div>
 
-    <!-- Quick Actions (2 cols) -->
-    <div class="lg:col-span-2 flex flex-col gap-4">
+      <!-- Quick Actions -->
       <div class="admin-card p-5">
-        <h2 class="font-bold text-base mb-4" style="color: var(--text-base);">
+        <h2 class="font-bold text-sm mb-3" style="color: var(--text-base);">
           {{ 'manager.overview.quickActions' | translate }}
         </h2>
         <div class="flex flex-col gap-2">
@@ -300,7 +240,7 @@
               <span class="flex-1 text-sm font-semibold" style="color: var(--text-base);">
                 {{ action.labelKey | translate }}
               </span>
-              <svg class="w-4 h-4 flex-shrink-0 transition-transform" style="color: var(--text-very-faint);"
+              <svg class="w-4 h-4 flex-shrink-0" style="color: var(--text-very-faint);"
                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
               </svg>
@@ -308,6 +248,7 @@
           }
         </div>
       </div>
+
     </div>
 
   </div>
