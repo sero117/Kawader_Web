@@ -21,7 +21,12 @@
   --text-ultra-faint: rgba(13, 12, 30, 0.12);
   --nav-active-bg:    #E0E7FF;
   --nav-active-text:  #4338CA;
-  --nav-accent:       #4F46E5;
+  --accent-light:     #4F46E5;
+  --accent-dark:      #6366F1;
+  --nav-accent:       var(--accent-light);
+  --table-row-bg:     #FEFCF9;
+  --table-row-bg-alt: #F8F3EB;
+  --table-row-hover:  #EDE4D5;
   --card-shadow:      rgba(0, 0, 0, 0.055);
   --sidebar-bg:       linear-gradient(175deg, #ffffff 0%, #f3f2ef 100%);
   --sidebar-shadow:   rgba(67, 56, 202, 0.13);
@@ -72,7 +77,10 @@
   --text-ultra-faint: rgba(255, 255, 255, 0.10);
   --nav-active-bg:    rgba(99, 102, 241, 0.16);
   --nav-active-text:  #A5B4FC;
-  --nav-accent:       #6366F1;
+  --nav-accent:       var(--accent-dark);
+  --table-row-bg:     var(--bg-surface);
+  --table-row-bg-alt: rgba(255, 255, 255, 0.03);
+  --table-row-hover:  rgba(160, 120, 75, 0.1);
   --card-shadow:      rgba(0, 0, 0, 0.2);
   --sidebar-bg:       linear-gradient(175deg, #13122a 0%, #0c0b1e 100%);
   --sidebar-shadow:   rgba(99, 102, 241, 0.22);
@@ -595,12 +603,12 @@
   padding: 0.875rem 1rem;
   font-size: 0.875rem;
   color: var(--text-muted);
-  background: var(--bg-surface);
+  background: var(--table-row-bg);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
   text-align: start;
-  transition: background 0.15s;
+  transition: background 0.13s ease;
 }
 
 .data-table tbody td:first-child {
@@ -619,7 +627,8 @@
   border-end-start-radius: 0;
 }
 
-.data-table tbody tr:hover td { background: var(--bg-surface-2); }
+.data-table tbody tr:nth-child(even) td { background: var(--table-row-bg-alt); }
+.data-table tbody tr:hover td { background: var(--table-row-hover); }
 
 /* ── Admin card (table/content wrapper) ──────────────────────────── */
 
@@ -1605,6 +1614,7 @@ select option {
 /* ── Header avatar ────────────────────────────────────────────────── */
 
 .header-avatar {
+  position: relative;
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -1624,6 +1634,34 @@ select option {
 
 .header-avatar:hover {
   box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 3.5px rgba(99, 102, 241, 0.6);
+}
+
+/* ── Header icon tooltips ─────────────────────────────────────────── */
+
+.notif-bell-btn::after,
+.header-avatar::after {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 9px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.88);
+  white-space: nowrap;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.4;
+  background: var(--text-base);
+  color: var(--bg-page);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 9999;
+}
+.notif-bell-btn:hover::after,
+.header-avatar:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
 }
 
 /* ── Offline / Online banner ──────────────────────────────────────── */

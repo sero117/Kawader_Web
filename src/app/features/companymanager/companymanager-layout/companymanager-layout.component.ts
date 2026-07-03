@@ -1,11 +1,14 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { CompanyService } from '../../../core/services/company.service';
 import { VisitTrackingService } from '../../../core/services/visit-tracking.service';
+import { AccentService } from '../../../core/services/accent.service';
 import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
+import { AccentPickerComponent } from '../../../core/components/accent-picker/accent-picker.component';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { WelcomeOverlayComponent, WelcomeAction } from '../welcome-overlay/welcome-overlay.component';
 import { OfflineBannerComponent } from '../../../core/components/offline-banner/offline-banner.component';
@@ -33,7 +36,7 @@ const MANAGER_WELCOME_ACTIONS: WelcomeAction[] = [
 @Component({
   selector: 'app-companymanager-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeSwitcherComponent, LanguageSwitcherComponent, TranslatePipe, WelcomeOverlayComponent, OfflineBannerComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeSwitcherComponent, LanguageSwitcherComponent, AccentPickerComponent, TranslatePipe, WelcomeOverlayComponent, OfflineBannerComponent],
   templateUrl: './companymanager-layout.component.html',
 })
 export class CompanyManagerLayoutComponent implements OnInit {
@@ -42,6 +45,7 @@ export class CompanyManagerLayoutComponent implements OnInit {
   private readonly notificationService = inject(NotificationService);
   private readonly companyService = inject(CompanyService);
   private readonly visitTracking = inject(VisitTrackingService);
+  private readonly accentService = inject(AccentService);
 
   collapsed        = signal(window.innerWidth < 640);
   shiftsOpen       = signal(true);
@@ -56,6 +60,8 @@ export class CompanyManagerLayoutComponent implements OnInit {
   searchQuery      = signal('');
 
   ngOnInit(): void {
+    this.accentService.init();
+
     if (sessionStorage.getItem(WELCOME_FLAG_KEY)) {
       sessionStorage.removeItem(WELCOME_FLAG_KEY);
       this.showWelcome.set(true);
@@ -63,6 +69,10 @@ export class CompanyManagerLayoutComponent implements OnInit {
 
     const previousVisit = this.visitTracking.recordAccountVisit();
     if (previousVisit) this.lastVisitText.set(this.visitTracking.formatTimeAgo(previousVisit));
+
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
+      if (window.innerWidth < 640) this.collapsed.set(true);
+    });
 
     this.companyService.getStatus().subscribe({
       next: (res: any) => {
