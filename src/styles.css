@@ -1602,6 +1602,30 @@ select option {
   font-weight: 700;
 }
 
+/* ── Header avatar ────────────────────────────────────────────────── */
+
+.header-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--nav-accent) 0%, #7c3aed 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  user-select: none;
+  letter-spacing: 0;
+  box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 3.5px rgba(99, 102, 241, 0.35);
+  transition: box-shadow 0.2s;
+}
+
+.header-avatar:hover {
+  box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 3.5px rgba(99, 102, 241, 0.6);
+}
+
 /* ── Offline / Online banner ──────────────────────────────────────── */
 
 @keyframes banner-slide-down {

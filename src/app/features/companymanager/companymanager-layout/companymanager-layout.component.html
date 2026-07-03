@@ -313,6 +313,12 @@
         }
 
       </div>
+
+      <!-- ── Manager Avatar ── -->
+      <div class="header-avatar flex-shrink-0" [title]="managerName()">
+        {{ (managerName() || '?').charAt(0).toUpperCase() }}
+      </div>
+
     </div>
     <app-offline-banner />
     <div class="p-4 sm:p-6 flex-1">
