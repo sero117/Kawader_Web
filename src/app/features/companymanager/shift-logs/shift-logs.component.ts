@@ -173,6 +173,32 @@ export class ShiftLogsComponent implements OnInit {
     return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
+  exportCsv(): void {
+    const headers = ['الرقم', 'اسم الموظف', 'الوردية', 'التاريخ', 'وقت الدخول', 'وقت الخروج', 'الحالة', 'ملاحظات'];
+    const rows = this.logs().map(l => [
+      String(l.id),
+      `${l.employeeFirstName ?? ''} ${l.employeeLastName ?? ''}`.trim() || String(l.employeeId),
+      l.shiftName,
+      this.formatDate(l.date),
+      this.formatTime(l.checkInTime),
+      this.formatTime(l.checkOutTime),
+      this.statusLabel(l.status),
+      l.notes ?? '',
+    ]);
+    const BOM = '﻿';
+    const csv = BOM + [headers, ...rows]
+      .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = Object.assign(document.createElement('a'), {
+      href: url,
+      download: `سجلات-الحضور-${new Date().toLocaleDateString('en-CA')}.csv`,
+    });
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   apiErr(err: any, fallback: string): string {
     if (err?.status === 0) return 'Cannot connect to server.';
     const body = err?.error;

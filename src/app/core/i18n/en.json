@@ -12,6 +12,7 @@
     "next": "Next →",
     "retry": "Retry",
     "print": "Print",
+    "exportExcel": "Export Excel",
     "optional": "(optional)",
     "required": "This field is required",
     "required_mark": "*",
@@ -416,7 +417,12 @@
       "qPayroll": "Payroll Runs",
       "qDevices": "Fingerprint Devices",
       "attendanceChart": "Attendance — Last 7 Days",
-      "dailyPunches": "Daily Punches"
+      "dailyPunches": "Daily Punches",
+      "todayAttendance": "Today's Attendance",
+      "present": "Present",
+      "late": "Late",
+      "absent": "Absent",
+      "attendanceRate": "Attendance Rate"
     },
     "branches": {
       "title": "Branches",

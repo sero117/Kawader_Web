@@ -99,6 +99,82 @@
     </div>
   }
 
+  <!-- ── Today's Attendance Summary ──────────────────────────────────────────── -->
+  @if (!loading() && attendanceSummary()) {
+    <div class="admin-card p-5 mb-5">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h2 class="font-bold text-base" style="color: var(--text-base);">
+            {{ 'manager.overview.todayAttendance' | translate }}
+          </h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ todayDate }}</p>
+        </div>
+        <a routerLink="/dashboard/manager/adms-logs"
+          class="text-xs font-semibold flex items-center gap-1 transition-opacity hover:opacity-70"
+          style="color: var(--nav-accent);">
+          {{ 'manager.overview.viewAll' | translate }}
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Stats row -->
+      <div class="attendance-stats-row mb-5">
+        <div class="attendance-stat">
+          <span class="attendance-stat-num present">{{ attendanceSummary()!.presentCount }}</span>
+          <span class="attendance-stat-label">{{ 'manager.overview.present' | translate }}</span>
+        </div>
+        <div class="attendance-stat">
+          <span class="attendance-stat-num late">{{ attendanceSummary()!.lateCount }}</span>
+          <span class="attendance-stat-label">{{ 'manager.overview.late' | translate }}</span>
+        </div>
+        <div class="attendance-stat">
+          <span class="attendance-stat-num absent">{{ attendanceSummary()!.absentCount }}</span>
+          <span class="attendance-stat-label">{{ 'manager.overview.absent' | translate }}</span>
+        </div>
+        <div class="attendance-bar-col">
+          <div class="attendance-bar-rate-label">{{ attendanceSummary()!.rate }}%</div>
+          <div class="attendance-bar-bg">
+            <div class="attendance-bar-fill" [style.width.%]="attendanceSummary()!.rate"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employee rows -->
+      @if (attendanceSummary()!.rows.length > 0) {
+        <div class="divide-y" style="border-color: var(--border);">
+          @for (row of attendanceSummary()!.rows; track row.name) {
+            <div class="flex items-center gap-3 py-2.5">
+              <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                style="background: linear-gradient(135deg, var(--nav-accent), #7c3aed); color: #fff;">
+                {{ row.name.charAt(0).toUpperCase() }}
+              </div>
+              <span class="flex-1 text-sm font-medium truncate" style="color: var(--text-base);">
+                {{ row.name }}
+              </span>
+              @if (row.isLate) {
+                <span class="text-[0.65rem] font-bold px-1.5 py-0.5 rounded-md flex-shrink-0"
+                  style="background: rgba(251,191,36,0.12); color: #d97706;">
+                  {{ 'manager.overview.late' | translate }}
+                </span>
+              }
+              <span class="text-xs font-mono px-2.5 py-1 rounded-lg font-semibold flex-shrink-0"
+                [style.background]="row.isLate ? 'rgba(251,191,36,0.1)' : 'rgba(16,185,129,0.1)'"
+                [style.color]="row.isLate ? '#d97706' : '#059669'">
+                {{ row.time }}
+              </span>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="text-sm text-center py-4" style="color: var(--text-faint);">
+          {{ 'manager.overview.noLogsToday' | translate }}
+        </p>
+      }
+    </div>
+  }
+
   <!-- ── Attendance Chart ─────────────────────────────────────────────────────── -->
   @if (!loading() && chartDays().length) {
     <div class="admin-card p-5 mb-5">

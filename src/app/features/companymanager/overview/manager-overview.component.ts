@@ -37,6 +37,14 @@ export class ManagerOverviewComponent implements OnInit {
   displayBranch   = signal(0);
   displayDevice   = signal(0);
   displayPunch    = signal(0);
+
+  attendanceSummary = signal<{
+    presentCount: number;
+    absentCount:  number;
+    lateCount:    number;
+    rate:         number;
+    rows:         { name: string; time: string; isLate: boolean }[];
+  } | null>(null);
   recentLogs      = signal<AdmsLog[]>([]);
   chartDays       = signal<{ label: string; count: number; heightPx: number }[]>([]);
 
@@ -92,6 +100,34 @@ export class ManagerOverviewComponent implements OnInit {
       );
       this.todayPunchCount.set(todayLogs.length);
       this.recentLogs.set([...todayLogs].reverse().slice(0, 6));
+
+      // Attendance summary: deduplicate by employee, first punch only
+      const LATE_HOUR = 9;
+      const seenKeys  = new Set<string>();
+      const sumRows: { name: string; time: string; isLate: boolean }[] = [];
+      for (const log of [...todayLogs].sort((a, b) =>
+        (a.punchTime ?? a.timestamp ?? a.time ?? '').localeCompare(b.punchTime ?? b.timestamp ?? b.time ?? ''),
+      )) {
+        const key = String(log.employeeId ?? log.deviceEmployeeNumber ?? log.number ?? '');
+        if (key && seenKeys.has(key)) continue;
+        if (key) seenKeys.add(key);
+        const raw  = log.punchTime ?? log.timestamp ?? log.time ?? '';
+        const hour = raw ? new Date(raw).getHours() : -1;
+        sumRows.push({
+          name:   log.employeeName ?? `#${String(log.deviceEmployeeNumber ?? log.number ?? '?')}`,
+          time:   raw ? new Date(raw).toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' }) : '—',
+          isLate: hour >= LATE_HOUR,
+        });
+      }
+      const presentCount = sumRows.length;
+      const empTotal     = Array.isArray(employees) ? employees.length : Math.max(1, presentCount);
+      this.attendanceSummary.set({
+        presentCount,
+        absentCount: Math.max(0, empTotal - presentCount),
+        lateCount:   sumRows.filter(r => r.isLate).length,
+        rate:        empTotal > 0 ? Math.round((presentCount / empTotal) * 100) : 0,
+        rows:        sumRows.slice(0, 8),
+      });
 
       // Build 7-day chart
       const last7 = Array.from({ length: 7 }, (_, i) => {

@@ -12,6 +12,7 @@
     "next": "→ التالي",
     "retry": "إعادة المحاولة",
     "print": "طباعة",
+    "exportExcel": "تصدير Excel",
     "optional": "(اختياري)",
     "required": "هذا الحقل مطلوب",
     "required_mark": "*",
@@ -416,7 +417,12 @@
       "qPayroll": "كشوف الرواتب",
       "qDevices": "أجهزة البصمة",
       "attendanceChart": "الحضور — آخر 7 أيام",
-      "dailyPunches": "البصمات اليومية"
+      "dailyPunches": "البصمات اليومية",
+      "todayAttendance": "حضور اليوم",
+      "present": "حاضر",
+      "late": "متأخر",
+      "absent": "غائب",
+      "attendanceRate": "نسبة الحضور"
     },
     "branches": {
       "title": "الفروع",

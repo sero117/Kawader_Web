@@ -139,6 +139,34 @@ export class AdmsLogsComponent implements OnInit {
     return String(log.deviceEmployeeNumber ?? log.number ?? '—');
   }
 
+  exportCsv(): void {
+    const headers = ['الرقم', 'اسم الموظف', 'رقم الموظف', 'الجهاز', 'وقت البصمة', 'طريقة التحقق'];
+    const rows = this.filtered().map(l => [
+      String(l.id ?? ''),
+      l.employeeName ?? '',
+      this.empNumber(l),
+      this.deviceSerial(l),
+      this.punchTime(l),
+      this.verifyLabel(l),
+    ]);
+    this.downloadCsv([headers, ...rows], 'سجلات-البصمة');
+  }
+
+  private downloadCsv(rows: string[][], filename: string): void {
+    const BOM = '﻿';
+    const csv = BOM + rows
+      .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = Object.assign(document.createElement('a'), {
+      href: url,
+      download: `${filename}-${new Date().toLocaleDateString('en-CA')}.csv`,
+    });
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   apiErr(err: any, fallback: string): string {
     if (err?.status === 0) return 'Cannot connect to server.';
     const body = err?.error;
