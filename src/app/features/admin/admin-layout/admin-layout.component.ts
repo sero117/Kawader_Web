@@ -7,6 +7,7 @@ import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { WelcomeOverlayComponent, WelcomeAction } from '../../companymanager/welcome-overlay/welcome-overlay.component';
+import { OfflineBannerComponent } from '../../../core/components/offline-banner/offline-banner.component';
 
 const WELCOME_FLAG_KEY = 'kawader_show_welcome';
 
@@ -26,7 +27,7 @@ const ADMIN_WELCOME_ACTIONS: WelcomeAction[] = [
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeSwitcherComponent, LanguageSwitcherComponent, TranslatePipe, WelcomeOverlayComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeSwitcherComponent, LanguageSwitcherComponent, TranslatePipe, WelcomeOverlayComponent, OfflineBannerComponent],
   templateUrl: './admin-layout.component.html',
 })
 export class AdminLayoutComponent implements OnInit {

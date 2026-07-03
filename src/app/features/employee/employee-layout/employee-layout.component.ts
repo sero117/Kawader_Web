@@ -8,11 +8,12 @@ import { EmployeeCompany } from '../../../core/models/employee.models';
 import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { OfflineBannerComponent } from '../../../core/components/offline-banner/offline-banner.component';
 
 @Component({
   selector: 'app-employee-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeSwitcherComponent, LanguageSwitcherComponent, TranslatePipe],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeSwitcherComponent, LanguageSwitcherComponent, TranslatePipe, OfflineBannerComponent],
   templateUrl: './employee-layout.component.html',
 })
 export class EmployeeLayoutComponent implements OnInit {

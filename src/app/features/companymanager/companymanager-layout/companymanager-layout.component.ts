@@ -8,6 +8,7 @@ import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { WelcomeOverlayComponent, WelcomeAction } from '../welcome-overlay/welcome-overlay.component';
+import { OfflineBannerComponent } from '../../../core/components/offline-banner/offline-banner.component';
 
 const WELCOME_FLAG_KEY = 'kawader_show_welcome';
 
@@ -32,7 +33,7 @@ const MANAGER_WELCOME_ACTIONS: WelcomeAction[] = [
 @Component({
   selector: 'app-companymanager-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeSwitcherComponent, LanguageSwitcherComponent, TranslatePipe, WelcomeOverlayComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeSwitcherComponent, LanguageSwitcherComponent, TranslatePipe, WelcomeOverlayComponent, OfflineBannerComponent],
   templateUrl: './companymanager-layout.component.html',
 })
 export class CompanyManagerLayoutComponent implements OnInit {
