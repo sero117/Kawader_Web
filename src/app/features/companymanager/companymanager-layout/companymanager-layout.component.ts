@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, HostListener } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
@@ -9,6 +9,7 @@ import { AccentService } from '../../../core/services/accent.service';
 import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
 import { AccentPickerComponent } from '../../../core/components/accent-picker/accent-picker.component';
+import { CommandPaletteComponent } from '../../../core/components/command-palette/command-palette.component';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { WelcomeOverlayComponent, WelcomeAction } from '../welcome-overlay/welcome-overlay.component';
 import { OfflineBannerComponent } from '../../../core/components/offline-banner/offline-banner.component';
@@ -36,7 +37,7 @@ const MANAGER_WELCOME_ACTIONS: WelcomeAction[] = [
 @Component({
   selector: 'app-companymanager-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeSwitcherComponent, LanguageSwitcherComponent, AccentPickerComponent, TranslatePipe, WelcomeOverlayComponent, OfflineBannerComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeSwitcherComponent, LanguageSwitcherComponent, AccentPickerComponent, CommandPaletteComponent, TranslatePipe, WelcomeOverlayComponent, OfflineBannerComponent],
   templateUrl: './companymanager-layout.component.html',
 })
 export class CompanyManagerLayoutComponent implements OnInit {
@@ -57,7 +58,6 @@ export class CompanyManagerLayoutComponent implements OnInit {
   lastVisitText    = signal<string | null>(null);
   showNotifPanel   = signal(false);
   showSearch       = signal(false);
-  searchQuery      = signal('');
 
   ngOnInit(): void {
     this.accentService.init();
@@ -88,16 +88,15 @@ export class CompanyManagerLayoutComponent implements OnInit {
   toggleNotifPanel(): void { this.showNotifPanel.update(v => !v); }
   closeNotifPanel(): void { this.showNotifPanel.set(false); }
 
-  openSearch(): void {
-    this.showSearch.set(true);
-    this.showNotifPanel.set(false);
-    setTimeout(() => (document.getElementById('header-search') as HTMLInputElement)?.focus(), 0);
-  }
+  openSearch(): void { this.showSearch.set(true); this.showNotifPanel.set(false); }
+  closeSearch(): void { this.showSearch.set(false); }
 
-  closeSearch(): void { this.showSearch.set(false); this.searchQuery.set(''); }
-
-  onSearchKey(event: KeyboardEvent): void {
-    if (event.key === 'Escape') this.closeSearch();
+  @HostListener('document:keydown', ['$event'])
+  onGlobalKey(e: KeyboardEvent): void {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      this.showSearch.update(v => !v);
+    }
   }
 
   onWelcomeNavigate(path: string): void {
