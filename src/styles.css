@@ -334,7 +334,7 @@
   height: 38px;
   flex-shrink: 0;
   border-radius: 0.75rem;
-  background: linear-gradient(135deg, var(--nav-accent) 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, var(--nav-accent) 0%, color-mix(in srgb, var(--nav-accent) 55%, #000) 100%);
   color: #fff;
 }
 
@@ -1161,7 +1161,7 @@ select option {
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 600;
-  background: linear-gradient(135deg, var(--nav-accent) 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, var(--nav-accent) 0%, color-mix(in srgb, var(--nav-accent) 55%, #000) 100%);
   color: #fff;
   border: none;
   cursor: pointer;
@@ -1271,7 +1271,7 @@ select option {
 /* ── Overview: greeting gradient name ────────────────────────────── */
 
 .overview-name-gradient {
-  background: linear-gradient(90deg, var(--nav-accent) 0%, #a855f7 100%);
+  background: linear-gradient(90deg, var(--nav-accent) 0%, color-mix(in srgb, var(--nav-accent) 60%, #fff) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1530,7 +1530,7 @@ select option {
 .chart-bar {
   width: 100%;
   border-radius: 5px 5px 0 0;
-  background: linear-gradient(to top, var(--nav-accent) 0%, #a855f7 100%);
+  background: linear-gradient(to top, color-mix(in srgb, var(--nav-accent) 55%, #000) 0%, var(--nav-accent) 100%);
   animation: bar-grow-up 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
   min-height: 3px;
 }
@@ -1618,7 +1618,7 @@ select option {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--nav-accent) 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, var(--nav-accent) 0%, color-mix(in srgb, var(--nav-accent) 55%, #000) 100%);
   color: #fff;
   display: flex;
   align-items: center;
@@ -1628,12 +1628,12 @@ select option {
   flex-shrink: 0;
   user-select: none;
   letter-spacing: 0;
-  box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 3.5px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 3.5px color-mix(in srgb, var(--nav-accent) 35%, transparent);
   transition: box-shadow 0.2s;
 }
 
 .header-avatar:hover {
-  box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 3.5px rgba(99, 102, 241, 0.6);
+  box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 3.5px color-mix(in srgb, var(--nav-accent) 65%, transparent);
 }
 
 /* ── Header icon tooltips ─────────────────────────────────────────── */
@@ -1795,7 +1795,7 @@ select option {
 .attendance-bar-fill {
   height: 100%;
   border-radius: 9999px;
-  background: linear-gradient(90deg, var(--nav-accent) 0%, #10b981 100%);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--nav-accent) 70%, #000) 0%, var(--nav-accent) 100%);
   transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
