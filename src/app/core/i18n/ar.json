@@ -5,6 +5,7 @@
     "hrms": "HRMS"
   },
   "common": {
+    "noData": "لا تتوفر بيانات",
     "cancel": "إلغاء",
     "save": "حفظ التغييرات",
     "delete": "حذف",

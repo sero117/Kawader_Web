@@ -4,10 +4,9 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { ShiftLogService } from '../../../core/services/shift-log.service';
-import { ShiftService } from '../../../core/services/shift.service';
 import { ShiftSystemService } from '../../../core/services/shift-system.service';
 import {
-  ShiftLog, Shift, ShiftSystem,
+  ShiftLog, ShiftSystem,
   AttendanceStatus, GetShiftLogsParams,
 } from '../../../core/models/shift.models';
 import { EmployeeService } from '../../../core/services/employee.service';
@@ -21,7 +20,6 @@ import { Employee } from '../../../core/models/employee.models';
 })
 export class ShiftLogsComponent implements OnInit {
   private readonly logService      = inject(ShiftLogService);
-  private readonly shiftService    = inject(ShiftService);
   private readonly systemService   = inject(ShiftSystemService);
   private readonly employeeService = inject(EmployeeService);
   private readonly lang            = inject(LanguageService);
@@ -37,7 +35,6 @@ export class ShiftLogsComponent implements OnInit {
 
   // ── Data ─────────────────────────────────────────────────────────────────────
   logs         = signal<ShiftLog[]>([]);
-  allShifts    = signal<Shift[]>([]);
   allSystems   = signal<ShiftSystem[]>([]);
   allEmployees = signal<Employee[]>([]);
   loading      = signal(true);
@@ -48,7 +45,6 @@ export class ShiftLogsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadLogs();
-    this.loadShifts();
     this.loadSystems();
     this.loadEmployees();
   }
@@ -76,17 +72,6 @@ export class ShiftLogsComponent implements OnInit {
         this.loading.set(false);
         this.listError.set(this.apiErr(err, 'Failed to load attendance logs.'));
       },
-    });
-  }
-
-  private loadShifts(): void {
-    this.shiftService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
-      next: (res: any) => {
-        const raw  = res?.data ?? res;
-        const list: Shift[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
-        this.allShifts.set(list);
-      },
-      error: () => {},
     });
   }
 

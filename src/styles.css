@@ -23,9 +23,9 @@
   --accent-light:     #4F46E5;
   --accent-dark:      #6366F1;
   --nav-accent:       var(--accent-light);
-  --table-row-bg:     #FEFCF9;
-  --table-row-bg-alt: #F8F3EB;
-  --table-row-hover:  #EDE4D5;
+  --table-row-bg:     color-mix(in srgb, var(--accent-light) 3%, #ffffff);
+  --table-row-bg-alt: color-mix(in srgb, var(--accent-light) 6%, #f8f7f4);
+  --table-row-hover:  color-mix(in srgb, var(--accent-light) 12%, #f0eeeb);
   --card-shadow:      rgba(0, 0, 0, 0.055);
   --sidebar-bg:       linear-gradient(175deg, color-mix(in srgb, var(--accent-light) 5%, #ffffff) 0%, color-mix(in srgb, var(--accent-light) 9%, #f3f2ef) 100%);
   --sidebar-shadow:   color-mix(in srgb, var(--accent-light) 22%, transparent);
@@ -79,8 +79,8 @@
   --nav-active-text:  var(--accent-dark);
   --nav-accent:       var(--accent-dark);
   --table-row-bg:     var(--bg-surface);
-  --table-row-bg-alt: rgba(255, 255, 255, 0.03);
-  --table-row-hover:  rgba(160, 120, 75, 0.1);
+  --table-row-bg-alt: color-mix(in srgb, var(--accent-dark) 6%, transparent);
+  --table-row-hover:  color-mix(in srgb, var(--accent-dark) 14%, transparent);
   --card-shadow:      rgba(0, 0, 0, 0.2);
   --sidebar-bg:       linear-gradient(175deg, color-mix(in srgb, var(--accent-dark) 10%, #13122a) 0%, color-mix(in srgb, var(--accent-dark) 7%, #0c0b1e) 100%);
   --sidebar-shadow:   color-mix(in srgb, var(--accent-dark) 32%, transparent);

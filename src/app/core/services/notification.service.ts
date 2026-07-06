@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from '@microsoft/signalr';
+import { HubConnection, HubConnectionBuilder, HubConnectionState, HttpTransportType, LogLevel } from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
@@ -29,7 +29,7 @@ export class NotificationService {
 
     this.connection = new HubConnectionBuilder()
       .withUrl(`${environment.signalRHubUrl}?access_token=${encodeURIComponent(token)}`, {
-        headers: { 'Authorization': `Bearer ${token}` },
+        transport: HttpTransportType.LongPolling,
         withCredentials: false,
       })
       .withAutomaticReconnect()

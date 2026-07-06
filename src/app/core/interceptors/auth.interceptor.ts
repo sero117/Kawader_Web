@@ -35,7 +35,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
   const silent = req.headers.has('X-Silent');
-  let headers = req.headers.set('language', language.getLanguage());
+  let headers = req.headers
+    .set('language', language.getLanguage())
+    .set('ngrok-skip-browser-warning', 'true');
   if (silent) headers = headers.delete('X-Silent');
 
   if (!req.headers.has('Authorization')) {
