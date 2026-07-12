@@ -55,7 +55,8 @@
     "accounts": "الحسابات",
     "plans": "الخطط",
     "cards": "الكروت",
-    "subscriptions": "الاشتراكات"
+    "subscriptions": "الاشتراكات",
+    "sectionSubscriptions": "الاشتراكات"
   },
   "auth": {
     "loginSuccess": "أهلاً وسهلاً",
@@ -258,6 +259,7 @@
       "title": "الخطط",
       "subtitle": "إدارة خطط الاشتراك المتاحة على المنصة.",
       "addPlan": "إضافة خطة",
+      "editPlan": "تعديل الخطة",
       "empty": "لا توجد خطط بعد",
       "days": "يوم",
       "employees": "موظف",
@@ -270,17 +272,19 @@
       "hide": "إخفاء",
       "recommend": "تمييز",
       "unrecommend": "إلغاء التمييز",
-      "nameLabel": "اسم الخطة",
-      "priceLabel": "السعر (USD)",
-      "durationLabel": "المدة (أيام)",
-      "detailsLabel": "المميزات",
+      "name": "اسم الخطة",
+      "price": "السعر",
+      "duration": "المدة (أيام)",
+      "details": "المميزات",
       "detailsHint": "اكتب كل ميزة في سطر منفصل",
-      "maxEmployeesLabel": "أقصى عدد موظفين",
-      "maxBranchesLabel": "أقصى عدد فروع",
-      "maxSectionsLabel": "أقصى عدد أقسام",
-      "editTitle": "تعديل الخطة",
-      "createTitle": "إنشاء خطة جديدة",
-      "confirmDelete": "هل تريد حذف هذه الخطة؟"
+      "maxEmployees": "أقصى عدد الموظفين",
+      "maxBranches": "أقصى عدد الفروع",
+      "maxSections": "أقصى عدد الأقسام",
+      "showPlan": "إظهار للعملاء",
+      "isRecommended": "مميزة (موصى بها)",
+      "nameRequired": "اسم الخطة مطلوب.",
+      "confirmDelete": "حذف الخطة؟",
+      "confirmDeleteMsg": "سيتم حذف الخطة نهائياً:"
     },
     "cards": {
       "title": "كروت الاشتراك",

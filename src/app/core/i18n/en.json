@@ -55,7 +55,8 @@
     "accounts": "Accounts",
     "plans": "Plans",
     "cards": "Cards",
-    "subscriptions": "Subscriptions"
+    "subscriptions": "Subscriptions",
+    "sectionSubscriptions": "Subscriptions"
   },
   "auth": {
     "loginSuccess": "Welcome back",
@@ -258,6 +259,7 @@
       "title": "Plans",
       "subtitle": "Manage the subscription plans available on the platform.",
       "addPlan": "Add Plan",
+      "editPlan": "Edit Plan",
       "empty": "No plans yet",
       "days": "days",
       "employees": "employees",
@@ -270,17 +272,19 @@
       "hide": "Hide",
       "recommend": "Feature",
       "unrecommend": "Unfeature",
-      "nameLabel": "Plan Name",
-      "priceLabel": "Price (USD)",
-      "durationLabel": "Duration (days)",
-      "detailsLabel": "Features",
+      "name": "Plan Name",
+      "price": "Price",
+      "duration": "Duration (days)",
+      "details": "Features",
       "detailsHint": "One feature per line",
-      "maxEmployeesLabel": "Max Employees",
-      "maxBranchesLabel": "Max Branches",
-      "maxSectionsLabel": "Max Sections",
-      "editTitle": "Edit Plan",
-      "createTitle": "Create Plan",
-      "confirmDelete": "Delete this plan?"
+      "maxEmployees": "Max Employees",
+      "maxBranches": "Max Branches",
+      "maxSections": "Max Sections",
+      "showPlan": "Show to customers",
+      "isRecommended": "Featured (Recommended)",
+      "nameRequired": "Plan name is required.",
+      "confirmDelete": "Delete Plan?",
+      "confirmDeleteMsg": "This plan will be permanently removed:"
     },
     "cards": {
       "title": "Subscription Cards",
