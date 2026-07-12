@@ -165,15 +165,6 @@
         </svg>
       </button>
 
-      <!-- Mobile logo -->
-      <svg viewBox="0 0 100 100" width="28" height="28" xmlns="http://www.w3.org/2000/svg" style="border-radius:8px;display:block;flex-shrink:0;" class="sm:hidden">
-        <rect x="2" y="2" width="96" height="96" rx="28" fill="var(--nav-accent)"/>
-        <g fill="#FFFFFF">
-          <g opacity="0.72"><circle cx="31" cy="45" r="7"/><rect x="24" y="53" width="14" height="25" rx="7"/></g>
-          <g opacity="0.72"><circle cx="69" cy="45" r="7"/><rect x="62" y="53" width="14" height="25" rx="7"/></g>
-          <circle cx="50" cy="37" r="9.5"/><rect x="38.5" y="48" width="23" height="32" rx="11.5"/>
-        </g>
-      </svg>
       <span class="font-bold text-sm sm:hidden" style="color: var(--text-base);">{{ 'brand.name' | translate }}</span>
 
       <!-- Admin badge (center) -->
@@ -184,6 +175,9 @@
         </svg>
         <span>{{ 'nav.adminPanel' | translate }}</span>
       </div>
+
+      <!-- Accent color picker -->
+      <app-accent-picker class="hidden sm:block" />
 
       <!-- Admin avatar -->
       <div class="header-avatar flex-shrink-0" [title]="adminName()">
