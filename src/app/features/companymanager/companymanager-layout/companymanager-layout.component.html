@@ -147,6 +147,13 @@
         <span class="sidebar-link-label">{{ 'manager.nav.payroll' | translate }}</span>
       </a>
 
+      <!-- Subscription section -->
+      @if (!collapsed()) {
+        <div class="sidebar-section">
+          <span class="sidebar-section-label">{{ 'manager.nav.subscriptionSection' | translate }}</span>
+        </div>
+      }
+
       <!-- Subscription -->
       <a routerLink="/dashboard/manager/subscription" routerLinkActive="sidebar-active" class="sidebar-link">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
