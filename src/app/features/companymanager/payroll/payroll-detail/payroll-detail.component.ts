@@ -353,6 +353,39 @@ export class PayrollDetailComponent implements OnInit {
     return (a ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
+  exportExcel(): void {
+    const r = this.run();
+    if (!r) return;
+    const headers = [
+      'اسم الموظف', 'الراتب الأساسي', 'الساعات الفعلية', 'الساعات المتوقعة',
+      'خصم النقص', 'ساعات إضافية', 'مبلغ الإضافي', 'الحوافز', 'الخصومات', 'صافي الراتب',
+    ];
+    const rows = this.filteredPayslips().map(p => [
+      p.employeeName,
+      p.baseSalary.toFixed(2),
+      String(p.totalActualHours),
+      String(p.totalExpectedHours),
+      p.shortageDeduction.toFixed(2),
+      String(p.overtimeHours),
+      p.overtimeAmount.toFixed(2),
+      p.totalIncentives.toFixed(2),
+      p.totalDeductions.toFixed(2),
+      p.netSalary.toFixed(2),
+    ]);
+    const BOM = '﻿';
+    const csv = BOM + [headers, ...rows]
+      .map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = Object.assign(document.createElement('a'), {
+      href: url,
+      download: `كشف-رواتب-${r.periodStart.slice(0, 10)}-${r.periodEnd.slice(0, 10)}.csv`,
+    });
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   private flash(msg: string): void {
     this.successMsg.set(msg);
     setTimeout(() => this.successMsg.set(null), 3500);

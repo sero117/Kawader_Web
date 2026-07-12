@@ -78,6 +78,24 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/accounts/accounts.component').then(m => m.AccountsComponent),
       },
+      {
+        path: 'plans',
+        title: 'الخطط',
+        loadComponent: () =>
+          import('./features/admin/plans/plans.component').then(m => m.PlansComponent),
+      },
+      {
+        path: 'cards',
+        title: 'الكروت',
+        loadComponent: () =>
+          import('./features/admin/cards/cards.component').then(m => m.CardsComponent),
+      },
+      {
+        path: 'subscriptions',
+        title: 'الاشتراكات',
+        loadComponent: () =>
+          import('./features/admin/subscriptions/subscriptions.component').then(m => m.SubscriptionsComponent),
+      },
     ],
   },
 
@@ -168,6 +186,12 @@ export const routes: Routes = [
         title: 'سجلات البصمة',
         loadComponent: () =>
           import('./features/companymanager/adms-logs/adms-logs.component').then(m => m.AdmsLogsComponent),
+      },
+      {
+        path: 'subscription',
+        title: 'الاشتراك',
+        loadComponent: () =>
+          import('./features/companymanager/subscription/subscription.component').then(m => m.SubscriptionComponent),
       },
     ],
   },
