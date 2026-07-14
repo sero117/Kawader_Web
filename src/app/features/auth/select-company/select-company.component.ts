@@ -35,11 +35,6 @@ export class SelectCompanyComponent implements OnInit {
         const list: EmployeeCompany[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
         this.companies.set(list);
         this.loading.set(false);
-
-        // Nothing to choose between — skip straight to the dashboard.
-        if (list.length === 1) {
-          this.choose(list[0]);
-        }
       },
       error: err => {
         this.loading.set(false);
@@ -51,6 +46,7 @@ export class SelectCompanyComponent implements OnInit {
   choose(company: EmployeeCompany): void {
     this.selectingId.set(company.companyId);
     this.authService.setSelectedTenantId(company.tenantId);
+    this.authService.saveCompanyName(company.companyName);
 
     // Probe for HR access: if the Employees list is reachable → this is an HR user.
     // X-Silent on the probe means a 403 won't trigger the global logout handler.

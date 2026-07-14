@@ -130,16 +130,25 @@ export class AuthService {
     return this.getEmployeeTypeFromToken();
   }
 
+  saveCompanyName(name: string): void {
+    localStorage.setItem(this.COMPANY_NAME_KEY, name);
+  }
+
+  getStoredCompanyName(): string | null {
+    return localStorage.getItem(this.COMPANY_NAME_KEY);
+  }
+
   // ── Token management ────────────────────────────────────────────────────────
 
-  private readonly ACCESS_TOKEN_KEY = 'kawader_access_token';
-  private readonly REFRESH_TOKEN_KEY = 'kawader_refresh_token';
-  private readonly USER_ID_KEY = 'kawader_user_id';
-  private readonly TENANT_ID_KEY = 'kawader_tenant_id';
-  private readonly LOGIN_PHONE_KEY = 'kawader_login_phone';
-  private readonly KNOWN_NAME_KEY = 'kawader_known_name';
-  private readonly ROLE_KEY          = 'kawader_role';
-  private readonly EMPLOYEE_TYPE_KEY = 'kawader_employee_type';
+  private readonly ACCESS_TOKEN_KEY    = 'kawader_access_token';
+  private readonly REFRESH_TOKEN_KEY   = 'kawader_refresh_token';
+  private readonly USER_ID_KEY         = 'kawader_user_id';
+  private readonly TENANT_ID_KEY       = 'kawader_tenant_id';
+  private readonly LOGIN_PHONE_KEY     = 'kawader_login_phone';
+  private readonly KNOWN_NAME_KEY      = 'kawader_known_name';
+  private readonly ROLE_KEY            = 'kawader_role';
+  private readonly EMPLOYEE_TYPE_KEY   = 'kawader_employee_type';
+  private readonly COMPANY_NAME_KEY    = 'kawader_company_name';
 
   saveTokens(tokens: AuthTokenResponse): void {
     const access = tokens.accessToken ?? tokens.token;
@@ -212,6 +221,7 @@ export class AuthService {
     localStorage.removeItem(this.KNOWN_NAME_KEY);
     localStorage.removeItem(this.ROLE_KEY);
     localStorage.removeItem(this.EMPLOYEE_TYPE_KEY);
+    localStorage.removeItem(this.COMPANY_NAME_KEY);
   }
 
   // ── Tenant resolution (multi-company employees) ─────────────────────────────

@@ -88,6 +88,9 @@ export class CompanyManagerLayoutComponent implements OnInit {
         },
         error: () => { /* badge just stays hidden */ },
       });
+    } else {
+      const name = this.authService.getStoredCompanyName();
+      if (name) this.companyName.set(name);
     }
   }
 
