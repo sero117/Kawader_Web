@@ -11,7 +11,7 @@
     <div>
       <h1 class="font-bold text-2xl mb-0.5" style="color: var(--text-base);">{{ 'manager.employees.title' | translate }}</h1>
       <nav class="breadcrumb mt-0.5">
-        <a routerLink="/dashboard/manager/branches" class="bc-link">{{ 'manager.nav.branches' | translate }}</a>
+        <a [routerLink]="backUrl()" class="bc-link">{{ 'manager.nav.branches' | translate }}</a>
         <span class="bc-sep">›</span>
         <span class="bc-current">{{ sectionName() || ('manager.employees.subtitle' | translate) }}</span>
       </nav>
@@ -458,24 +458,53 @@
             </div>
           </div>
 
-          <!-- Branch ID + Section ID (optional) -->
+          <!-- Branch + Section cascading selects -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Branch -->
             <div>
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addEmployee.branchIdLabel' | translate }}
-                <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+                @if (addForm.get('employeeRole')!.value === EmployeeType.HumanResourceManager) {
+                  <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+                } @else {
+                  <span style="color: rgba(239,68,68,0.7);">*</span>
+                }
               </label>
-              <input formControlName="branchId" type="number" min="1" step="1" class="modal-input"
-                [class.is-invalid]="addForm.get('branchId')!.invalid && addForm.get('branchId')!.touched" />
+              <select formControlName="branchId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
+                [class.is-invalid]="addForm.get('branchId')!.invalid && addForm.get('branchId')!.touched"
+                (change)="onAddBranchChange(addForm.get('branchId')!.value)">
+                <option [ngValue]="null">{{ 'common.selectBranch' | translate }}</option>
+                @for (b of formBranches(); track b.id) {
+                  <option [ngValue]="b.id">{{ b.name }}</option>
+                }
+              </select>
+              @if (addForm.get('branchId')!.invalid && addForm.get('branchId')!.touched) {
+                <p class="text-[10px] mt-1" style="color: rgba(239,68,68,0.8);">{{ 'validation.required' | translate }}</p>
+              }
             </div>
-            <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-                {{ 'manager.addEmployee.sectionIdLabel' | translate }}
-                <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
-              </label>
-              <input formControlName="sectionId" type="number" min="1" step="1" class="modal-input"
-                [class.is-invalid]="addForm.get('sectionId')!.invalid && addForm.get('sectionId')!.touched" />
-            </div>
+            <!-- Section (hidden for HR and BranchManager) -->
+            @if (addForm.get('employeeRole')!.value !== EmployeeType.HumanResourceManager && addForm.get('employeeRole')!.value !== EmployeeType.BranchManager) {
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.addEmployee.sectionIdLabel' | translate }}
+                  <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <select formControlName="sectionId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
+                  [class.is-invalid]="addForm.get('sectionId')!.invalid && addForm.get('sectionId')!.touched"
+                  [attr.disabled]="!addForm.get('branchId')!.value || null">
+                  <option [ngValue]="null">{{ 'common.selectSection' | translate }}</option>
+                  @for (s of addSections(); track s.id) {
+                    <option [ngValue]="s.id">{{ s.name }}</option>
+                  }
+                </select>
+                @if (!addForm.get('branchId')!.value) {
+                  <p class="text-[10px] mt-1" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.selectBranchFirst' | translate }}</p>
+                }
+                @if (addForm.get('sectionId')!.invalid && addForm.get('sectionId')!.touched) {
+                  <p class="text-[10px] mt-1" style="color: rgba(239,68,68,0.8);">{{ 'validation.required' | translate }}</p>
+                }
+              </div>
+            }
           </div>
 
           <!-- Hire Date + Base Salary -->
@@ -684,22 +713,42 @@
               </div>
             </div>
 
-            <!-- Branch ID + Section ID -->
+            <!-- Branch + Section cascading selects -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.branchIdLabel' | translate }}
-                  <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+                  @if (editForm.get('employeeRole')!.value === EmployeeType.HumanResourceManager) {
+                    <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
+                  } @else {
+                    <span style="color: rgba(239,68,68,0.7);">*</span>
+                  }
                 </label>
-                <input formControlName="branchId" type="number" min="1" step="1" class="modal-input" />
+                <select formControlName="branchId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
+                  [class.is-invalid]="editForm.get('branchId')!.invalid && editForm.get('branchId')!.touched"
+                  (change)="onEditBranchChange(editForm.get('branchId')!.value)">
+                  <option [ngValue]="null">{{ 'common.selectBranch' | translate }}</option>
+                  @for (b of formBranches(); track b.id) {
+                    <option [ngValue]="b.id">{{ b.name }}</option>
+                  }
+                </select>
               </div>
-              <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-                  {{ 'manager.editEmployee.sectionIdLabel' | translate }}
-                  <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
-                </label>
-                <input formControlName="sectionId" type="number" min="1" step="1" class="modal-input" />
-              </div>
+              @if (editForm.get('employeeRole')!.value !== EmployeeType.HumanResourceManager && editForm.get('employeeRole')!.value !== EmployeeType.BranchManager) {
+                <div>
+                  <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                    {{ 'manager.editEmployee.sectionIdLabel' | translate }}
+                    <span style="color: rgba(239,68,68,0.7);">*</span>
+                  </label>
+                  <select formControlName="sectionId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
+                    [class.is-invalid]="editForm.get('sectionId')!.invalid && editForm.get('sectionId')!.touched"
+                    [attr.disabled]="!editForm.get('branchId')!.value || null">
+                    <option [ngValue]="null">{{ 'common.selectSection' | translate }}</option>
+                    @for (s of editSections(); track s.id) {
+                      <option [ngValue]="s.id">{{ s.name }}</option>
+                    }
+                  </select>
+                </div>
+              }
             </div>
 
             <!-- Hire Date + Base Salary -->

@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
@@ -10,6 +10,10 @@ import { EmployeeStatusService } from '../../../core/services/employee-status.se
 import { ShiftSystemService } from '../../../core/services/shift-system.service';
 import { ShiftLogService } from '../../../core/services/shift-log.service';
 import { ShiftService } from '../../../core/services/shift.service';
+import { BranchService } from '../../../core/services/branch.service';
+import { SectionService } from '../../../core/services/section.service';
+import { Branch } from '../../../core/models/branch.models';
+import { Section } from '../../../core/models/section.models';
 import {
   Employee, EmployeeType, EmployeeStatus, AttachmentType,
   GenderType, ContractType, RelationType,
@@ -32,6 +36,8 @@ export class EmployeesComponent implements OnInit {
   private readonly shiftSystemService    = inject(ShiftSystemService);
   private readonly shiftLogService       = inject(ShiftLogService);
   private readonly shiftService          = inject(ShiftService);
+  private readonly branchService         = inject(BranchService);
+  private readonly sectionService        = inject(SectionService);
   private readonly fb                    = inject(FormBuilder);
   private readonly lang                  = inject(LanguageService);
   private readonly route                 = inject(ActivatedRoute);
@@ -39,8 +45,11 @@ export class EmployeesComponent implements OnInit {
 
   branchId    = 0;
   sectionId   = 0;
-  sectionName = signal<string>('');
-  backUrl     = signal<string>('/dashboard/manager/branches');
+  sectionName  = signal<string>('');
+  backUrl      = signal<string>('/dashboard/manager/branches');
+  formBranches = signal<Branch[]>([]);
+  addSections  = signal<Section[]>([]);
+  editSections = signal<Section[]>([]);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     search:     '',
@@ -259,6 +268,13 @@ export class EmployeesComponent implements OnInit {
     this.watchEmployeeType(this.addForm.get('employeeRole')!, this.addForm);
     this.watchEmployeeType(this.editForm.get('employeeRole')!, this.editForm);
     this.loadEmployees();
+    this.branchService.getAll({ pageNumber: 1, pageSize: 200 }).subscribe({
+      next: (res: any) => {
+        const raw = res?.data ?? res;
+        this.formBranches.set(Array.isArray(raw) ? raw : (raw?.items ?? []));
+      },
+      error: () => {},
+    });
   }
 
   private watchEmployeeType(ctrl: AbstractControl, form: ReturnType<typeof this.fb.group>): void {
@@ -351,7 +367,15 @@ export class EmployeesComponent implements OnInit {
       gender:       GenderType.Male,
       contractType: ContractType.FullTime,
     });
+    this.addSections.set([]);
     this.modalError.set(null);
+    if (this.branchId) {
+      this.addForm.patchValue({ branchId: this.branchId });
+      this.loadSectionsInto(this.branchId, this.addSections);
+    }
+    if (this.sectionId) {
+      this.addForm.patchValue({ sectionId: this.sectionId });
+    }
     this.showAddModal.set(true);
   }
 
@@ -393,11 +417,35 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
+  // ── Branch → Sections cascading for forms ────────────────────────────────
+  onAddBranchChange(branchId: number | null): void {
+    this.addSections.set([]);
+    this.addForm.get('sectionId')!.setValue(null);
+    if (branchId) this.loadSectionsInto(branchId, this.addSections);
+  }
+
+  onEditBranchChange(branchId: number | null): void {
+    this.editSections.set([]);
+    this.editForm.get('sectionId')!.setValue(null);
+    if (branchId) this.loadSectionsInto(branchId, this.editSections);
+  }
+
+  private loadSectionsInto(branchId: number, target: WritableSignal<Section[]>): void {
+    this.sectionService.getAll({ branchId, pageNumber: 1, pageSize: 200 }).subscribe({
+      next: (res: any) => {
+        const raw = res?.data ?? res;
+        target.set(Array.isArray(raw) ? raw : (raw?.items ?? []));
+      },
+      error: () => {},
+    });
+  }
+
   // ── Edit ───────────────────────────────────────────────────────────────────
   openEdit(emp: Employee, event: Event): void {
     event.stopPropagation();
     this.selectedEmployee.set(emp);
     this.editForm.reset();
+    this.editSections.set([]);
     this.modalError.set(null);
     this.editLoading.set(true);
     this.showEditModal.set(true);
@@ -406,6 +454,7 @@ export class EmployeesComponent implements OnInit {
       next: (res: any) => {
         this.editLoading.set(false);
         const e = res?.data ?? res;
+        if (e.branchId) this.loadSectionsInto(e.branchId, this.editSections);
         this.editForm.patchValue({
           firstName:      e.firstName,
           lastName:       e.lastName,
