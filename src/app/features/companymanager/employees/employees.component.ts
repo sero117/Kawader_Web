@@ -268,7 +268,7 @@ export class EmployeesComponent implements OnInit {
     this.watchEmployeeType(this.addForm.get('employeeRole')!, this.addForm);
     this.watchEmployeeType(this.editForm.get('employeeRole')!, this.editForm);
     this.loadEmployees();
-    this.branchService.getAll({ pageNumber: 1, pageSize: 200 }).subscribe({
+    this.branchService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
       next: (res: any) => {
         const raw = res?.data ?? res;
         this.formBranches.set(Array.isArray(raw) ? raw : (raw?.items ?? []));
@@ -432,7 +432,7 @@ export class EmployeesComponent implements OnInit {
   }
 
   private loadSectionsInto(branchId: number, target: WritableSignal<Section[]>): void {
-    this.sectionService.getAll({ branchId, pageNumber: 1, pageSize: 200 }).subscribe({
+    this.sectionService.getAll({ branchId, pageNumber: 1, pageSize: 100 }).subscribe({
       next: (res: any) => {
         const raw = res?.data ?? res;
         target.set(Array.isArray(raw) ? raw : (raw?.items ?? []));
