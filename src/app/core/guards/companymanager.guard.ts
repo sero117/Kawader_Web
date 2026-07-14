@@ -3,7 +3,6 @@ import { CanActivateFn, Router } from '@angular/router';
 import { map, catchError, of } from 'rxjs';
 import { CompanyService } from '../services/company.service';
 import { AuthService } from '../services/auth.service';
-import { Role, EmployeeType } from '../models/auth.models';
 
 export const companyManagerGuard: CanActivateFn = () => {
   const companyService = inject(CompanyService);
@@ -12,15 +11,6 @@ export const companyManagerGuard: CanActivateFn = () => {
 
   if (!authService.isAuthenticated()) {
     return router.createUrlTree(['/auth/login']);
-  }
-
-  const role       = authService.getRoleFromToken();
-  const empType    = authService.getEmployeeTypeFromToken();
-  const isAllowed  = role === Role.CompanyManager ||
-                    (role === Role.Employee && empType === EmployeeType.HumanResourceManager);
-
-  if (!isAllowed) {
-    return router.createUrlTree([authService.getHomeRoute(role ?? undefined)]);
   }
 
   return companyService.getStatus().pipe(
