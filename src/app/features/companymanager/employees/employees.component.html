@@ -725,8 +725,7 @@
                   }
                 </label>
                 <select formControlName="branchId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
-                  [class.is-invalid]="editForm.get('branchId')!.invalid && editForm.get('branchId')!.touched"
-                  (change)="onEditBranchChange(editForm.get('branchId')!.value)">
+                  [class.is-invalid]="editForm.get('branchId')!.invalid && editForm.get('branchId')!.touched">
                   <option [ngValue]="null">{{ 'common.selectBranch' | translate }}</option>
                   @for (b of formBranches(); track b.id) {
                     <option [ngValue]="b.id">{{ b.name }}</option>

@@ -267,6 +267,11 @@ export class EmployeesComponent implements OnInit {
     }
     this.watchEmployeeType(this.addForm.get('employeeRole')!, this.addForm);
     this.watchEmployeeType(this.editForm.get('employeeRole')!, this.editForm);
+    this.editForm.get('branchId')!.valueChanges.subscribe(branchId => {
+      this.editSections.set([]);
+      this.editForm.get('sectionId')!.setValue(null, { emitEvent: false });
+      if (branchId) this.loadSectionsInto(branchId, this.editSections);
+    });
     this.loadEmployees();
     this.branchService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
       next: (res: any) => {
@@ -424,11 +429,6 @@ export class EmployeesComponent implements OnInit {
     if (branchId) this.loadSectionsInto(branchId, this.addSections);
   }
 
-  onEditBranchChange(branchId: number | null): void {
-    this.editSections.set([]);
-    this.editForm.get('sectionId')!.setValue(null);
-    if (branchId) this.loadSectionsInto(branchId, this.editSections);
-  }
 
   private loadSectionsInto(branchId: number, target: WritableSignal<Section[]>): void {
     this.sectionService.getAll({ branchId, pageNumber: 1, pageSize: 100 }).subscribe({
@@ -454,7 +454,6 @@ export class EmployeesComponent implements OnInit {
       next: (res: any) => {
         this.editLoading.set(false);
         const e = res?.data ?? res;
-        if (e.branchId) this.loadSectionsInto(e.branchId, this.editSections);
         this.editForm.patchValue({
           firstName:      e.firstName,
           lastName:       e.lastName,
