@@ -11,17 +11,13 @@ export const employeeGuard: CanActivateFn = () => {
     return router.createUrlTree(['/auth/login']);
   }
 
-  const token = authService.getAccessToken();
-  if (!token) return router.createUrlTree(['/auth/login']);
-
-  try {
-    const claims = JSON.parse(atob(token.split('.')[1])) as Record<string, unknown>;
-    const roleVal = claims['role'] ??
-      claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-    if (Number(roleVal) !== Role.Employee) {
-      return router.createUrlTree([authService.getHomeRoute(Number(roleVal))]);
-    }
-  } catch { /* invalid token — let it through, server will reject */ }
+  // JWT for employees carries role as the string "Employee", not a number.
+  // Number("Employee") = NaN which breaks the comparison — use the stored
+  // numeric role from the sign-in response body instead.
+  const role = authService.getStoredRole();
+  if (role !== Role.Employee) {
+    return router.createUrlTree([authService.getHomeRoute(role ?? undefined)]);
+  }
 
   if (authService.needsCompanySelection()) {
     return router.createUrlTree(['/auth/select-company']);

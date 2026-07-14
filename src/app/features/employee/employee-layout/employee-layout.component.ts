@@ -26,7 +26,7 @@ export class EmployeeLayoutComponent implements OnInit {
 
   collapsed    = signal(window.innerWidth < 640);
   displayName  = signal(this.authService.getDisplayName());
-  employeeType = signal(this.authService.getEmployeeTypeFromToken());
+  employeeType = signal(this.authService.getStoredEmployeeType());
 
   // ── Company badge / switcher ─────────────────────────────────────────────────
   companies       = signal<EmployeeCompany[]>([]);
