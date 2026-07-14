@@ -110,7 +110,7 @@ export class AuthService {
       case Role.CompanyManager: return '/dashboard/manager';
       case Role.Employee: {
         switch (this.getEmployeeTypeFromToken()) {
-          case EmployeeType.HumanResourceManager: return '/dashboard/manager';
+          case EmployeeType.HumanResourceManager: return '/dashboard/hr';
           case EmployeeType.DepartmentManager:    return '/dashboard/dept';
           case EmployeeType.BranchManager:        return '/dashboard/branch';
           default:                                return '/dashboard/employee';

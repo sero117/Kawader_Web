@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { companyManagerGuard } from './core/guards/companymanager.guard';
 import { employeeGuard } from './core/guards/employee.guard';
+import { hrGuard } from './core/guards/hr.guard';
 import { payrollAccessGuard } from './core/guards/payroll-access.guard';
 
 export const routes: Routes = [
@@ -220,11 +221,103 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard/hr',
-    canActivate: [employeeGuard],
+    canActivate: [hrGuard],
     loadComponent: () =>
-      import('./features/employee/employee-layout/employee-layout.component').then(m => m.EmployeeLayoutComponent),
+      import('./features/companymanager/companymanager-layout/companymanager-layout.component').then(m => m.CompanyManagerLayoutComponent),
     children: [
-      { path: '', loadComponent: () => import('./features/employee/employee-overview/employee-overview.component').then(m => m.EmployeeOverviewComponent) },
+      {
+        path: '',
+        title: 'الرئيسية',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./features/companymanager/overview/manager-overview.component').then(m => m.ManagerOverviewComponent),
+      },
+      {
+        path: 'branches',
+        title: 'الفروع',
+        loadComponent: () =>
+          import('./features/companymanager/branches/branches.component').then(m => m.BranchesComponent),
+      },
+      {
+        path: 'sections',
+        title: 'الأقسام',
+        loadComponent: () =>
+          import('./features/companymanager/sections/sections.component').then(m => m.SectionsComponent),
+      },
+      {
+        path: 'branches/:branchId/sections',
+        title: 'الأقسام',
+        loadComponent: () =>
+          import('./features/companymanager/sections/sections.component').then(m => m.SectionsComponent),
+      },
+      {
+        path: 'employees',
+        title: 'الموظفون',
+        loadComponent: () =>
+          import('./features/companymanager/employees/employees.component').then(m => m.EmployeesComponent),
+      },
+      {
+        path: 'branches/:branchId/sections/:sectionId/employees',
+        title: 'الموظفون',
+        loadComponent: () =>
+          import('./features/companymanager/employees/employees.component').then(m => m.EmployeesComponent),
+      },
+      {
+        path: 'shifts',
+        title: 'الورديات',
+        loadComponent: () =>
+          import('./features/companymanager/shifts/shifts.component').then(m => m.ShiftsComponent),
+      },
+      {
+        path: 'shift-systems',
+        title: 'أنظمة الدوام',
+        loadComponent: () =>
+          import('./features/companymanager/shift-systems/shift-systems.component').then(m => m.ShiftSystemsComponent),
+      },
+      {
+        path: 'shift-systems/:shiftSystemId/days',
+        title: 'أيام الدوام',
+        loadComponent: () =>
+          import('./features/companymanager/shift-system-days/shift-system-days.component').then(m => m.ShiftSystemDaysComponent),
+      },
+      {
+        path: 'shift-logs',
+        title: 'سجلات الحضور',
+        loadComponent: () =>
+          import('./features/companymanager/shift-logs/shift-logs.component').then(m => m.ShiftLogsComponent),
+      },
+      {
+        path: 'company-holidays',
+        title: 'العطل الرسمية',
+        loadComponent: () =>
+          import('./features/companymanager/company-holidays/company-holidays.component').then(m => m.CompanyHolidaysComponent),
+      },
+      {
+        path: 'payroll',
+        title: 'الرواتب',
+        canActivate: [payrollAccessGuard],
+        loadComponent: () =>
+          import('./features/companymanager/payroll/payroll-list/payroll-list.component').then(m => m.PayrollListComponent),
+      },
+      {
+        path: 'payroll/:payrollRunId',
+        title: 'تفاصيل الراتب',
+        canActivate: [payrollAccessGuard],
+        loadComponent: () =>
+          import('./features/companymanager/payroll/payroll-detail/payroll-detail.component').then(m => m.PayrollDetailComponent),
+      },
+      {
+        path: 'devices',
+        title: 'إدارة الأجهزة',
+        loadComponent: () =>
+          import('./features/companymanager/devices/devices.component').then(m => m.DevicesComponent),
+      },
+      {
+        path: 'adms-logs',
+        title: 'سجلات البصمة',
+        loadComponent: () =>
+          import('./features/companymanager/adms-logs/adms-logs.component').then(m => m.AdmsLogsComponent),
+      },
     ],
   },
   {

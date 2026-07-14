@@ -460,7 +460,6 @@
     "role": "Company Manager",
     "nav": {
       "panel": "Manager Panel",
-      "employees": "Employees",
       "branches": "Branches",
       "shifts": "Shifts",
       "shiftSystems": "Shift Systems",
