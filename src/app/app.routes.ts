@@ -120,10 +120,22 @@ export const routes: Routes = [
           import('./features/companymanager/branches/branches.component').then(m => m.BranchesComponent),
       },
       {
+        path: 'sections',
+        title: 'الأقسام',
+        loadComponent: () =>
+          import('./features/companymanager/sections/sections.component').then(m => m.SectionsComponent),
+      },
+      {
         path: 'branches/:branchId/sections',
         title: 'الأقسام',
         loadComponent: () =>
           import('./features/companymanager/sections/sections.component').then(m => m.SectionsComponent),
+      },
+      {
+        path: 'employees',
+        title: 'الموظفون',
+        loadComponent: () =>
+          import('./features/companymanager/employees/employees.component').then(m => m.EmployeesComponent),
       },
       {
         path: 'branches/:branchId/sections/:sectionId/employees',

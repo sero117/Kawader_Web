@@ -504,30 +504,6 @@
             </div>
           </div>
 
-          <!-- Work Start + Work End -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-                {{ 'manager.addEmployee.workStartTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
-              </label>
-              <input formControlName="workStartTime" type="time" class="modal-input"
-                [class.is-invalid]="addForm.get('workStartTime')!.invalid && addForm.get('workStartTime')!.touched" />
-              @if (addForm.get('workStartTime')!.invalid && addForm.get('workStartTime')!.touched) {
-                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
-              }
-            </div>
-            <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-                {{ 'manager.addEmployee.workEndTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
-              </label>
-              <input formControlName="workEndTime" type="time" class="modal-input"
-                [class.is-invalid]="addForm.get('workEndTime')!.invalid && addForm.get('workEndTime')!.touched" />
-              @if (addForm.get('workEndTime')!.invalid && addForm.get('workEndTime')!.touched) {
-                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
-              }
-            </div>
-          </div>
-
           <!-- Internal Notes -->
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
@@ -748,30 +724,6 @@
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                     {{ editForm.get('baseSalary')!.hasError('required') ? ('validation.required' | translate) : ('validation.salaryMin' | translate) }}
                   </p>
-                }
-              </div>
-            </div>
-
-            <!-- Work Start + Work End -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-                  {{ 'manager.editEmployee.workStartTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
-                </label>
-                <input formControlName="workStartTime" type="time" class="modal-input"
-                  [class.is-invalid]="editForm.get('workStartTime')!.invalid && editForm.get('workStartTime')!.touched" />
-                @if (editForm.get('workStartTime')!.invalid && editForm.get('workStartTime')!.touched) {
-                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
-                }
-              </div>
-              <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-                  {{ 'manager.editEmployee.workEndTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
-                </label>
-                <input formControlName="workEndTime" type="time" class="modal-input"
-                  [class.is-invalid]="editForm.get('workEndTime')!.invalid && editForm.get('workEndTime')!.touched" />
-                @if (editForm.get('workEndTime')!.invalid && editForm.get('workEndTime')!.touched) {
-                  <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
                 }
               </div>
             </div>

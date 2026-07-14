@@ -1,9 +1,12 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { SectionService } from '../../../core/services/section.service';
+import { BranchService } from '../../../core/services/branch.service';
 import { Section, GetSectionsParams } from '../../../core/models/section.models';
+import { Branch } from '../../../core/models/branch.models';
 
 @Component({
   selector: 'app-sections',
@@ -13,13 +16,16 @@ import { Section, GetSectionsParams } from '../../../core/models/section.models'
 })
 export class SectionsComponent implements OnInit {
   private readonly sectionService = inject(SectionService);
+  private readonly branchService  = inject(BranchService);
   private readonly fb             = inject(FormBuilder);
   private readonly route          = inject(ActivatedRoute);
+  private readonly router         = inject(Router);
 
-  private readonly router = inject(Router);
-
-  private branchId = 0;
-  branchName       = signal<string>('');
+  private branchId  = 0;
+  isStandalone      = false;
+  branchName        = signal<string>('');
+  branches          = signal<Branch[]>([]);
+  filterBranchId    = signal<number>(0);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     name:       '',
@@ -43,8 +49,9 @@ export class SectionsComponent implements OnInit {
   deleteTargetId  = signal<number | null>(null);
 
   addForm = this.fb.group({
-    name: ['', [Validators.required, Validators.maxLength(200)]],
-    code: ['', [Validators.required, Validators.maxLength(20)]],
+    branchId: [null as number | null, [Validators.required, Validators.min(1)]],
+    name:     ['', [Validators.required, Validators.maxLength(200)]],
+    code:     ['', [Validators.required, Validators.maxLength(20)]],
   });
 
   editForm = this.fb.group({
@@ -53,16 +60,37 @@ export class SectionsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.branchId = Number(this.route.snapshot.paramMap.get('branchId'));
+    this.branchId    = Number(this.route.snapshot.paramMap.get('branchId')) || 0;
+    this.isStandalone = this.branchId === 0;
     const state = history.state as { branchName?: string };
     if (state?.branchName) this.branchName.set(state.branchName);
+    if (this.isStandalone) {
+      this.branchService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+        next: (res: any) => {
+          const raw = res?.data ?? res;
+          this.branches.set(Array.isArray(raw) ? raw : (raw?.items ?? []));
+        },
+        error: () => {},
+      });
+    } else {
+      this.addForm.patchValue({ branchId: this.branchId });
+      this.addForm.get('branchId')!.disable();
+    }
+    this.loadSections();
+  }
+
+  onFilterBranchChange(val: string): void {
+    this.filterBranchId.set(Number(val));
+    this.filter.patch({ pageNumber: 1 });
     this.loadSections();
   }
 
   loadSections(): void {
     this.loading.set(true);
     const { name, code, pageNumber, pageSize } = this.filter.value();
-    const params: GetSectionsParams = { pageSize, pageNumber, branchId: this.branchId };
+    const params: GetSectionsParams = { pageSize, pageNumber };
+    const bid = this.branchId || this.filterBranchId();
+    if (bid) params.branchId = bid;
     if (name.trim()) params.name = name.trim();
     if (code.trim()) params.code = code.trim();
 
@@ -113,7 +141,8 @@ export class SectionsComponent implements OnInit {
   }
 
   openAdd(): void {
-    this.addForm.reset();
+    this.addForm.reset({ branchId: this.isStandalone ? null : this.branchId });
+    if (!this.isStandalone) this.addForm.get('branchId')!.disable();
     this.modalError.set(null);
     this.showAddModal.set(true);
   }
@@ -123,9 +152,9 @@ export class SectionsComponent implements OnInit {
     this.submitting.set(true);
     this.modalError.set(null);
 
-    const v = this.addForm.value;
+    const v = this.addForm.getRawValue();
     this.sectionService.create({
-      branchId:       this.branchId,
+      branchId:       v.branchId!,
       name:           v.name!,
       code:           v.code!,
       idempotencyKey: crypto.randomUUID(),

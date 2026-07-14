@@ -53,10 +53,11 @@ export class EmployeeService {
 
   getAll(params?: GetEmployeesParams): Observable<any> {
     let p = new HttpParams();
-    if (params?.pageNumber) p = p.set('PageNumber', params.pageNumber);
-    if (params?.pageSize)   p = p.set('PageSize',   params.pageSize);
-    if (params?.tenantId)   p = p.set('TenantId',   params.tenantId);
+    if (params?.pageNumber)  p = p.set('PageNumber',  params.pageNumber);
+    if (params?.pageSize)    p = p.set('PageSize',    params.pageSize);
+    if (params?.tenantId)    p = p.set('TenantId',    params.tenantId);
     if (params?.phoneNumber) p = p.set('PhoneNumber', params.phoneNumber);
+    if (params?.branchId)    p = p.set('BranchId',    params.branchId);
     return this.api.get<any>(this.baseUrl, p);
   }
 

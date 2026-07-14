@@ -89,8 +89,6 @@ export interface CreateEmployeeRequest {
   hireDate: string;
   contractType: ContractType;
   baseSalary: number;
-  workStartTime: string;
-  workEndTime: string;
   internalNotes?: string;
 }
 
@@ -109,8 +107,6 @@ export interface UpdateEmployeeRequest {
   hireDate?: string;
   contractType?: ContractType;
   baseSalary?: number;
-  workStartTime?: string;
-  workEndTime?: string;
   internalNotes?: string;
 }
 
@@ -119,6 +115,7 @@ export interface GetEmployeesParams {
   pageSize?: number;
   tenantId?: string;
   phoneNumber?: string;
+  branchId?: number;
 }
 
 // ── Active employees (for payroll/employee pickers) ─────────────────────────────

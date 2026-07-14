@@ -223,8 +223,6 @@ export class EmployeesComponent implements OnInit {
     hireDate:       ['', [Validators.required]],
     contractType:   [ContractType.FullTime, Validators.required],
     baseSalary:     [null as number | null, [Validators.required, Validators.min(0.01)]],
-    workStartTime:  ['', [Validators.required]],
-    workEndTime:    ['', [Validators.required]],
     internalNotes:  ['', [Validators.maxLength(1000)]],
   });
 
@@ -243,8 +241,6 @@ export class EmployeesComponent implements OnInit {
     hireDate:       ['', [Validators.required]],
     contractType:   [ContractType.FullTime, Validators.required],
     baseSalary:     [null as number | null, [Validators.required, Validators.min(0.01)]],
-    workStartTime:  ['', [Validators.required]],
-    workEndTime:    ['', [Validators.required]],
     internalNotes:  ['', [Validators.maxLength(1000)]],
   });
 
@@ -300,6 +296,7 @@ export class EmployeesComponent implements OnInit {
     const params: GetEmployeesParams = { pageSize, pageNumber };
     const phone = search.trim();
     if (/^09\d{8}$/.test(phone)) params.phoneNumber = phone;
+    if (this.branchId) params.branchId = this.branchId;
 
     this.employeeService.getAll(params).subscribe({
       next: (res: any) => {
@@ -377,8 +374,6 @@ export class EmployeesComponent implements OnInit {
       hireDate:       v.hireDate!,
       contractType:   v.contractType!,
       baseSalary:     v.baseSalary!,
-      workStartTime:  this.toTimeString(v.workStartTime!),
-      workEndTime:    this.toTimeString(v.workEndTime!),
       internalNotes:  v.internalNotes || undefined,
     }).subscribe({
       next: () => {
@@ -388,7 +383,10 @@ export class EmployeesComponent implements OnInit {
         this.filter.patch({ pageNumber: 1 });
         this.loadEmployees();
       },
-      error: () => { this.submitting.set(false); },
+      error: (err: any) => {
+        this.submitting.set(false);
+        this.modalError.set(this.apiErr(err, this.lang.t('errors.unexpected')));
+      },
     });
   }
 
@@ -412,16 +410,14 @@ export class EmployeesComponent implements OnInit {
           employeeRole:   e.employeeRole   ?? EmployeeType.Employee,
           employeeNumber: e.employeeNumber ?? '',
           jobTitle:       e.jobTitle       ?? '',
-          birthDate:      e.birthDate      ? e.birthDate.substring(0, 10)    : '',
+          birthDate:      e.birthDate      ? e.birthDate.substring(0, 10) : '',
           gender:         e.gender         ?? GenderType.Male,
           nationality:    e.nationality    ?? '',
           branchId:       e.branchId       ?? null,
           sectionId:      e.sectionId      ?? null,
-          hireDate:       e.hireDate       ? e.hireDate.substring(0, 10)     : '',
+          hireDate:       e.hireDate       ? e.hireDate.substring(0, 10) : '',
           contractType:   e.contractType   ?? ContractType.FullTime,
           baseSalary:     e.baseSalary     ?? null,
-          workStartTime:  e.workStartTime  ? e.workStartTime.substring(0, 5) : '',
-          workEndTime:    e.workEndTime    ? e.workEndTime.substring(0, 5)   : '',
           internalNotes:  e.internalNotes  ?? '',
         });
       },
@@ -452,8 +448,6 @@ export class EmployeesComponent implements OnInit {
       hireDate:       v.hireDate       || undefined,
       contractType:   v.contractType   ?? ContractType.FullTime,
       baseSalary:     v.baseSalary     ?? undefined,
-      workStartTime:  v.workStartTime  ? this.toTimeString(v.workStartTime) : undefined,
-      workEndTime:    v.workEndTime    ? this.toTimeString(v.workEndTime)   : undefined,
       internalNotes:  v.internalNotes  || undefined,
     }).subscribe({
       next: () => {
@@ -462,7 +456,10 @@ export class EmployeesComponent implements OnInit {
         this.flash('Employee updated.');
         this.loadEmployees();
       },
-      error: () => { this.submitting.set(false); },
+      error: (err: any) => {
+        this.submitting.set(false);
+        this.modalError.set(this.apiErr(err, this.lang.t('errors.unexpected')));
+      },
     });
   }
 
