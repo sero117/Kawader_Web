@@ -70,8 +70,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       if (err.status === 403 && auth.isAuthenticated()) {
-        // HR users legitimately get 403 on CompanyManager-only endpoints — don't logout,
-        // just show the error toast so they know the page isn't available to them.
         const isHr = auth.getStoredRole() === 1 && auth.getStoredEmployeeType() === 1;
         if (!isHr) {
           // CompanyManager: account locked / frozen / employee suspended — force logout.
@@ -82,7 +80,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           router.navigate(['/auth/login']);
           return throwError(() => err);
         }
-        // HR: fall through to the toast below.
+        // HR on a GET: background data fetch failed silently — component handles the
+        // empty/error state itself; no toast needed (avoids spam on branch/device calls).
+        // HR on a mutation: fall through to the toast so the user knows the action failed.
+        if (req.method === 'GET') {
+          return throwError(() => err);
+        }
       }
 
       if (err.status !== 404) {
