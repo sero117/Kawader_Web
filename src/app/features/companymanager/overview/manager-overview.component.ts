@@ -4,6 +4,7 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { AuthService } from '../../../core/services/auth.service';
+import { Role, EmployeeType } from '../../../core/models/auth.models';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { BranchService } from '../../../core/services/branch.service';
 import { DeviceService } from '../../../core/services/device.service';
@@ -77,12 +78,14 @@ export class ManagerOverviewComponent implements OnInit {
 
   ngOnInit(): void {
     const todayIso = new Date().toISOString().split('T')[0];
+    const isHr = this.auth.getStoredRole() === Role.Employee &&
+                 this.auth.getStoredEmployeeType() === EmployeeType.HumanResourceManager;
 
     forkJoin({
       employees: this.empSvc.getActive().pipe(catchError(() => of([]))),
-      branches:  this.brSvc.getAll({ pageNumber: 1, pageSize: 1 }).pipe(catchError(() => of(null))),
-      devices:   this.devSvc.getAll(1, 1).pipe(catchError(() => of(null))),
-      logs:      this.admsSvc.getLogs().pipe(catchError(() => of(null))),
+      branches:  isHr ? of(null) : this.brSvc.getAll({ pageNumber: 1, pageSize: 1 }).pipe(catchError(() => of(null))),
+      devices:   isHr ? of(null) : this.devSvc.getAll(1, 1).pipe(catchError(() => of(null))),
+      logs:      isHr ? of(null) : this.admsSvc.getLogs().pipe(catchError(() => of(null))),
     }).subscribe(({ employees, branches, devices, logs }) => {
       this.employeeCount.set(Array.isArray(employees) ? employees.length : 0);
 

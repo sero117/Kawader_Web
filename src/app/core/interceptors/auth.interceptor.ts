@@ -68,14 +68,24 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       if (silent) {
         return throwError(() => err);
       }
+
       if (err.status === 403 && auth.isAuthenticated()) {
-        // Account locked / company frozen / employee access denied — kick out.
-        const problem = err.error as ServiceProblemDetails | null;
-        const message = extractErrorMessage(problem) ?? language.t('errors.unexpected');
-        sessionStorage.setItem(AUTH_ERROR_KEY, message);
-        auth.clearTokens();
-        router.navigate(['/auth/login']);
-      } else if (err.status !== 404) {
+        // HR users legitimately get 403 on CompanyManager-only endpoints — don't logout,
+        // just show the error toast so they know the page isn't available to them.
+        const isHr = auth.getStoredRole() === 1 && auth.getStoredEmployeeType() === 1;
+        if (!isHr) {
+          // CompanyManager: account locked / frozen / employee suspended — force logout.
+          const problem = err.error as ServiceProblemDetails | null;
+          const message = extractErrorMessage(problem) ?? language.t('errors.unexpected');
+          sessionStorage.setItem(AUTH_ERROR_KEY, message);
+          auth.clearTokens();
+          router.navigate(['/auth/login']);
+          return throwError(() => err);
+        }
+        // HR: fall through to the toast below.
+      }
+
+      if (err.status !== 404) {
         const problem = err.error as ServiceProblemDetails | null;
         const message = extractErrorMessage(problem) ?? language.t('errors.unexpected');
         snackbar.show(message, 'error');

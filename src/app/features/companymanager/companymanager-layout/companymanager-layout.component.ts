@@ -1,7 +1,8 @@
-import { Component, signal, inject, OnInit, HostListener } from '@angular/core';
+import { Component, signal, computed, inject, OnInit, HostListener } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
+import { Role, EmployeeType } from '../../../core/models/auth.models';
 import { NotificationService } from '../../../core/services/notification.service';
 import { CompanyService } from '../../../core/services/company.service';
 import { VisitTrackingService } from '../../../core/services/visit-tracking.service';
@@ -59,6 +60,11 @@ export class CompanyManagerLayoutComponent implements OnInit {
   showNotifPanel   = signal(false);
   showSearch       = signal(false);
 
+  readonly isHr = this.authService.getStoredRole() === Role.Employee &&
+                  this.authService.getStoredEmployeeType() === EmployeeType.HumanResourceManager;
+  readonly isManager = !this.isHr;
+  readonly homeRoute = this.isHr ? '/dashboard/hr' : '/dashboard/manager';
+
   ngOnInit(): void {
     this.accentService.init();
 
@@ -74,13 +80,15 @@ export class CompanyManagerLayoutComponent implements OnInit {
       if (window.innerWidth < 640) this.collapsed.set(true);
     });
 
-    this.companyService.getStatus().subscribe({
-      next: (res: any) => {
-        const name = res?.data?.companyName ?? res?.companyName;
-        if (name) this.companyName.set(name);
-      },
-      error: () => { /* badge just stays hidden */ },
-    });
+    if (this.isManager) {
+      this.companyService.getStatus().subscribe({
+        next: (res: any) => {
+          const name = res?.data?.companyName ?? res?.companyName;
+          if (name) this.companyName.set(name);
+        },
+        error: () => { /* badge just stays hidden */ },
+      });
+    }
   }
 
   toggle(): void { this.collapsed.update(v => !v); }
