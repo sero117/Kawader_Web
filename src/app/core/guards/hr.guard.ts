@@ -10,7 +10,7 @@ export const hrGuard: CanActivateFn = () => {
   if (!authService.isAuthenticated()) return router.createUrlTree(['/auth/login']);
 
   const role    = authService.getStoredRole();
-  const empType = authService.getEmployeeTypeFromToken();
+  const empType = authService.getStoredEmployeeType();
 
   if (role === Role.Employee && empType === EmployeeType.HumanResourceManager) return true;
 

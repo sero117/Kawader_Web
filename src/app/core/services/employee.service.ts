@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ApiService } from './api.service';
 import { ApiResponse } from '../models/auth.models';
@@ -36,6 +37,16 @@ export class EmployeeService {
   /** Companies the authenticated employee belongs to — used to resolve tenant context. */
   getMyCompanies(): Observable<any> {
     return this.api.get<any>(`${this.baseUrl}/my-companies`);
+  }
+
+  /** Silent probe — returns true if the current token + tenant can list employees (i.e. user is HR).
+   *  X-Silent prevents the global 403-logout and error-toast handlers from firing. */
+  checkHrAccess(): Observable<boolean> {
+    const p = new HttpParams().set('PageNumber', '1').set('PageSize', '1');
+    return this.http.get(this.baseUrl, { params: p, headers: { 'X-Silent': '' } }).pipe(
+      map(() => true),
+      catchError(() => of(false)),
+    );
   }
 
   // Returns the uploaded file URL as a string

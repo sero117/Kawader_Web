@@ -109,7 +109,7 @@ export class AuthService {
       case Role.Admin:          return '/dashboard/admin';
       case Role.CompanyManager: return '/dashboard/manager';
       case Role.Employee: {
-        switch (this.getEmployeeTypeFromToken()) {
+        switch (this.getStoredEmployeeType()) {
           case EmployeeType.HumanResourceManager: return '/dashboard/hr';
           case EmployeeType.DepartmentManager:    return '/dashboard/dept';
           case EmployeeType.BranchManager:        return '/dashboard/branch';
@@ -120,6 +120,16 @@ export class AuthService {
     }
   }
 
+  saveEmployeeType(type: EmployeeType): void {
+    localStorage.setItem(this.EMPLOYEE_TYPE_KEY, String(type));
+  }
+
+  getStoredEmployeeType(): EmployeeType {
+    const stored = localStorage.getItem(this.EMPLOYEE_TYPE_KEY);
+    if (stored !== null) return Number(stored) as EmployeeType;
+    return this.getEmployeeTypeFromToken();
+  }
+
   // ── Token management ────────────────────────────────────────────────────────
 
   private readonly ACCESS_TOKEN_KEY = 'kawader_access_token';
@@ -128,7 +138,8 @@ export class AuthService {
   private readonly TENANT_ID_KEY = 'kawader_tenant_id';
   private readonly LOGIN_PHONE_KEY = 'kawader_login_phone';
   private readonly KNOWN_NAME_KEY = 'kawader_known_name';
-  private readonly ROLE_KEY = 'kawader_role';
+  private readonly ROLE_KEY          = 'kawader_role';
+  private readonly EMPLOYEE_TYPE_KEY = 'kawader_employee_type';
 
   saveTokens(tokens: AuthTokenResponse): void {
     const access = tokens.accessToken ?? tokens.token;
@@ -200,6 +211,7 @@ export class AuthService {
     localStorage.removeItem(this.LOGIN_PHONE_KEY);
     localStorage.removeItem(this.KNOWN_NAME_KEY);
     localStorage.removeItem(this.ROLE_KEY);
+    localStorage.removeItem(this.EMPLOYEE_TYPE_KEY);
   }
 
   // ── Tenant resolution (multi-company employees) ─────────────────────────────
@@ -231,7 +243,7 @@ export class AuthService {
 
   /** True when the employee's token has no tenant pinned and they haven't picked a company yet. */
   needsCompanySelection(): boolean {
-    if (this.getRoleFromToken() !== Role.Employee) return false;
+    if (this.getStoredRole() !== Role.Employee) return false;
     return !this.getTenantIdFromToken() && !this.getSelectedTenantId();
   }
 

@@ -4,6 +4,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { AuthService } from '../../../core/services/auth.service';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { EmployeeCompany } from '../../../core/models/employee.models';
+import { EmployeeType } from '../../../core/models/auth.models';
 
 @Component({
   selector: 'app-select-company',
@@ -50,7 +51,16 @@ export class SelectCompanyComponent implements OnInit {
   choose(company: EmployeeCompany): void {
     this.selectingId.set(company.companyId);
     this.authService.setSelectedTenantId(company.tenantId);
-    this.router.navigate([this.authService.getHomeRoute(this.authService.getRoleFromToken() ?? undefined)]);
+
+    // Probe for HR access: if the Employees list is reachable → this is an HR user.
+    // X-Silent on the probe means a 403 won't trigger the global logout handler.
+    this.employeeService.checkHrAccess().subscribe(isHr => {
+      if (isHr) {
+        this.authService.saveEmployeeType(EmployeeType.HumanResourceManager);
+      }
+      const role = this.authService.getStoredRole();
+      this.router.navigate([this.authService.getHomeRoute(role ?? undefined)]);
+    });
   }
 
   signOut(): void {
