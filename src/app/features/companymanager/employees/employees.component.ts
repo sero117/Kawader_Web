@@ -35,6 +35,7 @@ export class EmployeesComponent implements OnInit {
   private readonly fb                    = inject(FormBuilder);
   private readonly lang                  = inject(LanguageService);
   private readonly route                 = inject(ActivatedRoute);
+  private readonly router                = inject(Router);
 
   branchId    = 0;
   sectionId   = 0;
@@ -250,8 +251,10 @@ export class EmployeesComponent implements OnInit {
     this.sectionId = Number(this.route.snapshot.paramMap.get('sectionId'));
     const state = history.state as { sectionName?: string };
     if (state?.sectionName) this.sectionName.set(state.sectionName);
+    const base = this.router.url.startsWith('/dashboard/hr') ? '/dashboard/hr' : '/dashboard/manager';
+    this.backUrl.set(`${base}/branches`);
     if (this.branchId && this.sectionId) {
-      this.backUrl.set(`/dashboard/manager/branches/${this.branchId}/sections`);
+      this.backUrl.set(`${base}/branches/${this.branchId}/sections`);
     }
     this.watchEmployeeType(this.addForm.get('employeeRole')!, this.addForm);
     this.watchEmployeeType(this.editForm.get('employeeRole')!, this.editForm);

@@ -99,8 +99,9 @@ export class ShiftSystemsComponent implements OnInit {
 
   // ── Configure Days ────────────────────────────────────────────────────────────
   openDays(system: ShiftSystem): void {
+    const base = this.router.url.startsWith('/dashboard/hr') ? '/dashboard/hr' : '/dashboard/manager';
     this.router.navigate(
-      ['/dashboard/manager/shift-systems', system.id, 'days'],
+      [base + '/shift-systems', system.id, 'days'],
       { state: { systemName: system.name } },
     );
   }

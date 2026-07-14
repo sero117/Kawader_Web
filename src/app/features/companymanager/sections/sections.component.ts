@@ -119,8 +119,9 @@ export class SectionsComponent implements OnInit {
   }
 
   viewEmployees(section: Section): void {
+    const base = this.router.url.startsWith('/dashboard/hr') ? '/dashboard/hr' : '/dashboard/manager';
     this.router.navigate(
-      ['/dashboard/manager/branches', this.branchId, 'sections', section.id, 'employees'],
+      [base + '/branches', this.branchId, 'sections', section.id, 'employees'],
       { state: { sectionName: section.name, branchId: this.branchId } }
     );
   }

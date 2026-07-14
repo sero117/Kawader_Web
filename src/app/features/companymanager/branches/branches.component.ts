@@ -108,7 +108,8 @@ export class BranchesComponent implements OnInit {
 
   viewSections(branch: Branch): void {
     this.visitTracking.recordBranchVisit(branch.id);
-    this.router.navigate(['/dashboard/manager/branches', branch.id, 'sections']);
+    const base = this.router.url.startsWith('/dashboard/hr') ? '/dashboard/hr' : '/dashboard/manager';
+    this.router.navigate([base + '/branches', branch.id, 'sections']);
   }
 
   lastVisitLabel(branchId: number): string {
