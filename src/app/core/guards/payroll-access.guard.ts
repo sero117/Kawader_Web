@@ -24,7 +24,7 @@ export const payrollAccessGuard: CanActivateFn = () => {
 
   const role = authService.getStoredRole();
   if (role === Role.CompanyManager) return true;
-  if (role === Role.Employee && authService.getEmployeeTypeFromToken() === EmployeeType.HumanResourceManager) {
+  if (role === Role.Employee && authService.getStoredEmployeeType() === EmployeeType.HumanResourceManager) {
     return true;
   }
   return router.createUrlTree([authService.getHomeRoute(role ?? undefined)]);

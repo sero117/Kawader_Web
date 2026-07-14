@@ -64,6 +64,7 @@ export class CompanyManagerLayoutComponent implements OnInit {
                   this.authService.getStoredEmployeeType() === EmployeeType.HumanResourceManager;
   readonly isManager = !this.isHr;
   readonly homeRoute = this.isHr ? '/dashboard/hr' : '/dashboard/manager';
+  readonly basePath  = this.homeRoute;
 
   ngOnInit(): void {
     this.accentService.init();
