@@ -315,7 +315,8 @@ export class EmployeesComponent implements OnInit {
     const params: GetEmployeesParams = { pageSize, pageNumber };
     const phone = search.trim();
     if (/^09\d{8}$/.test(phone)) params.phoneNumber = phone;
-    if (this.branchId) params.branchId = this.branchId;
+    if (this.branchId)  params.branchId  = this.branchId;
+    if (this.sectionId) params.sectionId = this.sectionId;
 
     this.employeeService.getAll(params).subscribe({
       next: (res: any) => {

@@ -69,6 +69,7 @@ export class EmployeeService {
     if (params?.tenantId)    p = p.set('TenantId',    params.tenantId);
     if (params?.phoneNumber) p = p.set('PhoneNumber', params.phoneNumber);
     if (params?.branchId)    p = p.set('BranchId',    params.branchId);
+    if (params?.sectionId)   p = p.set('SectionId',   params.sectionId);
     return this.api.get<any>(this.baseUrl, p);
   }
 

@@ -116,6 +116,7 @@ export interface GetEmployeesParams {
   tenantId?: string;
   phoneNumber?: string;
   branchId?: number;
+  sectionId?: number;
 }
 
 // ── Active employees (for payroll/employee pickers) ─────────────────────────────
