@@ -22,7 +22,7 @@ import { environment } from '../../../../environments/environment';
           <p class="page-subtitle">{{ 'admin.cards.subtitle' | translate }}</p>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn-ghost" (click)="exportCards()">
+          <button class="btn-ghost" (click)="openExportModal()">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:15px;height:15px">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
             </svg>
@@ -40,6 +40,7 @@ import { environment } from '../../../../environments/environment';
       <!-- Filters -->
       <div class="filter-bar">
         <input class="filter-input" type="text" [value]="filterSerial()" (input)="filterSerial.set($any($event.target).value)" placeholder="{{ 'admin.cards.searchSerial' | translate }}" />
+        <input class="filter-input" type="text" [value]="filterDistinct()" (input)="filterDistinct.set($any($event.target).value)" placeholder="{{ 'admin.cards.searchBatch' | translate }}" />
         <select class="filter-select" [value]="filterStatus()" (change)="onStatusFilter($any($event.target).value)">
           <option value="">{{ 'admin.cards.allStatuses' | translate }}</option>
           <option value="1">{{ 'admin.cards.available' | translate }}</option>
@@ -202,6 +203,52 @@ import { environment } from '../../../../environments/environment';
         </div>
       </div>
     }
+
+    <!-- Export Batch Modal -->
+    @if (showExportModal()) {
+      <div class="modal-backdrop" (click)="showExportModal.set(false)"></div>
+      <div class="modal-box" style="max-width:420px">
+        <h2 class="modal-title">{{ 'admin.cards.exportSelectBatch' | translate }}</h2>
+
+        @if (exportBatchLoading()) {
+          <div class="loading-state" style="padding:32px 0"><div class="spinner"></div></div>
+        } @else if (exportBatches().length === 0) {
+          <p style="font-size:0.875rem;color:var(--text-muted);text-align:center;padding:24px 0">
+            {{ 'admin.cards.noBatches' | translate }}
+          </p>
+        } @else {
+          <div style="display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;margin-bottom:20px">
+            @for (b of exportBatches(); track b) {
+              <button
+                (click)="selectedExportBatch.set(b)"
+                style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:2px solid;text-align:start;background:transparent;cursor:pointer;transition:all 0.15s"
+                [style.border-color]="selectedExportBatch() === b ? 'var(--accent)' : 'var(--border)'"
+                [style.background]="selectedExportBatch() === b ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'transparent'">
+                <div style="width:16px;height:16px;border-radius:50%;border:2px solid;flex-shrink:0;display:flex;align-items:center;justify-content:center"
+                     [style.border-color]="selectedExportBatch() === b ? 'var(--accent)' : 'var(--border)'">
+                  @if (selectedExportBatch() === b) {
+                    <div style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></div>
+                  }
+                </div>
+                <span style="font-size:0.9rem;font-weight:500;color:var(--text-base)">{{ b }}</span>
+              </button>
+            }
+          </div>
+        }
+
+        <div class="modal-actions">
+          <button class="btn-ghost" (click)="showExportModal.set(false)" [disabled]="exportDownloading()">
+            {{ 'common.cancel' | translate }}
+          </button>
+          <button class="btn-primary" (click)="doExport()" [disabled]="!selectedExportBatch() || exportBatchLoading() || exportDownloading()">
+            @if (exportDownloading()) {
+              <div class="spinner" style="width:14px;height:14px;border-width:2px;border-color:rgba(255,255,255,0.3);border-top-color:#fff"></div>
+            }
+            {{ 'admin.cards.exportAndPrint' | translate }}
+          </button>
+        </div>
+      </div>
+    }
   `,
 })
 export class CardsComponent implements OnInit {
@@ -219,15 +266,22 @@ export class CardsComponent implements OnInit {
   hasMore   = signal(false);
   page      = signal(1);
 
-  filterSerial = signal('');
-  filterStatus = signal('');
-  filterPlan   = signal('');
+  filterSerial   = signal('');
+  filterDistinct = signal('');
+  filterStatus   = signal('');
+  filterPlan     = signal('');
 
   showGenerate = signal(false);
   revokeTarget = signal<Card | null>(null);
   deleteTarget = signal<Card | null>(null);
   submitting   = signal(false);
   modalError   = signal<string | null>(null);
+
+  showExportModal     = signal(false);
+  exportBatches       = signal<string[]>([]);
+  exportBatchLoading  = signal(false);
+  selectedExportBatch = signal('');
+  exportDownloading   = signal(false);
 
   genForm = { planId: 0, count: 10, distinct: '' };
 
@@ -245,9 +299,10 @@ export class CardsComponent implements OnInit {
   load(): void {
     this.loading.set(true);
     const params: GetCardsParams = { pageNumber: this.page(), pageSize: 12 };
-    if (this.filterSerial()) params.serialNumber = this.filterSerial();
-    if (this.filterStatus()) params.status = +this.filterStatus() as CardStatus;
-    if (this.filterPlan())   params.planId = +this.filterPlan();
+    if (this.filterSerial())   params.serialNumber = this.filterSerial();
+    if (this.filterDistinct()) params.distinct      = this.filterDistinct();
+    if (this.filterStatus())   params.status        = +this.filterStatus() as CardStatus;
+    if (this.filterPlan())     params.planId        = +this.filterPlan();
 
     this.cardService.getAll(params).subscribe({
       next: (res: any) => {
@@ -308,15 +363,48 @@ export class CardsComponent implements OnInit {
     });
   }
 
-  exportCards(): void {
+  openExportModal(): void {
+    this.showExportModal.set(true);
+    this.exportBatchLoading.set(true);
+    this.selectedExportBatch.set('');
+    this.cardService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+      next: (res: any) => {
+        const raw = res?.data ?? res;
+        const items: Card[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
+        const batches = [...new Set(items.map(c => c.distinct).filter((d): d is string => !!d))].sort();
+        this.exportBatches.set(batches);
+        this.exportBatchLoading.set(false);
+      },
+      error: () => { this.exportBatchLoading.set(false); },
+    });
+  }
+
+  doExport(): void {
+    const batch = this.selectedExportBatch();
+    if (!batch) return;
     const token = this.auth.getAccessToken();
-    const distinct = this.filterPlan() ? this.filterPlan() : '';
-    let url = `${environment.apiUrl}/Cards/export`;
-    const params: string[] = [];
-    if (distinct) params.push(`Distinct=${encodeURIComponent(distinct)}`);
-    if (token)    params.push(`access_token=${encodeURIComponent(token)}`);
-    if (params.length) url += '?' + params.join('&');
-    window.open(url, '_blank');
+    if (!token) return;
+    this.exportDownloading.set(true);
+    const url = `${environment.apiUrl}/Cards/export?Distinct=${encodeURIComponent(batch)}`;
+    fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => {
+        if (!res.ok) throw new Error(String(res.status));
+        return res.blob();
+      })
+      .then(blob => {
+        const objUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = objUrl;
+        a.download = batch;
+        a.click();
+        URL.revokeObjectURL(objUrl);
+        this.exportDownloading.set(false);
+        this.showExportModal.set(false);
+      })
+      .catch(() => {
+        this.exportDownloading.set(false);
+        this.listError.set(this.lang.t('errors.unexpected'));
+      });
   }
 
   statusLabel(s: CardStatus): string {

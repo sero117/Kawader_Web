@@ -1,6 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { PlanService } from '../../../core/services/plan.service';
-import { Plan, CreatePlanRequest, UpdatePlanRequest } from '../../../core/models/plan.models';
+import { Plan, PlanCurrency, CreatePlanRequest, UpdatePlanRequest } from '../../../core/models/plan.models';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 
@@ -62,7 +62,7 @@ import { LanguageService } from '../../../core/services/language.service';
                 <h3 class="plan-name">{{ plan.name }}</h3>
                 <div class="plan-price">
                   <span class="plan-price-amount">{{ plan.price }}</span>
-                  <span class="plan-price-currency">USD</span>
+                  <span class="plan-price-currency">{{ plan.currency === 'LYD' ? 'د.ل' : 'USD' }}</span>
                 </div>
                 <p class="plan-duration">{{ plan.durationDays }} {{ 'admin.plans.days' | translate }}</p>
               </div>
@@ -167,8 +167,23 @@ import { LanguageService } from '../../../core/services/language.service';
             <input #nameInput class="form-input" type="text" [value]="form.name" (input)="form.name = $any($event.target).value" />
           </div>
           <div class="form-field">
-            <label class="form-label">{{ 'admin.plans.price' | translate }} (USD)</label>
+            <label class="form-label">{{ 'admin.plans.price' | translate }}</label>
             <input class="form-input" type="number" min="0" [value]="form.price" (input)="form.price = +$any($event.target).value" />
+          </div>
+          <div class="form-field">
+            <label class="form-label">{{ 'admin.plans.currency' | translate }}</label>
+            <div style="display:flex;gap:8px;margin-top:2px">
+              @for (cur of currencies; track cur.value) {
+                <label style="flex:1;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s"
+                  [style.borderColor]="form.currency === cur.value ? 'var(--nav-accent)' : 'var(--border)'"
+                  [style.background]="form.currency === cur.value ? 'color-mix(in srgb, var(--nav-accent) 8%, transparent)' : 'transparent'">
+                  <input type="radio" name="planCurrency" [value]="cur.value" [checked]="form.currency === cur.value"
+                    (change)="form.currency = cur.value" style="accent-color:var(--nav-accent)" />
+                  <span style="font-weight:600;font-size:0.85rem">{{ cur.label }}</span>
+                  <span style="font-size:0.75rem;color:var(--text-faint)">{{ cur.symbol }}</span>
+                </label>
+              }
+            </div>
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.plans.duration' | translate }}</label>
@@ -249,7 +264,13 @@ export class PlansComponent implements OnInit {
   submitting   = signal(false);
   modalError   = signal<string | null>(null);
 
-  form = { name: '', price: 0, durationDays: 30, maxEmployees: 10, maxBranches: 1, maxSections: 5, showPlan: true, isRecommended: false, detailsText: '' };
+  readonly currencies: { value: PlanCurrency; label: string; symbol: string }[] = [
+    { value: 'USD', label: 'دولار',       symbol: '$'   },
+    { value: 'LYD', label: 'دينار ليبي', symbol: 'د.ل' },
+  ];
+
+  form: { name: string; price: number; currency: PlanCurrency; durationDays: number; maxEmployees: number; maxBranches: number; maxSections: number; showPlan: boolean; isRecommended: boolean; detailsText: string } =
+    { name: '', price: 0, currency: 'USD', durationDays: 30, maxEmployees: 10, maxBranches: 1, maxSections: 5, showPlan: true, isRecommended: false, detailsText: '' };
 
   ngOnInit(): void { this.load(); }
 
@@ -274,7 +295,7 @@ export class PlansComponent implements OnInit {
 
   openCreate(): void {
     this.editingPlan.set(null);
-    this.form = { name: '', price: 0, durationDays: 30, maxEmployees: 10, maxBranches: 1, maxSections: 5, showPlan: true, isRecommended: false, detailsText: '' };
+    this.form = { name: '', price: 0, currency: 'USD', durationDays: 30, maxEmployees: 10, maxBranches: 1, maxSections: 5, showPlan: true, isRecommended: false, detailsText: '' };
     this.modalError.set(null);
     this.showModal.set(true);
   }
@@ -282,7 +303,7 @@ export class PlansComponent implements OnInit {
   openEdit(plan: Plan): void {
     this.editingPlan.set(plan);
     this.form = {
-      name: plan.name, price: plan.price, durationDays: plan.durationDays,
+      name: plan.name, price: plan.price, currency: plan.currency ?? 'USD', durationDays: plan.durationDays,
       maxEmployees: plan.maxEmployees, maxBranches: plan.maxBranches, maxSections: plan.maxSections,
       showPlan: plan.showPlan, isRecommended: plan.isRecommended,
       detailsText: (plan.details ?? []).join('\n'),
@@ -301,13 +322,13 @@ export class PlansComponent implements OnInit {
     const editing = this.editingPlan();
 
     if (editing) {
-      const payload: UpdatePlanRequest = { name: this.form.name, price: this.form.price, durationDays: this.form.durationDays, details, maxEmployees: this.form.maxEmployees, maxSections: this.form.maxSections, maxBranches: this.form.maxBranches };
+      const payload: UpdatePlanRequest = { name: this.form.name, price: this.form.price, currency: this.form.currency, durationDays: this.form.durationDays, details, maxEmployees: this.form.maxEmployees, maxSections: this.form.maxSections, maxBranches: this.form.maxBranches };
       this.planService.update(editing.id, payload).subscribe({
         next: () => { this.submitting.set(false); this.closeModal(); this.load(); },
         error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
       });
     } else {
-      const payload: CreatePlanRequest = { name: this.form.name, price: this.form.price, durationDays: this.form.durationDays, details, showPlan: this.form.showPlan, isRecommended: this.form.isRecommended, maxEmployees: this.form.maxEmployees, maxSections: this.form.maxSections, maxBranches: this.form.maxBranches, idempotencyKey: crypto.randomUUID() };
+      const payload: CreatePlanRequest = { name: this.form.name, price: this.form.price, currency: this.form.currency, durationDays: this.form.durationDays, details, showPlan: this.form.showPlan, isRecommended: this.form.isRecommended, maxEmployees: this.form.maxEmployees, maxSections: this.form.maxSections, maxBranches: this.form.maxBranches, idempotencyKey: crypto.randomUUID() };
       this.planService.create(payload).subscribe({
         next: () => { this.submitting.set(false); this.closeModal(); this.load(); },
         error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
