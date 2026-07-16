@@ -135,7 +135,11 @@ export class SubscriptionsComponent implements OnInit {
     this.subService.getAll(params).subscribe({
       next: (res: any) => {
         const raw   = res?.data ?? res;
-        const items: Subscription[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
+        const rawItems: any[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
+        const items: Subscription[] = rawItems.map((s: any) => ({
+          ...s,
+          companyName: s.companyName ?? s.tenantName ?? s.organizationName ?? s.company ?? s.clientName ?? undefined,
+        }));
         const total = raw?.totalCount ?? items.length;
         this.subs.set(items);
         this.hasMore.set(this.page() * 15 < total);

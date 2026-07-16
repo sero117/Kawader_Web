@@ -151,7 +151,7 @@ import { LanguageService } from '../../../core/services/language.service';
 
     <!-- Redeem Modal -->
     @if (showRedeem()) {
-      <div class="modal-backdrop" (click)="showRedeem.set(false)"></div>
+      <div class="modal-backdrop" (click)="!submitting() && showRedeem.set(false)"></div>
       <div class="modal-box" style="max-width:400px">
         <h2 class="modal-title">{{ 'manager.subscription.redeemTitle' | translate }}</h2>
         <p style="font-size:0.8125rem;color:var(--text-faint);margin:-0.5rem 0 1rem">{{ 'manager.subscription.redeemHint' | translate }}</p>
@@ -251,7 +251,14 @@ export class SubscriptionComponent implements OnInit {
         this.redeemError.set(null);
         setTimeout(() => { this.showRedeem.set(false); this.loadMySub(); }, 1500);
       },
-      error: (err: any) => { this.submitting.set(false); this.redeemError.set(this.apiErr(err)); },
+      error: (err: any) => {
+        this.submitting.set(false);
+        let msg = this.apiErr(err);
+        if (err?.status === 404) msg = 'الكرت غير موجود. تحقق من الرقم التسلسلي والكود.';
+        else if (err?.status === 409) msg = 'هذا الكرت ملغى أو مستخدم مسبقاً ولا يمكن تفعيله.';
+        else if (err?.status === 400 && !msg.includes(' ')) msg = 'الكرت غير صالح للتفعيل.';
+        this.redeemError.set(msg);
+      },
     });
   }
 
