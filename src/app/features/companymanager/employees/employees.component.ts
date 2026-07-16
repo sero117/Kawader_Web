@@ -178,6 +178,7 @@ export class EmployeesComponent implements OnInit {
   logsView       = signal<'list' | 'add' | 'edit'>('list');
   logsSubmitting = signal(false);
   logsModalError = signal<string | null>(null);
+  logsHasShift   = signal<boolean | null>(null);
   availableShifts = signal<Shift[]>([]);
   logsEditTarget  = signal<ShiftLog | null>(null);
   logsDeleteTarget = signal<ShiftLog | null>(null);
@@ -267,11 +268,6 @@ export class EmployeesComponent implements OnInit {
     }
     this.watchEmployeeType(this.addForm.get('employeeRole')!, this.addForm);
     this.watchEmployeeType(this.editForm.get('employeeRole')!, this.editForm);
-    this.editForm.get('branchId')!.valueChanges.subscribe(branchId => {
-      this.editSections.set([]);
-      this.editForm.get('sectionId')!.setValue(null, { emitEvent: false });
-      if (branchId) this.loadSectionsInto(branchId, this.editSections);
-    });
     this.loadEmployees();
     this.branchService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
       next: (res: any) => {
@@ -321,6 +317,8 @@ export class EmployeesComponent implements OnInit {
     const phone = search.trim();
     if (/^09\d{8}$/.test(phone)) params.phoneNumber = phone;
     if (this.branchId) params.branchId = this.branchId;
+    // Backend has no SectionId filter — fetch all branch employees and filter client-side
+    if (this.sectionId) { params.pageSize = 100; params.pageNumber = 1; }
 
     this.employeeService.getAll(params).subscribe({
       next: (res: any) => {
@@ -331,12 +329,16 @@ export class EmployeesComponent implements OnInit {
           return;
         }
         const raw = res?.data ?? res;
-        const items: Employee[] = Array.isArray(raw)
+        let items: Employee[] = Array.isArray(raw)
           ? raw
           : (raw?.items ?? raw?.data ?? raw?.employees ?? []);
-        const total = raw?.totalCount ?? items.length;
+        let total = raw?.totalCount ?? items.length;
+        if (this.sectionId && items.some(e => e.sectionId !== undefined)) {
+          items = items.filter(e => e.sectionId === this.sectionId);
+          total = items.length;
+        }
         this.employees.set(items);
-        this.hasMore.set(this.filter.value().pageNumber * this.filter.value().pageSize < total);
+        this.hasMore.set(!this.sectionId && this.filter.value().pageNumber * this.filter.value().pageSize < total);
         this.loading.set(false);
       },
       error: err => {
@@ -429,6 +431,12 @@ export class EmployeesComponent implements OnInit {
     if (branchId) this.loadSectionsInto(branchId, this.addSections);
   }
 
+  onEditBranchChange(branchId: number | null): void {
+    this.editSections.set([]);
+    this.editForm.get('sectionId')!.setValue(null);
+    if (branchId) this.loadSectionsInto(branchId, this.editSections);
+  }
+
 
   private loadSectionsInto(branchId: number, target: WritableSignal<Section[]>): void {
     this.sectionService.getAll({ branchId, pageNumber: 1, pageSize: 100 }).subscribe({
@@ -471,6 +479,7 @@ export class EmployeesComponent implements OnInit {
           baseSalary:     e.baseSalary     ?? null,
           internalNotes:  e.internalNotes  ?? '',
         });
+        if (e.branchId) this.loadSectionsInto(e.branchId, this.editSections);
       },
       error: () => { this.editLoading.set(false); },
     });
@@ -984,7 +993,14 @@ export class EmployeesComponent implements OnInit {
   openAddLog(): void {
     this.logsAddForm.reset();
     this.logsModalError.set(null);
+    this.logsHasShift.set(null);
     this.logsView.set('add');
+    const empId = this.logsEmployee()?.id;
+    if (!empId) return;
+    this.shiftSystemService.getEmployeeShiftSystem(empId).subscribe({
+      next: () => this.logsHasShift.set(true),
+      error: (err: any) => this.logsHasShift.set(err?.status === 404 ? false : true),
+    });
   }
 
   cancelAddLog(): void { this.logsView.set('list'); }
@@ -1011,7 +1027,13 @@ export class EmployeesComponent implements OnInit {
         this.loadShiftLogs();
         this.flash('Attendance recorded.');
       },
-      error: () => { this.logsSubmitting.set(false); },
+      error: (err: any) => {
+        this.logsSubmitting.set(false);
+        let msg = this.apiErr(err, 'Failed to record attendance.');
+        if (err?.status === 404) msg = 'الموظف غير مسند لنظام دوام نشط. يرجى تعيين الموظف على نظام دوام أولاً.';
+        else if (err?.status === 412) msg = 'تم تسجيل الحضور لهذا اليوم مسبقاً.';
+        this.logsModalError.set(msg);
+      },
     });
   }
 
@@ -1083,7 +1105,10 @@ export class EmployeesComponent implements OnInit {
         this.loadShiftLogs();
         this.flash('Attendance updated.');
       },
-      error: () => { this.logsSubmitting.set(false); },
+      error: (err: any) => {
+        this.logsSubmitting.set(false);
+        this.logsModalError.set(this.apiErr(err, 'Failed to update attendance log.'));
+      },
     });
   }
 

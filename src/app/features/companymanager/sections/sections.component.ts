@@ -120,9 +120,10 @@ export class SectionsComponent implements OnInit {
 
   viewEmployees(section: Section): void {
     const base = this.router.url.startsWith('/dashboard/hr') ? '/dashboard/hr' : '/dashboard/manager';
+    const branchId = this.branchId || section.branchId;
     this.router.navigate(
-      [base + '/branches', this.branchId, 'sections', section.id, 'employees'],
-      { state: { sectionName: section.name, branchId: this.branchId } }
+      [base + '/branches', branchId, 'sections', section.id, 'employees'],
+      { state: { sectionName: section.name, branchId } }
     );
   }
 
