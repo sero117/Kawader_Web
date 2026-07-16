@@ -18,6 +18,8 @@ jobs:
           node-version: 20
           cache: npm
 
+      - run: corepack enable
+
       - run: npm ci
 
       - run: npx ng build --configuration production
