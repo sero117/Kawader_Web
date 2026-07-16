@@ -18,9 +18,14 @@ jobs:
           node-version: 20
           cache: npm
 
-      - run: corepack enable
+      - run: npm install -g npm@11.6.1
 
-      - run: npm ci
+      - name: npm ci
+        run: |
+          npm ci 2>&1 | tee /tmp/npmci.log || {
+            echo "::error::npm ci failed: $(tail -c 3000 /tmp/npmci.log | tr '\n' ' ')"
+            exit 1
+          }
 
       - run: npx ng build --configuration production
 
