@@ -20,7 +20,7 @@ jobs:
 
       - run: npm ci
 
-      - run: npx ng build --configuration production --base-href "/Kawader_Web/"
+      - run: npx ng build --configuration production
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
