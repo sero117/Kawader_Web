@@ -48,7 +48,7 @@ export class ManagerOverviewComponent implements OnInit {
     absentCount:  number;
     lateCount:    number;
     rate:         number;
-    rows:         { name: string; time: string; isLate: boolean }[];
+    rows:         { name: string; time: string; status: 'present' | 'late' | 'absent' }[];
   } | null>(null);
   recentLogs      = signal<AdmsLog[]>([]);
   chartDays       = signal<{ label: string; count: number; heightPx: number }[]>([]);
@@ -124,30 +124,36 @@ export class ManagerOverviewComponent implements OnInit {
 
       // Attendance summary: deduplicate by employee, first punch only
       const LATE_HOUR = 9;
-      const seenKeys  = new Set<string>();
-      const sumRows: { name: string; time: string; isLate: boolean }[] = [];
+      const seenKeys   = new Set<string>();
+      const presentIds = new Set<number>();
+      const sumRows: { name: string; time: string; status: 'present' | 'late' | 'absent' }[] = [];
       for (const log of [...todayLogs].sort((a, b) =>
         (a.punchTime ?? a.timestamp ?? a.time ?? '').localeCompare(b.punchTime ?? b.timestamp ?? b.time ?? ''),
       )) {
         const key = String(log.employeeId ?? log.deviceEmployeeNumber ?? log.number ?? '');
         if (key && seenKeys.has(key)) continue;
         if (key) seenKeys.add(key);
+        if (log.employeeId !== undefined) presentIds.add(log.employeeId);
         const raw  = log.punchTime ?? log.timestamp ?? log.time ?? '';
         const hour = raw ? new Date(raw).getHours() : -1;
         sumRows.push({
           name:   log.employeeName ?? `#${String(log.deviceEmployeeNumber ?? log.number ?? '?')}`,
           time:   raw ? new Date(raw).toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' }) : '—',
-          isLate: hour >= LATE_HOUR,
+          status: hour >= LATE_HOUR ? 'late' : 'present',
         });
       }
       const presentCount = sumRows.length;
-      const empTotal     = Array.isArray(employees) ? employees.length : Math.max(1, presentCount);
+      const empList      = Array.isArray(employees) ? employees : [];
+      const empTotal      = empList.length || Math.max(1, presentCount);
+      const absentRows = empList
+        .filter(e => !presentIds.has(e.id))
+        .map(e => ({ name: e.fullName, time: '—', status: 'absent' as const }));
       this.attendanceSummary.set({
         presentCount,
         absentCount: Math.max(0, empTotal - presentCount),
-        lateCount:   sumRows.filter(r => r.isLate).length,
+        lateCount:   sumRows.filter(r => r.status === 'late').length,
         rate:        empTotal > 0 ? Math.round((presentCount / empTotal) * 100) : 0,
-        rows:        sumRows.slice(0, 8),
+        rows:        [...sumRows, ...absentRows].slice(0, 12),
       });
 
       // Build 7-day chart
