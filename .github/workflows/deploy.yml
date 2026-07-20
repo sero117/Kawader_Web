@@ -29,6 +29,9 @@ jobs:
 
       - run: npx ng build --configuration production
 
+      - name: SPA fallback for GitHub Pages
+        run: cp dist/hrms-pro/browser/index.html dist/hrms-pro/browser/404.html
+
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
