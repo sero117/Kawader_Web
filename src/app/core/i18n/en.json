@@ -502,6 +502,7 @@
       "employees": "Active Employees",
       "branches": "Branches",
       "devices": "Devices",
+      "payroll": "Latest Payroll Total",
       "todayPunches": "Today's Punches",
       "recentAttendance": "Recent Attendance",
       "noLogsToday": "No punches recorded today",

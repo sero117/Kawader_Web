@@ -1186,7 +1186,7 @@ select option {
 }
 
 @media (min-width: 1024px) {
-  .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+  .kpi-grid { grid-template-columns: repeat(5, 1fr); }
 }
 
 .kpi-card {

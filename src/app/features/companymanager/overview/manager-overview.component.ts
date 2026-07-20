@@ -9,6 +9,7 @@ import { EmployeeService } from '../../../core/services/employee.service';
 import { BranchService } from '../../../core/services/branch.service';
 import { DeviceService } from '../../../core/services/device.service';
 import { AdmsService, AdmsLog } from '../../../core/services/adms.service';
+import { PayrollService } from '../../../core/services/payroll.service';
 
 @Component({
   selector: 'app-manager-overview',
@@ -22,6 +23,7 @@ export class ManagerOverviewComponent implements OnInit {
   private readonly brSvc   = inject(BranchService);
   private readonly devSvc  = inject(DeviceService);
   private readonly admsSvc = inject(AdmsService);
+  private readonly payrollSvc = inject(PayrollService);
 
   loading         = signal(true);
   readonly managerName = this.auth.getDisplayName();
@@ -33,11 +35,13 @@ export class ManagerOverviewComponent implements OnInit {
   branchCount     = signal<number | null>(null);
   deviceCount     = signal<number | null>(null);
   todayPunchCount = signal<number | null>(null);
+  payrollTotal    = signal<number | null>(null);
 
   displayEmployee = signal(0);
   displayBranch   = signal(0);
   displayDevice   = signal(0);
   displayPunch    = signal(0);
+  displayPayroll  = signal(0);
 
   attendanceSummary = signal<{
     presentCount: number;
@@ -86,7 +90,21 @@ export class ManagerOverviewComponent implements OnInit {
       branches:  isHr ? of(null) : this.brSvc.getAll({ pageNumber: 1, pageSize: 1 }).pipe(catchError(() => of(null))),
       devices:   isHr ? of(null) : this.devSvc.getAll(1, 1).pipe(catchError(() => of(null))),
       logs:      isHr ? of(null) : this.admsSvc.getLogs().pipe(catchError(() => of(null))),
-    }).subscribe(({ employees, branches, devices, logs }) => {
+      payrolls:  this.payrollSvc.getAll({ pageNumber: 1, pageSize: 1 }).pipe(catchError(() => of(null))),
+    }).subscribe(({ employees, branches, devices, logs, payrolls }) => {
+      const latestRun = payrolls?.items?.[0];
+      if (latestRun) {
+        this.payrollSvc.getById(latestRun.id, undefined, true).subscribe({
+          next: detail => {
+            const total = (detail.payslips ?? []).reduce((sum, p) => sum + (p.netSalary ?? 0), 0);
+            this.payrollTotal.set(total);
+            this.countUp(v => this.displayPayroll.set(v), Math.round(total));
+          },
+          error: () => this.payrollTotal.set(null),
+        });
+      } else {
+        this.payrollTotal.set(0);
+      }
       this.employeeCount.set(Array.isArray(employees) ? employees.length : 0);
 
       const brRes = (branches as any)?.data ?? branches;
@@ -171,6 +189,10 @@ export class ManagerOverviewComponent implements OnInit {
       if (t < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
+  }
+
+  formatAmount(a: number): string {
+    return (a ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
   }
 
   logTime(log: AdmsLog): string {
