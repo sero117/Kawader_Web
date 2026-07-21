@@ -16,7 +16,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class AgentService {
   private readonly api     = inject(ApiService);
-  private readonly baseUrl = `${environment.apiUrl}/agents`;
+  private readonly baseUrl = `${environment.apiUrl}/Agents`;
 
   create(payload: CreateAgentRequest): Observable<{ id: number }> {
     return this.api.post<{ id: number }>(this.baseUrl, payload);
@@ -24,9 +24,9 @@ export class AgentService {
 
   getAll(params: GetAgentsParams): Observable<PagedResult<Agent>> {
     let p = new HttpParams()
-      .set('pageNumber', params.pageNumber)
-      .set('pageSize',   params.pageSize);
-    if (params.name) p = p.set('name', params.name);
+      .set('PageNumber', params.pageNumber)
+      .set('PageSize',   params.pageSize);
+    if (params.name) p = p.set('Name', params.name);
     return this.api.get<PagedResult<Agent>>(this.baseUrl, p);
   }
 
@@ -45,8 +45,8 @@ export class AgentService {
   /** Agent self-service — companies referred by the currently authenticated agent. */
   getMyCompanies(params: GetReferredCompaniesParams): Observable<PagedResult<ReferredCompany>> {
     const p = new HttpParams()
-      .set('pageNumber', params.pageNumber)
-      .set('pageSize',   params.pageSize);
+      .set('PageNumber', params.pageNumber)
+      .set('PageSize',   params.pageSize);
     return this.api.get<PagedResult<ReferredCompany>>(`${this.baseUrl}/me/companies`, p);
   }
 }
