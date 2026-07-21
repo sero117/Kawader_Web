@@ -1,1 +1,0 @@
-import{a as n}from"./chunk-WAKYU7YV.js";import{a as t}from"./chunk-A53YC4EH.js";import{M as r,R as i}from"./chunk-ZUV67EJU.js";var a=class e{api=i(n);baseUrl=`${t.apiUrl}/Adms`;getLogs(){return this.api.get(`${this.baseUrl}/logs`)}static \u0275fac=function(o){return new(o||e)};static \u0275prov=r({token:e,factory:e.\u0275fac,providedIn:"root"})};export{a};
