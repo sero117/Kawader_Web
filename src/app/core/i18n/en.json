@@ -207,7 +207,7 @@
       "result": "result",
       "prev": "Prev",
       "next": "Next",
-      "agentLabel": "Referring Agent",
+      "agentLabel": "Agent Name",
       "noAgent": "No agent"
     },
     "wizard": {
