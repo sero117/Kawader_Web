@@ -58,7 +58,8 @@
     "plans": "Plans",
     "cards": "Cards",
     "subscriptions": "Subscriptions",
-    "sectionSubscriptions": "Subscriptions"
+    "sectionSubscriptions": "Subscriptions",
+    "agents": "Agents"
   },
   "auth": {
     "loginSuccess": "Welcome back",
@@ -71,6 +72,8 @@
     "managerSetup": "Complete your setup",
     "isEmployee": "New employee?",
     "employeeActivate": "Activate your account",
+    "isAgent": "Agent?",
+    "agentActivate": "Activate your account",
     "login": {
       "phoneLabel": "Phone Number",
       "phonePlaceholder": "Enter your number",
@@ -203,7 +206,9 @@
       "results": "results",
       "result": "result",
       "prev": "Prev",
-      "next": "Next"
+      "next": "Next",
+      "agentLabel": "Referring Agent",
+      "noAgent": "No agent"
     },
     "wizard": {
       "title": "Add New Company",
@@ -371,6 +376,32 @@
       "result": "result",
       "prev": "Prev",
       "next": "Next"
+    },
+    "agents": {
+      "title": "Agents",
+      "subtitle": "Manage referral agents.",
+      "addAgent": "Add Agent",
+      "editAgent": "Edit Agent",
+      "searchName": "Search by name…",
+      "empty": "No agents yet.",
+      "colName": "Name",
+      "colPhone": "Phone",
+      "colEmail": "Email",
+      "colCountry": "Country",
+      "colStatus": "Status",
+      "colCreated": "Created",
+      "colActions": "Actions",
+      "verified": "Verified",
+      "unverified": "Unverified",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "phone": "Phone Number",
+      "email": "Email",
+      "country": "Country",
+      "phoneLockedHint": "Phone number can't be changed after the agent is verified.",
+      "nameRequired": "First and last name are required.",
+      "confirmDelete": "Delete Agent?",
+      "confirmDeleteMsg": "Are you sure you want to delete"
     }
   },
   "dashboard": {
@@ -453,6 +484,44 @@
     "confirmPasswordPlaceholder": "Re-enter password",
     "activate": "Activate Account",
     "activating": "Activating…"
+  },
+  "agentActivation": {
+    "step1Title": "Activate Your Agent Account",
+    "step1Subtitle": "Enter your phone number to receive a verification code.",
+    "step2Title": "Set Your Password",
+    "step2Subtitle": "Enter the code sent to your phone and choose a password.",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "Enter your number",
+    "sendCode": "Send Code",
+    "sending": "Sending…",
+    "codeLabel": "Verification Code",
+    "codePlaceholder": "6-digit code",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "8+ characters",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter password",
+    "activate": "Activate Account",
+    "activating": "Activating…"
+  },
+  "agent": {
+    "nav": {
+      "myCompanies": "My Companies"
+    },
+    "overview": {
+      "title": "Referred Companies",
+      "subtitle": "Companies you've referred as an agent.",
+      "colCompany": "Company",
+      "colStatus": "Status",
+      "colCreated": "Registered",
+      "completed": "Setup Complete",
+      "pending": "Setup Pending",
+      "empty": "No referred companies yet."
+    }
+  },
+  "countries": {
+    "1": "Libya",
+    "2": "Syria",
+    "3": "Iraq"
   },
   "manager": {
     "welcome": "Welcome back",

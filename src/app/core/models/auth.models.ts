@@ -4,6 +4,7 @@ export enum Role {
   Employee       = 1,
   CompanyManager = 2,
   Admin          = 3,
+  Agent          = 4,
 }
 
 export enum EmployeeType {
@@ -57,6 +58,12 @@ export interface CompleteCompanyInfoRequest {
 }
 
 export interface ResetPasswordRequest {
+  phoneNumber: string;
+  code: string;
+  password: string;
+}
+
+export interface CompleteAgentInfoRequest {
   phoneNumber: string;
   code: string;
   password: string;

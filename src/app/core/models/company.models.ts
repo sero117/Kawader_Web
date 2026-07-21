@@ -30,11 +30,14 @@ export interface CreateCompanyRequest {
   phoneNumber: string;
   email?: string;
   tenantId: string;
+  idempotencyKey: string;
+  agentId?: number | null;
 }
 
 export interface UpdateCompanyRequest {
   phoneNumber?: string;
   email?: string;
+  agentId?: number | null;
 }
 
 // ── Response ─────────────────────────────────────────────────────────────────

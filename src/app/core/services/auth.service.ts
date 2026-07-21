@@ -11,6 +11,7 @@ import {
   GenerateCodeResponse,
   CompleteCompanyInfoRequest,
   ResetPasswordRequest,
+  CompleteAgentInfoRequest,
   AuthTokenResponse,
   ApiResponse,
   Role,
@@ -72,6 +73,13 @@ export class AuthService {
     );
   }
 
+  completeAgentInfo(payload: CompleteAgentInfoRequest): Observable<ApiResponse<AuthTokenResponse>> {
+    return this.http.post<ApiResponse<AuthTokenResponse>>(
+      `${this.baseUrl}/complete-agent-info`,
+      payload
+    );
+  }
+
   getEmployeeTypeFromToken(): EmployeeType {
     const token = this.getAccessToken();
     if (!token) return EmployeeType.Employee;
@@ -108,6 +116,7 @@ export class AuthService {
     switch (Number(role)) {
       case Role.Admin:          return '/dashboard/admin';
       case Role.CompanyManager: return '/dashboard/manager';
+      case Role.Agent:          return '/dashboard/agent';
       case Role.Employee: {
         switch (this.getStoredEmployeeType()) {
           case EmployeeType.HumanResourceManager: return '/dashboard/hr';
@@ -304,6 +313,7 @@ export class AuthService {
       case Role.Admin:          return 'Admin';
       case Role.CompanyManager: return 'Manager';
       case Role.Employee:       return 'Employee';
+      case Role.Agent:          return 'Agent';
       default:                  return 'User';
     }
   }

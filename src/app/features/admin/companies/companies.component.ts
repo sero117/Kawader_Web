@@ -5,6 +5,8 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { CompanyService } from '../../../core/services/company.service';
+import { AgentService } from '../../../core/services/agent.service';
+import { Agent } from '../../../core/models/agent.models';
 import {
   Company, CompanyType, GetCompaniesParams,
 } from '../../../core/models/company.models';
@@ -17,8 +19,11 @@ import {
 })
 export class CompaniesComponent implements OnInit {
   private readonly companyService = inject(CompanyService);
+  private readonly agentService   = inject(AgentService);
   private readonly fb             = inject(FormBuilder);
   private readonly lang           = inject(LanguageService);
+
+  agents = signal<Agent[]>([]);
 
   // ── Frozen IDs persisted in localStorage (API list doesn't return isFrozen) ─
   private readonly FROZEN_KEY = 'kawader_frozen_companies';
@@ -66,6 +71,7 @@ export class CompaniesComponent implements OnInit {
   addForm = this.fb.group({
     phoneNumber: ['', [Validators.required, Validators.pattern(this.phonePattern)]],
     email:       ['', [Validators.email]],
+    agentId:     [null as number | null],
   });
 
   // ── View / Edit / Delete / Freeze modals ──────────────────────────────────
@@ -82,10 +88,17 @@ export class CompaniesComponent implements OnInit {
   editForm = this.fb.group({
     phoneNumber: ['', [Validators.required, Validators.pattern(this.phonePattern)]],
     email:       ['', [Validators.email]],
+    agentId:     [null as number | null],
   });
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
-  ngOnInit(): void { this.loadCompanies(); }
+  ngOnInit(): void {
+    this.loadCompanies();
+    this.agentService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+      next: res => this.agents.set(res.items ?? []),
+      error: () => {},
+    });
+  }
 
   loadCompanies(): void {
     this.loading.set(true);
@@ -170,9 +183,11 @@ export class CompaniesComponent implements OnInit {
     this.modalError.set(null);
 
     this.companyService.create({
-      phoneNumber: this.addForm.value.phoneNumber!,
-      email:       this.addForm.value.email || undefined,
-      tenantId:    crypto.randomUUID(),
+      phoneNumber:    this.addForm.value.phoneNumber!,
+      email:          this.addForm.value.email || undefined,
+      tenantId:       crypto.randomUUID(),
+      idempotencyKey: crypto.randomUUID(),
+      agentId:        this.addForm.value.agentId || undefined,
     }).subscribe({
       next: (res: any) => {
         this.submitting.set(false);
@@ -222,7 +237,11 @@ export class CompaniesComponent implements OnInit {
   openEdit(company: Company, event: Event): void {
     event.stopPropagation();
     this.selectedCompany.set(company);
-    this.editForm.patchValue({ phoneNumber: company.phoneNumber, email: company.email ?? '' });
+    this.editForm.patchValue({
+      phoneNumber: company.phoneNumber,
+      email:       company.email ?? '',
+      agentId:     (company as any).agentId ?? null,
+    });
     this.modalError.set(null);
     this.showEditModal.set(true);
   }
@@ -237,6 +256,7 @@ export class CompaniesComponent implements OnInit {
     this.companyService.update(id, {
       phoneNumber: this.editForm.value.phoneNumber || undefined,
       email:       this.editForm.value.email       || undefined,
+      agentId:     this.editForm.value.agentId      || undefined,
     }).subscribe({
       next: res => {
         this.submitting.set(false);

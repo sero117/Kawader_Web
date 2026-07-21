@@ -58,7 +58,8 @@
     "plans": "الخطط",
     "cards": "الكروت",
     "subscriptions": "الاشتراكات",
-    "sectionSubscriptions": "الاشتراكات"
+    "sectionSubscriptions": "الاشتراكات",
+    "agents": "المندوبون"
   },
   "auth": {
     "loginSuccess": "أهلاً وسهلاً",
@@ -71,6 +72,8 @@
     "managerSetup": "أكمل إعداد حسابك",
     "isEmployee": "موظف جديد؟",
     "employeeActivate": "فعّل حسابك",
+    "isAgent": "مندوب؟",
+    "agentActivate": "فعّل حسابك",
     "login": {
       "phoneLabel": "رقم الهاتف",
       "phonePlaceholder": "أدخل الرقم",
@@ -203,7 +206,9 @@
       "results": "نتائج",
       "result": "نتيجة",
       "prev": "السابق",
-      "next": "التالي"
+      "next": "التالي",
+      "agentLabel": "المندوب المُحيل",
+      "noAgent": "بدون مندوب"
     },
     "wizard": {
       "title": "إضافة شركة جديدة",
@@ -371,6 +376,32 @@
       "result": "نتيجة",
       "prev": "السابق",
       "next": "التالي"
+    },
+    "agents": {
+      "title": "المندوبون",
+      "subtitle": "إدارة مندوبي الإحالة.",
+      "addAgent": "إضافة مندوب",
+      "editAgent": "تعديل مندوب",
+      "searchName": "بحث بالاسم…",
+      "empty": "لا يوجد مندوبون بعد.",
+      "colName": "الاسم",
+      "colPhone": "الهاتف",
+      "colEmail": "البريد الإلكتروني",
+      "colCountry": "الدولة",
+      "colStatus": "الحالة",
+      "colCreated": "تاريخ الإنشاء",
+      "colActions": "الإجراءات",
+      "verified": "موثّق",
+      "unverified": "غير موثّق",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "phone": "رقم الهاتف",
+      "email": "البريد الإلكتروني",
+      "country": "الدولة",
+      "phoneLockedHint": "لا يمكن تغيير رقم الهاتف بعد توثيق المندوب.",
+      "nameRequired": "الاسم الأول واسم العائلة مطلوبان.",
+      "confirmDelete": "حذف المندوب؟",
+      "confirmDeleteMsg": "هل أنت متأكد من حذف"
     }
   },
   "dashboard": {
@@ -453,6 +484,44 @@
     "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور",
     "activate": "تفعيل الحساب",
     "activating": "جارٍ التفعيل…"
+  },
+  "agentActivation": {
+    "step1Title": "تفعيل حساب المندوب",
+    "step1Subtitle": "أدخل رقم هاتفك لاستلام رمز التحقق.",
+    "step2Title": "تعيين كلمة المرور",
+    "step2Subtitle": "أدخل الرمز المرسل إلى هاتفك واختر كلمة مرور.",
+    "phoneLabel": "رقم الهاتف",
+    "phonePlaceholder": "أدخل الرقم",
+    "sendCode": "إرسال الرمز",
+    "sending": "جارٍ الإرسال…",
+    "codeLabel": "رمز التحقق",
+    "codePlaceholder": "رمز مكون من 6 أرقام",
+    "passwordLabel": "كلمة المرور",
+    "passwordPlaceholder": "8 أحرف أو أكثر",
+    "confirmPasswordLabel": "تأكيد كلمة المرور",
+    "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور",
+    "activate": "تفعيل الحساب",
+    "activating": "جارٍ التفعيل…"
+  },
+  "agent": {
+    "nav": {
+      "myCompanies": "شركاتي"
+    },
+    "overview": {
+      "title": "الشركات المُحالة",
+      "subtitle": "الشركات التي سجّلتها كمُحيل.",
+      "colCompany": "الشركة",
+      "colStatus": "الحالة",
+      "colCreated": "تاريخ التسجيل",
+      "completed": "مكتمل الإعداد",
+      "pending": "قيد الإعداد",
+      "empty": "لا توجد شركات محالة بعد."
+    }
+  },
+  "countries": {
+    "1": "ليبيا",
+    "2": "سوريا",
+    "3": "العراق"
   },
   "manager": {
     "welcome": "مرحباً",

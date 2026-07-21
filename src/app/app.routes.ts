@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { companyManagerGuard } from './core/guards/companymanager.guard';
 import { employeeGuard } from './core/guards/employee.guard';
 import { hrGuard } from './core/guards/hr.guard';
+import { agentGuard } from './core/guards/agent.guard';
 import { payrollAccessGuard } from './core/guards/payroll-access.guard';
 
 export const routes: Routes = [
@@ -39,6 +40,11 @@ export const routes: Routes = [
         path: 'employee-activation',
         loadComponent: () =>
           import('./features/auth/employee-activation/employee-activation.component').then(m => m.EmployeeActivationComponent),
+      },
+      {
+        path: 'agent-activation',
+        loadComponent: () =>
+          import('./features/auth/agent-activation/agent-activation.component').then(m => m.AgentActivationComponent),
       },
       {
         path: 'select-company',
@@ -96,6 +102,12 @@ export const routes: Routes = [
         title: 'الاشتراكات',
         loadComponent: () =>
           import('./features/admin/subscriptions/subscriptions.component').then(m => m.SubscriptionsComponent),
+      },
+      {
+        path: 'agents',
+        title: 'المندوبون',
+        loadComponent: () =>
+          import('./features/admin/agents/agents.component').then(m => m.AgentsComponent),
       },
     ],
   },
@@ -336,6 +348,23 @@ export const routes: Routes = [
       import('./features/employee/employee-layout/employee-layout.component').then(m => m.EmployeeLayoutComponent),
     children: [
       { path: '', loadComponent: () => import('./features/employee/employee-overview/employee-overview.component').then(m => m.EmployeeOverviewComponent) },
+    ],
+  },
+
+  // ── Agent dashboard ────────────────────────────────────────────────────────
+  {
+    path: 'dashboard/agent',
+    canActivate: [agentGuard],
+    loadComponent: () =>
+      import('./features/agent/agent-layout/agent-layout.component').then(m => m.AgentLayoutComponent),
+    children: [
+      {
+        path: '',
+        title: 'شركاتي',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./features/agent/referred-companies/referred-companies.component').then(m => m.ReferredCompaniesComponent),
+      },
     ],
   },
 
