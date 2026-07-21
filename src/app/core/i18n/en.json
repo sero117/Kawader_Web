@@ -81,7 +81,8 @@
       "showPassword": "Show password",
       "hidePassword": "Hide password",
       "submit": "Sign In",
-      "submitting": "Signing in…"
+      "submitting": "Signing in…",
+      "accountNotVerified": "Your account isn't activated yet. Please complete activation first (links below)."
     },
     "register": {
       "title": "Create your account",

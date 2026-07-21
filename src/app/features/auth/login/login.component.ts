@@ -12,17 +12,31 @@ import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { SignInRequest, AuthTokenResponse } from '../../../core/models/auth.models';
 
-function extractErrorMessage(err: any): string {
-  if (err?.status === 0) return 'Cannot connect to server. Check your internet connection.';
-
+/** The raw backend message, if any — used both for display and for detecting known
+ *  business-rule identifiers (e.g. an unverified/not-yet-activated account) that
+ *  deserve a friendlier message than whatever raw text the API returns. */
+function rawBackendMessage(err: any): string | null {
   const body = err?.error;
-
   if (typeof body === 'string' && body.trim()) return body.trim();
-
   for (const key of ['message', 'title', 'detail', 'error']) {
     const v = body?.[key];
     if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
   }
+  return null;
+}
+
+/** Matches the backend's business-rule identifiers for an account that exists
+ *  but hasn't completed activation yet (no password set / not yet verified). */
+function isNotVerifiedMessage(msg: string | null | undefined): boolean {
+  return !!msg && /not.?verif|unverif|not.?activ|inactiv/i.test(msg);
+}
+
+function extractErrorMessage(err: any): string {
+  if (err?.status === 0) return 'Cannot connect to server. Check your internet connection.';
+
+  const body = err?.error;
+  const raw  = rawBackendMessage(err);
+  if (raw) return raw;
 
   if (body?.errors) {
     if (Array.isArray(body.errors)) {
@@ -126,14 +140,21 @@ export class LoginComponent implements OnInit {
           }
           this.router.navigate([next]);
         } else if ((response as any).isSuccess === false) {
-          this.errorMessage.set((response as any).message || 'Sign in failed.');
+          const msg = (response as any).message as string | undefined;
+          this.errorMessage.set(
+            isNotVerifiedMessage(msg) ? this.lang.t('auth.login.accountNotVerified') : (msg || 'Sign in failed.'),
+          );
         } else {
           this.errorMessage.set('Unexpected response. Please try again.');
         }
       },
       error: err => {
         this.loading.set(false);
-        this.errorMessage.set(extractErrorMessage(err));
+        this.errorMessage.set(
+          isNotVerifiedMessage(rawBackendMessage(err))
+            ? this.lang.t('auth.login.accountNotVerified')
+            : extractErrorMessage(err),
+        );
       },
     });
   }
