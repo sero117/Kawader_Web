@@ -132,6 +132,7 @@ export class CompaniesComponent implements OnInit {
             || (c.frozenAt != null && c.frozenAt !== '')
             || (c.FrozenAt != null && c.FrozenAt !== '')
             || frozenIds.has(c.id),
+          agentId: c.agentId ?? c.AgentId ?? null,
         }));
 
         this.companies.set(normalized);
@@ -225,6 +226,7 @@ export class CompaniesComponent implements OnInit {
             isFrozen: !!d.isFrozen || !!d.IsFrozen
               || (d.frozenAt != null && d.frozenAt !== '')
               || (d.FrozenAt != null && d.FrozenAt !== ''),
+            agentId: d.agentId ?? d.AgentId ?? null,
           });
         }
         this.viewLoading.set(false);
@@ -360,6 +362,12 @@ export class CompaniesComponent implements OnInit {
   // ── Helpers ────────────────────────────────────────────────────────────────
   companyTypeLabel(type?: CompanyType): string {
     return type !== undefined ? this.lang.t(`companyTypes.${type}`) : '—';
+  }
+
+  agentName(agentId?: number | null): string | null {
+    if (!agentId) return null;
+    const a = this.agents().find(ag => ag.id === agentId);
+    return a ? `${a.firstName} ${a.lastName}` : null;
   }
 
   statusLabel(c: Company): { text: string; active: boolean; pending: boolean; frozen: boolean } {

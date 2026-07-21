@@ -118,6 +118,7 @@
             <th>{{ 'admin.companies.colPhone' | translate }}</th>
             <th>{{ 'admin.companies.colEmail' | translate }}</th>
             <th>{{ 'admin.companies.colType' | translate }}</th>
+            <th>{{ 'admin.companies.agentLabel' | translate }}</th>
             <th>{{ 'admin.companies.colStatus' | translate }}</th>
             <th>{{ 'admin.companies.colCreated' | translate }}</th>
             <th style="text-align: right;">{{ 'admin.companies.colActions' | translate }}</th>
@@ -166,6 +167,7 @@
               <td class="font-medium" style="color: var(--text-muted);">{{ c.phoneNumber }}</td>
               <td style="color: var(--text-faint);">{{ c.email ?? '—' }}</td>
               <td style="color: var(--text-faint);">{{ companyTypeLabel(c.companyType) }}</td>
+              <td style="color: var(--text-faint);">{{ agentName(c.agentId) ?? '—' }}</td>
 
               <!-- Status badge -->
               <td>
@@ -400,6 +402,7 @@
             { labelKey: 'admin.view.landline', value: selectedCompany()!.landlinePhone },
             { labelKey: 'admin.view.business', value: selectedCompany()!.businessField },
             { labelKey: 'admin.view.type',     value: companyTypeLabel(selectedCompany()!.companyType) !== '—' ? companyTypeLabel(selectedCompany()!.companyType) : null },
+            { labelKey: 'admin.companies.agentLabel', value: agentName(selectedCompany()!.agentId) },
             { labelKey: 'admin.view.created',  value: formatDate(selectedCompany()!.createdAt) !== '—' ? formatDate(selectedCompany()!.createdAt) : null },
             { labelKey: 'admin.view.tenantId', value: selectedCompany()!.tenantId }
           ]; track field.labelKey) {

@@ -68,6 +68,7 @@ export interface Company {
   isFrozen?: boolean;
   frozenBy?: number | null;
   frozenAt?: string | null;
+  agentId?: number | null;
 }
 
 export interface CompanyStatus {
