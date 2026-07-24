@@ -950,7 +950,7 @@ select option {
 .sidebar-link:hover { background: var(--bg-subtle-sm); color: var(--text-muted); }
 .sidebar-link.sidebar-active { background: var(--nav-active-bg); color: var(--nav-active-text); font-weight: 600; }
 
-.sidebar-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+.sidebar-link svg { width: 20px; height: 20px; flex-shrink: 0; }
 
 .sidebar-link-label {
   white-space: nowrap;
@@ -1019,7 +1019,7 @@ select option {
   font-weight: 600;
 }
 
-.sidebar-sub-link svg { width: 14px; height: 14px; flex-shrink: 0; }
+.sidebar-sub-link svg { width: 17px; height: 17px; flex-shrink: 0; }
 
 .sidebar-footer {
   flex-shrink: 0;
