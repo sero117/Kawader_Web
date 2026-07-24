@@ -4,6 +4,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 type FilterValue = string | number | null | undefined;
 type FilterRecord = Record<string, FilterValue>;
 
+/** Pagination keys get a fixed PascalCase URL representation (matching the
+ *  backend's own query param casing) and, unlike every other filter key,
+ *  are always present in the URL — never stripped at their default value —
+ *  so a shared link always pins the exact page/size it was copied from. */
+const PAGINATION_URL_KEYS: Record<string, string> = {
+  pageNumber: 'PageNumber',
+  pageSize:   'PageSize',
+};
+
 /**
  * Syncs a typed filter object with URL query params (bidirectional).
  *
@@ -31,6 +40,7 @@ export class UrlFilter<T extends FilterRecord> {
     this._value = signal<T>({ ...defaults });
     this.value  = this._value.asReadonly();
     this.loadFromUrl();
+    this.syncUrl(); // normalize the URL immediately — PageSize/PageNumber always present, even on first load
   }
 
   /** Partial update — resets pageNumber to default unless explicitly included */
@@ -77,7 +87,10 @@ export class UrlFilter<T extends FilterRecord> {
     const loaded: Partial<T> = {};
 
     for (const key of Object.keys(this.defaults) as (keyof T & string)[]) {
-      const raw = params[key];
+      // Pagination keys read the PascalCase URL key first, falling back to the
+      // plain key so pre-existing/legacy links still work.
+      const urlKey = PAGINATION_URL_KEYS[key];
+      const raw = urlKey ? (params[urlKey] ?? params[key]) : params[key];
       if (raw === undefined) continue;
       const def = this.defaults[key];
       (loaded as FilterRecord)[key] = typeof def === 'number' ? Number(raw) : raw;
@@ -93,10 +106,23 @@ export class UrlFilter<T extends FilterRecord> {
     const queryParams: Record<string, string | null> = {};
 
     for (const [key, val] of Object.entries(v)) {
-      const def = (this.defaults as FilterRecord)[key];
-      queryParams[key] = (val === undefined || val === null || val === '' || val === def)
-        ? null
-        : String(val);
+      const urlKey = PAGINATION_URL_KEYS[key] ?? key;
+      const isEmpty = val === undefined || val === null || val === '';
+
+      if (urlKey !== key) {
+        // Migrate away from the old camelCase key if a legacy link had it.
+        queryParams[key] = null;
+      }
+
+      if (key in PAGINATION_URL_KEYS) {
+        // Always present, regardless of default — a shared link must pin the
+        // exact page/size it was copied from.
+        const def = (this.defaults as FilterRecord)[key];
+        queryParams[urlKey] = String(isEmpty ? def : val);
+      } else {
+        const def = (this.defaults as FilterRecord)[key];
+        queryParams[urlKey] = (isEmpty || val === def) ? null : String(val);
+      }
     }
 
     this.router.navigate([], {
