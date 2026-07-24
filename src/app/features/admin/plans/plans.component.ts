@@ -92,7 +92,7 @@ import { LanguageService } from '../../../core/services/language.service';
                 <ul class="plan-details">
                   @for (d of plan.details; track d) {
                     <li class="plan-detail-item">
-                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px;flex-shrink:0;color:var(--nav-accent)">
+                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px;flex-shrink:0;margin-top:2px;color:var(--nav-accent)">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
                       </svg>
                       {{ d }}
