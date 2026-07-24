@@ -164,11 +164,11 @@ import { LanguageService } from '../../../core/services/language.service';
         <div class="form-grid">
           <div class="form-field form-field-full">
             <label class="form-label">{{ 'manager.subscription.serialLabel' | translate }}</label>
-            <input class="form-input" type="text" [value]="redeemForm.serialNumber" (input)="redeemForm.serialNumber = $any($event.target).value" [placeholder]="'manager.subscription.serialPlaceholder' | translate" />
+            <input class="form-input" type="text" [value]="redeemForm.serialNumber" (input)="redeemForm.serialNumber = $any($event.target).value" [placeholder]="'manager.subscription.serialPlaceholder' | translate" [disabled]="submitting()" />
           </div>
           <div class="form-field form-field-full">
             <label class="form-label">{{ 'manager.subscription.codeLabel' | translate }}</label>
-            <input class="form-input" type="text" [value]="redeemForm.code" (input)="redeemForm.code = $any($event.target).value" [placeholder]="'manager.subscription.codePlaceholder' | translate" />
+            <input class="form-input" type="text" [value]="redeemForm.code" (input)="redeemForm.code = $any($event.target).value" [placeholder]="'manager.subscription.codePlaceholder' | translate" [disabled]="submitting()" />
           </div>
         </div>
         <div class="modal-actions">

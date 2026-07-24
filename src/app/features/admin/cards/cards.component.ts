@@ -150,7 +150,7 @@ import { environment } from '../../../../environments/environment';
         <div class="form-grid">
           <div class="form-field form-field-full">
             <label class="form-label">{{ 'admin.cards.plan' | translate }}</label>
-            <select class="form-input" [value]="genForm.planId" (change)="genForm.planId = +$any($event.target).value">
+            <select class="form-input" [value]="genForm.planId" (change)="genForm.planId = +$any($event.target).value" [disabled]="submitting()">
               <option value="0">{{ 'admin.cards.selectPlan' | translate }}</option>
               @for (p of plans(); track p.id) {
                 <option [value]="p.id">{{ p.name }} — {{ p.price }} USD</option>
@@ -159,11 +159,11 @@ import { environment } from '../../../../environments/environment';
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.cards.count' | translate }}</label>
-            <input class="form-input" type="number" min="1" max="500" [value]="genForm.count" (input)="genForm.count = +$any($event.target).value" />
+            <input class="form-input" type="number" min="1" max="500" [value]="genForm.count" (input)="genForm.count = +$any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.cards.batch' | translate }}</label>
-            <input class="form-input" type="text" [value]="genForm.distinct" (input)="genForm.distinct = $any($event.target).value" placeholder="{{ 'admin.cards.batchHint' | translate }}" />
+            <input class="form-input" type="text" [value]="genForm.distinct" (input)="genForm.distinct = $any($event.target).value" placeholder="{{ 'admin.cards.batchHint' | translate }}" [disabled]="submitting()" />
           </div>
         </div>
 

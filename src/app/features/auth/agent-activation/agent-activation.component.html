@@ -57,7 +57,8 @@
           <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10"
             [placeholder]="'agentActivation.phonePlaceholder' | translate"
             class="auth-input"
-            [class.is-invalid]="step1Form.get('phoneNumber')!.invalid && step1Form.get('phoneNumber')!.touched" />
+            [class.is-invalid]="step1Form.get('phoneNumber')!.invalid && step1Form.get('phoneNumber')!.touched"
+            [attr.disabled]="submitting() || null" />
           @if (step1Form.get('phoneNumber')!.invalid && step1Form.get('phoneNumber')!.touched) {
             <p class="text-red-400/75 text-xs mt-1.5">
               {{ step1Form.get('phoneNumber')!.hasError('required') ? ('validation.phoneRequired' | translate) : ('validation.phone09' | translate) }}
@@ -101,7 +102,8 @@
           <input formControlName="code" type="text" inputmode="numeric" maxlength="6"
             [placeholder]="'agentActivation.codePlaceholder' | translate"
             class="auth-input tracking-[0.3em] text-center"
-            [class.is-invalid]="step2Form.get('code')!.invalid && step2Form.get('code')!.touched" />
+            [class.is-invalid]="step2Form.get('code')!.invalid && step2Form.get('code')!.touched"
+            [attr.disabled]="submitting() || null" />
           @if (step2Form.get('code')!.invalid && step2Form.get('code')!.touched) {
             <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.codeDigits' | translate }}</p>
           }
@@ -116,7 +118,8 @@
             <input formControlName="password" [type]="showPw() ? 'text' : 'password'"
               [placeholder]="'agentActivation.passwordPlaceholder' | translate"
               class="auth-input pr-11"
-              [class.is-invalid]="step2Form.get('password')!.invalid && step2Form.get('password')!.touched" />
+              [class.is-invalid]="step2Form.get('password')!.invalid && step2Form.get('password')!.touched"
+              [attr.disabled]="submitting() || null" />
             <button type="button" (click)="showPw.update(v => !v)" class="auth-pw-toggle"
               aria-label="toggle password visibility">
               @if (showPw()) {
@@ -147,7 +150,8 @@
             <input formControlName="confirmPassword" [type]="showCpw() ? 'text' : 'password'"
               [placeholder]="'agentActivation.confirmPasswordPlaceholder' | translate"
               class="auth-input pr-11"
-              [class.is-invalid]="step2Form.get('confirmPassword')!.touched && step2Form.hasError('mismatch')" />
+              [class.is-invalid]="step2Form.get('confirmPassword')!.touched && step2Form.hasError('mismatch')"
+              [attr.disabled]="submitting() || null" />
             <button type="button" (click)="showCpw.update(v => !v)" class="auth-pw-toggle"
               aria-label="toggle confirm password visibility">
               @if (showCpw()) {

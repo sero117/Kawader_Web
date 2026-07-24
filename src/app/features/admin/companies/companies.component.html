@@ -305,7 +305,8 @@
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.wizard.companyPhone' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
             <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="09XXXXXXXX" class="modal-input"
-              [class.is-invalid]="addForm.get('phoneNumber')!.invalid && addForm.get('phoneNumber')!.touched" />
+              [class.is-invalid]="addForm.get('phoneNumber')!.invalid && addForm.get('phoneNumber')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (addForm.get('phoneNumber')!.invalid && addForm.get('phoneNumber')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                 {{ addForm.get('phoneNumber')!.hasError('required') ? ('validation.required' | translate) : ('validation.phone09' | translate) }}
@@ -315,14 +316,15 @@
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.wizard.companyEmail' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
             <input formControlName="email" type="email" placeholder="contact@company.com" class="modal-input"
-              [class.is-invalid]="addForm.get('email')!.invalid && addForm.get('email')!.touched" />
+              [class.is-invalid]="addForm.get('email')!.invalid && addForm.get('email')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (addForm.get('email')!.invalid && addForm.get('email')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.emailInvalid' | translate }}</p>
             }
           </div>
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.agentLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
-            <select formControlName="agentId" class="modal-input" style="appearance:none;-webkit-appearance:none;">
+            <select formControlName="agentId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
               <option [ngValue]="null">{{ 'admin.companies.noAgent' | translate }}</option>
               @for (ag of agents(); track ag.id) {
                 <option [ngValue]="ag.id">{{ ag.firstName }} {{ ag.lastName }}</option>
@@ -449,7 +451,8 @@
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.edit.phoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
           <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="09XXXXXXXX" class="modal-input"
-            [class.is-invalid]="editForm.get('phoneNumber')!.invalid && editForm.get('phoneNumber')!.touched" />
+            [class.is-invalid]="editForm.get('phoneNumber')!.invalid && editForm.get('phoneNumber')!.touched"
+            [attr.disabled]="submitting() || null" />
           @if (editForm.get('phoneNumber')!.invalid && editForm.get('phoneNumber')!.touched) {
             <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
               {{ editForm.get('phoneNumber')!.hasError('required') ? ('validation.required' | translate) : ('validation.phone09' | translate) }}
@@ -458,11 +461,11 @@
         </div>
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.edit.emailLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
-          <input formControlName="email" type="email" placeholder="contact@company.com" class="modal-input" />
+          <input formControlName="email" type="email" placeholder="contact@company.com" class="modal-input" [attr.disabled]="submitting() || null" />
         </div>
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.agentLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
-          <select formControlName="agentId" class="modal-input" style="appearance:none;-webkit-appearance:none;">
+          <select formControlName="agentId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
             <option [ngValue]="null">{{ 'admin.companies.noAgent' | translate }}</option>
             @for (ag of agents(); track ag.id) {
               <option [ngValue]="ag.id">{{ ag.firstName }} {{ ag.lastName }}</option>

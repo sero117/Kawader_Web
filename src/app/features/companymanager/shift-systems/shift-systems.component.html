@@ -205,7 +205,8 @@
               {{ 'manager.addShiftSystem.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="name" type="text" maxlength="100" class="modal-input"
-              [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched" />
+              [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (addForm.get('name')!.invalid && addForm.get('name')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }
@@ -262,7 +263,8 @@
               {{ 'manager.editShiftSystem.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="name" type="text" maxlength="100" class="modal-input"
-              [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched" />
+              [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (editForm.get('name')!.invalid && editForm.get('name')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }

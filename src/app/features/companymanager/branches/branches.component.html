@@ -237,7 +237,8 @@
                 {{ 'manager.addBranch.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="name" type="text" class="modal-input"
-                [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched" />
+                [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('name')!.invalid && addForm.get('name')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                   {{ addForm.get('name')!.hasError('required') ? ('validation.required' | translate) : ('validation.max200' | translate) }}
@@ -249,7 +250,8 @@
                 {{ 'manager.addBranch.codeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="code" type="text" maxlength="20" class="modal-input"
-                [class.is-invalid]="addForm.get('code')!.invalid && addForm.get('code')!.touched" />
+                [class.is-invalid]="addForm.get('code')!.invalid && addForm.get('code')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('code')!.invalid && addForm.get('code')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                   {{ addForm.get('code')!.hasError('required') ? ('validation.required' | translate) : ('validation.max20' | translate) }}
@@ -264,14 +266,14 @@
                 {{ 'manager.addBranch.cityLabel' | translate }}
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
-              <input formControlName="city" type="text" class="modal-input" />
+              <input formControlName="city" type="text" class="modal-input" [attr.disabled]="submitting() || null" />
             </div>
             <div>
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addBranch.addressLabel' | translate }}
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
-              <input formControlName="address" type="text" class="modal-input" />
+              <input formControlName="address" type="text" class="modal-input" [attr.disabled]="submitting() || null" />
             </div>
           </div>
 
@@ -282,7 +284,8 @@
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
               <input formControlName="latitude" type="number" step="any" class="modal-input"
-                [class.is-invalid]="addForm.get('latitude')!.invalid && addForm.get('latitude')!.touched" />
+                [class.is-invalid]="addForm.get('latitude')!.invalid && addForm.get('latitude')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('latitude')!.invalid && addForm.get('latitude')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.latRange' | translate }}</p>
               }
@@ -293,7 +296,8 @@
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
               <input formControlName="longitude" type="number" step="any" class="modal-input"
-                [class.is-invalid]="addForm.get('longitude')!.invalid && addForm.get('longitude')!.touched" />
+                [class.is-invalid]="addForm.get('longitude')!.invalid && addForm.get('longitude')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('longitude')!.invalid && addForm.get('longitude')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.lngRange' | translate }}</p>
               }
@@ -352,7 +356,8 @@
               {{ 'manager.editBranch.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="name" type="text" class="modal-input"
-              [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched" />
+              [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (editForm.get('name')!.invalid && editForm.get('name')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                 {{ editForm.get('name')!.hasError('required') ? ('validation.required' | translate) : ('validation.max200' | translate) }}
@@ -364,7 +369,8 @@
               {{ 'manager.editBranch.codeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="code" type="text" maxlength="20" class="modal-input"
-              [class.is-invalid]="editForm.get('code')!.invalid && editForm.get('code')!.touched" />
+              [class.is-invalid]="editForm.get('code')!.invalid && editForm.get('code')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (editForm.get('code')!.invalid && editForm.get('code')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                 {{ editForm.get('code')!.hasError('required') ? ('validation.required' | translate) : ('validation.max20' | translate) }}
@@ -378,13 +384,13 @@
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editBranch.cityLabel' | translate }}
             </label>
-            <input formControlName="city" type="text" class="modal-input" />
+            <input formControlName="city" type="text" class="modal-input" [attr.disabled]="submitting() || null" />
           </div>
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editBranch.addressLabel' | translate }}
             </label>
-            <input formControlName="address" type="text" class="modal-input" />
+            <input formControlName="address" type="text" class="modal-input" [attr.disabled]="submitting() || null" />
           </div>
         </div>
 
@@ -394,7 +400,8 @@
               {{ 'manager.editBranch.latLabel' | translate }}
             </label>
             <input formControlName="latitude" type="number" step="any" class="modal-input"
-              [class.is-invalid]="editForm.get('latitude')!.invalid && editForm.get('latitude')!.touched" />
+              [class.is-invalid]="editForm.get('latitude')!.invalid && editForm.get('latitude')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (editForm.get('latitude')!.invalid && editForm.get('latitude')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.latRange' | translate }}</p>
             }
@@ -404,7 +411,8 @@
               {{ 'manager.editBranch.lngLabel' | translate }}
             </label>
             <input formControlName="longitude" type="number" step="any" class="modal-input"
-              [class.is-invalid]="editForm.get('longitude')!.invalid && editForm.get('longitude')!.touched" />
+              [class.is-invalid]="editForm.get('longitude')!.invalid && editForm.get('longitude')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (editForm.get('longitude')!.invalid && editForm.get('longitude')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.lngRange' | translate }}</p>
             }

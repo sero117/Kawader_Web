@@ -49,7 +49,7 @@
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">{{ 'auth.register.firstNameLabel' | translate }}</label>
           <input formControlName="firstName" type="text" [placeholder]="'auth.register.firstNamePlaceholder' | translate"
-            class="auth-input text-sm" [class.is-invalid]="firstName.invalid && firstName.touched" />
+            class="auth-input text-sm" [class.is-invalid]="firstName.invalid && firstName.touched" [attr.disabled]="loading() || null" />
           @if (firstName.invalid && firstName.touched) {
             <p class="text-red-400/75 text-xs mt-1">
               {{ firstName.hasError('required') ? ('validation.required' | translate) : ('validation.nameMin' | translate) }}
@@ -59,7 +59,7 @@
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">{{ 'auth.register.lastNameLabel' | translate }}</label>
           <input formControlName="lastName" type="text" [placeholder]="'auth.register.lastNamePlaceholder' | translate"
-            class="auth-input text-sm" [class.is-invalid]="lastName.invalid && lastName.touched" />
+            class="auth-input text-sm" [class.is-invalid]="lastName.invalid && lastName.touched" [attr.disabled]="loading() || null" />
           @if (lastName.invalid && lastName.touched) {
             <p class="text-red-400/75 text-xs mt-1">
               {{ lastName.hasError('required') ? ('validation.required' | translate) : ('validation.nameMin' | translate) }}
@@ -74,7 +74,7 @@
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">{{ 'auth.register.phoneLabel' | translate }}</label>
           <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10"
             [placeholder]="'auth.register.phonePlaceholder' | translate"
-            class="auth-input text-sm" [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched" />
+            class="auth-input text-sm" [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched" [attr.disabled]="loading() || null" />
           @if (phoneNumber.invalid && phoneNumber.touched) {
             <p class="text-red-400/75 text-xs mt-1">
               {{ phoneNumber.hasError('required') ? ('validation.required' | translate) : ('validation.phone10only' | translate) }}
@@ -84,7 +84,7 @@
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">{{ 'auth.register.emailLabel' | translate }}</label>
           <input formControlName="email" type="email" [placeholder]="'auth.register.emailPlaceholder' | translate"
-            class="auth-input text-sm" [class.is-invalid]="email.invalid && email.touched" />
+            class="auth-input text-sm" [class.is-invalid]="email.invalid && email.touched" [attr.disabled]="loading() || null" />
           @if (email.invalid && email.touched) {
             <p class="text-red-400/75 text-xs mt-1">
               {{ email.hasError('required') ? ('validation.required' | translate) : ('validation.emailInvalid' | translate) }}
@@ -102,7 +102,7 @@
           <div class="relative">
             <input formControlName="password" [type]="showPassword() ? 'text' : 'password'"
               [placeholder]="'auth.register.passwordPlaceholder' | translate"
-              class="auth-input text-sm pr-10" [class.is-invalid]="password.invalid && password.touched" />
+              class="auth-input text-sm pr-10" [class.is-invalid]="password.invalid && password.touched" [attr.disabled]="loading() || null" />
             <button type="button" (click)="togglePassword()" class="auth-pw-toggle">
               @if (showPassword()) {
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -177,7 +177,8 @@
             <input formControlName="confirmPassword" [type]="showConfirmPassword() ? 'text' : 'password'"
               [placeholder]="'auth.register.confirmPasswordPlaceholder' | translate"
               class="auth-input text-sm pr-10"
-              [class.is-invalid]="confirmPassword.touched && (confirmPassword.invalid || form.hasError('passwordMismatch'))" />
+              [class.is-invalid]="confirmPassword.touched && (confirmPassword.invalid || form.hasError('passwordMismatch'))"
+              [attr.disabled]="loading() || null" />
             <button type="button" (click)="toggleConfirmPassword()" class="auth-pw-toggle">
               @if (showConfirmPassword()) {
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">

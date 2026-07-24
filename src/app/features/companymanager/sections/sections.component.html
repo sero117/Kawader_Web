@@ -258,7 +258,8 @@
                 {{ 'manager.nav.branches' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <select formControlName="branchId" class="modal-input"
-                [class.is-invalid]="addForm.get('branchId')!.invalid && addForm.get('branchId')!.touched">
+                [class.is-invalid]="addForm.get('branchId')!.invalid && addForm.get('branchId')!.touched"
+                [attr.disabled]="submitting() || null">
                 <option [value]="null">— {{ 'manager.sections.selectBranch' | translate }} —</option>
                 @for (b of branches(); track b.id) {
                   <option [value]="b.id">{{ b.name }}</option>
@@ -274,7 +275,8 @@
               {{ 'manager.addSection.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="name" type="text" class="modal-input"
-              [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched" />
+              [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (addForm.get('name')!.invalid && addForm.get('name')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                 {{ addForm.get('name')!.hasError('required') ? ('validation.required' | translate) : ('validation.max200' | translate) }}
@@ -286,7 +288,8 @@
               {{ 'manager.addSection.codeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="code" type="text" maxlength="20" class="modal-input"
-              [class.is-invalid]="addForm.get('code')!.invalid && addForm.get('code')!.touched" />
+              [class.is-invalid]="addForm.get('code')!.invalid && addForm.get('code')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (addForm.get('code')!.invalid && addForm.get('code')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                 {{ addForm.get('code')!.hasError('required') ? ('validation.required' | translate) : ('validation.max20' | translate) }}
@@ -344,7 +347,8 @@
             {{ 'manager.editSection.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
           </label>
           <input formControlName="name" type="text" class="modal-input"
-            [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched" />
+            [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched"
+            [attr.disabled]="submitting() || null" />
           @if (editForm.get('name')!.invalid && editForm.get('name')!.touched) {
             <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
               {{ editForm.get('name')!.hasError('required') ? ('validation.required' | translate) : ('validation.max200' | translate) }}
@@ -356,7 +360,8 @@
             {{ 'manager.editSection.codeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
           </label>
           <input formControlName="code" type="text" maxlength="20" class="modal-input"
-            [class.is-invalid]="editForm.get('code')!.invalid && editForm.get('code')!.touched" />
+            [class.is-invalid]="editForm.get('code')!.invalid && editForm.get('code')!.touched"
+            [attr.disabled]="submitting() || null" />
           @if (editForm.get('code')!.invalid && editForm.get('code')!.touched) {
             <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
               {{ editForm.get('code')!.hasError('required') ? ('validation.required' | translate) : ('validation.max20' | translate) }}

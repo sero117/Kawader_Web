@@ -202,7 +202,8 @@
               {{ 'manager.companyHolidays.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="name" type="text" maxlength="200" class="modal-input"
-              [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched" />
+              [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (addForm.get('name')!.invalid && addForm.get('name')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }
@@ -212,7 +213,8 @@
               {{ 'manager.companyHolidays.dateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="date" type="date" class="modal-input"
-              [class.is-invalid]="addForm.get('date')!.invalid && addForm.get('date')!.touched" />
+              [class.is-invalid]="addForm.get('date')!.invalid && addForm.get('date')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (addForm.get('date')!.invalid && addForm.get('date')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }
@@ -221,14 +223,14 @@
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.companyHolidays.recurrenceLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="holidayRecurrence" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+            <select formControlName="holidayRecurrence" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
               @for (r of recurrenceList; track r) {
                 <option [ngValue]="r">{{ recurrenceLabel(r) }}</option>
               }
             </select>
           </div>
           <div class="flex items-center gap-2.5">
-            <input formControlName="isPaid" type="checkbox" id="add-holiday-paid" class="w-4 h-4 rounded" />
+            <input formControlName="isPaid" type="checkbox" id="add-holiday-paid" class="w-4 h-4 rounded" [attr.disabled]="submitting() || null" />
             <label for="add-holiday-paid" class="text-sm font-medium" style="color: var(--text-muted);">
               {{ 'manager.companyHolidays.isPaidLabel' | translate }}
             </label>
@@ -275,7 +277,8 @@
               {{ 'manager.companyHolidays.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="name" type="text" maxlength="200" class="modal-input"
-              [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched" />
+              [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (editForm.get('name')!.invalid && editForm.get('name')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }
@@ -285,7 +288,8 @@
               {{ 'manager.companyHolidays.dateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="date" type="date" class="modal-input"
-              [class.is-invalid]="editForm.get('date')!.invalid && editForm.get('date')!.touched" />
+              [class.is-invalid]="editForm.get('date')!.invalid && editForm.get('date')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (editForm.get('date')!.invalid && editForm.get('date')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }
@@ -294,14 +298,14 @@
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.companyHolidays.recurrenceLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="holidayRecurrence" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+            <select formControlName="holidayRecurrence" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
               @for (r of recurrenceList; track r) {
                 <option [ngValue]="r">{{ recurrenceLabel(r) }}</option>
               }
             </select>
           </div>
           <div class="flex items-center gap-2.5">
-            <input formControlName="isPaid" type="checkbox" id="edit-holiday-paid" class="w-4 h-4 rounded" />
+            <input formControlName="isPaid" type="checkbox" id="edit-holiday-paid" class="w-4 h-4 rounded" [attr.disabled]="submitting() || null" />
             <label for="edit-holiday-paid" class="text-sm font-medium" style="color: var(--text-muted);">
               {{ 'manager.companyHolidays.isPaidLabel' | translate }}
             </label>

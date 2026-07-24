@@ -326,7 +326,8 @@
               {{ 'manager.addEmployee.phoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="09XXXXXXXX"
-              class="modal-input" [class.is-invalid]="addForm.get('phoneNumber')!.invalid && addForm.get('phoneNumber')!.touched" />
+              class="modal-input" [class.is-invalid]="addForm.get('phoneNumber')!.invalid && addForm.get('phoneNumber')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (addForm.get('phoneNumber')!.invalid && addForm.get('phoneNumber')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                 {{ addForm.get('phoneNumber')!.hasError('required') ? ('validation.required' | translate) : ('validation.phone09' | translate) }}
@@ -341,7 +342,8 @@
                 {{ 'manager.addEmployee.firstNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="firstName" type="text" class="modal-input"
-                [class.is-invalid]="addForm.get('firstName')!.invalid && addForm.get('firstName')!.touched" />
+                [class.is-invalid]="addForm.get('firstName')!.invalid && addForm.get('firstName')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('firstName')!.invalid && addForm.get('firstName')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
               }
@@ -351,7 +353,8 @@
                 {{ 'manager.addEmployee.lastNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="lastName" type="text" class="modal-input"
-                [class.is-invalid]="addForm.get('lastName')!.invalid && addForm.get('lastName')!.touched" />
+                [class.is-invalid]="addForm.get('lastName')!.invalid && addForm.get('lastName')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('lastName')!.invalid && addForm.get('lastName')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
               }
@@ -365,7 +368,8 @@
                 {{ 'manager.addEmployee.employeeNumberLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="employeeNumber" type="text" maxlength="50" placeholder="EMP-001" class="modal-input"
-                [class.is-invalid]="addForm.get('employeeNumber')!.invalid && addForm.get('employeeNumber')!.touched" />
+                [class.is-invalid]="addForm.get('employeeNumber')!.invalid && addForm.get('employeeNumber')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('employeeNumber')!.invalid && addForm.get('employeeNumber')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
               }
@@ -375,7 +379,8 @@
                 {{ 'manager.addEmployee.jobTitleLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="jobTitle" type="text" maxlength="100" class="modal-input"
-                [class.is-invalid]="addForm.get('jobTitle')!.invalid && addForm.get('jobTitle')!.touched" />
+                [class.is-invalid]="addForm.get('jobTitle')!.invalid && addForm.get('jobTitle')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('jobTitle')!.invalid && addForm.get('jobTitle')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
               }
@@ -389,7 +394,8 @@
                 {{ 'manager.addEmployee.birthDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="birthDate" type="date" class="modal-input"
-                [class.is-invalid]="addForm.get('birthDate')!.invalid && addForm.get('birthDate')!.touched" />
+                [class.is-invalid]="addForm.get('birthDate')!.invalid && addForm.get('birthDate')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('birthDate')!.invalid && addForm.get('birthDate')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
               }
@@ -398,7 +404,7 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addEmployee.genderLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <select formControlName="gender" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+              <select formControlName="gender" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
                 <option [ngValue]="GenderType.Male">{{ 'manager.genderTypes.0' | translate }}</option>
                 <option [ngValue]="GenderType.Female">{{ 'manager.genderTypes.1' | translate }}</option>
               </select>
@@ -412,7 +418,8 @@
               <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
             </label>
             <input formControlName="nationality" type="text" maxlength="100" class="modal-input"
-              [class.is-invalid]="addForm.get('nationality')!.invalid && addForm.get('nationality')!.touched" />
+              [class.is-invalid]="addForm.get('nationality')!.invalid && addForm.get('nationality')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (addForm.get('nationality')!.invalid && addForm.get('nationality')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.max100' | translate }}</p>
             }
@@ -425,7 +432,8 @@
               <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
             </label>
             <input formControlName="email" type="text" placeholder="employee@company.com" class="modal-input"
-              [class.is-invalid]="addForm.get('email')!.invalid && addForm.get('email')!.touched" />
+              [class.is-invalid]="addForm.get('email')!.invalid && addForm.get('email')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (addForm.get('email')!.invalid && addForm.get('email')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.emailInvalid' | translate }}</p>
             }
@@ -437,7 +445,7 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addEmployee.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <select formControlName="employeeRole" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+              <select formControlName="employeeRole" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
                 <option [ngValue]="EmployeeType.Employee">{{ 'manager.employeeTypes.0' | translate }}</option>
                 <option [ngValue]="EmployeeType.HumanResourceManager">{{ 'manager.employeeTypes.1' | translate }}</option>
                 <option [ngValue]="EmployeeType.DepartmentManager">{{ 'manager.employeeTypes.2' | translate }}</option>
@@ -448,7 +456,7 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addEmployee.contractTypeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <select formControlName="contractType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+              <select formControlName="contractType" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
                 <option [ngValue]="ContractType.FullTime">{{ 'manager.contractTypes.0' | translate }}</option>
                 <option [ngValue]="ContractType.PartTime">{{ 'manager.contractTypes.1' | translate }}</option>
                 <option [ngValue]="ContractType.Temporary">{{ 'manager.contractTypes.2' | translate }}</option>
@@ -472,7 +480,8 @@
               </label>
               <select formControlName="branchId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
                 [class.is-invalid]="addForm.get('branchId')!.invalid && addForm.get('branchId')!.touched"
-                (change)="onAddBranchChange(addForm.get('branchId')!.value)">
+                (change)="onAddBranchChange(addForm.get('branchId')!.value)"
+                [attr.disabled]="submitting() || null">
                 <option [ngValue]="null">{{ 'common.selectBranch' | translate }}</option>
                 @for (b of formBranches(); track b.id) {
                   <option [ngValue]="b.id">{{ b.name }}</option>
@@ -491,7 +500,7 @@
                 </label>
                 <select formControlName="sectionId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
                   [class.is-invalid]="addForm.get('sectionId')!.invalid && addForm.get('sectionId')!.touched"
-                  [attr.disabled]="!addForm.get('branchId')!.value || null">
+                  [attr.disabled]="!addForm.get('branchId')!.value || submitting() || null">
                   <option [ngValue]="null">{{ 'common.selectSection' | translate }}</option>
                   @for (s of addSections(); track s.id) {
                     <option [ngValue]="s.id">{{ s.name }}</option>
@@ -514,7 +523,8 @@
                 {{ 'manager.addEmployee.hireDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="hireDate" type="date" class="modal-input"
-                [class.is-invalid]="addForm.get('hireDate')!.invalid && addForm.get('hireDate')!.touched" />
+                [class.is-invalid]="addForm.get('hireDate')!.invalid && addForm.get('hireDate')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('hireDate')!.invalid && addForm.get('hireDate')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
               }
@@ -524,7 +534,8 @@
                 {{ 'manager.addEmployee.baseSalaryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="baseSalary" type="number" min="0.01" step="0.01" class="modal-input"
-                [class.is-invalid]="addForm.get('baseSalary')!.invalid && addForm.get('baseSalary')!.touched" />
+                [class.is-invalid]="addForm.get('baseSalary')!.invalid && addForm.get('baseSalary')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('baseSalary')!.invalid && addForm.get('baseSalary')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                   {{ addForm.get('baseSalary')!.hasError('required') ? ('validation.required' | translate) : ('validation.salaryMin' | translate) }}
@@ -540,7 +551,8 @@
               <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
             </label>
             <textarea formControlName="internalNotes" rows="3" maxlength="1000" class="modal-input resize-none"
-              [class.is-invalid]="addForm.get('internalNotes')!.invalid && addForm.get('internalNotes')!.touched"></textarea>
+              [class.is-invalid]="addForm.get('internalNotes')!.invalid && addForm.get('internalNotes')!.touched"
+              [attr.disabled]="submitting() || null"></textarea>
             @if (addForm.get('internalNotes')!.invalid && addForm.get('internalNotes')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.max1000' | translate }}</p>
             }
@@ -600,7 +612,8 @@
                   {{ 'manager.editEmployee.firstNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
                 <input formControlName="firstName" type="text" class="modal-input"
-                  [class.is-invalid]="editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched" />
+                  [class.is-invalid]="editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched"
+                  [attr.disabled]="submitting() || null" />
                 @if (editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched) {
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
                 }
@@ -610,7 +623,8 @@
                   {{ 'manager.editEmployee.lastNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
                 <input formControlName="lastName" type="text" class="modal-input"
-                  [class.is-invalid]="editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched" />
+                  [class.is-invalid]="editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched"
+                  [attr.disabled]="submitting() || null" />
                 @if (editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched) {
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.nameMax50' | translate }}</p>
                 }
@@ -624,7 +638,8 @@
                   {{ 'manager.editEmployee.employeeNumberLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
                 <input formControlName="employeeNumber" type="text" maxlength="50" class="modal-input"
-                  [class.is-invalid]="editForm.get('employeeNumber')!.invalid && editForm.get('employeeNumber')!.touched" />
+                  [class.is-invalid]="editForm.get('employeeNumber')!.invalid && editForm.get('employeeNumber')!.touched"
+                  [attr.disabled]="submitting() || null" />
                 @if (editForm.get('employeeNumber')!.invalid && editForm.get('employeeNumber')!.touched) {
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
                 }
@@ -634,7 +649,8 @@
                   {{ 'manager.editEmployee.jobTitleLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
                 <input formControlName="jobTitle" type="text" maxlength="100" class="modal-input"
-                  [class.is-invalid]="editForm.get('jobTitle')!.invalid && editForm.get('jobTitle')!.touched" />
+                  [class.is-invalid]="editForm.get('jobTitle')!.invalid && editForm.get('jobTitle')!.touched"
+                  [attr.disabled]="submitting() || null" />
                 @if (editForm.get('jobTitle')!.invalid && editForm.get('jobTitle')!.touched) {
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
                 }
@@ -648,7 +664,8 @@
                   {{ 'manager.editEmployee.birthDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
                 <input formControlName="birthDate" type="date" class="modal-input"
-                  [class.is-invalid]="editForm.get('birthDate')!.invalid && editForm.get('birthDate')!.touched" />
+                  [class.is-invalid]="editForm.get('birthDate')!.invalid && editForm.get('birthDate')!.touched"
+                  [attr.disabled]="submitting() || null" />
                 @if (editForm.get('birthDate')!.invalid && editForm.get('birthDate')!.touched) {
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
                 }
@@ -657,7 +674,7 @@
                 <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.genderLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <select formControlName="gender" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                <select formControlName="gender" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
                   <option [ngValue]="GenderType.Male">{{ 'manager.genderTypes.0' | translate }}</option>
                   <option [ngValue]="GenderType.Female">{{ 'manager.genderTypes.1' | translate }}</option>
                 </select>
@@ -671,7 +688,8 @@
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
               <input formControlName="nationality" type="text" maxlength="100" class="modal-input"
-                [class.is-invalid]="editForm.get('nationality')!.invalid && editForm.get('nationality')!.touched" />
+                [class.is-invalid]="editForm.get('nationality')!.invalid && editForm.get('nationality')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (editForm.get('nationality')!.invalid && editForm.get('nationality')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.max100' | translate }}</p>
               }
@@ -683,7 +701,7 @@
                 {{ 'manager.editEmployee.emailLabel' | translate }}
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
-              <input formControlName="email" type="text" placeholder="employee@company.com" class="modal-input" />
+              <input formControlName="email" type="text" placeholder="employee@company.com" class="modal-input" [attr.disabled]="submitting() || null" />
             </div>
 
             <!-- Employee Role + Contract Type -->
@@ -692,7 +710,7 @@
                 <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <select formControlName="employeeRole" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                <select formControlName="employeeRole" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
                   <option [ngValue]="EmployeeType.Employee">{{ 'manager.employeeTypes.0' | translate }}</option>
                   <option [ngValue]="EmployeeType.HumanResourceManager">{{ 'manager.employeeTypes.1' | translate }}</option>
                   <option [ngValue]="EmployeeType.DepartmentManager">{{ 'manager.employeeTypes.2' | translate }}</option>
@@ -703,7 +721,7 @@
                 <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.contractTypeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <select formControlName="contractType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                <select formControlName="contractType" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
                   <option [ngValue]="ContractType.FullTime">{{ 'manager.contractTypes.0' | translate }}</option>
                   <option [ngValue]="ContractType.PartTime">{{ 'manager.contractTypes.1' | translate }}</option>
                   <option [ngValue]="ContractType.Temporary">{{ 'manager.contractTypes.2' | translate }}</option>
@@ -726,7 +744,8 @@
                 </label>
                 <select formControlName="branchId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
                   [class.is-invalid]="editForm.get('branchId')!.invalid && editForm.get('branchId')!.touched"
-                  (change)="onEditBranchChange(editForm.get('branchId')!.value)">
+                  (change)="onEditBranchChange(editForm.get('branchId')!.value)"
+                  [attr.disabled]="submitting() || null">
                   <option [ngValue]="null">{{ 'common.selectBranch' | translate }}</option>
                   @for (b of formBranches(); track b.id) {
                     <option [ngValue]="b.id">{{ b.name }}</option>
@@ -741,7 +760,7 @@
                   </label>
                   <select formControlName="sectionId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
                     [class.is-invalid]="editForm.get('sectionId')!.invalid && editForm.get('sectionId')!.touched"
-                    [attr.disabled]="!editForm.get('branchId')!.value || null">
+                    [attr.disabled]="!editForm.get('branchId')!.value || submitting() || null">
                     <option [ngValue]="null">{{ 'common.selectSection' | translate }}</option>
                     @for (s of editSections(); track s.id) {
                       <option [ngValue]="s.id">{{ s.name }}</option>
@@ -758,7 +777,8 @@
                   {{ 'manager.editEmployee.hireDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
                 <input formControlName="hireDate" type="date" class="modal-input"
-                  [class.is-invalid]="editForm.get('hireDate')!.invalid && editForm.get('hireDate')!.touched" />
+                  [class.is-invalid]="editForm.get('hireDate')!.invalid && editForm.get('hireDate')!.touched"
+                  [attr.disabled]="submitting() || null" />
                 @if (editForm.get('hireDate')!.invalid && editForm.get('hireDate')!.touched) {
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
                 }
@@ -768,7 +788,8 @@
                   {{ 'manager.editEmployee.baseSalaryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
                 <input formControlName="baseSalary" type="number" min="0.01" step="0.01" class="modal-input"
-                  [class.is-invalid]="editForm.get('baseSalary')!.invalid && editForm.get('baseSalary')!.touched" />
+                  [class.is-invalid]="editForm.get('baseSalary')!.invalid && editForm.get('baseSalary')!.touched"
+                  [attr.disabled]="submitting() || null" />
                 @if (editForm.get('baseSalary')!.invalid && editForm.get('baseSalary')!.touched) {
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                     {{ editForm.get('baseSalary')!.hasError('required') ? ('validation.required' | translate) : ('validation.salaryMin' | translate) }}
@@ -784,7 +805,8 @@
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
               <textarea formControlName="internalNotes" rows="3" maxlength="1000" class="modal-input resize-none"
-                [class.is-invalid]="editForm.get('internalNotes')!.invalid && editForm.get('internalNotes')!.touched"></textarea>
+                [class.is-invalid]="editForm.get('internalNotes')!.invalid && editForm.get('internalNotes')!.touched"
+                [attr.disabled]="submitting() || null"></textarea>
               @if (editForm.get('internalNotes')!.invalid && editForm.get('internalNotes')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.max1000' | translate }}</p>
               }
@@ -1060,7 +1082,8 @@
                     {{ 'manager.emergencyContacts.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                   </label>
                   <input formControlName="name" type="text" maxlength="100" class="modal-input"
-                    [class.is-invalid]="emContactForm.get('name')!.invalid && emContactForm.get('name')!.touched" />
+                    [class.is-invalid]="emContactForm.get('name')!.invalid && emContactForm.get('name')!.touched"
+                    [attr.disabled]="emContactsSubmitting() || null" />
                 </div>
 
                 <!-- Phone + Priority -->
@@ -1070,7 +1093,8 @@
                       {{ 'manager.emergencyContacts.phoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                     </label>
                     <input formControlName="phone" type="tel" inputmode="numeric" maxlength="10" class="modal-input"
-                      [class.is-invalid]="emContactForm.get('phone')!.invalid && emContactForm.get('phone')!.touched" />
+                      [class.is-invalid]="emContactForm.get('phone')!.invalid && emContactForm.get('phone')!.touched"
+                      [attr.disabled]="emContactsSubmitting() || null" />
                     @if (emContactForm.get('phone')!.invalid && emContactForm.get('phone')!.touched) {
                       <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.phone10only' | translate }}</p>
                     }
@@ -1079,7 +1103,7 @@
                     <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                       {{ 'manager.emergencyContacts.priorityLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                     </label>
-                    <input formControlName="priority" type="number" min="1" step="1" class="modal-input" />
+                    <input formControlName="priority" type="number" min="1" step="1" class="modal-input" [attr.disabled]="emContactsSubmitting() || null" />
                   </div>
                 </div>
 
@@ -1088,7 +1112,7 @@
                   <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                     {{ 'manager.emergencyContacts.relationLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                   </label>
-                  <select formControlName="relation" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+                  <select formControlName="relation" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="emContactsSubmitting() || null">
                     <option [ngValue]="RelationType.Father">{{ 'manager.relationTypes.0' | translate }}</option>
                     <option [ngValue]="RelationType.Mother">{{ 'manager.relationTypes.1' | translate }}</option>
                     <option [ngValue]="RelationType.Brother">{{ 'manager.relationTypes.2' | translate }}</option>
@@ -1290,7 +1314,7 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.statusHistory.statusLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <select formControlName="status" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+              <select formControlName="status" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="historySubmitting() || null">
                 @for (s of EmployeeStatusList; track s) {
                   <option [ngValue]="s">{{ employeeStatusLabel(s) }}</option>
                 }
@@ -1304,7 +1328,8 @@
                   {{ 'manager.statusHistory.startDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
                 <input formControlName="startDate" type="date" class="modal-input"
-                  [class.is-invalid]="historyForm.get('startDate')!.invalid && historyForm.get('startDate')!.touched" />
+                  [class.is-invalid]="historyForm.get('startDate')!.invalid && historyForm.get('startDate')!.touched"
+                  [attr.disabled]="historySubmitting() || null" />
                 @if (historyForm.get('startDate')!.invalid && historyForm.get('startDate')!.touched) {
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
                 }
@@ -1314,7 +1339,7 @@
                   {{ 'manager.statusHistory.endDateLabel' | translate }}
                   <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
                 </label>
-                <input formControlName="endDate" type="date" class="modal-input" />
+                <input formControlName="endDate" type="date" class="modal-input" [attr.disabled]="historySubmitting() || null" />
                 <p class="text-[10px] mt-1" style="color: var(--text-very-faint);">{{ 'manager.statusHistory.endDateHint' | translate }}</p>
               </div>
             </div>
@@ -1325,7 +1350,7 @@
                 {{ 'manager.statusHistory.reasonLabel' | translate }}
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
-              <textarea formControlName="reason" rows="2" class="modal-input resize-none" style="min-height: 60px;"></textarea>
+              <textarea formControlName="reason" rows="2" class="modal-input resize-none" style="min-height: 60px;" [attr.disabled]="historySubmitting() || null"></textarea>
             </div>
 
             <div class="flex gap-3 pt-1">
@@ -1562,7 +1587,8 @@
                 </label>
                 <select class="modal-input" style="appearance:none; -webkit-appearance:none;"
                   [value]="selectedSystemId()"
-                  (change)="selectedSystemId.set(+$any($event.target).value || null)">
+                  (change)="selectedSystemId.set(+$any($event.target).value || null)"
+                  [disabled]="shiftSubmitting()">
                   <option [value]="null">{{ 'manager.shiftAssignment.systemPlaceholder' | translate }}</option>
                   @for (sys of availableSystems(); track sys.id) {
                     <option [value]="sys.id">{{ sys.name }}</option>
@@ -1706,7 +1732,7 @@
             <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
               {{ 'manager.shiftLogs.shiftLabel' | translate }}
             </label>
-            <select formControlName="shiftId" class="auth-input w-full text-sm">
+            <select formControlName="shiftId" class="auth-input w-full text-sm" [attr.disabled]="logsSubmitting() || null">
               <option [ngValue]="null" disabled>{{ 'manager.shiftLogs.shiftPlaceholder' | translate }}</option>
               @for (s of availableShifts(); track s.id) {
                 <option [ngValue]="s.id">{{ s.name }}</option>
@@ -1722,7 +1748,7 @@
             <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
               {{ 'manager.shiftLogs.dateLabel' | translate }}
             </label>
-            <input type="date" formControlName="date" class="auth-input w-full text-sm" />
+            <input type="date" formControlName="date" class="auth-input w-full text-sm" [attr.disabled]="logsSubmitting() || null" />
             @if (logsAddForm.get('date')?.invalid && logsAddForm.get('date')?.touched) {
               <p class="text-[11px] mt-1" style="color: rgba(239,68,68,0.8);">{{ 'common.required' | translate }}</p>
             }
@@ -1733,7 +1759,7 @@
             <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
               {{ 'manager.shiftLogs.checkInLabel' | translate }}
             </label>
-            <input type="time" formControlName="checkInTime" class="auth-input w-full text-sm" />
+            <input type="time" formControlName="checkInTime" class="auth-input w-full text-sm" [attr.disabled]="logsSubmitting() || null" />
             @if (logsAddForm.get('checkInTime')?.invalid && logsAddForm.get('checkInTime')?.touched) {
               <p class="text-[11px] mt-1" style="color: rgba(239,68,68,0.8);">{{ 'common.required' | translate }}</p>
             }
@@ -1745,7 +1771,7 @@
               {{ 'manager.shiftLogs.notesLabel' | translate }}
             </label>
             <textarea formControlName="notes" rows="3" class="auth-input w-full text-sm resize-none"
-              [placeholder]="'manager.shiftLogs.notesPlaceholder' | translate"></textarea>
+              [placeholder]="'manager.shiftLogs.notesPlaceholder' | translate" [attr.disabled]="logsSubmitting() || null"></textarea>
           </div>
 
           <!-- Actions -->
@@ -1788,7 +1814,7 @@
               {{ 'manager.shiftLogs.checkOutLabel' | translate }}
               <span class="font-normal" style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
             </label>
-            <input type="time" formControlName="checkOutTime" class="auth-input w-full text-sm" />
+            <input type="time" formControlName="checkOutTime" class="auth-input w-full text-sm" [attr.disabled]="logsSubmitting() || null" />
           </div>
 
           <!-- Status -->
@@ -1796,7 +1822,7 @@
             <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
               {{ 'manager.shiftLogs.colStatus' | translate }}
             </label>
-            <select formControlName="status" class="auth-input w-full text-sm">
+            <select formControlName="status" class="auth-input w-full text-sm" [attr.disabled]="logsSubmitting() || null">
               @for (s of statusList; track s) {
                 <option [ngValue]="s">{{ logsStatusLabel(s) }}</option>
               }
@@ -1809,7 +1835,7 @@
               {{ 'manager.shiftLogs.notesLabel' | translate }}
             </label>
             <textarea formControlName="notes" rows="3" class="auth-input w-full text-sm resize-none"
-              [placeholder]="'manager.shiftLogs.notesPlaceholder' | translate"></textarea>
+              [placeholder]="'manager.shiftLogs.notesPlaceholder' | translate" [attr.disabled]="logsSubmitting() || null"></textarea>
           </div>
 
           @if (logsModalError()) {

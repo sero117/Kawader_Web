@@ -78,7 +78,8 @@
         </label>
         <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10"
           [placeholder]="'auth.verify.phonePlaceholder' | translate"
-          class="auth-input" [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched" />
+          class="auth-input" [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched"
+          [attr.disabled]="loading() || null" />
         @if (phoneNumber.invalid && phoneNumber.touched) {
           <p class="text-red-400/75 text-xs mt-1.5">
             {{ phoneNumber.hasError('required') ? ('validation.phoneRequired' | translate) : ('validation.phone10digits' | translate) }}
@@ -94,7 +95,8 @@
         <input formControlName="code" type="text" inputmode="numeric" maxlength="6"
           autocomplete="one-time-code" placeholder="• • • • • •"
           class="auth-input text-2xl font-mono text-center py-4" style="letter-spacing: 0.5em;"
-          [class.is-invalid]="code.invalid && code.touched" />
+          [class.is-invalid]="code.invalid && code.touched"
+          [attr.disabled]="loading() || null" />
         @if (code.invalid && code.touched) {
           <p class="text-red-400/75 text-xs mt-1.5">
             {{ code.hasError('required') ? ('validation.codeRequired' | translate) : ('validation.codeInvalid' | translate) }}

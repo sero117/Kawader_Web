@@ -139,24 +139,24 @@ import { Agent, Country, CreateAgentRequest, UpdateAgentRequest } from '../../..
         <div class="form-grid">
           <div class="form-field">
             <label class="form-label">{{ 'admin.agents.firstName' | translate }}</label>
-            <input class="form-input" type="text" maxlength="50" [value]="form.firstName" (input)="form.firstName = $any($event.target).value" />
+            <input class="form-input" type="text" maxlength="50" [value]="form.firstName" (input)="form.firstName = $any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.agents.lastName' | translate }}</label>
-            <input class="form-input" type="text" maxlength="50" [value]="form.lastName" (input)="form.lastName = $any($event.target).value" />
+            <input class="form-input" type="text" maxlength="50" [value]="form.lastName" (input)="form.lastName = $any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.agents.phone' | translate }}</label>
             <input class="form-input" type="tel" inputmode="numeric" maxlength="10"
               [value]="form.phoneNumber" (input)="form.phoneNumber = $any($event.target).value"
-              [disabled]="editingAgent()?.isVerified === true" />
+              [disabled]="editingAgent()?.isVerified === true || submitting()" />
             @if (editingAgent()?.isVerified) {
               <p style="font-size:0.7rem;color:var(--text-faint);margin-top:4px">{{ 'admin.agents.phoneLockedHint' | translate }}</p>
             }
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.agents.email' | translate }}</label>
-            <input class="form-input" type="email" [value]="form.email" (input)="form.email = $any($event.target).value" />
+            <input class="form-input" type="email" [value]="form.email" (input)="form.email = $any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field form-field-full">
             <label class="form-label">{{ 'admin.agents.country' | translate }}</label>
@@ -166,7 +166,7 @@ import { Agent, Country, CreateAgentRequest, UpdateAgentRequest } from '../../..
                   [style.borderColor]="form.country === c.value ? 'var(--nav-accent)' : 'var(--border)'"
                   [style.background]="form.country === c.value ? 'color-mix(in srgb, var(--nav-accent) 8%, transparent)' : 'transparent'">
                   <input type="radio" name="agentCountry" [value]="c.value" [checked]="form.country === c.value"
-                    (change)="form.country = c.value" style="accent-color:var(--nav-accent)" />
+                    (change)="form.country = c.value" style="accent-color:var(--nav-accent)" [disabled]="submitting()" />
                   <span style="font-weight:600;font-size:0.85rem">{{ c.label }}</span>
                 </label>
               }

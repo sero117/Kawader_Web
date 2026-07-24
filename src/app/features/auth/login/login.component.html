@@ -28,6 +28,7 @@
           [placeholder]="'auth.login.phonePlaceholder' | translate"
           class="auth-input"
           [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched"
+          [attr.disabled]="loading() || null"
         />
         @if (phoneNumber.invalid && phoneNumber.touched) {
           <p class="text-red-400/75 text-xs mt-1.5">
@@ -48,6 +49,7 @@
             placeholder="••••••••"
             class="auth-input pe-11"
             [class.is-invalid]="password.invalid && password.touched"
+            [attr.disabled]="loading() || null"
           />
           <button type="button" (click)="togglePassword()" class="auth-pw-toggle"
             [attr.aria-label]="showPassword() ? ('auth.login.hidePassword' | translate) : ('auth.login.showPassword' | translate)">

@@ -168,7 +168,7 @@
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.addShiftSystemDay.dayLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="dayOfWeek" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+            <select formControlName="dayOfWeek" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
               @for (dow of ALL_DAYS; track dow) {
                 <option [ngValue]="dow">{{ dayLabel(dow) }}</option>
               }
@@ -181,7 +181,8 @@
               {{ 'manager.addShiftSystemDay.shiftLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <select formControlName="shiftId" class="modal-input" style="appearance:none; -webkit-appearance:none;"
-              [class.is-invalid]="addForm.get('shiftId')!.invalid && addForm.get('shiftId')!.touched">
+              [class.is-invalid]="addForm.get('shiftId')!.invalid && addForm.get('shiftId')!.touched"
+              [attr.disabled]="submitting() || null">
               <option [ngValue]="null" disabled>{{ 'manager.addShiftSystemDay.shiftPlaceholder' | translate }}</option>
               @for (shift of allShifts(); track shift.id) {
                 <option [ngValue]="shift.id">{{ shift.name }} ({{ shift.startTime.substring(0,5) }} – {{ shift.endTime.substring(0,5) }})</option>
@@ -241,7 +242,7 @@
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editShiftSystemDay.dayLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="dayOfWeek" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+            <select formControlName="dayOfWeek" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
               @for (dow of ALL_DAYS; track dow) {
                 <option [ngValue]="dow">{{ dayLabel(dow) }}</option>
               }
@@ -252,7 +253,7 @@
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editShiftSystemDay.shiftLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="shiftId" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+            <select formControlName="shiftId" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
               @for (shift of allShifts(); track shift.id) {
                 <option [ngValue]="shift.id">{{ shift.name }} ({{ shift.startTime.substring(0,5) }} – {{ shift.endTime.substring(0,5) }})</option>
               }

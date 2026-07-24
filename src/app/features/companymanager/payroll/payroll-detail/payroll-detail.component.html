@@ -225,13 +225,13 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.payroll.periodStartLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="periodStart" type="date" class="modal-input" />
+              <input formControlName="periodStart" type="date" class="modal-input" [attr.disabled]="submitting() || null" />
             </div>
             <div>
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.payroll.periodEndLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="periodEnd" type="date" class="modal-input" />
+              <input formControlName="periodEnd" type="date" class="modal-input" [attr.disabled]="submitting() || null" />
             </div>
           </div>
           @if (updatePeriodForm.hasError('periodRange') && updatePeriodForm.get('periodEnd')!.touched) {
@@ -283,7 +283,8 @@
             class="w-full ps-9 pe-4 py-2.5 rounded-xl text-sm"
             style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
             [value]="employeeFilter()"
-            (input)="onEmployeeFilterChange($any($event.target).value)" />
+            (input)="onEmployeeFilterChange($any($event.target).value)"
+            [disabled]="submitting()" />
         </div>
 
         @if (activeEmployeesLoading()) {
@@ -300,7 +301,7 @@
           <div class="max-h-64 overflow-y-auto space-y-1 pe-1">
             @for (e of pickableEmployees(); track e.id) {
               <label class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer" style="background: var(--bg-subtle-sm);">
-                <input type="checkbox" [checked]="selectedEmployeeIds().has(e.id)" (change)="toggleEmployeeSelected(e.id)" />
+                <input type="checkbox" [checked]="selectedEmployeeIds().has(e.id)" (change)="toggleEmployeeSelected(e.id)" [disabled]="submitting()" />
                 <div>
                   <p class="text-sm font-medium" style="color: var(--text-base);">{{ e.fullName }}</p>
                   <p class="text-xs" style="color: var(--text-faint);">{{ e.phoneNumber }}</p>
@@ -356,13 +357,13 @@
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
             {{ 'manager.payroll.netSalaryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
           </label>
-          <input formControlName="netSalary" type="number" step="0.01" class="modal-input" />
+          <input formControlName="netSalary" type="number" step="0.01" class="modal-input" [attr.disabled]="submitting() || null" />
         </div>
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
             {{ 'manager.payroll.adjustmentNotesLabel' | translate }}
           </label>
-          <textarea formControlName="adjustmentNotes" rows="3" maxlength="500" class="modal-input"></textarea>
+          <textarea formControlName="adjustmentNotes" rows="3" maxlength="500" class="modal-input" [attr.disabled]="submitting() || null"></textarea>
           @if (adjustForm.get('adjustmentNotes')!.invalid && adjustForm.get('adjustmentNotes')!.touched) {
             <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'manager.payroll.adjustmentNotesMaxError' | translate }}</p>
           }

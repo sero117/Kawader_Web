@@ -203,7 +203,8 @@
                 {{ 'manager.payroll.periodStartLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="periodStart" type="date" class="modal-input"
-                [class.is-invalid]="createForm.get('periodStart')!.invalid && createForm.get('periodStart')!.touched" />
+                [class.is-invalid]="createForm.get('periodStart')!.invalid && createForm.get('periodStart')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (createForm.get('periodStart')!.invalid && createForm.get('periodStart')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
               }
@@ -213,7 +214,8 @@
                 {{ 'manager.payroll.periodEndLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="periodEnd" type="date" class="modal-input"
-                [class.is-invalid]="createForm.get('periodEnd')!.invalid && createForm.get('periodEnd')!.touched" />
+                [class.is-invalid]="createForm.get('periodEnd')!.invalid && createForm.get('periodEnd')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (createForm.get('periodEnd')!.invalid && createForm.get('periodEnd')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
               }

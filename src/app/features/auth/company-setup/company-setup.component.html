@@ -52,7 +52,8 @@
             </label>
             <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10"
               [placeholder]="'setup.phonePlaceholder' | translate"
-              class="auth-input" [class.is-invalid]="phone.invalid && phone.touched" />
+              class="auth-input" [class.is-invalid]="phone.invalid && phone.touched"
+              [attr.disabled]="submitting() || null" />
             @if (phone.invalid && phone.touched) {
               <p class="text-red-400/75 text-xs mt-1.5">
                 {{ phone.hasError('required') ? ('validation.phoneRequired' | translate) : ('validation.phone10digits' | translate) }}
@@ -106,7 +107,8 @@
             </label>
             <input formControlName="code" type="text" inputmode="numeric" maxlength="6"
               [placeholder]="'setup.codePlaceholder' | translate"
-              class="auth-input" [class.is-invalid]="code.invalid && code.touched" />
+              class="auth-input" [class.is-invalid]="code.invalid && code.touched"
+              [attr.disabled]="submitting() || null" />
             @if (code.invalid && code.touched) {
               <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.codeInvalid' | translate }}</p>
             }
@@ -118,7 +120,8 @@
                 {{ 'setup.firstNameLabel' | translate }}
               </label>
               <input formControlName="firstName" type="text" [placeholder]="'setup.firstNamePlaceholder' | translate"
-                class="auth-input" [class.is-invalid]="fname.invalid && fname.touched" />
+                class="auth-input" [class.is-invalid]="fname.invalid && fname.touched"
+                [attr.disabled]="submitting() || null" />
               @if (fname.invalid && fname.touched) {
                 <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.nameMax50' | translate }}</p>
               }
@@ -128,7 +131,8 @@
                 {{ 'setup.lastNameLabel' | translate }}
               </label>
               <input formControlName="lastName" type="text" [placeholder]="'setup.lastNamePlaceholder' | translate"
-                class="auth-input" [class.is-invalid]="lname.invalid && lname.touched" />
+                class="auth-input" [class.is-invalid]="lname.invalid && lname.touched"
+                [attr.disabled]="submitting() || null" />
               @if (lname.invalid && lname.touched) {
                 <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.nameMax50' | translate }}</p>
               }
@@ -142,7 +146,8 @@
             <div class="relative">
               <input formControlName="password" [type]="showPw() ? 'text' : 'password'"
                 [placeholder]="'setup.passwordPlaceholder' | translate"
-                class="auth-input pr-11" [class.is-invalid]="pw.invalid && pw.touched" />
+                class="auth-input pr-11" [class.is-invalid]="pw.invalid && pw.touched"
+                [attr.disabled]="submitting() || null" />
               <button type="button" (click)="showPw.set(!showPw())" class="auth-pw-toggle">
                 @if (showPw()) {
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
@@ -164,7 +169,8 @@
               <input formControlName="confirmPassword" [type]="showCpw() ? 'text' : 'password'"
                 [placeholder]="'setup.confirmPasswordPlaceholder' | translate"
                 class="auth-input pr-11"
-                [class.is-invalid]="(cpw.invalid && cpw.touched) || (step2Form.hasError('mismatch') && cpw.touched)" />
+                [class.is-invalid]="(cpw.invalid && cpw.touched) || (step2Form.hasError('mismatch') && cpw.touched)"
+                [attr.disabled]="submitting() || null" />
               <button type="button" (click)="showCpw.set(!showCpw())" class="auth-pw-toggle">
                 @if (showCpw()) {
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
@@ -226,7 +232,7 @@
                     <span class="text-[9px] font-medium uppercase tracking-wide" style="color: var(--auth-fg-25);">Logo</span>
                   }
                 </div>
-                <input #logoInput type="file" accept="image/jpeg,image/png,image/webp" class="hidden" (change)="onLogoChange($event)" />
+                <input #logoInput type="file" accept="image/jpeg,image/png,image/webp" class="hidden" (change)="onLogoChange($event)" [disabled]="submitting()" />
               </label>
               @if (logoError()) {
                 <p class="text-red-400/75 text-[10px] mt-1 w-[72px] leading-tight">{{ logoError()! | translate }}</p>
@@ -240,7 +246,8 @@
               <input formControlName="companyName" type="text"
                 [placeholder]="'setup.companyNamePlaceholder' | translate"
                 class="auth-input flex-1" style="height: auto;"
-                [class.is-invalid]="cname.invalid && cname.touched" />
+                [class.is-invalid]="cname.invalid && cname.touched"
+                [attr.disabled]="submitting() || null" />
               @if (cname.invalid && cname.touched) {
                 <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.max200' | translate }}</p>
               }
@@ -249,7 +256,7 @@
                   {{ 'setup.companyTypeLabel' | translate }}
                   <span class="ml-1 text-[9px] normal-case" style="color: var(--auth-fg-20);">{{ 'common.optional' | translate }}</span>
                 </label>
-                <select formControlName="companyType" class="auth-input" style="appearance:none; -webkit-appearance:none;">
+                <select formControlName="companyType" class="auth-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
                   <option value="" [style.background]="'var(--auth-card)'">—</option>
                   <option value="0" [style.background]="'var(--auth-card)'">{{ 'companyTypes.0' | translate }}</option>
                   <option value="1" [style.background]="'var(--auth-card)'">{{ 'companyTypes.1' | translate }}</option>
@@ -265,7 +272,8 @@
               <span class="ml-1 text-[9px] normal-case" style="color: var(--auth-fg-20);">{{ 'common.optional' | translate }}</span>
             </label>
             <input formControlName="address" type="text" [placeholder]="'setup.addressPlaceholder' | translate"
-              class="auth-input" [class.is-invalid]="addr.invalid && addr.touched" />
+              class="auth-input" [class.is-invalid]="addr.invalid && addr.touched"
+              [attr.disabled]="submitting() || null" />
             @if (addr.invalid && addr.touched) {
               <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.max500' | translate }}</p>
             }
@@ -279,7 +287,8 @@
               </label>
               <input formControlName="landlinePhone" type="tel" inputmode="numeric" maxlength="10"
                 [placeholder]="'setup.landlinePlaceholder' | translate"
-                class="auth-input" [class.is-invalid]="landline.invalid && landline.touched" />
+                class="auth-input" [class.is-invalid]="landline.invalid && landline.touched"
+                [attr.disabled]="submitting() || null" />
               @if (landline.invalid && landline.touched) {
                 <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.landlineDigits' | translate }}</p>
               }
@@ -291,7 +300,8 @@
               </label>
               <input formControlName="businessField" type="text"
                 [placeholder]="'setup.businessFieldPlaceholder' | translate"
-                class="auth-input" [class.is-invalid]="bfield.invalid && bfield.touched" />
+                class="auth-input" [class.is-invalid]="bfield.invalid && bfield.touched"
+                [attr.disabled]="submitting() || null" />
               @if (bfield.invalid && bfield.touched) {
                 <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.max200' | translate }}</p>
               }
@@ -304,7 +314,7 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
                 {{ 'setup.currencyLabel' | translate }} <span class="text-red-400/80">*</span>
               </label>
-              <select formControlName="currency" class="auth-input" style="appearance:none; -webkit-appearance:none;">
+              <select formControlName="currency" class="auth-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
                 <option [ngValue]="CurrencyType.LYD" [style.background]="'var(--auth-card)'">{{ 'manager.currencyTypes.0' | translate }}</option>
                 <option [ngValue]="CurrencyType.USD" [style.background]="'var(--auth-card)'">{{ 'manager.currencyTypes.1' | translate }}</option>
               </select>
@@ -314,7 +324,8 @@
                 {{ 'setup.utcOffsetLabel' | translate }} <span class="text-red-400/80">*</span>
               </label>
               <input formControlName="utcOffset" type="number" step="1" min="-12" max="14" placeholder="e.g. 2"
-                class="auth-input" [class.is-invalid]="utcOffset.invalid && utcOffset.touched" />
+                class="auth-input" [class.is-invalid]="utcOffset.invalid && utcOffset.touched"
+                [attr.disabled]="submitting() || null" />
               @if (utcOffset.invalid && utcOffset.touched) {
                 <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.utcRange' | translate }}</p>
               }
@@ -329,7 +340,8 @@
                 <span class="ml-1 text-[9px] normal-case" style="color: var(--auth-fg-20);">{{ 'common.optional' | translate }}</span>
               </label>
               <input formControlName="latitude" type="number" step="any"
-                class="auth-input" [class.is-invalid]="lat.invalid && lat.touched" />
+                class="auth-input" [class.is-invalid]="lat.invalid && lat.touched"
+                [attr.disabled]="submitting() || null" />
               @if (lat.invalid && lat.touched) {
                 <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.latRange' | translate }}</p>
               }
@@ -340,7 +352,8 @@
                 <span class="ml-1 text-[9px] normal-case" style="color: var(--auth-fg-20);">{{ 'common.optional' | translate }}</span>
               </label>
               <input formControlName="longitude" type="number" step="any"
-                class="auth-input" [class.is-invalid]="lng.invalid && lng.touched" />
+                class="auth-input" [class.is-invalid]="lng.invalid && lng.touched"
+                [attr.disabled]="submitting() || null" />
               @if (lng.invalid && lng.touched) {
                 <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.lngRange' | translate }}</p>
               }

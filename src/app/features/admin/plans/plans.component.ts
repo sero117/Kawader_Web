@@ -164,11 +164,11 @@ import { LanguageService } from '../../../core/services/language.service';
         <div class="form-grid">
           <div class="form-field form-field-full">
             <label class="form-label">{{ 'admin.plans.name' | translate }}</label>
-            <input #nameInput class="form-input" type="text" [value]="form.name" (input)="form.name = $any($event.target).value" />
+            <input #nameInput class="form-input" type="text" [value]="form.name" (input)="form.name = $any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.plans.price' | translate }}</label>
-            <input class="form-input" type="number" min="0" [value]="form.price" (input)="form.price = +$any($event.target).value" />
+            <input class="form-input" type="number" min="0" [value]="form.price" (input)="form.price = +$any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.plans.currency' | translate }}</label>
@@ -178,7 +178,7 @@ import { LanguageService } from '../../../core/services/language.service';
                   [style.borderColor]="form.currency === cur.value ? 'var(--nav-accent)' : 'var(--border)'"
                   [style.background]="form.currency === cur.value ? 'color-mix(in srgb, var(--nav-accent) 8%, transparent)' : 'transparent'">
                   <input type="radio" name="planCurrency" [value]="cur.value" [checked]="form.currency === cur.value"
-                    (change)="form.currency = cur.value" style="accent-color:var(--nav-accent)" />
+                    (change)="form.currency = cur.value" style="accent-color:var(--nav-accent)" [disabled]="submitting()" />
                   <span style="font-weight:600;font-size:0.85rem">{{ cur.label }}</span>
                   <span style="font-size:0.75rem;color:var(--text-faint)">{{ cur.symbol }}</span>
                 </label>
@@ -187,34 +187,34 @@ import { LanguageService } from '../../../core/services/language.service';
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.plans.duration' | translate }}</label>
-            <input class="form-input" type="number" min="1" [value]="form.durationDays" (input)="form.durationDays = +$any($event.target).value" />
+            <input class="form-input" type="number" min="1" [value]="form.durationDays" (input)="form.durationDays = +$any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.plans.maxEmployees' | translate }}</label>
-            <input class="form-input" type="number" min="0" [value]="form.maxEmployees" (input)="form.maxEmployees = +$any($event.target).value" />
+            <input class="form-input" type="number" min="0" [value]="form.maxEmployees" (input)="form.maxEmployees = +$any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.plans.maxBranches' | translate }}</label>
-            <input class="form-input" type="number" min="0" [value]="form.maxBranches" (input)="form.maxBranches = +$any($event.target).value" />
+            <input class="form-input" type="number" min="0" [value]="form.maxBranches" (input)="form.maxBranches = +$any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.plans.maxSections' | translate }}</label>
-            <input class="form-input" type="number" min="0" [value]="form.maxSections" (input)="form.maxSections = +$any($event.target).value" />
+            <input class="form-input" type="number" min="0" [value]="form.maxSections" (input)="form.maxSections = +$any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field form-field-full">
             <label class="form-label">{{ 'admin.plans.details' | translate }}</label>
             <textarea class="form-input" rows="3" style="resize:vertical"
               [value]="form.detailsText"
               (input)="form.detailsText = $any($event.target).value"
-              placeholder="{{ 'admin.plans.detailsHint' | translate }}"></textarea>
+              placeholder="{{ 'admin.plans.detailsHint' | translate }}" [disabled]="submitting()"></textarea>
           </div>
           <div class="form-field form-field-full" style="display:flex;gap:16px;align-items:center">
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.875rem;color:var(--text-muted)">
-              <input type="checkbox" [checked]="form.showPlan" (change)="form.showPlan = $any($event.target).checked" />
+              <input type="checkbox" [checked]="form.showPlan" (change)="form.showPlan = $any($event.target).checked" [disabled]="submitting()" />
               {{ 'admin.plans.showPlan' | translate }}
             </label>
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.875rem;color:var(--text-muted)">
-              <input type="checkbox" [checked]="form.isRecommended" (change)="form.isRecommended = $any($event.target).checked" />
+              <input type="checkbox" [checked]="form.isRecommended" (change)="form.isRecommended = $any($event.target).checked" [disabled]="submitting()" />
               {{ 'admin.plans.isRecommended' | translate }}
             </label>
           </div>

@@ -239,7 +239,8 @@
               {{ 'manager.addShift.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="name" type="text" maxlength="100" class="modal-input"
-              [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched" />
+              [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (addForm.get('name')!.invalid && addForm.get('name')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }
@@ -252,7 +253,8 @@
                 {{ 'manager.addShift.startTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="startTime" type="time" class="modal-input"
-                [class.is-invalid]="addForm.get('startTime')!.invalid && addForm.get('startTime')!.touched" />
+                [class.is-invalid]="addForm.get('startTime')!.invalid && addForm.get('startTime')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('startTime')!.invalid && addForm.get('startTime')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
               }
@@ -262,7 +264,8 @@
                 {{ 'manager.addShift.endTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="endTime" type="time" class="modal-input"
-                [class.is-invalid]="addForm.get('endTime')!.invalid && addForm.get('endTime')!.touched" />
+                [class.is-invalid]="addForm.get('endTime')!.invalid && addForm.get('endTime')!.touched"
+                [attr.disabled]="submitting() || null" />
               @if (addForm.get('endTime')!.invalid && addForm.get('endTime')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
               }
@@ -274,7 +277,7 @@
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.addShift.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="type" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+            <select formControlName="type" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
               <option [ngValue]="ShiftType.Regular">{{ 'manager.shiftTypes.0' | translate }}</option>
               <option [ngValue]="ShiftType.Overtime">{{ 'manager.shiftTypes.1' | translate }}</option>
             </select>
@@ -333,7 +336,8 @@
               {{ 'manager.editShift.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
             <input formControlName="name" type="text" maxlength="100" class="modal-input"
-              [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched" />
+              [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched"
+              [attr.disabled]="submitting() || null" />
             @if (editForm.get('name')!.invalid && editForm.get('name')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }
@@ -345,14 +349,16 @@
                 {{ 'manager.editShift.startTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="startTime" type="time" class="modal-input"
-                [class.is-invalid]="editForm.get('startTime')!.invalid && editForm.get('startTime')!.touched" />
+                [class.is-invalid]="editForm.get('startTime')!.invalid && editForm.get('startTime')!.touched"
+                [attr.disabled]="submitting() || null" />
             </div>
             <div>
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.editShift.endTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
               <input formControlName="endTime" type="time" class="modal-input"
-                [class.is-invalid]="editForm.get('endTime')!.invalid && editForm.get('endTime')!.touched" />
+                [class.is-invalid]="editForm.get('endTime')!.invalid && editForm.get('endTime')!.touched"
+                [attr.disabled]="submitting() || null" />
             </div>
           </div>
 
@@ -360,7 +366,7 @@
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editShift.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="type" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+            <select formControlName="type" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
               <option [ngValue]="ShiftType.Regular">{{ 'manager.shiftTypes.0' | translate }}</option>
               <option [ngValue]="ShiftType.Overtime">{{ 'manager.shiftTypes.1' | translate }}</option>
             </select>

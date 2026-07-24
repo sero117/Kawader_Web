@@ -183,7 +183,8 @@
               </label>
               <input formControlName="serialNumber" type="text" class="modal-input"
                 [class.is-invalid]="deviceForm.get('serialNumber')!.invalid && deviceForm.get('serialNumber')!.touched"
-                [placeholder]="'manager.devices.serialPlaceholder' | translate" />
+                [placeholder]="'manager.devices.serialPlaceholder' | translate"
+                [attr.disabled]="submitting() || null" />
               @if (deviceForm.get('serialNumber')!.invalid && deviceForm.get('serialNumber')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
               }
@@ -195,7 +196,8 @@
             </label>
             <input formControlName="name" type="text" class="modal-input"
               [class.is-invalid]="deviceForm.get('name')!.invalid && deviceForm.get('name')!.touched"
-              [placeholder]="'manager.devices.namePlaceholder' | translate" />
+              [placeholder]="'manager.devices.namePlaceholder' | translate"
+              [attr.disabled]="submitting() || null" />
             @if (deviceForm.get('name')!.invalid && deviceForm.get('name')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }
@@ -482,7 +484,8 @@
               [value]="empSearchQuery()"
               (input)="onEmpSearchInput($any($event.target).value)"
               (focus)="showEmpDropdown.set(true)"
-              [placeholder]="'manager.devices.employees.employeePlaceholder' | translate" />
+              [placeholder]="'manager.devices.employees.employeePlaceholder' | translate"
+              [disabled]="empSubmitting()" />
             @if (showEmpDropdown() && filteredEmployees().length > 0) {
               <div class="absolute top-full start-0 end-0 mt-1 rounded-xl shadow-lg z-10 overflow-y-auto"
                 style="background: var(--bg-surface-2); border: 1px solid var(--border); max-height: 180px;">
@@ -512,7 +515,8 @@
           <input type="text" class="modal-input"
             [value]="addEmpNumber()"
             (input)="addEmpNumber.set($any($event.target).value)"
-            [placeholder]="'manager.devices.employees.numberPlaceholder' | translate" />
+            [placeholder]="'manager.devices.employees.numberPlaceholder' | translate"
+            [disabled]="empSubmitting()" />
         </div>
         <div class="flex gap-3 pt-1">
           <button type="button" (click)="showAddEmpModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
@@ -561,7 +565,8 @@
           <input type="text" class="modal-input"
             [value]="editEmpNumber()"
             (input)="editEmpNumber.set($any($event.target).value)"
-            [placeholder]="'manager.devices.employees.numberPlaceholder' | translate" />
+            [placeholder]="'manager.devices.employees.numberPlaceholder' | translate"
+            [disabled]="editEmpSubmit()" />
         </div>
         <div class="flex gap-3 pt-1">
           <button type="button" (click)="showEditEmpModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
