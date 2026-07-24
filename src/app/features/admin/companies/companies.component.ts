@@ -102,12 +102,20 @@ export class CompaniesComponent implements OnInit {
   private requestSeq = 0;
 
   loadCompanies(): void {
+    const { search, pageNumber, pageSize } = this.filter.value();
+    const trimmedSearch = search.trim();
+    // The backend rejects a partial phone number outright (400: "max length is
+    // 10"). Rather than surface that as a scary error while the user is still
+    // typing, just wait until it's cleared or a full 10-digit number.
+    if (trimmedSearch.length > 0 && trimmedSearch.length < 10) {
+      this.listError.set(null);
+      return;
+    }
+
     this.loading.set(true);
     const seq = ++this.requestSeq;
-
-    const { search, pageNumber, pageSize } = this.filter.value();
     const params: GetCompaniesParams = { pageSize, pageNumber };
-    if (search.trim()) params.phoneNumber = search.trim();
+    if (trimmedSearch) params.phoneNumber = trimmedSearch;
 
     this.companyService.getAll(params).subscribe({
       next: res => {

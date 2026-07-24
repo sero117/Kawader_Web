@@ -47,11 +47,20 @@ export class AccountsComponent implements OnInit {
   private requestSeq = 0;
 
   loadAccounts(): void {
+    const { phone, firstName, lastName, pageNumber, pageSize } = this.filter.value();
+    const trimmedPhone = phone.trim();
+    // The backend rejects a partial phone number outright (400: "max length is
+    // 10"). Rather than surface that as a scary error while the user is still
+    // typing, just wait until it's cleared or a full 10-digit number.
+    if (trimmedPhone.length > 0 && trimmedPhone.length < 10) {
+      this.listError.set(null);
+      return;
+    }
+
     this.loading.set(true);
     const seq = ++this.requestSeq;
-    const { phone, firstName, lastName, pageNumber, pageSize } = this.filter.value();
     const params: GetAccountsParams = { pageNumber, pageSize };
-    if (phone.trim())      params.phoneNumber = phone.trim();
+    if (trimmedPhone)      params.phoneNumber = trimmedPhone;
     if (firstName.trim())  params.firstName   = firstName.trim();
     if (lastName.trim())   params.lastName    = lastName.trim();
 
