@@ -464,6 +464,10 @@
     "utcOffsetLabel": "UTC Offset (hours)",
     "latLabel": "Latitude",
     "lngLabel": "Longitude",
+    "useMyLocation": "Use my current location",
+    "locating": "Locating…",
+    "geoUnsupported": "Your browser doesn't support location detection",
+    "geoDenied": "Couldn't access your location — you can enter it manually",
     "finish": "Finish Setup",
     "finishing": "Finishing…",
     "backToLogin": "← Back to Sign In"

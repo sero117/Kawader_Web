@@ -54,6 +54,7 @@ export class CompanyManagerLayoutComponent implements OnInit {
   managerName      = signal(this.authService.getDisplayName());
   managerId        = signal(this.authService.getUserId());
   companyName      = signal<string | null>(null);
+  companyLogoUrl   = signal<string | null>(null);
   showWelcome      = signal(false);
   welcomeActions   = MANAGER_WELCOME_ACTIONS;
   lastVisitText    = signal<string | null>(null);
@@ -86,6 +87,8 @@ export class CompanyManagerLayoutComponent implements OnInit {
         next: (res: any) => {
           const name = res?.data?.companyName ?? res?.companyName;
           if (name) this.companyName.set(name);
+          const logoUrl = res?.data?.logoUrl ?? res?.logoUrl;
+          if (logoUrl) this.companyLogoUrl.set(logoUrl);
         },
         error: () => { /* badge just stays hidden */ },
       });

@@ -186,8 +186,12 @@
 
 /* ── Sparkles ─────────────────────────────────────────────────────── */
 
+/* `fixed` (not `absolute`) so these purely-decorative shapes never contribute
+   to the auth page's scrollHeight — an absolutely-positioned blob rotated near
+   the container's edge was pushing content 1px past the viewport, forcing a
+   phantom scrollbar with nothing real to scroll. */
 .auth-sparkle {
-  position: absolute;
+  position: fixed;
   pointer-events: none;
   user-select: none;
   color: var(--auth-sparkle);
@@ -198,7 +202,7 @@
 /* ── Blob shapes ──────────────────────────────────────────────────── */
 
 .auth-blob {
-  position: absolute;
+  position: fixed;
   background: var(--auth-blob-bg);
   border: 1px solid var(--auth-blob-bdr);
   border-radius: 120px;

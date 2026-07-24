@@ -2,7 +2,7 @@ import { HttpInterceptorFn, HttpErrorResponse, HttpResponse } from '@angular/com
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { LanguageService } from '../services/language.service';
 import { SnackbarService } from '../services/snackbar.service';
@@ -66,6 +66,34 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }),
     catchError((err: HttpErrorResponse) => {
       if (silent) {
+        return throwError(() => err);
+      }
+
+      // 401 = no/expired token. If a refresh token is on hand, try it once and
+      // retry the original request; otherwise (or if refresh itself fails) send
+      // the user to login instead of leaving them stuck on a broken page.
+      if (err.status === 401 && !isAuthUrl) {
+        const refreshTok = auth.getRefreshToken();
+        const userId = auth.getUserId();
+        if (refreshTok && userId != null) {
+          return auth.refreshToken({ userId, refreshToken: refreshTok }).pipe(
+            switchMap(res => {
+              const tokens = res?.data;
+              const newAccess = tokens?.accessToken ?? tokens?.token;
+              if (!newAccess) return throwError(() => err);
+              auth.saveTokens(tokens);
+              const retryHeaders = headers.set('Authorization', `Bearer ${newAccess}`);
+              return next(req.clone({ headers: retryHeaders }));
+            }),
+            catchError(() => {
+              auth.clearTokens();
+              router.navigate(['/auth/login']);
+              return throwError(() => err);
+            }),
+          );
+        }
+        auth.clearTokens();
+        router.navigate(['/auth/login']);
         return throwError(() => err);
       }
 

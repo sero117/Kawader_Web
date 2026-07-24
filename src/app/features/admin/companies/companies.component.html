@@ -117,7 +117,6 @@
             <th>{{ 'admin.companies.colCompany' | translate }}</th>
             <th>{{ 'admin.companies.colPhone' | translate }}</th>
             <th>{{ 'admin.companies.colEmail' | translate }}</th>
-            <th>{{ 'admin.companies.colType' | translate }}</th>
             <th>{{ 'admin.companies.agentLabel' | translate }}</th>
             <th>{{ 'admin.companies.colStatus' | translate }}</th>
             <th>{{ 'admin.companies.colCreated' | translate }}</th>
@@ -166,7 +165,6 @@
 
               <td class="font-medium" style="color: var(--text-muted);">{{ c.phoneNumber }}</td>
               <td style="color: var(--text-faint);">{{ c.email ?? '—' }}</td>
-              <td style="color: var(--text-faint);">{{ companyTypeLabel(c.companyType) }}</td>
               <td style="color: var(--text-faint);">{{ agentName(c.agentId) ?? '—' }}</td>
 
               <!-- Status badge -->
@@ -400,11 +398,10 @@
           @for (field of [
             { labelKey: 'admin.view.phone',    value: selectedCompany()!.phoneNumber },
             { labelKey: 'admin.view.email',    value: selectedCompany()!.email },
+            { labelKey: 'admin.companies.agentLabel', value: agentName(selectedCompany()!.agentId) },
             { labelKey: 'admin.view.address',  value: selectedCompany()!.address },
             { labelKey: 'admin.view.landline', value: selectedCompany()!.landlinePhone },
             { labelKey: 'admin.view.business', value: selectedCompany()!.businessField },
-            { labelKey: 'admin.view.type',     value: companyTypeLabel(selectedCompany()!.companyType) !== '—' ? companyTypeLabel(selectedCompany()!.companyType) : null },
-            { labelKey: 'admin.companies.agentLabel', value: agentName(selectedCompany()!.agentId) },
             { labelKey: 'admin.view.created',  value: formatDate(selectedCompany()!.createdAt) !== '—' ? formatDate(selectedCompany()!.createdAt) : null },
             { labelKey: 'admin.view.tenantId', value: selectedCompany()!.tenantId }
           ]; track field.labelKey) {
@@ -461,7 +458,12 @@
         </div>
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.edit.emailLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
-          <input formControlName="email" type="email" placeholder="contact@company.com" class="modal-input" [attr.disabled]="submitting() || null" />
+          <input formControlName="email" type="email" placeholder="contact@company.com" class="modal-input"
+            [class.is-invalid]="editForm.get('email')!.invalid && editForm.get('email')!.touched"
+            [attr.disabled]="submitting() || null" />
+          @if (editForm.get('email')!.invalid && editForm.get('email')!.touched) {
+            <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.emailInvalid' | translate }}</p>
+          }
         </div>
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.agentLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>

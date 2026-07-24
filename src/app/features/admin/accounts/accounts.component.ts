@@ -43,8 +43,12 @@ export class AccountsComponent implements OnInit {
   // ── Lifecycle ──────────────────────────────────────────────────────────────
   ngOnInit(): void { this.loadAccounts(); }
 
+  private searchTimer: ReturnType<typeof setTimeout> | null = null;
+  private requestSeq = 0;
+
   loadAccounts(): void {
     this.loading.set(true);
+    const seq = ++this.requestSeq;
     const { phone, firstName, lastName, pageNumber, pageSize } = this.filter.value();
     const params: GetAccountsParams = { pageNumber, pageSize };
     if (phone.trim())      params.phoneNumber = phone.trim();
@@ -53,6 +57,7 @@ export class AccountsComponent implements OnInit {
 
     this.accountService.getAll(params).subscribe({
       next: (res: any) => {
+        if (seq !== this.requestSeq) return; // a newer search superseded this one
         this.listError.set(null);
         const raw   = res?.data ?? res;
         const items: Account[] = raw?.items ?? [];
@@ -62,16 +67,24 @@ export class AccountsComponent implements OnInit {
         this.loading.set(false);
       },
       error: err => {
+        if (seq !== this.requestSeq) return;
         this.loading.set(false);
         this.listError.set(this.apiErr(err, 'Failed to load accounts.'));
       },
     });
   }
 
+  /** Debounces the network call so fast typing doesn't fire a request per keystroke
+   *  (which was racing and making the list flicker/appear "stuck" on short input). */
+  private debouncedLoad(): void {
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.loadAccounts(), 350);
+  }
+
   // ── Search ─────────────────────────────────────────────────────────────────
-  onSearchPhone(v: string): void { this.filter.set({ phone: v, pageNumber: 1 }); this.loadAccounts(); }
-  onSearchFirst(v: string): void { this.filter.patch({ firstName: v, pageNumber: 1 }); this.loadAccounts(); }
-  onSearchLast(v: string): void  { this.filter.patch({ lastName: v, pageNumber: 1 }); this.loadAccounts(); }
+  onSearchPhone(v: string): void { this.filter.set({ phone: v, pageNumber: 1 }); this.debouncedLoad(); }
+  onSearchFirst(v: string): void { this.filter.patch({ firstName: v, pageNumber: 1 }); this.debouncedLoad(); }
+  onSearchLast(v: string): void  { this.filter.patch({ lastName: v, pageNumber: 1 }); this.debouncedLoad(); }
 
   // ── Pagination ─────────────────────────────────────────────────────────────
   prevPage(): void {

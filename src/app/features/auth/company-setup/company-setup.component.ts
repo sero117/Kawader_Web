@@ -78,7 +78,8 @@ export class CompanySetupComponent {
     businessField: ['', [Validators.maxLength(200)]],
     companyType:   [''],
     currency:      [CurrencyType.LYD, [Validators.required]],
-    utcOffset:     [2, [Validators.required, Validators.min(-12), Validators.max(14)]],
+    // Defaults to the browser's own timezone offset — still editable by hand.
+    utcOffset:     [Math.round(-new Date().getTimezoneOffset() / 60), [Validators.required, Validators.min(-12), Validators.max(14)]],
     latitude:      [null as number | null, [Validators.min(-90), Validators.max(90)]],
     longitude:     [null as number | null, [Validators.min(-180), Validators.max(180)]],
   });
@@ -86,6 +87,33 @@ export class CompanySetupComponent {
   logoFile  = signal<File | null>(null);
   logoError = signal<string | null>(null);
   logoPreview = signal<string | null>(null);
+
+  locating      = signal(false);
+  locationError = signal<string | null>(null);
+
+  // ── Step 3: "use my location" (auto-fill lat/long, manual entry still allowed) ──
+  useMyLocation(): void {
+    if (!navigator.geolocation) {
+      this.locationError.set('setup.geoUnsupported');
+      return;
+    }
+    this.locating.set(true);
+    this.locationError.set(null);
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        this.locating.set(false);
+        this.step3Form.patchValue({
+          latitude:  pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
+      },
+      () => {
+        this.locating.set(false);
+        this.locationError.set('setup.geoDenied');
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  }
 
   // ── Step 1: send verification code ───────────────────────────────────────────
   submitStep1(): void {

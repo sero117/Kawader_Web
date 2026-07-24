@@ -155,7 +155,7 @@ import { Agent, Country, CreateAgentRequest, UpdateAgentRequest } from '../../..
             }
           </div>
           <div class="form-field">
-            <label class="form-label">{{ 'admin.agents.email' | translate }}</label>
+            <label class="form-label">{{ 'admin.agents.email' | translate }} <span style="color:var(--text-very-faint);font-weight:400">{{ 'common.optional' | translate }}</span></label>
             <input class="form-input" type="email" [value]="form.email" (input)="form.email = $any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field form-field-full">

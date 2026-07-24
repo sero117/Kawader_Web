@@ -2,13 +2,12 @@ import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
-import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { CompanyService } from '../../../core/services/company.service';
 import { AgentService } from '../../../core/services/agent.service';
 import { Agent } from '../../../core/models/agent.models';
 import {
-  Company, CompanyType, GetCompaniesParams,
+  Company, GetCompaniesParams,
 } from '../../../core/models/company.models';
 
 @Component({
@@ -21,7 +20,6 @@ export class CompaniesComponent implements OnInit {
   private readonly companyService = inject(CompanyService);
   private readonly agentService   = inject(AgentService);
   private readonly fb             = inject(FormBuilder);
-  private readonly lang           = inject(LanguageService);
 
   agents = signal<Agent[]>([]);
 
@@ -100,8 +98,12 @@ export class CompaniesComponent implements OnInit {
     });
   }
 
+  private searchTimer: ReturnType<typeof setTimeout> | null = null;
+  private requestSeq = 0;
+
   loadCompanies(): void {
     this.loading.set(true);
+    const seq = ++this.requestSeq;
 
     const { search, pageNumber, pageSize } = this.filter.value();
     const params: GetCompaniesParams = { pageSize, pageNumber };
@@ -109,6 +111,7 @@ export class CompaniesComponent implements OnInit {
 
     this.companyService.getAll(params).subscribe({
       next: res => {
+        if (seq !== this.requestSeq) return; // a newer search superseded this one
         this.listError.set(null);
 
         if ((res as any).isSuccess === false) {
@@ -140,6 +143,7 @@ export class CompaniesComponent implements OnInit {
         this.loading.set(false);
       },
       error: err => {
+        if (seq !== this.requestSeq) return;
         this.loading.set(false);
         this.listError.set(this.apiErr(err, 'Failed to load companies.'));
       },
@@ -147,9 +151,12 @@ export class CompaniesComponent implements OnInit {
   }
 
   // ── Search ─────────────────────────────────────────────────────────────────
+  /** Debounced so fast typing doesn't fire a request per keystroke (which was
+   *  racing and making the list flicker/appear "stuck" on short input). */
   onSearch(value: string): void {
     this.filter.set({ search: value });
-    this.loadCompanies();
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.loadCompanies(), 350);
   }
 
   onEmailSearch(value: string): void {
@@ -193,11 +200,23 @@ export class CompaniesComponent implements OnInit {
       next: (res: any) => {
         this.submitting.set(false);
         // API returns { data: companyId }
-        if (res?.data != null || res?.id != null || res?.isSuccess === true) {
+        const newId = res?.data ?? res?.id;
+        if (newId != null || res?.isSuccess === true) {
           this.showWizard.set(false);
           this.flash('Company created successfully!');
+          const agentId = this.addForm.value.agentId || null;
+          const newCompany: Company = {
+            id:            typeof newId === 'number' ? newId : Number(newId),
+            phoneNumber:   this.addForm.value.phoneNumber!,
+            email:         this.addForm.value.email || undefined,
+            tenantId:      '',
+            agentId,
+            isCompleted:   false,
+            isFrozen:      false,
+            createdAt:     new Date().toISOString(),
+          };
           this.filter.patch({ pageNumber: 1 });
-          this.loadCompanies();
+          this.companies.update(list => [newCompany, ...list]);
         } else {
           this.modalError.set(res?.message || 'Failed to create company.');
         }
@@ -260,15 +279,23 @@ export class CompaniesComponent implements OnInit {
       email:       this.editForm.value.email       || undefined,
       agentId:     this.editForm.value.agentId      || undefined,
     }).subscribe({
-      next: res => {
+      next: (res: any) => {
         this.submitting.set(false);
-        if (res.isSuccess) {
-          this.showEditModal.set(false);
-          this.flash('Company updated.');
-          this.loadCompanies();
-        } else {
-          this.modalError.set(res.message);
+        // Some responses omit the envelope entirely (e.g. 204 No Content) — only
+        // an explicit isSuccess:false counts as a failure, matching submitAdd().
+        if (res?.isSuccess === false) {
+          this.modalError.set(res.message || 'Update failed.');
+          return;
         }
+        this.showEditModal.set(false);
+        this.flash('Company updated.');
+        const patch = {
+          phoneNumber: this.editForm.value.phoneNumber!,
+          email:       this.editForm.value.email || undefined,
+          agentId:     this.editForm.value.agentId ?? null,
+        };
+        this.companies.update(list => list.map(c => c.id === id ? { ...c, ...patch } : c));
+        this.selectedCompany.update(c => c && c.id === id ? { ...c, ...patch } : c);
       },
       error: err => {
         this.submitting.set(false);
@@ -360,10 +387,6 @@ export class CompaniesComponent implements OnInit {
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
-  companyTypeLabel(type?: CompanyType): string {
-    return type !== undefined ? this.lang.t(`companyTypes.${type}`) : '—';
-  }
-
   agentName(agentId?: number | null): string | null {
     if (!agentId) return null;
     const a = this.agents().find(ag => ag.id === agentId);

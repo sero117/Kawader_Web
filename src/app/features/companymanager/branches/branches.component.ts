@@ -58,7 +58,36 @@ export class BranchesComponent implements OnInit {
     longitude: [null as number | null, [Validators.min(-180), Validators.max(180)]],
   });
 
+  locatingAdd    = signal(false);
+  locatingEdit   = signal(false);
+  locationError  = signal<string | null>(null);
+
   ngOnInit(): void { this.loadBranches(); }
+
+  /** "Use my location" for either the add or edit form — auto-fills lat/long,
+   *  manual entry into the same fields is still allowed. */
+  useMyLocation(target: 'add' | 'edit'): void {
+    const locating = target === 'add' ? this.locatingAdd : this.locatingEdit;
+    const form     = target === 'add' ? this.addForm      : this.editForm;
+
+    if (!navigator.geolocation) {
+      this.locationError.set('setup.geoUnsupported');
+      return;
+    }
+    locating.set(true);
+    this.locationError.set(null);
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        locating.set(false);
+        form.patchValue({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+      },
+      () => {
+        locating.set(false);
+        this.locationError.set('setup.geoDenied');
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  }
 
   loadBranches(): void {
     this.loading.set(true);
