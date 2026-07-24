@@ -210,37 +210,18 @@ import { environment } from '../../../../environments/environment';
       <div class="modal-box" style="max-width:420px">
         <h2 class="modal-title">{{ 'admin.cards.exportSelectBatch' | translate }}</h2>
 
-        @if (exportBatchLoading()) {
-          <div class="loading-state" style="padding:32px 0"><div class="spinner"></div></div>
-        } @else if (exportBatches().length === 0) {
-          <p style="font-size:0.875rem;color:var(--text-muted);text-align:center;padding:24px 0">
-            {{ 'admin.cards.noBatches' | translate }}
-          </p>
-        } @else {
-          <div style="display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;margin-bottom:20px">
-            @for (b of exportBatches(); track b) {
-              <button
-                (click)="selectedExportBatch.set(b)"
-                style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:2px solid;text-align:start;background:transparent;cursor:pointer;transition:all 0.15s"
-                [style.border-color]="selectedExportBatch() === b ? 'var(--accent)' : 'var(--border)'"
-                [style.background]="selectedExportBatch() === b ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'transparent'">
-                <div style="width:16px;height:16px;border-radius:50%;border:2px solid;flex-shrink:0;display:flex;align-items:center;justify-content:center"
-                     [style.border-color]="selectedExportBatch() === b ? 'var(--accent)' : 'var(--border)'">
-                  @if (selectedExportBatch() === b) {
-                    <div style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></div>
-                  }
-                </div>
-                <span style="font-size:0.9rem;font-weight:500;color:var(--text-base)">{{ b }}</span>
-              </button>
-            }
-          </div>
-        }
+        <div class="form-field form-field-full" style="margin-bottom:20px">
+          <label class="form-label">{{ 'admin.cards.batch' | translate }}</label>
+          <input class="form-input" type="text" [value]="selectedExportBatch()"
+            (input)="selectedExportBatch.set($any($event.target).value)"
+            placeholder="{{ 'admin.cards.batchHint' | translate }}" [disabled]="exportDownloading()" />
+        </div>
 
         <div class="modal-actions">
           <button class="btn-ghost" (click)="showExportModal.set(false)" [disabled]="exportDownloading()">
             {{ 'common.cancel' | translate }}
           </button>
-          <button class="btn-primary" (click)="doExport()" [disabled]="!selectedExportBatch() || exportBatchLoading() || exportDownloading()">
+          <button class="btn-primary" (click)="doExport()" [disabled]="!selectedExportBatch().trim() || exportDownloading()">
             @if (exportDownloading()) {
               <div class="spinner" style="width:14px;height:14px;border-width:2px;border-color:rgba(255,255,255,0.3);border-top-color:#fff"></div>
             }
@@ -278,8 +259,6 @@ export class CardsComponent implements OnInit {
   modalError   = signal<string | null>(null);
 
   showExportModal     = signal(false);
-  exportBatches       = signal<string[]>([]);
-  exportBatchLoading  = signal(false);
   selectedExportBatch = signal('');
   exportDownloading   = signal(false);
 
@@ -319,8 +298,11 @@ export class CardsComponent implements OnInit {
   }
 
   applyFilter(): void { this.page.set(1); this.load(); }
-  onStatusFilter(v: string): void { this.filterStatus.set(v); }
-  onPlanFilter(v: string): void { this.filterPlan.set(v); }
+  // Select filters apply immediately on change — unlike free-text inputs, a
+  // selection is always a complete value, so there's no need to wait for a
+  // separate "search" click.
+  onStatusFilter(v: string): void { this.filterStatus.set(v); this.applyFilter(); }
+  onPlanFilter(v: string): void { this.filterPlan.set(v); this.applyFilter(); }
   prevPage(): void { this.page.update(p => p - 1); this.load(); }
   nextPage(): void { this.page.update(p => p + 1); this.load(); }
 
@@ -364,23 +346,12 @@ export class CardsComponent implements OnInit {
   }
 
   openExportModal(): void {
-    this.showExportModal.set(true);
-    this.exportBatchLoading.set(true);
     this.selectedExportBatch.set('');
-    this.cardService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
-      next: (res: any) => {
-        const raw = res?.data ?? res;
-        const items: Card[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
-        const batches = [...new Set(items.map(c => c.distinct).filter((d): d is string => !!d))].sort();
-        this.exportBatches.set(batches);
-        this.exportBatchLoading.set(false);
-      },
-      error: () => { this.exportBatchLoading.set(false); },
-    });
+    this.showExportModal.set(true);
   }
 
   doExport(): void {
-    const batch = this.selectedExportBatch();
+    const batch = this.selectedExportBatch().trim();
     if (!batch) return;
     const token = this.auth.getAccessToken();
     if (!token) return;

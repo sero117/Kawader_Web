@@ -69,19 +69,19 @@ import { LanguageService } from '../../../core/services/language.service';
 
               <div class="plan-limits">
                 <div class="plan-limit-item">
-                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width:16px;height:16px">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
                   </svg>
                   <span>{{ plan.maxEmployees }} {{ 'admin.plans.employees' | translate }}</span>
                 </div>
                 <div class="plan-limit-item">
-                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width:16px;height:16px">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
                   </svg>
                   <span>{{ plan.maxBranches }} {{ 'admin.plans.branches' | translate }}</span>
                 </div>
                 <div class="plan-limit-item">
-                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="width:16px;height:16px">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>
                   </svg>
                   <span>{{ plan.maxSections }} {{ 'admin.plans.sections' | translate }}</span>
@@ -116,11 +116,11 @@ import { LanguageService } from '../../../core/services/language.service';
                 </button>
                 <button class="plan-action-btn" (click)="toggleVisibility(plan)" [title]="plan.showPlan ? ('admin.plans.hide' | translate) : ('admin.plans.show' | translate)">
                   @if (plan.showPlan) {
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:#059669">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/>
                     </svg>
                   } @else {
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--text-faint)">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
                   }
@@ -171,21 +171,6 @@ import { LanguageService } from '../../../core/services/language.service';
             <input class="form-input" type="number" min="0" [value]="form.price" (input)="form.price = +$any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field">
-            <label class="form-label">{{ 'admin.plans.currency' | translate }}</label>
-            <div style="display:flex;gap:8px;margin-top:2px">
-              @for (cur of currencies; track cur.value) {
-                <label style="flex:1;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s"
-                  [style.borderColor]="form.currency === cur.value ? 'var(--nav-accent)' : 'var(--border)'"
-                  [style.background]="form.currency === cur.value ? 'color-mix(in srgb, var(--nav-accent) 8%, transparent)' : 'transparent'">
-                  <input type="radio" name="planCurrency" [value]="cur.value" [checked]="form.currency === cur.value"
-                    (change)="form.currency = cur.value" style="accent-color:var(--nav-accent)" [disabled]="submitting()" />
-                  <span style="font-weight:600;font-size:0.85rem">{{ cur.label }}</span>
-                  <span style="font-size:0.75rem;color:var(--text-faint)">{{ cur.symbol }}</span>
-                </label>
-              }
-            </div>
-          </div>
-          <div class="form-field">
             <label class="form-label">{{ 'admin.plans.duration' | translate }}</label>
             <input class="form-input" type="number" min="1" [value]="form.durationDays" (input)="form.durationDays = +$any($event.target).value" [disabled]="submitting()" />
           </div>
@@ -203,7 +188,7 @@ import { LanguageService } from '../../../core/services/language.service';
           </div>
           <div class="form-field form-field-full">
             <label class="form-label">{{ 'admin.plans.details' | translate }}</label>
-            <textarea class="form-input" rows="3" style="resize:vertical"
+            <textarea class="form-input" rows="5" style="resize:vertical"
               [value]="form.detailsText"
               (input)="form.detailsText = $any($event.target).value"
               placeholder="{{ 'admin.plans.detailsHint' | translate }}" [disabled]="submitting()"></textarea>
@@ -263,11 +248,6 @@ export class PlansComponent implements OnInit {
   deleteTarget = signal<Plan | null>(null);
   submitting   = signal(false);
   modalError   = signal<string | null>(null);
-
-  readonly currencies: { value: PlanCurrency; label: string; symbol: string }[] = [
-    { value: 'USD', label: 'دولار',       symbol: '$'   },
-    { value: 'LYD', label: 'دينار ليبي', symbol: 'د.ل' },
-  ];
 
   form: { name: string; price: number; currency: PlanCurrency; durationDays: number; maxEmployees: number; maxBranches: number; maxSections: number; showPlan: boolean; isRecommended: boolean; detailsText: string } =
     { name: '', price: 0, currency: 'USD', durationDays: 30, maxEmployees: 10, maxBranches: 1, maxSections: 5, showPlan: true, isRecommended: false, detailsText: '' };

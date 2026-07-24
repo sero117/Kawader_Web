@@ -7,7 +7,7 @@ import { SnackbarService, SnackbarType } from '../../services/snackbar.service';
   template: `
     <div class="fixed top-5 end-5 z-[9999] flex flex-col gap-2 pointer-events-none" style="min-width:300px;max-width:380px;">
       @for (msg of snackbar.messages(); track msg.id) {
-        <div class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm pointer-events-auto snack-in"
+        <div class="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm pointer-events-auto snack-in"
           style="background: var(--bg-surface-2); border: 1px solid var(--border);
                  box-shadow: 0 8px 32px rgba(0,0,0,0.18); backdrop-filter: blur(12px);">
 

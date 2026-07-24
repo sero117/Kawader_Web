@@ -36,7 +36,6 @@ import { LanguageService } from '../../../core/services/language.service';
             <option [value]="p.id">{{ p.name }}</option>
           }
         </select>
-        <button class="btn-ghost" (click)="applyFilter()">{{ 'admin.subscriptions.search' | translate }}</button>
       </div>
 
       <!-- Error -->
@@ -151,8 +150,10 @@ export class SubscriptionsComponent implements OnInit {
   }
 
   applyFilter(): void { this.page.set(1); this.load(); }
-  onStatusFilter(v: string): void { this.filterStatus.set(v); }
-  onPlanFilter(v: string): void { this.filterPlan.set(v); }
+  // A selection is always a complete value (unlike a partially-typed text
+  // field), so apply it immediately instead of waiting for a "search" click.
+  onStatusFilter(v: string): void { this.filterStatus.set(v); this.applyFilter(); }
+  onPlanFilter(v: string): void { this.filterPlan.set(v); this.applyFilter(); }
   prevPage(): void { this.page.update(p => p - 1); this.load(); }
   nextPage(): void { this.page.update(p => p + 1); this.load(); }
 
