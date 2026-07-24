@@ -737,6 +737,21 @@ select option {
   border-radius: 2px;
 }
 
+/* Thin, theme-aware scrollbar for the table/list horizontal-scroll wrappers
+   used across the app (Tailwind's overflow-x-auto) — replaces the default
+   thick browser scrollbar. */
+.overflow-x-auto {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.overflow-x-auto::-webkit-scrollbar { height: 6px; }
+.overflow-x-auto::-webkit-scrollbar-track { background: transparent; }
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb:hover { background: var(--text-very-faint); }
+
 /* ── Mobile sidebar (offcanvas) ───────────────────────────────────── */
 
 .sidebar-backdrop {

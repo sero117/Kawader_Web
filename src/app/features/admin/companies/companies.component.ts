@@ -94,7 +94,7 @@ export class CompaniesComponent implements OnInit {
   // ── Lifecycle ──────────────────────────────────────────────────────────────
   ngOnInit(): void {
     this.loadCompanies();
-    this.agentService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+    this.agentService.getAll({ pageNumber: 1, pageSize: 100 }, true).subscribe({
       next: res => this.agents.set(res.items ?? []),
       error: () => {},
     });
