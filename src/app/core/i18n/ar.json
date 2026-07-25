@@ -160,6 +160,8 @@
       "totalLabel": "الشركات",
       "frozenBadge": "مجمّدة",
       "frozenLabel": "شركات مجمّدة",
+      "agentsBadge": "مندوبون",
+      "agentsLabel": "مندوبو الإحالة",
       "recentTitle": "أحدث الشركات",
       "viewAll": "← عرض الكل",
       "noCompanies": "لا توجد شركات بعد",
