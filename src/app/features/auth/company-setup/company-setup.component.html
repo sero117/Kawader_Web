@@ -62,15 +62,6 @@
             <p class="text-[10px] mt-1.5" style="color: var(--auth-fg-20);">{{ 'setup.phoneHint' | translate }}</p>
           </div>
 
-          @if (errorMsg()) {
-            <div class="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-3.5 py-2.5">
-              <svg class="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-              </svg>
-              <span class="text-red-400/90 text-sm">{{ errorMsg() }}</span>
-            </div>
-          }
-
           <button type="submit" [disabled]="submitting()" class="auth-btn mt-1">
             @if (submitting()) {
               <span>{{ 'setup.sending' | translate }}</span>
@@ -183,15 +174,6 @@
               <p class="text-red-400/75 text-xs mt-1.5">{{ 'validation.passwordsMismatch' | translate }}</p>
             }
           </div>
-
-          @if (errorMsg()) {
-            <div class="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-3.5 py-2.5">
-              <svg class="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-              </svg>
-              <span class="text-red-400/90 text-sm">{{ errorMsg() }}</span>
-            </div>
-          }
 
           <button type="submit" [disabled]="submitting()" class="auth-btn mt-1">
             @if (submitting()) {
@@ -378,14 +360,6 @@
             <p class="text-red-400/75 text-xs mt-[-0.75rem] mb-4">{{ locationError()! | translate }}</p>
           }
 
-          @if (errorMsg()) {
-            <div class="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-3.5 py-2.5 mb-4">
-              <svg class="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-              </svg>
-              <span class="text-red-400/90 text-sm">{{ errorMsg() }}</span>
-            </div>
-          }
 
           <button type="submit" [disabled]="submitting()" class="auth-btn">
             @if (submitting()) {

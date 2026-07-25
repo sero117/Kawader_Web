@@ -116,7 +116,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
 
-      if (err.status !== 404) {
+      // Auth-flow endpoints (login, signup, company-setup, activation, ...)
+      // always show their own inline/local error for the response body — the
+      // generic toast here would just duplicate that same message.
+      if (err.status !== 404 && !isAuthUrl) {
         const problem = err.error as ServiceProblemDetails | null;
         const message = extractErrorMessage(problem) ?? language.t('errors.unexpected');
         snackbar.show(message, 'error');

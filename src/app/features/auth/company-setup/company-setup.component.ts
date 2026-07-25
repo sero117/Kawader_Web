@@ -11,6 +11,7 @@ import { CompanySetupService } from '../../../core/services/company-setup.servic
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { CurrencyType } from '../../../core/models/company.models';
 import { Role } from '../../../core/models/auth.models';
 import { ServiceProblemDetails, extractErrorMessage } from '../../../core/models/problem-details.model';
@@ -45,12 +46,12 @@ export class CompanySetupComponent {
   private readonly fb           = inject(FormBuilder);
   private readonly router       = inject(Router);
   private readonly lang         = inject(LanguageService);
+  private readonly snackbar     = inject(SnackbarService);
 
   @ViewChild('logoInput') logoInput!: ElementRef<HTMLInputElement>;
 
   step       = signal(1);
   submitting = signal(false);
-  errorMsg   = signal<string | null>(null);
   showPw     = signal(false);
   showCpw    = signal(false);
 
@@ -122,7 +123,6 @@ export class CompanySetupComponent {
   submitStep1(): void {
     if (this.step1Form.invalid) { this.step1Form.markAllAsTouched(); return; }
     this.submitting.set(true);
-    this.errorMsg.set(null);
 
     const phone = this.step1Form.value.phoneNumber!;
 
@@ -130,7 +130,7 @@ export class CompanySetupComponent {
       next: (res: any) => {
         this.submitting.set(false);
         if (res?.isSuccess === false) {
-          this.errorMsg.set(res.message || 'Failed to send code.');
+          this.snackbar.show(res.message || 'Failed to send code.', 'error');
           return;
         }
         this._managerPhone = phone;
@@ -139,7 +139,7 @@ export class CompanySetupComponent {
       error: err => {
         this.submitting.set(false);
         console.error('[generate-code] error:', err.status, err.error);
-        this.errorMsg.set(this.apiErr(err, 'Failed to send code.'));
+        this.snackbar.show(this.apiErr(err, 'Failed to send code.'), 'error');
       },
     });
   }
@@ -148,7 +148,6 @@ export class CompanySetupComponent {
   submitStep2(): void {
     if (this.step2Form.invalid) { this.step2Form.markAllAsTouched(); return; }
     this.submitting.set(true);
-    this.errorMsg.set(null);
 
     const { code, firstName, lastName, password } = this.step2Form.value;
 
@@ -162,7 +161,7 @@ export class CompanySetupComponent {
       next: (res: any) => {
         this.submitting.set(false);
         if (res?.isSuccess === false) {
-          this.errorMsg.set(res.message || 'Failed to create account.');
+          this.snackbar.show(res.message || 'Failed to create account.', 'error');
           return;
         }
         const token: string =
@@ -172,7 +171,7 @@ export class CompanySetupComponent {
           res?.accessToken       ?? '';
 
         if (!token) {
-          this.errorMsg.set('Account created but no token received. Please contact support.');
+          this.snackbar.show('Account created but no token received. Please contact support.', 'error');
           return;
         }
         this._managerToken = token;
@@ -191,7 +190,7 @@ export class CompanySetupComponent {
       },
       error: err => {
         this.submitting.set(false);
-        this.errorMsg.set(this.apiErr(err, 'Failed to create account.'));
+        this.snackbar.show(this.apiErr(err, 'Failed to create account.'), 'error');
       },
     });
   }
@@ -229,7 +228,6 @@ export class CompanySetupComponent {
     }
 
     this.submitting.set(true);
-    this.errorMsg.set(null);
 
     const v = this.step3Form.value;
     const fd = new FormData();
@@ -249,18 +247,18 @@ export class CompanySetupComponent {
       next: (res: any) => {
         this.submitting.set(false);
         if (res?.isSuccess === false) {
-          this.errorMsg.set(res.message || 'Failed to complete company setup.');
+          this.snackbar.show(res.message || 'Failed to complete company setup.', 'error');
           return;
         }
         if (res?.data != null || res?.id != null || res?.isSuccess === true) {
           this.router.navigate(['/dashboard/manager']);
           return;
         }
-        this.errorMsg.set(res?.message || 'Failed to complete company setup.');
+        this.snackbar.show(res?.message || 'Failed to complete company setup.', 'error');
       },
       error: err => {
         this.submitting.set(false);
-        this.errorMsg.set(this.apiErr(err, 'Failed to complete company setup.'));
+        this.snackbar.show(this.apiErr(err, 'Failed to complete company setup.'), 'error');
       },
     });
   }
