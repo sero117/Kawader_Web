@@ -197,13 +197,6 @@
   gap: 0.875rem;
 }
 
-.auth-brand-slash {
-  font-size: 2rem;
-  font-weight: 300;
-  line-height: 1;
-  color: var(--auth-fg-25);
-}
-
 .auth-logo-wrap {
   position: relative;
   width: 52px;
