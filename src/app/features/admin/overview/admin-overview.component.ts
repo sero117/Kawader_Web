@@ -1,9 +1,16 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { CompanyService } from '../../../core/services/company.service';
 import { AgentService } from '../../../core/services/agent.service';
+import { CardService } from '../../../core/services/card.service';
+import { SubscriptionService } from '../../../core/services/subscription.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { Company } from '../../../core/models/company.models';
+import { CardStatus } from '../../../core/models/card.models';
+import { SubscriptionStatus } from '../../../core/models/subscription.models';
+
+interface StatusCounts { total: number; a: number; b: number; c: number; }
 
 @Component({
   selector: 'app-admin-overview',
@@ -12,12 +19,16 @@ import { Company } from '../../../core/models/company.models';
   templateUrl: './admin-overview.component.html',
 })
 export class AdminOverviewComponent implements OnInit {
-  private readonly companyService = inject(CompanyService);
-  private readonly agentService   = inject(AgentService);
+  private readonly companyService      = inject(CompanyService);
+  private readonly agentService        = inject(AgentService);
+  private readonly cardService         = inject(CardService);
+  private readonly subscriptionService = inject(SubscriptionService);
 
-  companies  = signal<Company[]>([]);
-  loading    = signal(true);
-  agentCount = signal<number | null>(null);
+  companies   = signal<Company[]>([]);
+  loading     = signal(true);
+  agentCount  = signal<number | null>(null);
+  cardCounts  = signal<StatusCounts | null>(null);
+  subCounts   = signal<StatusCounts | null>(null);
 
   ngOnInit(): void {
     this.companyService.getAll({ pageSize: 100, pageNumber: 1 }).subscribe({
@@ -45,6 +56,30 @@ export class AdminOverviewComponent implements OnInit {
     this.agentService.getAll({ pageNumber: 1, pageSize: 1 }, true).subscribe({
       next: res => this.agentCount.set(res?.totalCount ?? 0),
       error: () => this.agentCount.set(null),
+    });
+
+    forkJoin([
+      this.cardService.getAll({ pageNumber: 1, pageSize: 1 }),
+      this.cardService.getAll({ pageNumber: 1, pageSize: 1, status: CardStatus.Available }),
+      this.cardService.getAll({ pageNumber: 1, pageSize: 1, status: CardStatus.Used }),
+      this.cardService.getAll({ pageNumber: 1, pageSize: 1, status: CardStatus.Revoked }),
+    ]).subscribe({
+      next: ([total, available, used, revoked]) => this.cardCounts.set({
+        total: total?.totalCount ?? 0, a: available?.totalCount ?? 0, b: used?.totalCount ?? 0, c: revoked?.totalCount ?? 0,
+      }),
+      error: () => this.cardCounts.set(null),
+    });
+
+    forkJoin([
+      this.subscriptionService.getAll({ pageNumber: 1, pageSize: 1 }),
+      this.subscriptionService.getAll({ pageNumber: 1, pageSize: 1, status: SubscriptionStatus.Active }),
+      this.subscriptionService.getAll({ pageNumber: 1, pageSize: 1, status: SubscriptionStatus.Expired }),
+      this.subscriptionService.getAll({ pageNumber: 1, pageSize: 1, status: SubscriptionStatus.Pending }),
+    ]).subscribe({
+      next: ([total, active, expired, pending]) => this.subCounts.set({
+        total: total?.totalCount ?? 0, a: active?.totalCount ?? 0, b: expired?.totalCount ?? 0, c: pending?.totalCount ?? 0,
+      }),
+      error: () => this.subCounts.set(null),
     });
   }
 
