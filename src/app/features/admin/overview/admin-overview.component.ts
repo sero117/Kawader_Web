@@ -1,7 +1,5 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { CompanyService } from '../../../core/services/company.service';
 import { AgentService } from '../../../core/services/agent.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
@@ -40,20 +38,6 @@ export class AdminOverviewComponent implements OnInit {
         }));
         this.companies.set(normalized);
         this.loading.set(false);
-
-        // The list endpoint doesn't return companyName — backfill it for the
-        // handful of rows actually shown here via the single-company endpoint.
-        const recent = normalized.slice(0, 5);
-        if (recent.length) {
-          forkJoin(recent.map(c => this.companyService.getById(c.id).pipe(catchError(() => of(null))))).subscribe(results => {
-            this.companies.update(list => list.map(c => {
-              const idx = recent.findIndex(r => r.id === c.id);
-              const d: any = idx >= 0 ? results[idx] : null;
-              const data = d?.data ?? d;
-              return data?.companyName ? { ...c, companyName: data.companyName } : c;
-            }));
-          });
-        }
       },
       error: () => this.loading.set(false),
     });

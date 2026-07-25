@@ -103,7 +103,6 @@
           <th>{{ 'admin.overview.colId' | translate }}</th>
           <th>{{ 'admin.overview.colPhone' | translate }}</th>
           <th>{{ 'admin.overview.colEmail' | translate }}</th>
-          <th>{{ 'admin.overview.colName' | translate }}</th>
           <th>{{ 'admin.overview.colStatus' | translate }}</th>
         </tr>
       </thead>
@@ -113,7 +112,6 @@
             <td class="font-mono text-xs" style="color: var(--text-faint);">{{ c.id }}</td>
             <td style="color: var(--text-muted);">{{ c.phoneNumber }}</td>
             <td style="color: var(--text-faint);">{{ c.email ?? '—' }}</td>
-            <td style="color: var(--text-muted);">{{ c.companyName ?? '—' }}</td>
             <td>
               @if (c.isFrozen) {
                 <span class="text-[10px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full"
