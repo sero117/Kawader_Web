@@ -1,6 +1,8 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { CompanyService } from '../../../core/services/company.service';
@@ -33,6 +35,18 @@ export class CompaniesComponent implements OnInit {
     const ids = this.getFrozenIds();
     frozen ? ids.add(id) : ids.delete(id);
     localStorage.setItem(this.FROZEN_KEY, JSON.stringify([...ids]));
+  }
+
+  // ── Agent IDs persisted in localStorage (list endpoint doesn't return it) ──
+  private readonly AGENT_KEY = 'kawader_company_agents';
+  private getAgentCache(): Record<number, number> {
+    try { return JSON.parse(localStorage.getItem(this.AGENT_KEY) ?? '{}'); }
+    catch { return {}; }
+  }
+  private saveAgentId(id: number, agentId: number | null): void {
+    const cache = this.getAgentCache();
+    if (agentId == null) delete cache[id]; else cache[id] = agentId;
+    localStorage.setItem(this.AGENT_KEY, JSON.stringify(cache));
   }
 
   // ── Filter (synced with URL) ───────────────────────────────────────────────
@@ -133,8 +147,10 @@ export class CompaniesComponent implements OnInit {
           ? raw
           : (raw?.items ?? raw?.data ?? raw?.companies ?? []);
 
-        // Normalize PascalCase fields from .NET API + localStorage for frozen
+        // Normalize PascalCase fields from .NET API + localStorage for frozen/agent
+        // (the list endpoint returns neither isFrozen nor agentId)
         const frozenIds = this.getFrozenIds();
+        const agentCache = this.getAgentCache();
         const normalized = items.map((c: any) => ({
           ...c,
           isActive:    c.isActive    !== undefined ? c.isActive    : c.IsActive,
@@ -143,12 +159,29 @@ export class CompaniesComponent implements OnInit {
             || (c.frozenAt != null && c.frozenAt !== '')
             || (c.FrozenAt != null && c.FrozenAt !== '')
             || frozenIds.has(c.id),
-          agentId: c.agentId ?? c.AgentId ?? null,
+          agentId: c.agentId ?? c.AgentId ?? agentCache[c.id] ?? null,
         }));
 
         this.companies.set(normalized);
         this.hasMore.set(items.length >= this.filter.value().pageSize);
         this.loading.set(false);
+
+        // The list endpoint also omits createdAt (unlike the single-company
+        // endpoint) — backfill it per row so the column isn't always blank.
+        if (normalized.length) {
+          const thisSeq = seq;
+          forkJoin(normalized.map((c: Company) =>
+            this.companyService.getById(c.id).pipe(catchError(() => of(null)))
+          )).subscribe(results => {
+            if (thisSeq !== this.requestSeq) return;
+            this.companies.update(list => list.map(c => {
+              const idx = normalized.findIndex((n: Company) => n.id === c.id);
+              const d: any = idx >= 0 ? results[idx] : null;
+              const data = d?.data ?? d;
+              return data?.createdAt ? { ...c, createdAt: data.createdAt } : c;
+            }));
+          });
+        }
       },
       error: err => {
         if (seq !== this.requestSeq) return;
@@ -213,8 +246,9 @@ export class CompaniesComponent implements OnInit {
           this.showWizard.set(false);
           this.flash('Company created successfully!');
           const agentId = this.addForm.value.agentId || null;
+          const newId2  = typeof newId === 'number' ? newId : Number(newId);
           const newCompany: Company = {
-            id:            typeof newId === 'number' ? newId : Number(newId),
+            id:            newId2,
             phoneNumber:   this.addForm.value.phoneNumber!,
             email:         this.addForm.value.email || undefined,
             tenantId:      '',
@@ -223,6 +257,7 @@ export class CompaniesComponent implements OnInit {
             isFrozen:      false,
             createdAt:     new Date().toISOString(),
           };
+          this.saveAgentId(newId2, agentId);
           this.filter.patch({ pageNumber: 1 });
           this.companies.update(list => [newCompany, ...list]);
         } else {
@@ -302,6 +337,7 @@ export class CompaniesComponent implements OnInit {
           email:       this.editForm.value.email || undefined,
           agentId:     this.editForm.value.agentId ?? null,
         };
+        this.saveAgentId(id, patch.agentId);
         this.companies.update(list => list.map(c => c.id === id ? { ...c, ...patch } : c));
         this.selectedCompany.update(c => c && c.id === id ? { ...c, ...patch } : c);
       },
@@ -382,13 +418,17 @@ export class CompaniesComponent implements OnInit {
     if (id === null) return;
     this.submitting.set(true);
     this.companyService.delete(id).subscribe({
-      next: res => {
+      next: (res: any) => {
         this.submitting.set(false);
         this.showDeleteModal.set(false);
-        if (res.isSuccess) {
-          this.companies.update(list => list.filter(c => c.id !== id));
-          this.flash('Company deleted.');
+        // Some responses omit the envelope entirely (e.g. 204 No Content) — only
+        // an explicit isSuccess:false counts as a failure, matching submitEdit().
+        if (res?.isSuccess === false) {
+          this.listError.set(res.message || 'Failed to delete company.');
+          return;
         }
+        this.companies.update(list => list.filter(c => c.id !== id));
+        this.flash('Company deleted.');
       },
       error: () => { this.submitting.set(false); this.showDeleteModal.set(false); },
     });

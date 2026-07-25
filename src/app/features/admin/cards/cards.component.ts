@@ -196,7 +196,6 @@ import { environment } from '../../../../environments/environment';
       <div class="modal-box" style="max-width:380px">
         <h2 class="modal-title">{{ 'admin.cards.confirmDelete' | translate }}</h2>
         <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:20px">{{ deleteTarget()?.serialNumber }}</p>
-        @if (modalError()) { <div class="modal-error">{{ modalError() }}</div> }
         <div class="modal-actions">
           <button class="btn-ghost" (click)="deleteTarget.set(null)" [disabled]="submitting()">{{ 'common.cancel' | translate }}</button>
           <button class="btn-danger" (click)="deleteCard()" [disabled]="submitting()">{{ 'common.delete' | translate }}</button>
@@ -341,7 +340,9 @@ export class CardsComponent implements OnInit {
     this.submitting.set(true);
     this.cardService.delete(t.id).subscribe({
       next: () => { this.submitting.set(false); this.deleteTarget.set(null); this.load(); },
-      error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+      // No local modal-error banner here — the global interceptor already
+      // shows this failure as a snackbar; showing both was a duplicate message.
+      error: () => { this.submitting.set(false); },
     });
   }
 

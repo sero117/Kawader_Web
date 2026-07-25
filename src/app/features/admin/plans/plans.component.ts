@@ -154,7 +154,7 @@ import { LanguageService } from '../../../core/services/language.service';
     <!-- Create / Edit Modal -->
     @if (showModal()) {
       <div class="modal-backdrop" (click)="closeModal()"></div>
-      <div class="modal-box" style="max-width:560px">
+      <div class="modal-box" style="max-width:680px">
         <h2 class="modal-title">{{ editingPlan() ? ('admin.plans.editPlan' | translate) : ('admin.plans.addPlan' | translate) }}</h2>
 
         @if (modalError()) {
@@ -188,7 +188,7 @@ import { LanguageService } from '../../../core/services/language.service';
           </div>
           <div class="form-field form-field-full">
             <label class="form-label">{{ 'admin.plans.details' | translate }}</label>
-            <textarea class="form-input" rows="5" style="resize:vertical"
+            <textarea class="form-input" rows="8" style="resize:vertical;min-height:180px;font-size:0.9375rem;line-height:1.6;padding:0.875rem 1rem"
               [value]="form.detailsText"
               (input)="form.detailsText = $any($event.target).value"
               placeholder="{{ 'admin.plans.detailsHint' | translate }}" [disabled]="submitting()"></textarea>
