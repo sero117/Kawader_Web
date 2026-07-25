@@ -12,6 +12,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { CurrencyType } from '../../../core/models/company.models';
 import { Role } from '../../../core/models/auth.models';
+import { ServiceProblemDetails, extractErrorMessage } from '../../../core/models/problem-details.model';
 
 // ── Validators ────────────────────────────────────────────────────────────────
 
@@ -282,23 +283,22 @@ export class CompanySetupComponent {
     const body = err?.error;
     if (!body) return fallback;
     if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
+
+    // Field-level validation messages (e.g. "Name must be English letters or
+    // numbers") can land in `errors`, `detail`/`title`, or a custom
+    // `extensions` entry depending on the endpoint — this shared helper checks
+    // all of those, unlike the plain message/title/detail/error lookup this
+    // used to do on its own, which silently fell through to the generic
+    // fallback whenever the real message was in `extensions`.
+    const extracted = extractErrorMessage(body as ServiceProblemDetails);
+    if (extracted) return extracted;
+
+    for (const key of ['message', 'error']) {
       const v = body[key];
       if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
     }
-    if (body.errors) {
-      if (Array.isArray(body.errors)) {
-        const m = body.errors.map((e: any) => e?.message ?? e)
-          .filter((s: any) => typeof s === 'string').join('. ');
-        if (m) return m;
-      } else if (typeof body.errors === 'object') {
-        const m = (Object.values(body.errors) as unknown[]).flat()
-          .filter((s): s is string => typeof s === 'string').join('. ');
-        if (m) return m;
-      }
-    }
+
     switch (err?.status) {
-      case 400: return fallback;
       case 401: return 'Session expired.';
       case 403: return 'You do not have permission.';
       case 409: return 'This record already exists.';

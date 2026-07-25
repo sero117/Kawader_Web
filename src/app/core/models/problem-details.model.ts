@@ -22,6 +22,20 @@ export function extractErrorMessage(problem: ServiceProblemDetails | null | unde
 
   if (problem.detail) return problem.detail;
   if (problem.title) return problem.title;
+
+  // Some endpoints attach a field-specific message under a key named after
+  // whichever input failed (e.g. {"Code": "The verification code is invalid."},
+  // {"Name": "Name must be English letters or numbers"}) as a sibling of
+  // type/title/status rather than nested under `extensions` — ASP.NET Core's
+  // ProblemDetails serializer flattens `Extensions` entries onto the top-level
+  // object instead of keeping them under an "extensions" wrapper key. Scan for
+  // any such field before falling back to `extensions` itself.
+  const KNOWN_KEYS = new Set(['type', 'title', 'status', 'detail', 'instance', 'errors', 'extensions']);
+  for (const [key, value] of Object.entries(problem as unknown as Record<string, unknown>)) {
+    if (KNOWN_KEYS.has(key)) continue;
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+
   if (problem.extensions) {
     const firstValue = Object.values(problem.extensions)[0];
     if (typeof firstValue === 'string') return firstValue;
