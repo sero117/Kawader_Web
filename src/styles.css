@@ -172,10 +172,47 @@
   70%       { transform: rotate(var(--rot, 0deg)) translate(-5px,   8px); }
 }
 
+@keyframes auth-logo-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(0.92); }
+  50%      { opacity: 0.55; transform: scale(1.1);  }
+}
+
+@keyframes auth-logo-float {
+  0%, 100% { transform: translateY(0)    rotate(0deg);  }
+  50%      { transform: translateY(-5px) rotate(-3deg); }
+}
+
 /* ── Base utilities ────────────────────────────────────────────────── */
 
 .auth-card-enter {
   animation: auth-card-enter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Auth brand logo (login etc.) ─────────────────────────────────── */
+
+.auth-logo-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-logo-glow {
+  position: absolute;
+  inset: -16px;
+  border-radius: 30px;
+  background: radial-gradient(circle, var(--nav-accent) 0%, transparent 72%);
+  filter: blur(11px);
+  animation: auth-logo-pulse 3.2s ease-in-out infinite;
+  transition: background 0.25s;
+}
+.auth-logo-icon {
+  position: relative;
+  border-radius: 18px;
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--nav-accent) 45%, transparent);
+  animation: auth-logo-float 4.5s ease-in-out infinite;
 }
 
 .auth-word {
@@ -2074,6 +2111,8 @@ select option {
   transform: translate(-50%, -50%);
   z-index: 201;
   width: calc(100% - 2rem);
+  max-height: calc(100dvh - 3rem);
+  overflow-y: auto;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -2123,6 +2162,7 @@ select option {
 
 .form-field { display: flex; flex-direction: column; gap: 0.375rem; }
 .form-field-full { grid-column: 1 / -1; }
+.form-divider { height: 1px; background: var(--border); margin: 0.125rem 0; }
 
 .form-label {
   font-size: 0.75rem;
@@ -2202,7 +2242,13 @@ select option {
   width: fit-content;
 }
 
-.plan-card-header { display: flex; flex-direction: column; gap: 0.25rem; }
+.plan-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
 .plan-name { font-size: 1.125rem; font-weight: 700; color: var(--text-base); margin: 0; }
 .plan-price {
   display: flex;
@@ -2213,13 +2259,20 @@ select option {
 .plan-price-currency { font-size: 0.8125rem; color: var(--text-muted); }
 .plan-duration { font-size: 0.875rem; color: var(--text-faint); margin: 0; }
 
-.plan-limits { display: flex; flex-direction: column; gap: 0.5rem; }
+.plan-limits { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .plan-limit-item {
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.625rem;
+  background: var(--bg-subtle-sm);
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
   color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .plan-details {
@@ -2239,6 +2292,57 @@ select option {
   font-size: 0.9rem;
   line-height: 1.4;
   color: var(--text-muted);
+}
+
+.plan-toggle-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.plan-toggle-chip {
+  flex: 1 1 160px;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.plan-toggle-chip-active {
+  border-color: var(--nav-accent);
+  background: color-mix(in srgb, var(--nav-accent) 8%, transparent);
+  color: var(--text-base);
+}
+.plan-toggle-chip input[type="checkbox"] { display: none; }
+.plan-toggle-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+.plan-toggle-chip-active .plan-toggle-check {
+  border-color: var(--nav-accent);
+  background: var(--nav-accent);
+}
+.plan-toggle-chip-active .plan-toggle-check::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translate(-1px, -1px);
 }
 
 .plan-status-row { margin-top: auto; }

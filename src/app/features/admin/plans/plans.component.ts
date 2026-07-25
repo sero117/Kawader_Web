@@ -174,6 +174,7 @@ import { LanguageService } from '../../../core/services/language.service';
             <label class="form-label">{{ 'admin.plans.duration' | translate }}</label>
             <input class="form-input" type="number" min="1" [value]="form.durationDays" (input)="form.durationDays = +$any($event.target).value" [disabled]="submitting()" />
           </div>
+          <div class="form-field-full form-divider"></div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.plans.maxEmployees' | translate }}</label>
             <input class="form-input" type="number" min="0" [value]="form.maxEmployees" (input)="form.maxEmployees = +$any($event.target).value" [disabled]="submitting()" />
@@ -186,6 +187,7 @@ import { LanguageService } from '../../../core/services/language.service';
             <label class="form-label">{{ 'admin.plans.maxSections' | translate }}</label>
             <input class="form-input" type="number" min="0" [value]="form.maxSections" (input)="form.maxSections = +$any($event.target).value" [disabled]="submitting()" />
           </div>
+          <div class="form-field-full form-divider"></div>
           <div class="form-field form-field-full">
             <label class="form-label">{{ 'admin.plans.details' | translate }}</label>
             <textarea class="form-input" rows="8" style="resize:vertical;min-height:180px;font-size:0.9375rem;line-height:1.6;padding:0.875rem 1rem"
@@ -193,14 +195,17 @@ import { LanguageService } from '../../../core/services/language.service';
               (input)="form.detailsText = $any($event.target).value"
               placeholder="{{ 'admin.plans.detailsHint' | translate }}" [disabled]="submitting()"></textarea>
           </div>
-          <div class="form-field form-field-full" style="display:flex;gap:16px;align-items:center">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.875rem;color:var(--text-muted)">
+          <div class="form-field-full form-divider"></div>
+          <div class="form-field-full plan-toggle-row">
+            <label class="plan-toggle-chip" [class.plan-toggle-chip-active]="form.showPlan">
               <input type="checkbox" [checked]="form.showPlan" (change)="form.showPlan = $any($event.target).checked" [disabled]="submitting()" />
-              {{ 'admin.plans.showPlan' | translate }}
+              <span class="plan-toggle-check"></span>
+              <span>{{ 'admin.plans.showPlan' | translate }}</span>
             </label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.875rem;color:var(--text-muted)">
+            <label class="plan-toggle-chip" [class.plan-toggle-chip-active]="form.isRecommended">
               <input type="checkbox" [checked]="form.isRecommended" (change)="form.isRecommended = $any($event.target).checked" [disabled]="submitting()" />
-              {{ 'admin.plans.isRecommended' | translate }}
+              <span class="plan-toggle-check"></span>
+              <span>{{ 'admin.plans.isRecommended' | translate }}</span>
             </label>
           </div>
         </div>

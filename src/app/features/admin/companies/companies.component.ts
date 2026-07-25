@@ -7,6 +7,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { CompanyService } from '../../../core/services/company.service';
 import { AgentService } from '../../../core/services/agent.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Agent } from '../../../core/models/agent.models';
 import {
   Company, GetCompaniesParams,
@@ -22,6 +23,7 @@ export class CompaniesComponent implements OnInit {
   private readonly companyService = inject(CompanyService);
   private readonly agentService   = inject(AgentService);
   private readonly fb             = inject(FormBuilder);
+  private readonly snackbar       = inject(SnackbarService);
 
   agents = signal<Agent[]>([]);
 
@@ -326,8 +328,11 @@ export class CompaniesComponent implements OnInit {
         this.submitting.set(false);
         // Some responses omit the envelope entirely (e.g. 204 No Content) — only
         // an explicit isSuccess:false counts as a failure, matching submitAdd().
+        // This is a 200 OK with a business-level failure, so the interceptor's
+        // automatic snackbar never fires for it — show one here instead of the
+        // modal's own inline banner (single message, not two).
         if (res?.isSuccess === false) {
-          this.modalError.set(res.message || 'Update failed.');
+          this.snackbar.show(res.message || 'Update failed.', 'error');
           return;
         }
         this.showEditModal.set(false);
@@ -341,10 +346,9 @@ export class CompaniesComponent implements OnInit {
         this.companies.update(list => list.map(c => c.id === id ? { ...c, ...patch } : c));
         this.selectedCompany.update(c => c && c.id === id ? { ...c, ...patch } : c);
       },
-      error: err => {
-        this.submitting.set(false);
-        this.modalError.set(this.apiErr(err, 'Update failed.'));
-      },
+      // No local error banner here — the global interceptor already shows this
+      // failure as a snackbar; showing both was a duplicate message.
+      error: () => { this.submitting.set(false); },
     });
   }
 

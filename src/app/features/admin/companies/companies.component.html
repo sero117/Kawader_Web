@@ -435,15 +435,6 @@
         </button>
       </div>
 
-      @if (modalError()) {
-        <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4" style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
-          <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgba(239,68,68,0.8);" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-          </svg>
-          <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ modalError() }}</span>
-        </div>
-      }
-
       <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.edit.phoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
