@@ -10,6 +10,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { CompanySetupService } from '../../../core/services/company-setup.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyType } from '../../../core/models/company.models';
 import { Role } from '../../../core/models/auth.models';
 import { ServiceProblemDetails, extractErrorMessage } from '../../../core/models/problem-details.model';
@@ -43,6 +44,7 @@ export class CompanySetupComponent {
   private readonly notificationService = inject(NotificationService);
   private readonly fb           = inject(FormBuilder);
   private readonly router       = inject(Router);
+  private readonly lang         = inject(LanguageService);
 
   @ViewChild('logoInput') logoInput!: ElementRef<HTMLInputElement>;
 
@@ -283,6 +285,16 @@ export class CompanySetupComponent {
     const body = err?.error;
     if (!body) return fallback;
     if (typeof body === 'string' && body.trim()) return body.trim();
+
+    // The backend builds an internal username from firstName-lastName-<random
+    // digits> and rejects it if the name has non-English characters — but its
+    // message echoes that generated username verbatim ("Username
+    // 'أحمد-محمد-9287' is invalid, can only contain letters or digits."),
+    // which is confusing since the user only ever typed their name, never a
+    // username. Show the actual rule instead.
+    if (typeof body.InvalidUserName === 'string') {
+      return this.lang.t('setup.nameLettersOnly');
+    }
 
     // Field-level validation messages (e.g. "Name must be English letters or
     // numbers") can land in `errors`, `detail`/`title`, or a custom

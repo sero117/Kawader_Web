@@ -434,6 +434,7 @@
     "empty": "You're not linked to any company yet."
   },
   "setup": {
+    "nameLettersOnly": "First name and last name must contain only English letters or numbers.",
     "step1Title": "Your Phone Number",
     "step1Subtitle": "Enter your phone number to receive a verification code.",
     "step2Title": "Create Your Account",
