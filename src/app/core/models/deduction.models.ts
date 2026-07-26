@@ -12,6 +12,8 @@ export interface Deduction {
   date: string;
   reason?: string | null;
   createdAt: string;
+  isConsumed: boolean;
+  payslipId?: number | null;
 }
 
 export interface CreateDeductionRequest {
@@ -35,4 +37,5 @@ export interface GetDeductionsParams {
   fromDate?: string;
   toDate?: string;
   type?: DeductionType | null;
+  isConsumed?: boolean | null;
 }

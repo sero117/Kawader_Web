@@ -15,6 +15,7 @@ import {
   EmergencyContact,
   CreateEmergencyContactRequest,
   UpdateEmergencyContactRequest,
+  EmployeeAttachment,
 } from '../models/employee.models';
 
 @Injectable({ providedIn: 'root' })
@@ -62,11 +63,16 @@ export class EmployeeService {
     return this.api.delete<void>(`${this.baseUrl}/${id}/attachments/${type}`);
   }
 
+  /** Plain array ordered by type, at most one per type. An employee from another
+   *  company returns an empty array rather than an error/404. */
+  getAttachments(id: number): Observable<EmployeeAttachment[]> {
+    return this.api.get<EmployeeAttachment[]>(`${this.baseUrl}/${id}/attachments`);
+  }
+
   getAll(params?: GetEmployeesParams): Observable<any> {
     let p = new HttpParams();
     if (params?.pageNumber)  p = p.set('PageNumber',  params.pageNumber);
     if (params?.pageSize)    p = p.set('PageSize',    params.pageSize);
-    if (params?.tenantId)    p = p.set('TenantId',    params.tenantId);
     if (params?.phoneNumber) p = p.set('PhoneNumber', params.phoneNumber);
     if (params?.branchId)    p = p.set('BranchId',    params.branchId);
     return this.api.get<any>(this.baseUrl, p);

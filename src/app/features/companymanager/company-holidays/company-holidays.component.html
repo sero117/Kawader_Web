@@ -208,17 +208,31 @@
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }
           </div>
-          <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
-              {{ 'manager.companyHolidays.dateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
-            </label>
-            <input formControlName="date" type="date" class="modal-input"
-              [class.is-invalid]="addForm.get('date')!.invalid && addForm.get('date')!.touched"
-              [attr.disabled]="submitting() || null" />
-            @if (addForm.get('date')!.invalid && addForm.get('date')!.touched) {
-              <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
-            }
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.companyHolidays.startDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="startDate" type="date" class="modal-input"
+                [class.is-invalid]="addForm.get('startDate')!.invalid && addForm.get('startDate')!.touched"
+                [attr.disabled]="submitting() || null" />
+              @if (addForm.get('startDate')!.invalid && addForm.get('startDate')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+              }
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.companyHolidays.endDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="endDate" type="date" class="modal-input"
+                [class.is-invalid]="addForm.get('endDate')!.invalid && addForm.get('endDate')!.touched"
+                [attr.disabled]="submitting() || null" />
+              @if (addForm.get('endDate')!.invalid && addForm.get('endDate')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
+              }
+            </div>
           </div>
+          <p style="font-size:0.72rem;color:var(--text-faint);margin-top:-8px">{{ 'manager.companyHolidays.rangeHint' | translate }}</p>
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.companyHolidays.recurrenceLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>

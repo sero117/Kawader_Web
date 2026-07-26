@@ -212,6 +212,14 @@
                       </svg>
                     </button>
                   }
+                  <!-- Manage currencies -->
+                  <button (click)="openCurrencies(c, $event)"
+                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                    style="color: rgba(217,119,6,0.75); background: rgba(245,158,11,0.09);" [title]="'admin.companies.manageCurrencies' | translate">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m4.5-9.5c0-1.657-2.015-3-4.5-3S7.5 4.843 7.5 6.5 9.515 9.5 12 9.5s4.5 1.343 4.5 3-2.015 3-4.5 3-4.5-1.343-4.5-3"/>
+                    </svg>
+                  </button>
                   <!-- Edit -->
                   <button (click)="openEdit(c, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
@@ -321,6 +329,15 @@
             }
           </div>
           <div>
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.countryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
+            <select formControlName="countryId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
+              <option [ngValue]="null" disabled>{{ 'admin.companies.selectCountry' | translate }}</option>
+              @for (c of countries(); track c.id) {
+                <option [ngValue]="c.id">{{ c.arabicName }} / {{ c.englishName }}</option>
+              }
+            </select>
+          </div>
+          <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.agentLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
             <select formControlName="agentId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
               <option [ngValue]="null">{{ 'admin.companies.noAgent' | translate }}</option>
@@ -398,6 +415,7 @@
           @for (field of [
             { labelKey: 'admin.view.phone',    value: selectedCompany()!.phoneNumber },
             { labelKey: 'admin.view.email',    value: selectedCompany()!.email },
+            { labelKey: 'admin.companies.countryLabel', value: countryDisplayName(selectedCompany()!) },
             { labelKey: 'admin.companies.agentLabel', value: agentName(selectedCompany()!.agentId) },
             { labelKey: 'admin.view.address',  value: selectedCompany()!.address },
             { labelKey: 'admin.view.landline', value: selectedCompany()!.landlinePhone },
@@ -455,6 +473,15 @@
           @if (editForm.get('email')!.invalid && editForm.get('email')!.touched) {
             <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.emailInvalid' | translate }}</p>
           }
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.countryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
+          <select formControlName="countryId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
+            <option [ngValue]="null" disabled>{{ 'admin.companies.selectCountry' | translate }}</option>
+            @for (c of countries(); track c.id) {
+              <option [ngValue]="c.id">{{ c.arabicName }} / {{ c.englishName }}</option>
+            }
+          </select>
         </div>
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.agentLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
@@ -564,6 +591,82 @@
           {{ submitting() ? ('common.deleting' | translate) : ('common.delete' | translate) }}
         </button>
       </div>
+    </div>
+  </div>
+}
+
+
+<!-- ══ MANAGE CURRENCIES MODAL ══ -->
+@if (showCurrenciesModal() && currenciesTarget()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);" (click)="closeCurrenciesModal()">
+    <div class="w-full max-w-md rounded-2xl p-6" style="background: var(--bg-surface-2); border: 1px solid var(--border);" (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'admin.companies.manageCurrencies' | translate }}</h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ currenciesTarget()!.companyName ?? currenciesTarget()!.phoneNumber }}</p>
+        </div>
+        <button (click)="closeCurrenciesModal()" class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      @if (currenciesError()) {
+        <div class="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mb-4" style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
+          <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ currenciesError() }}</span>
+        </div>
+      }
+
+      @if (currenciesLoading()) {
+        <div class="space-y-2 py-2">
+          @for (_ of [1,2,3]; track $index) {
+            <div class="h-10 rounded-lg animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+          }
+        </div>
+      } @else {
+        @if (companyCurrencies().length === 0) {
+          <p class="text-sm mb-4" style="color: var(--text-faint);">{{ 'admin.companies.noCurrenciesGranted' | translate }}</p>
+        } @else {
+          <div class="space-y-2 mb-4">
+            @for (cc of companyCurrencies(); track cc.id) {
+              <div class="flex items-center justify-between rounded-xl px-3.5 py-2.5" style="background: var(--bg-subtle-sm);">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold" style="background: var(--bg-subtle-md); color: var(--text-muted);">{{ cc.priority }}</span>
+                  <span class="text-sm font-medium" style="color: var(--text-base);">{{ cc.code }}</span>
+                  <span class="text-xs" style="color: var(--text-faint);">{{ cc.arabicName }}</span>
+                </div>
+                <button (click)="revokeCurrency(cc.id)" [disabled]="submitting()" class="w-7 h-7 rounded-lg flex items-center justify-center"
+                  style="color: rgba(239,68,68,0.6); background: rgba(239,68,68,0.08);" [title]="'admin.companies.revokeCurrency' | translate">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="flex gap-2 items-end pt-2" style="border-top: 1px solid var(--border);padding-top:14px">
+          <div class="flex-1">
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.grantCurrency' | translate }}</label>
+            <select class="modal-input" style="appearance:none;-webkit-appearance:none;" [value]="grantCurrencyId()" (change)="grantCurrencyId.set(+$any($event.target).value || null)" [disabled]="submitting()">
+              <option [value]="''">{{ 'admin.companies.selectCurrency' | translate }}</option>
+              @for (cur of availableCurrenciesToGrant(); track cur.id) {
+                <option [value]="cur.id">{{ cur.code }} — {{ cur.arabicName }}</option>
+              }
+            </select>
+          </div>
+          <div style="width:80px">
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.priority' | translate }}</label>
+            <input type="number" min="1" class="modal-input" [value]="grantPriority()" (input)="grantPriority.set(+$any($event.target).value || 1)" [disabled]="submitting()" />
+          </div>
+          <button (click)="grantCurrency()" [disabled]="submitting() || !grantCurrencyId()" class="h-[42px] px-4 rounded-xl text-sm font-semibold flex-shrink-0"
+            style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="(submitting() || !grantCurrencyId()) ? '0.5' : '1'">
+            {{ 'admin.companies.grant' | translate }}
+          </button>
+        </div>
+      }
     </div>
   </div>
 }

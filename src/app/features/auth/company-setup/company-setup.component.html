@@ -303,17 +303,8 @@
             </div>
           </div>
 
-          <!-- Currency + UTC Offset (required) -->
-          <div class="grid grid-cols-2 gap-3 mb-3">
-            <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
-                {{ 'setup.currencyLabel' | translate }} <span class="text-red-400/80">*</span>
-              </label>
-              <select formControlName="currency" class="auth-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
-                <option [ngValue]="CurrencyType.LYD" [style.background]="'var(--auth-card)'">{{ 'manager.currencyTypes.0' | translate }}</option>
-                <option [ngValue]="CurrencyType.USD" [style.background]="'var(--auth-card)'">{{ 'manager.currencyTypes.1' | translate }}</option>
-              </select>
-            </div>
+          <!-- UTC Offset (required) -->
+          <div class="mb-3">
             <div>
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
                 {{ 'setup.utcOffsetLabel' | translate }} <span class="text-red-400/80">*</span>

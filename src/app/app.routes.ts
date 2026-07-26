@@ -109,6 +109,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/agents/agents.component').then(m => m.AgentsComponent),
       },
+      {
+        path: 'countries',
+        title: 'الدول',
+        loadComponent: () =>
+          import('./features/admin/countries/countries.component').then(m => m.CountriesComponent),
+      },
+      {
+        path: 'currencies',
+        title: 'العملات',
+        loadComponent: () =>
+          import('./features/admin/currencies/currencies.component').then(m => m.CurrenciesComponent),
+      },
     ],
   },
 

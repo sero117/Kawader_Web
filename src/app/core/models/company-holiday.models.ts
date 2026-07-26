@@ -14,10 +14,16 @@ export interface CompanyHoliday {
 
 export interface CreateCompanyHolidayRequest {
   name: string;
-  date: string;
+  startDate: string;
+  endDate: string;
   holidayRecurrence: HolidayRecurrence;
   isPaid: boolean;
   idempotencyKey: string;
+}
+
+/** POST /companyholidays now creates one row per day in the range and returns all their ids. */
+export interface CreateCompanyHolidayResponse {
+  ids: number[];
 }
 
 export interface UpdateCompanyHolidayRequest {

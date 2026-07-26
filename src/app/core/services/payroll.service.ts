@@ -15,6 +15,8 @@ import {
   UpdatePayslipRequest,
   GetPayrollsParams,
   GetPayrollDetailParams,
+  UncoveredEmployee,
+  GetUncoveredParams,
   PagedResult,
 } from '../models/payroll.models';
 
@@ -91,5 +93,14 @@ export class PayrollService {
 
   pay(payrollRunId: number): Observable<void> {
     return this.api.put<void>(`${this.baseUrl}/${payrollRunId}/pay`, {});
+  }
+
+  /** Active/probation employees with no payslip anywhere in the given period, grouped
+   *  by currency in the UI — an empty array means the period is fully covered. */
+  getUncovered(params: GetUncoveredParams): Observable<UncoveredEmployee[]> {
+    const p = new HttpParams()
+      .set('periodStart', params.periodStart)
+      .set('periodEnd',   params.periodEnd);
+    return this.api.get<UncoveredEmployee[]>(`${this.baseUrl}/uncovered`, p);
   }
 }

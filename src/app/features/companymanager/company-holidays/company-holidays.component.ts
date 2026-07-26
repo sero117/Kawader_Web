@@ -50,7 +50,8 @@ export class CompanyHolidaysComponent implements OnInit {
 
   addForm = this.fb.group({
     name:              ['', [Validators.required, Validators.maxLength(200)]],
-    date:              ['', [Validators.required]],
+    startDate:         ['', [Validators.required]],
+    endDate:           ['', [Validators.required]],
     holidayRecurrence: [HolidayRecurrence.None, [Validators.required]],
     isPaid:            [true, [Validators.required]],
   });
@@ -117,20 +118,35 @@ export class CompanyHolidaysComponent implements OnInit {
 
   submitAdd(): void {
     if (this.addForm.invalid) { this.addForm.markAllAsTouched(); return; }
+    const v = this.addForm.value;
+    const start = new Date(v.startDate!);
+    const end   = new Date(v.endDate!);
+    if (end < start) {
+      this.modalError.set(this.lang.t('manager.companyHolidays.endBeforeStart'));
+      return;
+    }
+    const rangeDays = Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
+    if (rangeDays >= 366) {
+      this.modalError.set(this.lang.t('manager.companyHolidays.rangeTooLong'));
+      return;
+    }
     this.submitting.set(true);
     this.modalError.set(null);
-    const v = this.addForm.value;
     this.holidayService.create({
       name:              v.name!,
-      date:              v.date!,
+      startDate:         v.startDate!,
+      endDate:           v.endDate!,
       holidayRecurrence: v.holidayRecurrence!,
       isPaid:            v.isPaid!,
       idempotencyKey:    crypto.randomUUID(),
     }).subscribe({
-      next: () => {
+      next: (res: any) => {
         this.submitting.set(false);
         this.showAddModal.set(false);
-        this.flash(this.lang.t('manager.companyHolidays.added'));
+        const count = res?.ids?.length ?? 1;
+        this.flash(count > 1
+          ? this.lang.t('manager.companyHolidays.addedMany').replace('{count}', String(count))
+          : this.lang.t('manager.companyHolidays.added'));
         this.filter.patch({ pageNumber: 1 });
         this.loadHolidays();
       },

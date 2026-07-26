@@ -65,8 +65,8 @@ export class EmployeePayrollModalComponent implements OnInit {
   incentivesLoading    = signal(false);
   incentivesListError  = signal<string | null>(null);
   incentivesHasMore    = signal(false);
-  incentivesFilter     = signal<DateFilter & { type: IncentiveType | null }>({
-    fromDate: '', toDate: '', type: null, pageNumber: 1, pageSize: this.PAGE_SIZE,
+  incentivesFilter     = signal<DateFilter & { type: IncentiveType | null; isConsumed: boolean | null }>({
+    fromDate: '', toDate: '', type: null, isConsumed: null, pageNumber: 1, pageSize: this.PAGE_SIZE,
   });
   incentivesFilterErr  = signal<string | null>(null);
 
@@ -75,8 +75,8 @@ export class EmployeePayrollModalComponent implements OnInit {
   deductionsLoading    = signal(false);
   deductionsListError  = signal<string | null>(null);
   deductionsHasMore    = signal(false);
-  deductionsFilter     = signal<DateFilter & { type: DeductionType | null }>({
-    fromDate: '', toDate: '', type: null, pageNumber: 1, pageSize: this.PAGE_SIZE,
+  deductionsFilter     = signal<DateFilter & { type: DeductionType | null; isConsumed: boolean | null }>({
+    fromDate: '', toDate: '', type: null, isConsumed: null, pageNumber: 1, pageSize: this.PAGE_SIZE,
   });
   deductionsFilterErr  = signal<string | null>(null);
 
@@ -191,6 +191,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     if (f.fromDate) params.fromDate = f.fromDate;
     if (f.toDate)   params.toDate   = f.toDate;
     if (f.type !== null) params.type = f.type;
+    if (f.isConsumed !== null) params.isConsumed = f.isConsumed;
 
     this.incentiveService.getAll(this.employee.id, params).subscribe({
       next: (res: any) => {
@@ -214,12 +215,17 @@ export class EmployeePayrollModalComponent implements OnInit {
     this.loadIncentives();
   }
 
-  patchIncentiveFilter(patch: Partial<DateFilter & { type: IncentiveType | null }>): void {
+  patchIncentiveFilter(patch: Partial<DateFilter & { type: IncentiveType | null; isConsumed: boolean | null }>): void {
     this.incentivesFilter.update(f => ({ ...f, ...patch }));
   }
 
   onIncentiveTypeFilterChange(value: string): void {
     this.patchIncentiveFilter({ type: value === '' ? null : (Number(value) as IncentiveType) });
+  }
+
+  onIncentiveConsumedFilterChange(value: string): void {
+    this.patchIncentiveFilter({ isConsumed: value === '' ? null : value === 'true' });
+    this.applyIncentiveFilter();
   }
 
   prevIncentivePage(): void {
@@ -247,6 +253,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     if (f.fromDate) params.fromDate = f.fromDate;
     if (f.toDate)   params.toDate   = f.toDate;
     if (f.type !== null) params.type = f.type;
+    if (f.isConsumed !== null) params.isConsumed = f.isConsumed;
 
     this.deductionService.getAll(this.employee.id, params).subscribe({
       next: (res: any) => {
@@ -270,12 +277,17 @@ export class EmployeePayrollModalComponent implements OnInit {
     this.loadDeductions();
   }
 
-  patchDeductionFilter(patch: Partial<DateFilter & { type: DeductionType | null }>): void {
+  patchDeductionFilter(patch: Partial<DateFilter & { type: DeductionType | null; isConsumed: boolean | null }>): void {
     this.deductionsFilter.update(f => ({ ...f, ...patch }));
   }
 
   onDeductionTypeFilterChange(value: string): void {
     this.patchDeductionFilter({ type: value === '' ? null : (Number(value) as DeductionType) });
+  }
+
+  onDeductionConsumedFilterChange(value: string): void {
+    this.patchDeductionFilter({ isConsumed: value === '' ? null : value === 'true' });
+    this.applyDeductionFilter();
   }
 
   prevDeductionPage(): void {
@@ -353,7 +365,7 @@ export class EmployeePayrollModalComponent implements OnInit {
         this.flash(this.lang.t('manager.incentivesDeductions.incentiveUpdated'));
         this.loadIncentives();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to update incentive.')); },
+      error: err => { this.submitting.set(false); this.modalError.set(this.consumedAwareErr(err, 'Failed to update incentive.')); },
     });
   }
 
@@ -375,7 +387,11 @@ export class EmployeePayrollModalComponent implements OnInit {
         this.incentives.update(list => list.filter(i => i.id !== id));
         this.flash(this.lang.t('manager.incentivesDeductions.incentiveDeleted'));
       },
-      error: () => { this.submitting.set(false); this.showIncentiveDeleteModal.set(false); },
+      error: err => {
+        this.submitting.set(false);
+        this.showIncentiveDeleteModal.set(false);
+        if (err?.status === 412) this.flash(this.lang.t('errors.consumedItemLocked'));
+      },
     });
   }
 
@@ -442,7 +458,7 @@ export class EmployeePayrollModalComponent implements OnInit {
         this.flash(this.lang.t('manager.incentivesDeductions.deductionUpdated'));
         this.loadDeductions();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to update deduction.')); },
+      error: err => { this.submitting.set(false); this.modalError.set(this.consumedAwareErr(err, 'Failed to update deduction.')); },
     });
   }
 
@@ -464,7 +480,11 @@ export class EmployeePayrollModalComponent implements OnInit {
         this.deductions.update(list => list.filter(d => d.id !== id));
         this.flash(this.lang.t('manager.incentivesDeductions.deductionDeleted'));
       },
-      error: () => { this.submitting.set(false); this.showDeductionDeleteModal.set(false); },
+      error: err => {
+        this.submitting.set(false);
+        this.showDeductionDeleteModal.set(false);
+        if (err?.status === 412) this.flash(this.lang.t('errors.consumedItemLocked'));
+      },
     });
   }
 
@@ -764,6 +784,11 @@ export class EmployeePayrollModalComponent implements OnInit {
   private flash(msg: string): void {
     this.successMsg.set(msg);
     setTimeout(() => this.successMsg.set(null), 3500);
+  }
+
+  consumedAwareErr(err: any, fallback: string): string {
+    if (err?.status === 412) return this.lang.t('errors.consumedItemLocked');
+    return this.apiErr(err, fallback);
   }
 
   apiErr(err: any, fallback: string): string {

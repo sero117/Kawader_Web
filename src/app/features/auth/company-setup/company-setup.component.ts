@@ -12,7 +12,6 @@ import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
-import { CurrencyType } from '../../../core/models/company.models';
 import { Role } from '../../../core/models/auth.models';
 import { ServiceProblemDetails, extractErrorMessage } from '../../../core/models/problem-details.model';
 
@@ -72,8 +71,6 @@ export class CompanySetupComponent {
     confirmPassword: ['', [Validators.required]],
   }, { validators: passwordsMatch });
 
-  readonly CurrencyType = CurrencyType;
-
   // ── Step 3 form ──────────────────────────────────────────────────────────────
   step3Form = this.fb.group({
     companyName:   ['', [Validators.required, Validators.maxLength(200)]],
@@ -81,7 +78,6 @@ export class CompanySetupComponent {
     landlinePhone: ['', [Validators.pattern(/^\d{7,10}$/)]],
     businessField: ['', [Validators.maxLength(200)]],
     companyType:   [''],
-    currency:      [CurrencyType.LYD, [Validators.required]],
     // Defaults to the browser's own timezone offset — still editable by hand.
     utcOffset:     [Math.round(-new Date().getTimezoneOffset() / 60), [Validators.required, Validators.min(-12), Validators.max(14)]],
     latitude:      [null as number | null, [Validators.min(-90), Validators.max(90)]],
@@ -237,7 +233,6 @@ export class CompanySetupComponent {
     if (v.businessField?.trim()) fd.append('businessField',  v.businessField.trim());
     if (v.companyType != null && v.companyType !== '')
       fd.append('companyType', v.companyType);
-    fd.append('currency',   v.currency!.toString());
     fd.append('utcOffset',  v.utcOffset!.toString());
     if (v.latitude  != null) fd.append('latitude',  v.latitude.toString());
     if (v.longitude != null) fd.append('longitude', v.longitude.toString());

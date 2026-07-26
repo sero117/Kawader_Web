@@ -27,6 +27,7 @@
     "saving": "جارٍ الحفظ…",
     "deleting": "جارٍ الحذف…",
     "close": "إغلاق",
+    "hide": "إخفاء",
     "saveFailed": "فشل الحفظ. حاول مجدداً.",
     "success": {
       "added": "تمت الإضافة بنجاح",
@@ -59,7 +60,9 @@
     "cards": "الكروت",
     "subscriptions": "الاشتراكات",
     "sectionSubscriptions": "الاشتراكات",
-    "agents": "المندوبون"
+    "agents": "المندوبون",
+    "countries": "الدول",
+    "currencies": "العملات"
   },
   "auth": {
     "loginSuccess": "أهلاً وسهلاً",
@@ -150,7 +153,8 @@
     "latRange": "يجب أن تكون بين -90 و 90",
     "lngRange": "يجب أن تكون بين -180 و 180",
     "salaryMin": "يجب أن يكون أكبر من 0",
-    "utcRange": "يجب أن يكون بين -12 و 14"
+    "utcRange": "يجب أن يكون بين -12 و 14",
+    "selectCurrency": "اختر العملة"
   },
   "admin": {
     "overview": {
@@ -221,7 +225,16 @@
       "prev": "السابق",
       "next": "التالي",
       "agentLabel": "اسم المندوب",
-      "noAgent": "بدون مندوب"
+      "noAgent": "بدون مندوب",
+      "countryLabel": "الدولة",
+      "selectCountry": "اختر الدولة…",
+      "manageCurrencies": "إدارة العملات",
+      "noCurrenciesGranted": "لم يتم منح أي عملات لهذه الشركة بعد.",
+      "grantCurrency": "منح عملة",
+      "selectCurrency": "اختر العملة…",
+      "priority": "الأولوية",
+      "grant": "منح",
+      "revokeCurrency": "سحب"
     },
     "wizard": {
       "title": "إضافة شركة جديدة",
@@ -305,7 +318,10 @@
       "isRecommended": "مميزة (موصى بها)",
       "nameRequired": "اسم الخطة مطلوب.",
       "confirmDelete": "حذف الخطة؟",
-      "confirmDeleteMsg": "سيتم حذف الخطة نهائياً:"
+      "confirmDeleteMsg": "سيتم حذف الخطة نهائياً:",
+      "usdBanner": "جميع أسعار الخطط بالدولار الأمريكي.",
+      "usdMissingError": "لا يمكن إنشاء خطة قبل تعريف عملة الدولار الأمريكي (USD).",
+      "goToCurrencies": "الذهاب إلى العملات ←"
     },
     "cards": {
       "title": "كروت الاشتراك",
@@ -353,7 +369,8 @@
       "colStart": "تاريخ البداية",
       "colEnd": "تاريخ الانتهاء",
       "colLimits": "الحدود",
-      "empty": "لا توجد اشتراكات بعد"
+      "empty": "لا توجد اشتراكات بعد",
+      "viewCompany": "عرض الشركة"
     },
     "accounts": {
       "title": "الحسابات",
@@ -413,8 +430,62 @@
       "country": "الدولة",
       "phoneLockedHint": "لا يمكن تغيير رقم الهاتف بعد توثيق المندوب.",
       "nameRequired": "الاسم الأول واسم العائلة مطلوبان.",
+      "selectCountry": "اختر الدولة",
       "confirmDelete": "حذف المندوب؟",
       "confirmDeleteMsg": "هل أنت متأكد من حذف"
+    },
+    "countries": {
+      "title": "الدول",
+      "subtitle": "إدارة الدول التي يمكن ربط الشركات والمندوبين بها.",
+      "addCountry": "إضافة دولة",
+      "editCountry": "تعديل دولة",
+      "searchName": "بحث بالاسم…",
+      "empty": "لا توجد دول بعد.",
+      "colArabicName": "الاسم بالعربي",
+      "colEnglishName": "الاسم بالإنجليزي",
+      "colLocked": "مقفلة",
+      "colCreated": "تاريخ الإنشاء",
+      "colActions": "الإجراءات",
+      "locked": "مقفلة",
+      "lockedEditHint": "هذه الدولة مقفلة — لا يزال بالإمكان تعديلها، لكن لا يمكن حذفها.",
+      "lockedDeleteHint": "هذه الدولة مستخدَمة من قِبل شركة أو مندوب ولا يمكن حذفها.",
+      "arabicName": "الاسم بالعربي",
+      "englishName": "الاسم بالإنجليزي",
+      "nameRequired": "الاسم بالعربي والإنجليزي مطلوبان.",
+      "confirmDelete": "حذف الدولة؟",
+      "confirmDeleteMsg": "هل أنت متأكد من حذف"
+    },
+    "currencies": {
+      "title": "العملات",
+      "subtitle": "إدارة العملات التي يمكن للشركات دفع رواتب موظفيها بها.",
+      "addCurrency": "إضافة عملة",
+      "editCurrency": "تعديل عملة",
+      "searchCode": "بحث بالرمز…",
+      "searchName": "بحث بالاسم…",
+      "empty": "لا توجد عملات بعد.",
+      "colArabicName": "الاسم بالعربي",
+      "colEnglishName": "الاسم بالإنجليزي",
+      "colCode": "الرمز",
+      "colSymbol": "العلامة",
+      "colRate": "سعر الصرف (لكل دولار)",
+      "colActions": "الإجراءات",
+      "baseCurrency": "العملة الأساسية",
+      "viewRates": "سجل أسعار الصرف",
+      "arabicName": "الاسم بالعربي",
+      "englishName": "الاسم بالإنجليزي",
+      "code": "الرمز",
+      "symbol": "العلامة",
+      "rate": "سعر الصرف",
+      "usdRateLockedHint": "سعر صرف الدولار دائماً 1 ولا يمكن تغييره.",
+      "rateChangeHint": "تغيير سعر الصرف هنا يسجل قيداً جديداً في سجل الأسعار.",
+      "fieldsRequired": "جميع الحقول مطلوبة.",
+      "rateMustBePositive": "يجب أن يكون سعر الصرف أكبر من 0.",
+      "confirmDelete": "حذف العملة؟",
+      "confirmDeleteMsg": "هل أنت متأكد من حذف",
+      "ratesTitle": "سجل أسعار الصرف",
+      "ratesEmpty": "لا يوجد سجل أسعار صرف بعد.",
+      "effectiveFrom": "ساري من",
+      "change": "التغيّر"
     }
   },
   "dashboard": {
@@ -736,6 +807,8 @@
       "hireDateLabel": "تاريخ التوظيف",
       "contractTypeLabel": "نوع العقد",
       "baseSalaryLabel": "الراتب الأساسي",
+      "currencyLabel": "العملة",
+      "selectCurrency": "اختر العملة…",
       "workStartTimeLabel": "بداية الدوام",
       "workEndTimeLabel": "نهاية الدوام",
       "emergencyContactRelationLabel": "صلة الاتصال الطارئ",
@@ -758,6 +831,9 @@
       "hireDateLabel": "تاريخ التوظيف",
       "contractTypeLabel": "نوع العقد",
       "baseSalaryLabel": "الراتب الأساسي",
+      "currencyLabel": "العملة",
+      "selectCurrency": "اختر العملة…",
+      "currencyChangeWarning": "تغيير العملة يُعتبر تغييراً في الراتب. كشوفات الرواتب الصادرة سابقاً تحتفظ بعملتها الأصلية.",
       "workStartTimeLabel": "بداية الدوام",
       "workEndTimeLabel": "نهاية الدوام",
       "emergencyContactRelationLabel": "صلة الاتصال الطارئ",
@@ -1143,7 +1219,14 @@
       "incentiveDeleted": "تم حذف الحافز.",
       "deductionAdded": "تمت إضافة الخصم.",
       "deductionUpdated": "تم تحديث الخصم.",
-      "deductionDeleted": "تم حذف الخصم."
+      "deductionDeleted": "تم حذف الخصم.",
+      "filterConsumed": "الصرف",
+      "consumedAll": "الكل",
+      "consumedPending": "لا تزال قيد الدفع في الدفعة القادمة",
+      "consumedOnly": "المصروفة فقط",
+      "consumedBadge": "مصروف",
+      "consumedByPayslip": "تم صرفه ضمن كشف راتب",
+      "consumedLockedHint": "لا يمكن تعديله أو حذفه — تم صرفه ضمن كشف راتب. احذف كشف الراتب المسودة أو الدفعة لإعادته قابلاً للتعديل."
     },
     "holidayRecurrence": {
       "0": "مرة واحدة",
@@ -1177,7 +1260,13 @@
       "isPaidLabel": "عطلة مدفوعة",
       "added": "تمت إضافة العطلة.",
       "updated": "تم تحديث العطلة.",
-      "deleted": "تم حذف العطلة."
+      "deleted": "تم حذف العطلة.",
+      "startDateLabel": "تاريخ البداية",
+      "endDateLabel": "تاريخ النهاية",
+      "rangeHint": "المدى الزمني ينشئ يوم عطلة واحد لكل يوم. ليوم واحد فقط، استخدم نفس التاريخ مرتين.",
+      "endBeforeStart": "يجب أن يكون تاريخ النهاية بعد أو يساوي تاريخ البداية.",
+      "rangeTooLong": "يجب أن تكون المدة أقل من 366 يوماً.",
+      "addedMany": "تم إنشاء {count} يوم عطلة."
     },
     "leaves": {
       "tab": "الإجازات",
@@ -1257,6 +1346,15 @@
       "page": "صفحة",
       "prev": "السابق",
       "next": "التالي",
+      "colCurrency": "العملة",
+      "currencyLabel": "العملة",
+      "selectCurrency": "اختر العملة…",
+      "errSameCurrencyOverlap": "يوجد كشف بنفس العملة يغطي هذه الفترة",
+      "errCurrencyNotAllowed": "العملة المحددة غير متاحة لدولة شركتك",
+      "errMixedCurrency": "الموظفين المحددين رواتبهم بعملة مختلفة عن كشف الرواتب",
+      "uncoveredMsg": "{count} موظف غير مشمولين بأي كشف راتب لهذه الفترة ({currency})",
+      "createMissingRun": "إنشاء الكشف الناقص",
+      "showEmployees": "عرض الموظفين",
       "periodStartLabel": "بداية الفترة",
       "periodEndLabel": "نهاية الفترة",
       "periodRangeError": "يجب أن تكون نهاية الفترة بعد أو تساوي بدايتها.",
@@ -1454,7 +1552,9 @@
     "resetting": "جارٍ الإعادة…"
   },
   "errors": {
-    "unexpected": "حدث خطأ غير متوقع"
+    "unexpected": "حدث خطأ غير متوقع",
+    "consumedItemLocked": "لا يمكن تعديل بند تم صرفه ضمن كشف راتب",
+    "noCountryForCompany": "لم يتم تحديد دولة لشركتك — تواصل مع مدير النظام"
   },
   "employee": {
     "subtitle0": "مساحة العمل الشخصية",

@@ -11,6 +11,8 @@ export interface Incentive {
   date: string;
   reason?: string | null;
   createdAt: string;
+  isConsumed: boolean;
+  payslipId?: number | null;
 }
 
 export interface CreateIncentiveRequest {
@@ -34,4 +36,5 @@ export interface GetIncentivesParams {
   fromDate?: string;
   toDate?: string;
   type?: IncentiveType | null;
+  isConsumed?: boolean | null;
 }

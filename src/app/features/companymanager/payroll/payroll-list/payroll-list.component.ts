@@ -1,10 +1,13 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { TranslatePipe } from '../../../../core/pipes/translate.pipe';
+import { LanguageService } from '../../../../core/services/language.service';
 import { UrlFilter } from '../../../../core/utils/url-filter';
 import { PayrollService } from '../../../../core/services/payroll.service';
-import { PayrollRun, PayrollStatus } from '../../../../core/models/payroll.models';
+import { CurrencyService } from '../../../../core/services/currency.service';
+import { PayrollRun, PayrollStatus, UncoveredEmployee } from '../../../../core/models/payroll.models';
+import { Currency } from '../../../../core/models/currency.models';
 
 function periodRangeValidator(group: AbstractControl): ValidationErrors | null {
   const start = group.get('periodStart')?.value;
@@ -19,9 +22,25 @@ function periodRangeValidator(group: AbstractControl): ValidationErrors | null {
   templateUrl: './payroll-list.component.html',
 })
 export class PayrollListComponent implements OnInit {
-  private readonly payrollService = inject(PayrollService);
-  private readonly fb             = inject(FormBuilder);
-  private readonly router         = inject(Router);
+  private readonly payrollService  = inject(PayrollService);
+  private readonly currencyService = inject(CurrencyService);
+  private readonly fb              = inject(FormBuilder);
+  private readonly router          = inject(Router);
+  private readonly lang            = inject(LanguageService);
+
+  myCurrencies = signal<Currency[]>([]);
+
+  uncovered        = signal<UncoveredEmployee[]>([]);
+  uncoveredGroups   = computed(() => {
+    const groups = new Map<string, UncoveredEmployee[]>();
+    for (const e of this.uncovered()) {
+      const key = e.currencyCode;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(e);
+    }
+    return Array.from(groups.entries()).map(([currencyCode, employees]) => ({ currencyCode, employees }));
+  });
+  uncoveredExpanded = signal(false);
 
   readonly STATUSES: PayrollStatus[] = ['Draft', 'Approved', 'Paid'];
 
@@ -43,11 +62,18 @@ export class PayrollListComponent implements OnInit {
   deleteTargetId  = signal<number | null>(null);
 
   createForm = this.fb.group({
+    currencyId:  [null as number | null, [Validators.required]],
     periodStart: ['', [Validators.required]],
     periodEnd:   ['', [Validators.required]],
   }, { validators: periodRangeValidator });
 
-  ngOnInit(): void { this.loadRuns(); }
+  ngOnInit(): void {
+    this.loadRuns();
+    this.currencyService.getMe().subscribe({
+      next: list => this.myCurrencies.set(list ?? []),
+      error: () => {},
+    });
+  }
 
   loadRuns(): void {
     this.loading.set(true);
@@ -62,12 +88,38 @@ export class PayrollListComponent implements OnInit {
         this.runs.set(res.items);
         this.hasMore.set(res.hasNextPage);
         this.loading.set(false);
+        this.loadUncovered();
       },
       error: err => {
         this.loading.set(false);
         this.listError.set(this.apiErr(err, 'Failed to load payroll runs.'));
       },
     });
+  }
+
+  /** Uses the current run's period as a best-effort default range for the coverage
+   *  check — falls back to the current calendar month when no runs exist yet. */
+  loadUncovered(): void {
+    const runs = this.runs();
+    let periodStart: string;
+    let periodEnd: string;
+    if (runs.length > 0) {
+      periodStart = runs[0].periodStart;
+      periodEnd   = runs[0].periodEnd;
+    } else {
+      const now = new Date();
+      periodStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().substring(0, 10);
+      periodEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().substring(0, 10);
+    }
+    this.payrollService.getUncovered({ periodStart, periodEnd }).subscribe({
+      next: list => this.uncovered.set(list ?? []),
+      error: () => this.uncovered.set([]),
+    });
+  }
+
+  createRunForCurrency(currencyId: number): void {
+    this.openCreate();
+    this.createForm.patchValue({ currencyId });
   }
 
   onStatusFilterChange(value: string): void {
@@ -92,7 +144,7 @@ export class PayrollListComponent implements OnInit {
   }
 
   openCreate(): void {
-    this.createForm.reset();
+    this.createForm.reset({ currencyId: this.myCurrencies()[0]?.id ?? null });
     this.modalError.set(null);
     this.showCreateModal.set(true);
   }
@@ -103,6 +155,7 @@ export class PayrollListComponent implements OnInit {
     this.modalError.set(null);
     const v = this.createForm.value;
     this.payrollService.create({
+      currencyId:     v.currencyId!,
       periodStart:    v.periodStart!,
       periodEnd:      v.periodEnd!,
       idempotencyKey: crypto.randomUUID(),
@@ -122,7 +175,18 @@ export class PayrollListComponent implements OnInit {
           this.loadRuns();
         }
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to create payroll run.')); },
+      error: err => {
+        this.submitting.set(false);
+        if (err?.status === 409) {
+          this.modalError.set(this.lang.t('manager.payroll.errSameCurrencyOverlap'));
+          return;
+        }
+        if (err?.status === 412) {
+          this.modalError.set(this.lang.t('manager.payroll.errCurrencyNotAllowed'));
+          return;
+        }
+        this.modalError.set(this.apiErr(err, 'Failed to create payroll run.'));
+      },
     });
   }
 

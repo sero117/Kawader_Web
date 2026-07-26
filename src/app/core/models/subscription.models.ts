@@ -11,6 +11,7 @@ export interface Subscription {
   status: SubscriptionStatus;
   startDate: string;
   endDate: string;
+  companyId?: number;
   companyName?: string;
   maxEmployees: number;
   maxSections: number;

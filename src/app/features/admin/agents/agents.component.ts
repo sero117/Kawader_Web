@@ -4,7 +4,9 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { AgentService } from '../../../core/services/agent.service';
-import { Agent, Country, CreateAgentRequest, UpdateAgentRequest } from '../../../core/models/agent.models';
+import { Agent, CreateAgentRequest, UpdateAgentRequest } from '../../../core/models/agent.models';
+import { CountryService } from '../../../core/services/country.service';
+import { Country } from '../../../core/models/country.models';
 
 @Component({
   selector: 'app-agents',
@@ -81,7 +83,7 @@ import { Agent, Country, CreateAgentRequest, UpdateAgentRequest } from '../../..
                     <td style="color: var(--text-base); font-weight: 600;">{{ a.firstName }} {{ a.lastName }}</td>
                     <td style="color: var(--text-faint);">{{ a.phoneNumber }}</td>
                     <td style="color: var(--text-faint);">{{ a.email || '—' }}</td>
-                    <td style="color: var(--text-faint);">{{ ('countries.' + a.country) | translate }}</td>
+                    <td style="color: var(--text-faint);">{{ countryName(a) }}</td>
                     <td>
                       <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
                         [style.background]="a.isVerified ? 'rgba(52,211,153,0.1)' : 'var(--bg-subtle-sm)'"
@@ -160,17 +162,12 @@ import { Agent, Country, CreateAgentRequest, UpdateAgentRequest } from '../../..
           </div>
           <div class="form-field form-field-full">
             <label class="form-label">{{ 'admin.agents.country' | translate }}</label>
-            <div style="display:flex;gap:8px;margin-top:2px;flex-wrap:wrap">
-              @for (c of countries; track c.value) {
-                <label style="flex:1;min-width:100px;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s"
-                  [style.borderColor]="form.country === c.value ? 'var(--nav-accent)' : 'var(--border)'"
-                  [style.background]="form.country === c.value ? 'color-mix(in srgb, var(--nav-accent) 8%, transparent)' : 'transparent'">
-                  <input type="radio" name="agentCountry" [value]="c.value" [checked]="form.country === c.value"
-                    (change)="form.country = c.value" style="accent-color:var(--nav-accent)" [disabled]="submitting()" />
-                  <span style="font-weight:600;font-size:0.85rem">{{ c.label }}</span>
-                </label>
+            <select class="form-input" [value]="form.countryId" (change)="form.countryId = +$any($event.target).value" [disabled]="submitting()">
+              <option [value]="0" disabled>{{ 'admin.agents.selectCountry' | translate }}</option>
+              @for (c of countries(); track c.id) {
+                <option [value]="c.id">{{ lang.current() === 'ar' ? c.arabicName : c.englishName }}</option>
               }
-            </div>
+            </select>
           </div>
         </div>
 
@@ -203,8 +200,9 @@ import { Agent, Country, CreateAgentRequest, UpdateAgentRequest } from '../../..
   `,
 })
 export class AgentsComponent implements OnInit {
-  private readonly agentService = inject(AgentService);
-  private readonly lang         = inject(LanguageService);
+  private readonly agentService  = inject(AgentService);
+  private readonly countryService = inject(CountryService);
+  readonly lang = inject(LanguageService);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     name:       '',
@@ -217,22 +215,29 @@ export class AgentsComponent implements OnInit {
   listError = signal<string | null>(null);
   hasMore   = signal(false);
 
+  countries = signal<Country[]>([]);
+
   showModal    = signal(false);
   editingAgent = signal<Agent | null>(null);
   deleteTarget = signal<Agent | null>(null);
   submitting   = signal(false);
   modalError   = signal<string | null>(null);
 
-  readonly countries: { value: Country; label: string }[] = [
-    { value: Country.Libya, label: 'ليبيا' },
-    { value: Country.Syria, label: 'سوريا' },
-    { value: Country.Iraq,  label: 'العراق' },
-  ];
+  form: { firstName: string; lastName: string; phoneNumber: string; email: string; countryId: number } =
+    { firstName: '', lastName: '', phoneNumber: '', email: '', countryId: 0 };
 
-  form: { firstName: string; lastName: string; phoneNumber: string; email: string; country: Country } =
-    { firstName: '', lastName: '', phoneNumber: '', email: '', country: Country.Libya };
+  ngOnInit(): void {
+    this.load();
+    this.countryService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+      next: res => this.countries.set(res.items ?? []),
+      error: () => {},
+    });
+  }
 
-  ngOnInit(): void { this.load(); }
+  countryName(a: Agent): string {
+    const name = this.lang.current() === 'ar' ? a.countryArabicName : a.countryEnglishName;
+    return name || '—';
+  }
 
   load(): void {
     this.loading.set(true);
@@ -267,7 +272,7 @@ export class AgentsComponent implements OnInit {
 
   openCreate(): void {
     this.editingAgent.set(null);
-    this.form = { firstName: '', lastName: '', phoneNumber: '', email: '', country: Country.Libya };
+    this.form = { firstName: '', lastName: '', phoneNumber: '', email: '', countryId: this.countries()[0]?.id ?? 0 };
     this.modalError.set(null);
     this.showModal.set(true);
   }
@@ -276,7 +281,7 @@ export class AgentsComponent implements OnInit {
     this.editingAgent.set(agent);
     this.form = {
       firstName: agent.firstName, lastName: agent.lastName,
-      phoneNumber: agent.phoneNumber, email: agent.email ?? '', country: agent.country,
+      phoneNumber: agent.phoneNumber, email: agent.email ?? '', countryId: agent.countryId,
     };
     this.modalError.set(null);
     this.showModal.set(true);
@@ -293,6 +298,10 @@ export class AgentsComponent implements OnInit {
       this.modalError.set(this.lang.t('validation.phone09'));
       return;
     }
+    if (!this.form.countryId) {
+      this.modalError.set(this.lang.t('admin.agents.selectCountry'));
+      return;
+    }
     this.submitting.set(true);
     this.modalError.set(null);
     const editing = this.editingAgent();
@@ -300,7 +309,7 @@ export class AgentsComponent implements OnInit {
     if (editing) {
       const payload: UpdateAgentRequest = {
         firstName: this.form.firstName, lastName: this.form.lastName,
-        phoneNumber: this.form.phoneNumber, email: this.form.email || undefined, country: this.form.country,
+        phoneNumber: this.form.phoneNumber, email: this.form.email || undefined, countryId: this.form.countryId,
       };
       this.agentService.update(editing.id, payload).subscribe({
         next: () => { this.submitting.set(false); this.closeModal(); this.load(); },
@@ -309,7 +318,7 @@ export class AgentsComponent implements OnInit {
     } else {
       const payload: CreateAgentRequest = {
         firstName: this.form.firstName, lastName: this.form.lastName,
-        phoneNumber: this.form.phoneNumber, email: this.form.email || undefined, country: this.form.country,
+        phoneNumber: this.form.phoneNumber, email: this.form.email || undefined, countryId: this.form.countryId,
         idempotencyKey: crypto.randomUUID(),
       };
       this.agentService.create(payload).subscribe({

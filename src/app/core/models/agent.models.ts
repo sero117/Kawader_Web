@@ -1,16 +1,12 @@
-export enum Country {
-  Libya = 1,
-  Syria = 2,
-  Iraq  = 3,
-}
-
 export interface Agent {
   id: number;
   firstName: string;
   lastName: string;
   phoneNumber: string;
   email?: string | null;
-  country: Country;
+  countryId: number;
+  countryArabicName?: string | null;
+  countryEnglishName?: string | null;
   isVerified: boolean;
   createdAt: string;
 }
@@ -20,7 +16,7 @@ export interface CreateAgentRequest {
   lastName: string;
   phoneNumber: string;
   email?: string | null;
-  country: Country;
+  countryId: number;
   idempotencyKey: string;
 }
 
@@ -29,7 +25,7 @@ export interface UpdateAgentRequest {
   lastName: string;
   phoneNumber: string;
   email?: string | null;
-  country: Country;
+  countryId: number;
 }
 
 export interface GetAgentsParams {

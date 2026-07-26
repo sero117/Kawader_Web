@@ -4,28 +4,31 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiService } from './api.service';
 import {
-  CreateCompanyHolidayRequest, CreateCompanyHolidayResponse, UpdateCompanyHolidayRequest, GetCompanyHolidaysParams,
-} from '../models/company-holiday.models';
+  Country, CreateCountryRequest, UpdateCountryRequest, GetCountriesParams, PagedResult,
+} from '../models/country.models';
 
 @Injectable({ providedIn: 'root' })
-export class CompanyHolidayService {
+export class CountryService {
   private readonly api     = inject(ApiService);
-  private readonly baseUrl = `${environment.apiUrl}/CompanyHolidays`;
+  private readonly baseUrl = `${environment.apiUrl}/Countries`;
 
-  getAll(params: GetCompanyHolidaysParams): Observable<any> {
+  getAll(params: GetCountriesParams): Observable<PagedResult<Country>> {
     let p = new HttpParams()
       .set('PageNumber', params.pageNumber)
       .set('PageSize',   params.pageSize);
     if (params.name) p = p.set('Name', params.name);
-    if (params.year) p = p.set('Year', params.year);
-    return this.api.get<any>(this.baseUrl, p);
+    return this.api.get<PagedResult<Country>>(this.baseUrl, p);
   }
 
-  create(payload: CreateCompanyHolidayRequest): Observable<CreateCompanyHolidayResponse> {
-    return this.api.post<CreateCompanyHolidayResponse>(this.baseUrl, payload);
+  getById(id: number): Observable<Country> {
+    return this.api.get<Country>(`${this.baseUrl}/${id}`);
   }
 
-  update(id: number, payload: UpdateCompanyHolidayRequest): Observable<{ id: number }> {
+  create(payload: CreateCountryRequest): Observable<{ id: number }> {
+    return this.api.post<{ id: number }>(this.baseUrl, payload);
+  }
+
+  update(id: number, payload: UpdateCountryRequest): Observable<{ id: number }> {
     return this.api.put<{ id: number }>(`${this.baseUrl}/${id}`, payload);
   }
 

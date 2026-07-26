@@ -1,6 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SubscriptionService } from '../../../core/services/subscription.service';
 import { PlanService } from '../../../core/services/plan.service';
 import { Subscription, SubscriptionStatus, GetSubscriptionsParams } from '../../../core/models/subscription.models';
@@ -12,7 +12,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
 @Component({
   selector: 'app-subscriptions',
   standalone: true,
-  imports: [TranslatePipe, DatePipe],
+  imports: [TranslatePipe, DatePipe, RouterLink],
   template: `
     <div class="page-content">
 
@@ -71,7 +71,15 @@ import { UrlFilter } from '../../../core/utils/url-filter';
             <tbody>
               @for (sub of subs(); track sub.id) {
                 <tr>
-                  <td style="font-weight:600">{{ sub.companyName ?? '—' }}</td>
+                  <td style="font-weight:600">
+                    @if (sub.companyId) {
+                      <a routerLink="/dashboard/admin/companies" style="color:inherit;text-decoration:underline" [title]="'admin.subscriptions.viewCompany' | translate">
+                        {{ sub.companyName ?? ('#' + sub.companyId) }}
+                      </a>
+                    } @else {
+                      {{ sub.companyName ?? '—' }}
+                    }
+                  </td>
                   <td>{{ sub.planName }}</td>
                   <td>
                     <span class="subs-status-badge" [class.subs-status-active]="sub.status === SubscriptionStatus.Active" [class.subs-status-expired]="sub.status === SubscriptionStatus.Expired" [class.subs-status-pending]="sub.status === SubscriptionStatus.Pending">
@@ -143,6 +151,7 @@ export class SubscriptionsComponent implements OnInit {
         const rawItems: any[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
         const items: Subscription[] = rawItems.map((s: any) => ({
           ...s,
+          companyId:   s.companyId ?? undefined,
           companyName: s.companyName ?? s.tenantName ?? s.organizationName ?? s.company ?? s.clientName ?? undefined,
         }));
         const total = raw?.totalCount ?? items.length;

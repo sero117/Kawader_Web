@@ -17,6 +17,7 @@ export class IncentiveService {
     if (params.fromDate)            p = p.set('fromDate', params.fromDate);
     if (params.toDate)              p = p.set('toDate',   params.toDate);
     if (params.type !== null && params.type !== undefined) p = p.set('type', params.type);
+    if (params.isConsumed !== null && params.isConsumed !== undefined) p = p.set('IsConsumed', params.isConsumed);
     return this.api.get<any>(`${this.empUrl}/${employeeId}/incentives`, p);
   }
 

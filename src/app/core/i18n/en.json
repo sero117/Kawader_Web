@@ -27,6 +27,7 @@
     "saving": "Saving…",
     "deleting": "Deleting…",
     "close": "Close",
+    "hide": "Hide",
     "saveFailed": "Save failed. Please try again.",
     "success": {
       "added": "Added successfully",
@@ -59,7 +60,9 @@
     "cards": "Cards",
     "subscriptions": "Subscriptions",
     "sectionSubscriptions": "Subscriptions",
-    "agents": "Agents"
+    "agents": "Agents",
+    "countries": "Countries",
+    "currencies": "Currencies"
   },
   "auth": {
     "loginSuccess": "Welcome back",
@@ -150,7 +153,8 @@
     "latRange": "Must be between -90 and 90",
     "lngRange": "Must be between -180 and 180",
     "salaryMin": "Must be greater than 0",
-    "utcRange": "Must be between -12 and 14"
+    "utcRange": "Must be between -12 and 14",
+    "selectCurrency": "Select a currency"
   },
   "admin": {
     "overview": {
@@ -221,7 +225,16 @@
       "prev": "Prev",
       "next": "Next",
       "agentLabel": "Agent Name",
-      "noAgent": "No agent"
+      "noAgent": "No agent",
+      "countryLabel": "Country",
+      "selectCountry": "Select a country…",
+      "manageCurrencies": "Manage Currencies",
+      "noCurrenciesGranted": "No currencies granted to this company yet.",
+      "grantCurrency": "Grant a currency",
+      "selectCurrency": "Select a currency…",
+      "priority": "Priority",
+      "grant": "Grant",
+      "revokeCurrency": "Revoke"
     },
     "wizard": {
       "title": "Add New Company",
@@ -305,7 +318,10 @@
       "isRecommended": "Featured (Recommended)",
       "nameRequired": "Plan name is required.",
       "confirmDelete": "Delete Plan?",
-      "confirmDeleteMsg": "This plan will be permanently removed:"
+      "confirmDeleteMsg": "This plan will be permanently removed:",
+      "usdBanner": "All plan prices are in USD.",
+      "usdMissingError": "A plan cannot be created before the US Dollar (USD) currency is defined.",
+      "goToCurrencies": "Go to Currencies →"
     },
     "cards": {
       "title": "Subscription Cards",
@@ -353,7 +369,8 @@
       "colStart": "Start Date",
       "colEnd": "End Date",
       "colLimits": "Limits",
-      "empty": "No subscriptions yet"
+      "empty": "No subscriptions yet",
+      "viewCompany": "View company"
     },
     "accounts": {
       "title": "Accounts",
@@ -413,8 +430,62 @@
       "country": "Country",
       "phoneLockedHint": "Phone number can't be changed after the agent is verified.",
       "nameRequired": "First and last name are required.",
+      "selectCountry": "Select a country",
       "confirmDelete": "Delete Agent?",
       "confirmDeleteMsg": "Are you sure you want to delete"
+    },
+    "countries": {
+      "title": "Countries",
+      "subtitle": "Manage the countries companies and agents can be linked to.",
+      "addCountry": "Add Country",
+      "editCountry": "Edit Country",
+      "searchName": "Search by name…",
+      "empty": "No countries yet.",
+      "colArabicName": "Arabic Name",
+      "colEnglishName": "English Name",
+      "colLocked": "Locked",
+      "colCreated": "Created",
+      "colActions": "Actions",
+      "locked": "Locked",
+      "lockedEditHint": "This country is locked — it can still be edited, but not deleted.",
+      "lockedDeleteHint": "This country is in use by a company or an agent and can't be deleted.",
+      "arabicName": "Arabic Name",
+      "englishName": "English Name",
+      "nameRequired": "Arabic and English names are required.",
+      "confirmDelete": "Delete Country?",
+      "confirmDeleteMsg": "Are you sure you want to delete"
+    },
+    "currencies": {
+      "title": "Currencies",
+      "subtitle": "Manage the currencies companies can pay employees in.",
+      "addCurrency": "Add Currency",
+      "editCurrency": "Edit Currency",
+      "searchCode": "Search by code…",
+      "searchName": "Search by name…",
+      "empty": "No currencies yet.",
+      "colArabicName": "Arabic Name",
+      "colEnglishName": "English Name",
+      "colCode": "Code",
+      "colSymbol": "Symbol",
+      "colRate": "Rate (per USD)",
+      "colActions": "Actions",
+      "baseCurrency": "Base Currency",
+      "viewRates": "Rate history",
+      "arabicName": "Arabic Name",
+      "englishName": "English Name",
+      "code": "Code",
+      "symbol": "Symbol",
+      "rate": "Rate",
+      "usdRateLockedHint": "USD's rate is always 1 and can't be changed.",
+      "rateChangeHint": "Changing the rate here records a new entry in the rate history.",
+      "fieldsRequired": "All fields are required.",
+      "rateMustBePositive": "Rate must be greater than 0.",
+      "confirmDelete": "Delete Currency?",
+      "confirmDeleteMsg": "Are you sure you want to delete",
+      "ratesTitle": "Rate History",
+      "ratesEmpty": "No rate history yet.",
+      "effectiveFrom": "Effective From",
+      "change": "Change"
     }
   },
   "dashboard": {
@@ -736,6 +807,8 @@
       "hireDateLabel": "Hire Date",
       "contractTypeLabel": "Contract Type",
       "baseSalaryLabel": "Base Salary",
+      "currencyLabel": "Currency",
+      "selectCurrency": "Select a currency…",
       "workStartTimeLabel": "Work Start",
       "workEndTimeLabel": "Work End",
       "emergencyContactRelationLabel": "Emergency Relation",
@@ -758,6 +831,9 @@
       "hireDateLabel": "Hire Date",
       "contractTypeLabel": "Contract Type",
       "baseSalaryLabel": "Base Salary",
+      "currencyLabel": "Currency",
+      "selectCurrency": "Select a currency…",
+      "currencyChangeWarning": "Changing the currency counts as a salary change. Already-issued payslips keep their original currency.",
       "workStartTimeLabel": "Work Start",
       "workEndTimeLabel": "Work End",
       "emergencyContactRelationLabel": "Emergency Relation",
@@ -1143,7 +1219,14 @@
       "incentiveDeleted": "Incentive deleted.",
       "deductionAdded": "Deduction added.",
       "deductionUpdated": "Deduction updated.",
-      "deductionDeleted": "Deduction deleted."
+      "deductionDeleted": "Deduction deleted.",
+      "filterConsumed": "Consumed",
+      "consumedAll": "All",
+      "consumedPending": "Still to be paid in the next run",
+      "consumedOnly": "Consumed only",
+      "consumedBadge": "Consumed",
+      "consumedByPayslip": "Consumed by payslip",
+      "consumedLockedHint": "Can't edit or delete — already paid in a payslip. Delete the draft payslip or run to release it."
     },
     "holidayRecurrence": {
       "0": "One-time",
@@ -1177,7 +1260,13 @@
       "isPaidLabel": "Paid holiday",
       "added": "Holiday added.",
       "updated": "Holiday updated.",
-      "deleted": "Holiday deleted."
+      "deleted": "Holiday deleted.",
+      "startDateLabel": "Start Date",
+      "endDateLabel": "End Date",
+      "rangeHint": "A range creates one holiday row per day. For a single day, use the same date twice.",
+      "endBeforeStart": "End date must be on or after start date.",
+      "rangeTooLong": "The range must be under 366 days.",
+      "addedMany": "Created {count} holiday days."
     },
     "leaves": {
       "tab": "Leaves",
@@ -1257,6 +1346,15 @@
       "page": "Page",
       "prev": "Prev",
       "next": "Next",
+      "colCurrency": "Currency",
+      "currencyLabel": "Currency",
+      "selectCurrency": "Select a currency…",
+      "errSameCurrencyOverlap": "A run in the same currency already covers this period.",
+      "errCurrencyNotAllowed": "This currency is not available for your company's country.",
+      "errMixedCurrency": "The selected employees are paid in a different currency than this payroll run.",
+      "uncoveredMsg": "{count} employees are not covered by any run for this period ({currency})",
+      "createMissingRun": "Create missing run",
+      "showEmployees": "Show employees",
       "periodStartLabel": "Period Start",
       "periodEndLabel": "Period End",
       "periodRangeError": "Period end must be on or after period start.",
@@ -1454,7 +1552,9 @@
     "resetting": "Resetting…"
   },
   "errors": {
-    "unexpected": "An unexpected error occurred"
+    "unexpected": "An unexpected error occurred",
+    "consumedItemLocked": "This item can't be edited — it has already been paid out in a payslip.",
+    "noCountryForCompany": "No country has been set for your company — contact your system administrator."
   },
   "employee": {
     "subtitle0": "Your personal workspace",

@@ -10,6 +10,7 @@ import {
   GetCompaniesParams,
   UpdateCompanyRequest,
 } from '../models/company.models';
+import { CompanyCurrency, GrantCompanyCurrencyRequest } from '../models/currency.models';
 import { ApiService } from './api.service';
 
 @Injectable({ providedIn: 'root' })
@@ -57,5 +58,20 @@ export class CompanyService {
 
   unfreeze(id: number): Observable<{ id: number }> {
     return this.api.patch<{ id: number }>(`${this.baseUrl}/${id}/unfreeze`, {});
+  }
+
+  /** Admin only — the company's granted currency set, ordered by its own priority. */
+  getCurrencies(companyId: number): Observable<CompanyCurrency[]> {
+    return this.api.get<CompanyCurrency[]>(`${this.baseUrl}/${companyId}/currencies`);
+  }
+
+  /** Response is { id: companyId }, not a link id. */
+  grantCurrency(companyId: number, payload: GrantCompanyCurrencyRequest): Observable<{ id: number }> {
+    return this.api.post<{ id: number }>(`${this.baseUrl}/${companyId}/currencies`, payload);
+  }
+
+  /** 412 if any employee or payroll run of this company is paid in it. */
+  revokeCurrency(companyId: number, currencyId: number): Observable<void> {
+    return this.api.delete<void>(`${this.baseUrl}/${companyId}/currencies/${currencyId}`);
   }
 }

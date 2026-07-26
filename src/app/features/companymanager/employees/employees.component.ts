@@ -12,8 +12,10 @@ import { ShiftLogService } from '../../../core/services/shift-log.service';
 import { ShiftService } from '../../../core/services/shift.service';
 import { BranchService } from '../../../core/services/branch.service';
 import { SectionService } from '../../../core/services/section.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { Branch } from '../../../core/models/branch.models';
 import { Section } from '../../../core/models/section.models';
+import { Currency } from '../../../core/models/currency.models';
 import {
   Employee, EmployeeType, EmployeeStatus, AttachmentType,
   GenderType, ContractType, RelationType,
@@ -38,6 +40,7 @@ export class EmployeesComponent implements OnInit {
   private readonly shiftService          = inject(ShiftService);
   private readonly branchService         = inject(BranchService);
   private readonly sectionService        = inject(SectionService);
+  private readonly currencyService       = inject(CurrencyService);
   private readonly fb                    = inject(FormBuilder);
   private readonly lang                  = inject(LanguageService);
   private readonly route                 = inject(ActivatedRoute);
@@ -50,6 +53,8 @@ export class EmployeesComponent implements OnInit {
   formBranches = signal<Branch[]>([]);
   addSections  = signal<Section[]>([]);
   editSections = signal<Section[]>([]);
+  myCurrencies = signal<Currency[]>([]);
+  originalEditCurrencyId = signal<number | null>(null);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     search:     '',
@@ -120,6 +125,7 @@ export class EmployeesComponent implements OnInit {
   deletingAttachType = signal<AttachmentType | null>(null);
   attachmentError    = signal<string | null>(null);
   attachedTypes      = signal<Set<AttachmentType>>(new Set());
+  attachmentUrls     = signal<Map<AttachmentType, string>>(new Map());
   // Cache persists for the lifetime of the component (page session)
   private readonly attachCache = new Map<number, Set<AttachmentType>>();
 
@@ -238,6 +244,7 @@ export class EmployeesComponent implements OnInit {
     hireDate:       ['', [Validators.required]],
     contractType:   [ContractType.FullTime, Validators.required],
     baseSalary:     [null as number | null, [Validators.required, Validators.min(0.01)]],
+    currencyId:     [null as number | null, [Validators.required]],
     internalNotes:  ['', [Validators.maxLength(1000)]],
   });
 
@@ -256,11 +263,16 @@ export class EmployeesComponent implements OnInit {
     hireDate:       ['', [Validators.required]],
     contractType:   [ContractType.FullTime, Validators.required],
     baseSalary:     [null as number | null, [Validators.required, Validators.min(0.01)]],
+    currencyId:     [null as number | null, [Validators.required]],
     internalNotes:  ['', [Validators.maxLength(1000)]],
   });
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
   ngOnInit(): void {
+    this.currencyService.getMe().subscribe({
+      next: list => this.myCurrencies.set(list ?? []),
+      error: () => {},
+    });
     this.branchId  = Number(this.route.snapshot.paramMap.get('branchId'));
     this.sectionId = Number(this.route.snapshot.paramMap.get('sectionId'));
     const state = history.state as { sectionName?: string };
@@ -377,6 +389,7 @@ export class EmployeesComponent implements OnInit {
       employeeRole: EmployeeType.Employee,
       gender:       GenderType.Male,
       contractType: ContractType.FullTime,
+      currencyId:   this.myCurrencies()[0]?.id ?? null,
     });
     this.addSections.set([]);
     this.modalError.set(null);
@@ -412,6 +425,7 @@ export class EmployeesComponent implements OnInit {
       hireDate:       v.hireDate!,
       contractType:   v.contractType!,
       baseSalary:     v.baseSalary!,
+      currencyId:     v.currencyId!,
       internalNotes:  v.internalNotes || undefined,
     }).subscribe({
       next: () => {
@@ -481,8 +495,10 @@ export class EmployeesComponent implements OnInit {
           hireDate:       e.hireDate       ? e.hireDate.substring(0, 10) : '',
           contractType:   e.contractType   ?? ContractType.FullTime,
           baseSalary:     e.baseSalary     ?? null,
+          currencyId:     e.currencyId     ?? this.myCurrencies()[0]?.id ?? null,
           internalNotes:  e.internalNotes  ?? '',
         });
+        this.originalEditCurrencyId.set(e.currencyId ?? null);
         if (e.branchId) this.loadSectionsInto(e.branchId, this.editSections);
       },
       error: () => { this.editLoading.set(false); },
@@ -512,6 +528,7 @@ export class EmployeesComponent implements OnInit {
       hireDate:       v.hireDate       || undefined,
       contractType:   v.contractType   ?? ContractType.FullTime,
       baseSalary:     v.baseSalary     ?? undefined,
+      currencyId:     v.currencyId     ?? undefined,
       internalNotes:  v.internalNotes  || undefined,
     }).subscribe({
       next: () => {
@@ -766,13 +783,36 @@ export class EmployeesComponent implements OnInit {
     return this.lang.t(`manager.dayOfWeek.${dow}`);
   }
 
+  currencySymbolFor(currencyId?: number | null): string {
+    if (!currencyId) return '';
+    return this.myCurrencies().find(c => c.id === currencyId)?.symbol ?? '';
+  }
+
   // ── Attachments modal open ─────────────────────────────────────────────────
   openAttach(emp: Employee, event: Event): void {
     event.stopPropagation();
     this.editEmployeeDetail.set(emp);
     this.attachmentError.set(null);
     this.attachedTypes.set(new Set(this.attachCache.get(emp.id) ?? []));
+    this.attachmentUrls.set(new Map());
     this.showAttachModal.set(true);
+    this.attachModalLoading.set(true);
+    this.employeeService.getAttachments(emp.id).subscribe({
+      next: (list: any) => {
+        const items: any[] = Array.isArray(list) ? list : (list?.data ?? []);
+        const types = new Set<AttachmentType>();
+        const urls = new Map<AttachmentType, string>();
+        for (const a of items) {
+          types.add(a.type);
+          if (a.url) urls.set(a.type, a.url);
+        }
+        this.attachedTypes.set(types);
+        this.attachmentUrls.set(urls);
+        this.attachCache.set(emp.id, types);
+        this.attachModalLoading.set(false);
+      },
+      error: () => { this.attachModalLoading.set(false); },
+    });
   }
 
   // ── Status History ─────────────────────────────────────────────────────────
@@ -937,9 +977,10 @@ export class EmployeesComponent implements OnInit {
     this.attachmentError.set(null);
 
     this.employeeService.uploadAttachment(empId, file, type).subscribe({
-      next: () => {
+      next: (url: string) => {
         this.uploadingType.set(null);
         this.attachedTypes.update(s => new Set([...s, type]));
+        this.attachmentUrls.update(m => new Map(m).set(type, url));
         if (!this.attachCache.has(empId)) this.attachCache.set(empId, new Set());
         this.attachCache.get(empId)!.add(type);
       },
@@ -957,6 +998,7 @@ export class EmployeesComponent implements OnInit {
       next: () => {
         this.deletingAttachType.set(null);
         this.attachedTypes.update(s => { const n = new Set(s); n.delete(type); return n; });
+        this.attachmentUrls.update(m => { const n = new Map(m); n.delete(type); return n; });
         this.attachCache.get(empId)?.delete(type);
       },
       error: () => { this.deletingAttachType.set(null); },

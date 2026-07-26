@@ -7,8 +7,12 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { CompanyService } from '../../../core/services/company.service';
 import { AgentService } from '../../../core/services/agent.service';
+import { CountryService } from '../../../core/services/country.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Agent } from '../../../core/models/agent.models';
+import { Country } from '../../../core/models/country.models';
+import { Currency, CompanyCurrency } from '../../../core/models/currency.models';
 import {
   Company, GetCompaniesParams,
 } from '../../../core/models/company.models';
@@ -20,12 +24,25 @@ import {
   templateUrl: './companies.component.html',
 })
 export class CompaniesComponent implements OnInit {
-  private readonly companyService = inject(CompanyService);
-  private readonly agentService   = inject(AgentService);
-  private readonly fb             = inject(FormBuilder);
-  private readonly snackbar       = inject(SnackbarService);
+  private readonly companyService  = inject(CompanyService);
+  private readonly agentService    = inject(AgentService);
+  private readonly countryService  = inject(CountryService);
+  private readonly currencyService = inject(CurrencyService);
+  private readonly fb              = inject(FormBuilder);
+  private readonly snackbar        = inject(SnackbarService);
 
-  agents = signal<Agent[]>([]);
+  agents         = signal<Agent[]>([]);
+  countries      = signal<Country[]>([]);
+  allCurrencies  = signal<Currency[]>([]);
+
+  // ── Company currency grants modal ─────────────────────────────────────────
+  showCurrenciesModal  = signal(false);
+  currenciesTarget     = signal<Company | null>(null);
+  companyCurrencies    = signal<CompanyCurrency[]>([]);
+  currenciesLoading    = signal(false);
+  currenciesError      = signal<string | null>(null);
+  grantCurrencyId      = signal<number | null>(null);
+  grantPriority        = signal<number>(1);
 
   // ── Frozen IDs persisted in localStorage (API list doesn't return isFrozen) ─
   private readonly FROZEN_KEY = 'kawader_frozen_companies';
@@ -85,6 +102,7 @@ export class CompaniesComponent implements OnInit {
   addForm = this.fb.group({
     phoneNumber: ['', [Validators.required, Validators.pattern(this.phonePattern)]],
     email:       ['', [Validators.email]],
+    countryId:   [null as number | null, [Validators.required]],
     agentId:     [null as number | null],
   });
 
@@ -102,6 +120,7 @@ export class CompaniesComponent implements OnInit {
   editForm = this.fb.group({
     phoneNumber: ['', [Validators.required, Validators.pattern(this.phonePattern)]],
     email:       ['', [Validators.email]],
+    countryId:   [null as number | null, [Validators.required]],
     agentId:     [null as number | null],
   });
 
@@ -112,6 +131,70 @@ export class CompaniesComponent implements OnInit {
       next: res => this.agents.set(res.items ?? []),
       error: () => {},
     });
+    this.countryService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+      next: res => this.countries.set(res.items ?? []),
+      error: () => {},
+    });
+    this.currencyService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+      next: res => this.allCurrencies.set(res.items ?? []),
+      error: () => {},
+    });
+  }
+
+  // ── Company currency grants ────────────────────────────────────────────────
+  openCurrencies(company: Company, event: Event): void {
+    event.stopPropagation();
+    this.currenciesTarget.set(company);
+    this.showCurrenciesModal.set(true);
+    this.currenciesError.set(null);
+    this.grantCurrencyId.set(null);
+    this.grantPriority.set(1);
+    this.loadCompanyCurrencies();
+  }
+
+  closeCurrenciesModal(): void { this.showCurrenciesModal.set(false); }
+
+  loadCompanyCurrencies(): void {
+    const company = this.currenciesTarget();
+    if (!company) return;
+    this.currenciesLoading.set(true);
+    this.companyService.getCurrencies(company.id).subscribe({
+      next: res => { this.companyCurrencies.set(res ?? []); this.currenciesLoading.set(false); },
+      error: (err: any) => { this.currenciesLoading.set(false); this.currenciesError.set(this.apiErr(err, 'Failed to load currencies.')); },
+    });
+  }
+
+  grantCurrency(): void {
+    const company = this.currenciesTarget();
+    const currencyId = this.grantCurrencyId();
+    if (!company || !currencyId) return;
+    this.submitting.set(true);
+    this.currenciesError.set(null);
+    this.companyService.grantCurrency(company.id, { currencyId, priority: this.grantPriority() }).subscribe({
+      next: () => {
+        this.submitting.set(false);
+        this.grantCurrencyId.set(null);
+        this.grantPriority.set(this.companyCurrencies().length + 2);
+        this.loadCompanyCurrencies();
+      },
+      error: (err: any) => { this.submitting.set(false); this.currenciesError.set(this.apiErr(err, 'Failed to grant currency.')); },
+    });
+  }
+
+  revokeCurrency(currencyId: number): void {
+    const company = this.currenciesTarget();
+    if (!company) return;
+    this.submitting.set(true);
+    this.currenciesError.set(null);
+    this.companyService.revokeCurrency(company.id, currencyId).subscribe({
+      next: () => { this.submitting.set(false); this.loadCompanyCurrencies(); },
+      error: (err: any) => { this.submitting.set(false); this.currenciesError.set(this.apiErr(err, 'Failed to revoke currency.')); },
+    });
+  }
+
+  availableCurrenciesToGrant(): Currency[] {
+    const grantedIds = new Set(this.companyCurrencies().map(c => c.id));
+    return this.allCurrencies().filter(c => !grantedIds.has(c.id));
   }
 
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
@@ -237,6 +320,7 @@ export class CompaniesComponent implements OnInit {
       phoneNumber:    this.addForm.value.phoneNumber!,
       email:          this.addForm.value.email || undefined,
       tenantId:       crypto.randomUUID(),
+      countryId:      this.addForm.value.countryId!,
       idempotencyKey: crypto.randomUUID(),
       agentId:        this.addForm.value.agentId || undefined,
     }).subscribe({
@@ -248,6 +332,8 @@ export class CompaniesComponent implements OnInit {
           this.showWizard.set(false);
           this.flash('Company created successfully!');
           const agentId = this.addForm.value.agentId || null;
+          const countryId = this.addForm.value.countryId ?? null;
+          const country = this.countries().find(c => c.id === countryId);
           const newId2  = typeof newId === 'number' ? newId : Number(newId);
           const newCompany: Company = {
             id:            newId2,
@@ -255,6 +341,9 @@ export class CompaniesComponent implements OnInit {
             email:         this.addForm.value.email || undefined,
             tenantId:      '',
             agentId,
+            countryId,
+            countryArabicName:  country?.arabicName ?? null,
+            countryEnglishName: country?.englishName ?? null,
             isCompleted:   false,
             isFrozen:      false,
             createdAt:     new Date().toISOString(),
@@ -306,6 +395,7 @@ export class CompaniesComponent implements OnInit {
     this.editForm.patchValue({
       phoneNumber: company.phoneNumber,
       email:       company.email ?? '',
+      countryId:   company.countryId ?? null,
       agentId:     (company as any).agentId ?? null,
     });
     this.modalError.set(null);
@@ -322,6 +412,7 @@ export class CompaniesComponent implements OnInit {
     this.companyService.update(id, {
       phoneNumber: this.editForm.value.phoneNumber || undefined,
       email:       this.editForm.value.email       || undefined,
+      countryId:   this.editForm.value.countryId   ?? undefined,
       agentId:     this.editForm.value.agentId      || undefined,
     }).subscribe({
       next: (res: any) => {
@@ -337,9 +428,14 @@ export class CompaniesComponent implements OnInit {
         }
         this.showEditModal.set(false);
         this.flash('Company updated.');
+        const countryId = this.editForm.value.countryId ?? null;
+        const country = this.countries().find(c => c.id === countryId);
         const patch = {
           phoneNumber: this.editForm.value.phoneNumber!,
           email:       this.editForm.value.email || undefined,
+          countryId,
+          countryArabicName:  country?.arabicName ?? null,
+          countryEnglishName: country?.englishName ?? null,
           agentId:     this.editForm.value.agentId ?? null,
         };
         this.saveAgentId(id, patch.agentId);
@@ -443,6 +539,15 @@ export class CompaniesComponent implements OnInit {
     if (!agentId) return null;
     const a = this.agents().find(ag => ag.id === agentId);
     return a ? `${a.firstName} ${a.lastName}` : null;
+  }
+
+  countryDisplayName(c: Company): string | null {
+    if (c.countryArabicName || c.countryEnglishName) {
+      return [c.countryArabicName, c.countryEnglishName].filter(Boolean).join(' / ');
+    }
+    if (!c.countryId) return null;
+    const country = this.countries().find(co => co.id === c.countryId);
+    return country ? `${country.arabicName} / ${country.englishName}` : null;
   }
 
   statusLabel(c: Company): { text: string; active: boolean; pending: boolean; frozen: boolean } {

@@ -97,8 +97,14 @@ export class PayrollDetailComponent implements OnInit {
   selectedEmployeeIds    = signal<Set<number>>(new Set());
 
   alreadyOnRunIds = computed(() => new Set((this.run()?.payslips ?? []).map(p => p.employeeId)));
-  pickableEmployees = computed(() =>
-    this.activeEmployees().filter(e => !this.alreadyOnRunIds().has(e.id)));
+  // Only employees paid in the run's own currency can be added — the picker never
+  // even shows a mismatched employee, so the user can't build an invalid selection.
+  pickableEmployees = computed(() => {
+    const runCurrencyId = this.run()?.currencyId;
+    return this.activeEmployees().filter(e =>
+      !this.alreadyOnRunIds().has(e.id) &&
+      (runCurrencyId == null || e.currencyId == null || e.currencyId === runCurrencyId));
+  });
 
   // ── Adjust payslip modal ──────────────────────────────────────────────────────
   showAdjustModal = signal(false);
@@ -245,7 +251,14 @@ export class PayrollDetailComponent implements OnInit {
         this.localProcessing.set('Processing');
         this.flash(this.t('addEmployeesSuccess'));
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add employees.')); },
+      error: err => {
+        this.submitting.set(false);
+        if (err?.status === 412) {
+          this.modalError.set(this.lang.t('manager.payroll.errMixedCurrency'));
+          return;
+        }
+        this.modalError.set(this.apiErr(err, 'Failed to add employees.'));
+      },
     });
   }
 
@@ -350,7 +363,9 @@ export class PayrollDetailComponent implements OnInit {
   }
 
   formatAmount(a: number): string {
-    return (a ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const symbol = this.run()?.currencySymbol;
+    const num = (a ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return symbol ? `${num} ${symbol}` : num;
   }
 
   exportExcel(): void {

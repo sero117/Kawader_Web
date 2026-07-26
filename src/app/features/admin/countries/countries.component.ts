@@ -1,0 +1,304 @@
+import { Component, signal, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LanguageService } from '../../../core/services/language.service';
+import { UrlFilter } from '../../../core/utils/url-filter';
+import { CountryService } from '../../../core/services/country.service';
+import { Country, CreateCountryRequest, UpdateCountryRequest } from '../../../core/models/country.models';
+
+@Component({
+  selector: 'app-countries',
+  standalone: true,
+  imports: [TranslatePipe],
+  template: `
+    <div class="page-content">
+
+      <!-- Header -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">{{ 'admin.countries.title' | translate }}</h1>
+          <p class="page-subtitle">{{ 'admin.countries.subtitle' | translate }}</p>
+        </div>
+        <button class="btn-primary" (click)="openCreate()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+          </svg>
+          {{ 'admin.countries.addCountry' | translate }}
+        </button>
+      </div>
+
+      <!-- Search -->
+      <div class="admin-card" style="margin-bottom:16px">
+        <div class="p-5 pb-4">
+          <div class="relative" style="max-width:320px">
+            <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input type="text" [placeholder]="'admin.countries.searchName' | translate"
+              class="w-full ps-9 pe-4 py-2.5 rounded-xl text-sm"
+              style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
+              [value]="filter.value().name"
+              (input)="onSearch($any($event.target).value)" />
+          </div>
+        </div>
+      </div>
+
+      @if (listError()) {
+        <div class="error-banner">{{ listError() }}</div>
+      }
+
+      @if (loading()) {
+        <div class="loading-state"><div class="spinner"></div></div>
+      } @else if (countries().length === 0) {
+        <div class="empty-state">
+          <p class="empty-state-title">{{ 'admin.countries.empty' | translate }}</p>
+        </div>
+      } @else {
+        <div class="admin-card">
+          <div class="overflow-x-auto">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>{{ 'admin.countries.colArabicName' | translate }}</th>
+                  <th>{{ 'admin.countries.colEnglishName' | translate }}</th>
+                  <th>{{ 'admin.countries.colLocked' | translate }}</th>
+                  <th>{{ 'admin.countries.colCreated' | translate }}</th>
+                  <th style="text-align: right;">{{ 'admin.countries.colActions' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (c of countries(); track c.id) {
+                  <tr>
+                    <td style="color: var(--text-base); font-weight: 600;">{{ c.arabicName }}</td>
+                    <td style="color: var(--text-faint);">{{ c.englishName }}</td>
+                    <td>
+                      @if (c.locked) {
+                        <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
+                          style="background: rgba(99,102,241,0.1); color: rgba(99,102,241,0.9);">
+                          {{ 'admin.countries.locked' | translate }}
+                        </span>
+                      } @else {
+                        <span style="color: var(--text-very-faint);">—</span>
+                      }
+                    </td>
+                    <td style="color: var(--text-faint);">{{ formatDate(c.createdAt) }}</td>
+                    <td>
+                      <div class="flex items-center justify-end gap-1.5">
+                        <button (click)="openEdit(c)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+                          style="color: var(--text-faint); background: var(--bg-subtle-sm);"
+                          [title]="'common.edit' | translate">
+                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                          </svg>
+                        </button>
+                        <button (click)="!c.locked && confirmDelete(c)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+                          [style.color]="c.locked ? 'var(--text-very-faint)' : 'rgba(239,68,68,0.55)'"
+                          [style.background]="c.locked ? 'var(--bg-subtle-sm)' : 'rgba(239,68,68,0.07)'"
+                          [style.cursor]="c.locked ? 'not-allowed' : 'pointer'"
+                          [title]="(c.locked ? 'admin.countries.lockedDeleteHint' : 'common.delete') | translate">
+                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pagination-row">
+          <button class="pagination-btn" [disabled]="filter.value().pageNumber <= 1" (click)="prevPage()">{{ 'common.back' | translate }}</button>
+          <span class="pagination-info">{{ 'common.page' | translate }} {{ filter.value().pageNumber }}</span>
+          <button class="pagination-btn" [disabled]="!hasMore()" (click)="nextPage()">{{ 'common.next' | translate }}</button>
+        </div>
+      }
+    </div>
+
+    <!-- Create / Edit Modal -->
+    @if (showModal()) {
+      <div class="modal-backdrop" (click)="closeModal()"></div>
+      <div class="modal-box" style="max-width:480px">
+        <h2 class="modal-title">{{ editingCountry() ? ('admin.countries.editCountry' | translate) : ('admin.countries.addCountry' | translate) }}</h2>
+
+        @if (modalError()) {
+          <div class="modal-error">{{ modalError() }}</div>
+        }
+
+        @if (editingCountry()?.locked) {
+          <p style="font-size:0.78rem;color:var(--text-faint);margin-bottom:12px">{{ 'admin.countries.lockedEditHint' | translate }}</p>
+        }
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="form-label">{{ 'admin.countries.arabicName' | translate }}</label>
+            <input class="form-input" type="text" maxlength="100" [value]="form.arabicName" (input)="form.arabicName = $any($event.target).value" [disabled]="submitting()" />
+          </div>
+          <div class="form-field">
+            <label class="form-label">{{ 'admin.countries.englishName' | translate }}</label>
+            <input class="form-input" type="text" maxlength="100" [value]="form.englishName" (input)="form.englishName = $any($event.target).value" [disabled]="submitting()" />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-ghost" (click)="closeModal()" [disabled]="submitting()">{{ 'common.cancel' | translate }}</button>
+          <button class="btn-primary" (click)="submit()" [disabled]="submitting()">
+            {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Delete Confirm Modal -->
+    @if (deleteTarget()) {
+      <div class="modal-backdrop" (click)="deleteTarget.set(null)"></div>
+      <div class="modal-box" style="max-width:400px">
+        <h2 class="modal-title">{{ 'admin.countries.confirmDelete' | translate }}</h2>
+        <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:20px">
+          {{ 'admin.countries.confirmDeleteMsg' | translate }} <strong>{{ deleteTarget()?.arabicName }}</strong>؟
+        </p>
+        @if (modalError()) { <div class="modal-error">{{ modalError() }}</div> }
+        <div class="modal-actions">
+          <button class="btn-ghost" (click)="deleteTarget.set(null)" [disabled]="submitting()">{{ 'common.cancel' | translate }}</button>
+          <button class="btn-danger" (click)="deleteCountry()" [disabled]="submitting()">
+            {{ submitting() ? ('common.deleting' | translate) : ('common.delete' | translate) }}
+          </button>
+        </div>
+      </div>
+    }
+  `,
+})
+export class CountriesComponent implements OnInit {
+  private readonly countryService = inject(CountryService);
+  private readonly lang           = inject(LanguageService);
+
+  filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
+    name:       '',
+    pageNumber: 1,
+    pageSize:   10,
+  });
+
+  countries = signal<Country[]>([]);
+  loading   = signal(true);
+  listError = signal<string | null>(null);
+  hasMore   = signal(false);
+
+  showModal      = signal(false);
+  editingCountry = signal<Country | null>(null);
+  deleteTarget   = signal<Country | null>(null);
+  submitting     = signal(false);
+  modalError     = signal<string | null>(null);
+
+  form: { arabicName: string; englishName: string } = { arabicName: '', englishName: '' };
+
+  ngOnInit(): void { this.load(); }
+
+  load(): void {
+    this.loading.set(true);
+    const { name, pageNumber, pageSize } = this.filter.value();
+    this.countryService.getAll({ pageNumber, pageSize, name: name || undefined }).subscribe({
+      next: res => {
+        this.countries.set(res.items ?? []);
+        this.hasMore.set(pageNumber * pageSize < res.totalCount);
+        this.loading.set(false);
+        this.listError.set(null);
+      },
+      error: (err: any) => { this.loading.set(false); this.listError.set(this.apiErr(err)); },
+    });
+  }
+
+  onSearch(value: string): void {
+    this.filter.set({ name: value, pageNumber: 1 });
+    this.load();
+  }
+
+  prevPage(): void {
+    if (this.filter.value().pageNumber <= 1) return;
+    this.filter.patch({ pageNumber: this.filter.value().pageNumber - 1 });
+    this.load();
+  }
+
+  nextPage(): void {
+    if (!this.hasMore()) return;
+    this.filter.patch({ pageNumber: this.filter.value().pageNumber + 1 });
+    this.load();
+  }
+
+  openCreate(): void {
+    this.editingCountry.set(null);
+    this.form = { arabicName: '', englishName: '' };
+    this.modalError.set(null);
+    this.showModal.set(true);
+  }
+
+  openEdit(country: Country): void {
+    this.editingCountry.set(country);
+    this.form = { arabicName: country.arabicName, englishName: country.englishName };
+    this.modalError.set(null);
+    this.showModal.set(true);
+  }
+
+  closeModal(): void { this.showModal.set(false); }
+
+  submit(): void {
+    if (!this.form.arabicName.trim() || !this.form.englishName.trim()) {
+      this.modalError.set(this.lang.t('admin.countries.nameRequired'));
+      return;
+    }
+    this.submitting.set(true);
+    this.modalError.set(null);
+    const editing = this.editingCountry();
+
+    if (editing) {
+      const payload: UpdateCountryRequest = { arabicName: this.form.arabicName, englishName: this.form.englishName };
+      this.countryService.update(editing.id, payload).subscribe({
+        next: () => { this.submitting.set(false); this.closeModal(); this.load(); },
+        error: (err: any) => {
+          this.submitting.set(false);
+          if (err?.status === 412) { this.closeModal(); this.load(); return; }
+          this.modalError.set(this.apiErr(err));
+        },
+      });
+    } else {
+      const payload: CreateCountryRequest = {
+        arabicName: this.form.arabicName, englishName: this.form.englishName,
+        idempotencyKey: crypto.randomUUID(),
+      };
+      this.countryService.create(payload).subscribe({
+        next: () => { this.submitting.set(false); this.closeModal(); this.filter.set({ pageNumber: 1 }); this.load(); },
+        error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+      });
+    }
+  }
+
+  confirmDelete(country: Country): void { this.deleteTarget.set(country); this.modalError.set(null); }
+
+  deleteCountry(): void {
+    const t = this.deleteTarget();
+    if (!t) return;
+    this.submitting.set(true);
+    this.countryService.delete(t.id).subscribe({
+      next: () => { this.submitting.set(false); this.deleteTarget.set(null); this.load(); },
+      error: (err: any) => {
+        this.submitting.set(false);
+        this.modalError.set(err?.status === 412 ? this.lang.t('admin.countries.lockedDeleteHint') : this.apiErr(err));
+      },
+    });
+  }
+
+  formatDate(dateStr?: string): string {
+    if (!dateStr) return '—';
+    return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  apiErr(err: any): string {
+    if (err?.status === 0) return this.lang.t('errors.unexpected');
+    const b = err?.error;
+    if (!b) return this.lang.t('errors.unexpected');
+    if (typeof b === 'string' && b.trim()) return b.trim();
+    for (const k of ['title', 'message', 'detail']) { if (typeof b[k] === 'string' && b[k].trim()) return b[k]; }
+    return this.lang.t('errors.unexpected');
+  }
+}

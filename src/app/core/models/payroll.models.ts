@@ -13,6 +13,9 @@ export interface PayrollRun {
   createdAt: string;
   approvedBy?: string | null;
   approvedAt?: string | null;
+  currencyId?: number;
+  currencyCode?: string;
+  currencySymbol?: string;
 }
 
 export interface Payslip {
@@ -45,13 +48,32 @@ export interface PayrollRunDetail {
   createdAt: string;
   approvedBy?: string | null;
   approvedAt?: string | null;
+  currencyId?: number;
+  currencyCode?: string;
+  currencySymbol?: string;
   payslips: Payslip[];
 }
 
 export interface CreatePayrollRequest {
+  currencyId: number;
   periodStart: string;
   periodEnd: string;
   idempotencyKey: string;
+}
+
+export interface UncoveredEmployee {
+  id: number;
+  firstName: string;
+  lastName: string;
+  employeeNumber: string;
+  currencyId: number;
+  currencyCode: string;
+  currencySymbol: string;
+}
+
+export interface GetUncoveredParams {
+  periodStart: string;
+  periodEnd: string;
 }
 
 export interface UpdatePayrollRequest {

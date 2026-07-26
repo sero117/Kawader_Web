@@ -542,14 +542,30 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addEmployee.baseSalaryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="baseSalary" type="number" min="0.01" step="0.01" class="modal-input"
-                [class.is-invalid]="addForm.get('baseSalary')!.invalid && addForm.get('baseSalary')!.touched"
-                [attr.disabled]="submitting() || null" />
+              <div class="flex items-center gap-2">
+                <input formControlName="baseSalary" type="number" min="0.01" step="0.01" class="modal-input"
+                  [class.is-invalid]="addForm.get('baseSalary')!.invalid && addForm.get('baseSalary')!.touched"
+                  [attr.disabled]="submitting() || null" />
+                @if (currencySymbolFor(addForm.value.currencyId)) {
+                  <span class="text-sm font-semibold flex-shrink-0" style="color: var(--text-faint);">{{ currencySymbolFor(addForm.value.currencyId) }}</span>
+                }
+              </div>
               @if (addForm.get('baseSalary')!.invalid && addForm.get('baseSalary')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                   {{ addForm.get('baseSalary')!.hasError('required') ? ('validation.required' | translate) : ('validation.salaryMin' | translate) }}
                 </p>
               }
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.addEmployee.currencyLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <select formControlName="currencyId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
+                <option [ngValue]="null" disabled>{{ 'manager.addEmployee.selectCurrency' | translate }}</option>
+                @for (cur of myCurrencies(); track cur.id) {
+                  <option [ngValue]="cur.id">{{ cur.code }} — {{ cur.arabicName }}</option>
+                }
+              </select>
             </div>
           </div>
 
@@ -796,13 +812,32 @@
                 <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.baseSalaryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <input formControlName="baseSalary" type="number" min="0.01" step="0.01" class="modal-input"
-                  [class.is-invalid]="editForm.get('baseSalary')!.invalid && editForm.get('baseSalary')!.touched"
-                  [attr.disabled]="submitting() || null" />
+                <div class="flex items-center gap-2">
+                  <input formControlName="baseSalary" type="number" min="0.01" step="0.01" class="modal-input"
+                    [class.is-invalid]="editForm.get('baseSalary')!.invalid && editForm.get('baseSalary')!.touched"
+                    [attr.disabled]="submitting() || null" />
+                  @if (currencySymbolFor(editForm.value.currencyId)) {
+                    <span class="text-sm font-semibold flex-shrink-0" style="color: var(--text-faint);">{{ currencySymbolFor(editForm.value.currencyId) }}</span>
+                  }
+                </div>
                 @if (editForm.get('baseSalary')!.invalid && editForm.get('baseSalary')!.touched) {
                   <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">
                     {{ editForm.get('baseSalary')!.hasError('required') ? ('validation.required' | translate) : ('validation.salaryMin' | translate) }}
                   </p>
+                }
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  {{ 'manager.editEmployee.currencyLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+                </label>
+                <select formControlName="currencyId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
+                  <option [ngValue]="null" disabled>{{ 'manager.editEmployee.selectCurrency' | translate }}</option>
+                  @for (cur of myCurrencies(); track cur.id) {
+                    <option [ngValue]="cur.id">{{ cur.code }} — {{ cur.arabicName }}</option>
+                  }
+                </select>
+                @if (originalEditCurrencyId() !== null && editForm.value.currencyId !== originalEditCurrencyId()) {
+                  <p style="font-size:0.7rem;color:rgba(217,119,6,0.9);margin-top:4px">{{ 'manager.editEmployee.currencyChangeWarning' | translate }}</p>
                 }
               </div>
             </div>
@@ -955,6 +990,9 @@
               <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.baseSalaryLabel' | translate }}</p>
               <p class="text-sm font-semibold" style="color: var(--text-base);">
                 {{ e.baseSalary != null ? (e.baseSalary | number:'1.2-2') : '—' }}
+                @if (e.currencySymbol || currencySymbolFor(e.currencyId)) {
+                  <span>{{ e.currencySymbol || currencySymbolFor(e.currencyId) }}</span>
+                }
                 @if (e.lastSalaryModifiedAt) {
                   <span class="text-[10px] font-normal ml-1" style="color: var(--text-very-faint);">({{ formatDate(e.lastSalaryModifiedAt) }})</span>
                 }
@@ -1455,6 +1493,13 @@
 
                 <!-- Actions -->
                 <div class="flex items-center gap-1.5 flex-shrink-0">
+                  @if (attachedTypes().has(att.type) && attachmentUrls().get(att.type)) {
+                    <a [href]="attachmentUrls().get(att.type)" target="_blank" rel="noopener"
+                      class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold"
+                      style="color: var(--text-muted); background: var(--bg-subtle-md); border: 1px solid var(--border);">
+                      {{ 'manager.editEmployee.viewFile' | translate }}
+                    </a>
+                  }
                   @if (!attachedTypes().has(att.type)) {
                     <!-- Upload button — visible when no file uploaded yet this session -->
                     <button type="button" (click)="triggerAttachmentUpload(att.type)"

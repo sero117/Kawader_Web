@@ -66,6 +66,9 @@ export interface Employee {
   sectionId?: number;
   hireDate?: string;
   baseSalary?: number;
+  currencyId?: number;
+  currencyCode?: string;
+  currencySymbol?: string;
   lastSalaryModifiedAt?: string;
   workStartTime?: string;
   workEndTime?: string;
@@ -89,6 +92,7 @@ export interface CreateEmployeeRequest {
   hireDate: string;
   contractType: ContractType;
   baseSalary: number;
+  currencyId: number;
   internalNotes?: string;
 }
 
@@ -107,16 +111,25 @@ export interface UpdateEmployeeRequest {
   hireDate?: string;
   contractType?: ContractType;
   baseSalary?: number;
+  currencyId?: number;
   internalNotes?: string;
 }
 
 export interface GetEmployeesParams {
   pageNumber?: number;
   pageSize?: number;
-  tenantId?: string;
   phoneNumber?: string;
   branchId?: number;
   sectionId?: number;
+}
+
+// ── Attachments ───────────────────────────────────────────────────────────────
+
+export interface EmployeeAttachment {
+  id: number;
+  type: AttachmentType;
+  url: string;
+  createdAt: string;
 }
 
 // ── Active employees (for payroll/employee pickers) ─────────────────────────────
@@ -125,6 +138,8 @@ export interface ActiveEmployee {
   id: number;
   fullName: string;
   phoneNumber: string;
+  currencyId?: number;
+  currencyCode?: string;
 }
 
 // ── My Companies (multi-tenant employee context) ────────────────────────────────

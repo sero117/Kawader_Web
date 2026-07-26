@@ -38,6 +38,11 @@
           [style.border]="r.status === 'Paid' || r.status === 'Approved' ? 'none' : '1px solid var(--border)'">
           {{ ('manager.payroll.status.' + r.status) | translate }}
         </span>
+        @if (r.currencyCode) {
+          <span class="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-md" style="background: var(--bg-subtle-sm); color: var(--text-muted);">
+            {{ r.currencyCode }} · {{ r.currencySymbol }}
+          </span>
+        }
       </div>
       <p class="text-xs font-mono" style="color: var(--text-ultra-faint);">#{{ r.id }}</p>
     </div>

@@ -78,6 +78,24 @@
         <span class="sidebar-link-label">{{ 'nav.agents' | translate }}</span>
       </a>
 
+      <!-- Countries -->
+      <a routerLink="/dashboard/admin/countries" routerLinkActive="sidebar-active" class="sidebar-link">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 21a9 9 0 100-18 9 9 0 000 18zM3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/>
+        </svg>
+        <span class="sidebar-link-label">{{ 'nav.countries' | translate }}</span>
+      </a>
+
+      <!-- Currencies -->
+      <a routerLink="/dashboard/admin/currencies" routerLinkActive="sidebar-active" class="sidebar-link">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 6v12m4.5-9.5c0-1.657-2.015-3-4.5-3S7.5 4.843 7.5 6.5 9.515 9.5 12 9.5s4.5 1.343 4.5 3-2.015 3-4.5 3-4.5-1.343-4.5-3"/>
+        </svg>
+        <span class="sidebar-link-label">{{ 'nav.currencies' | translate }}</span>
+      </a>
+
       <!-- Section: Subscriptions -->
       @if (!collapsed()) {
         <div class="sidebar-section">

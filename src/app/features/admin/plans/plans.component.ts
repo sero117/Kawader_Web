@@ -27,6 +27,10 @@ import { UrlFilter } from '../../../core/utils/url-filter';
         </button>
       </div>
 
+      <div class="admin-card" style="margin-bottom:16px;padding:12px 16px;background:var(--bg-subtle-sm);font-size:0.8125rem;color:var(--text-faint)">
+        {{ 'admin.plans.usdBanner' | translate }}
+      </div>
+
       <!-- Error -->
       @if (listError()) {
         <div class="error-banner">{{ listError() }}</div>
@@ -160,7 +164,14 @@ import { UrlFilter } from '../../../core/utils/url-filter';
         <h2 class="modal-title">{{ editingPlan() ? ('admin.plans.editPlan' | translate) : ('admin.plans.addPlan' | translate) }}</h2>
 
         @if (modalError()) {
-          <div class="modal-error">{{ modalError() }}</div>
+          <div class="modal-error">
+            {{ modalError() }}
+            @if (usdMissing()) {
+              <button type="button" (click)="goToCurrencies()" class="ms-2" style="text-decoration:underline;font-weight:600">
+                {{ 'admin.plans.goToCurrencies' | translate }}
+              </button>
+            }
+          </div>
         }
 
         <div class="form-grid">
@@ -243,6 +254,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
 export class PlansComponent implements OnInit {
   private readonly planService = inject(PlanService);
   private readonly lang        = inject(LanguageService);
+  private readonly router      = inject(Router);
 
   plans      = signal<Plan[]>([]);
   loading    = signal(true);
@@ -259,6 +271,7 @@ export class PlansComponent implements OnInit {
   deleteTarget = signal<Plan | null>(null);
   submitting   = signal(false);
   modalError   = signal<string | null>(null);
+  usdMissing   = signal(false);
 
   form: { name: string; price: number; currency: PlanCurrency; durationDays: number; maxEmployees: number; maxBranches: number; maxSections: number; showPlan: boolean; isRecommended: boolean; detailsText: string } =
     { name: '', price: 0, currency: 'USD', durationDays: 30, maxEmployees: 10, maxBranches: 1, maxSections: 5, showPlan: true, isRecommended: false, detailsText: '' };
@@ -298,6 +311,7 @@ export class PlansComponent implements OnInit {
     this.editingPlan.set(null);
     this.form = { name: '', price: 0, currency: 'USD', durationDays: 30, maxEmployees: 10, maxBranches: 1, maxSections: 5, showPlan: true, isRecommended: false, detailsText: '' };
     this.modalError.set(null);
+    this.usdMissing.set(false);
     this.showModal.set(true);
   }
 
@@ -319,6 +333,7 @@ export class PlansComponent implements OnInit {
     if (!this.form.name.trim()) { this.modalError.set(this.lang.t('admin.plans.nameRequired')); return; }
     this.submitting.set(true);
     this.modalError.set(null);
+    this.usdMissing.set(false);
     const details = this.form.detailsText.split('\n').map(s => s.trim()).filter(Boolean);
     const editing = this.editingPlan();
 
@@ -332,9 +347,21 @@ export class PlansComponent implements OnInit {
       const payload: CreatePlanRequest = { name: this.form.name, price: this.form.price, currency: this.form.currency, durationDays: this.form.durationDays, details, showPlan: this.form.showPlan, isRecommended: this.form.isRecommended, maxEmployees: this.form.maxEmployees, maxSections: this.form.maxSections, maxBranches: this.form.maxBranches, idempotencyKey: crypto.randomUUID() };
       this.planService.create(payload).subscribe({
         next: () => { this.submitting.set(false); this.closeModal(); this.load(); },
-        error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+        error: (err: any) => {
+          this.submitting.set(false);
+          if (err?.status === 412) {
+            this.usdMissing.set(true);
+            this.modalError.set(this.lang.t('admin.plans.usdMissingError'));
+            return;
+          }
+          this.modalError.set(this.apiErr(err));
+        },
       });
     }
+  }
+
+  goToCurrencies(): void {
+    this.router.navigate(['/dashboard/admin/currencies']);
   }
 
   toggleVisibility(plan: Plan): void {
