@@ -1,6 +1,7 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
@@ -8,6 +9,27 @@ import { CompanyHolidayService } from '../../../core/services/company-holiday.se
 import {
   CompanyHoliday, HolidayRecurrence, GetCompanyHolidaysParams,
 } from '../../../core/models/company-holiday.models';
+
+/** A run of consecutive-day holidays created together (same name/paid/recurrence,
+ *  each day exactly one day after the last) — collapsed into a single display row
+ *  instead of one row per day. */
+interface HolidayGroup {
+  ids: number[];
+  name: string;
+  startDate: string;
+  endDate: string;
+  holidayRecurrence: HolidayRecurrence;
+  isPaid: boolean;
+  /** The single underlying record — only set when the group is exactly one day,
+   *  since editing only makes sense for a single day (PUT still edits one `date`). */
+  single: CompanyHoliday | null;
+}
+
+function isNextCalendarDay(prevDateStr: string, dateStr: string): boolean {
+  const prev = new Date(prevDateStr);
+  const cur  = new Date(dateStr);
+  return Math.round((cur.getTime() - prev.getTime()) / 86400000) === 1;
+}
 
 @Component({
   selector: 'app-company-holidays',
@@ -35,6 +57,30 @@ export class CompanyHolidaysComponent implements OnInit {
   loading  = signal(true);
   hasMore  = signal(false);
 
+  groupedHolidays = computed<HolidayGroup[]>(() => {
+    const sorted = [...this.holidays()].sort((a, b) =>
+      a.name === b.name ? a.date.localeCompare(b.date) : a.name.localeCompare(b.name));
+    const groups: HolidayGroup[] = [];
+    for (const h of sorted) {
+      const last = groups[groups.length - 1];
+      const continuesLast = last
+        && last.name === h.name && last.isPaid === h.isPaid
+        && last.holidayRecurrence === h.holidayRecurrence
+        && isNextCalendarDay(last.endDate, h.date);
+      if (continuesLast) {
+        last.endDate = h.date;
+        last.ids.push(h.id);
+        last.single = null;
+      } else {
+        groups.push({
+          ids: [h.id], name: h.name, startDate: h.date, endDate: h.date,
+          holidayRecurrence: h.holidayRecurrence, isPaid: h.isPaid, single: h,
+        });
+      }
+    }
+    return groups.sort((a, b) => a.startDate.localeCompare(b.startDate));
+  });
+
   // ── Flash / error ────────────────────────────────────────────────────────────
   successMsg = signal<string | null>(null);
   listError  = signal<string | null>(null);
@@ -46,7 +92,7 @@ export class CompanyHolidaysComponent implements OnInit {
   showEditModal   = signal(false);
   showDeleteModal = signal(false);
   selectedHoliday = signal<CompanyHoliday | null>(null);
-  deleteTargetId  = signal<number | null>(null);
+  deleteTargetIds = signal<number[]>([]);
 
   addForm = this.fb.group({
     name:              ['', [Validators.required, Validators.maxLength(200)]],
@@ -155,6 +201,7 @@ export class CompanyHolidaysComponent implements OnInit {
   }
 
   // ── Edit ─────────────────────────────────────────────────────────────────────
+  /** Only meaningful for a single-day group — PUT still edits exactly one `date`. */
   openEdit(holiday: CompanyHoliday, event: Event): void {
     event.stopPropagation();
     this.selectedHoliday.set(holiday);
@@ -192,21 +239,23 @@ export class CompanyHolidaysComponent implements OnInit {
   }
 
   // ── Delete ───────────────────────────────────────────────────────────────────
-  confirmDelete(holiday: CompanyHoliday, event: Event): void {
+  /** Deletes every day in the group — a grouped row was created together as one
+   *  logical holiday, so removing it removes all its days. */
+  confirmDelete(group: HolidayGroup, event: Event): void {
     event.stopPropagation();
-    this.deleteTargetId.set(holiday.id);
+    this.deleteTargetIds.set(group.ids);
     this.showDeleteModal.set(true);
   }
 
   executeDelete(): void {
-    const id = this.deleteTargetId();
-    if (!id) return;
+    const ids = this.deleteTargetIds();
+    if (!ids.length) return;
     this.submitting.set(true);
-    this.holidayService.delete(id).subscribe({
+    forkJoin(ids.map(id => this.holidayService.delete(id))).subscribe({
       next: () => {
         this.submitting.set(false);
         this.showDeleteModal.set(false);
-        this.holidays.update(list => list.filter(h => h.id !== id));
+        this.holidays.update(list => list.filter(h => !ids.includes(h.id)));
         this.flash(this.lang.t('manager.companyHolidays.deleted'));
       },
       error: () => { this.submitting.set(false); this.showDeleteModal.set(false); },

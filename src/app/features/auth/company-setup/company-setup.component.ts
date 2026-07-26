@@ -13,6 +13,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { LanguageService } from '../../../core/services/language.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Role } from '../../../core/models/auth.models';
+import { requestLocation } from '../../../core/utils/geolocation';
 import { ServiceProblemDetails, extractErrorMessage } from '../../../core/models/problem-details.model';
 
 // ── Validators ────────────────────────────────────────────────────────────────
@@ -93,13 +94,9 @@ export class CompanySetupComponent {
 
   // ── Step 3: "use my location" (auto-fill lat/long, manual entry still allowed) ──
   useMyLocation(): void {
-    if (!navigator.geolocation) {
-      this.locationError.set('setup.geoUnsupported');
-      return;
-    }
     this.locating.set(true);
     this.locationError.set(null);
-    navigator.geolocation.getCurrentPosition(
+    requestLocation(
       pos => {
         this.locating.set(false);
         this.step3Form.patchValue({
@@ -107,11 +104,8 @@ export class CompanySetupComponent {
           longitude: pos.coords.longitude,
         });
       },
-      () => {
-        this.locating.set(false);
-        this.locationError.set('setup.geoDenied');
-      },
-      { enableHighAccuracy: true, timeout: 10000 },
+      () => { this.locating.set(false); this.locationError.set('setup.geoDenied'); },
+      () => { this.locating.set(false); this.locationError.set('setup.geoUnsupported'); },
     );
   }
 

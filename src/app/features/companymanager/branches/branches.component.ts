@@ -6,6 +6,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
 import { BranchService } from '../../../core/services/branch.service';
 import { VisitTrackingService } from '../../../core/services/visit-tracking.service';
 import { Branch, GetBranchesParams } from '../../../core/models/branch.models';
+import { requestLocation } from '../../../core/utils/geolocation';
 
 @Component({
   selector: 'app-branches',
@@ -70,22 +71,15 @@ export class BranchesComponent implements OnInit {
     const locating = target === 'add' ? this.locatingAdd : this.locatingEdit;
     const form     = target === 'add' ? this.addForm      : this.editForm;
 
-    if (!navigator.geolocation) {
-      this.locationError.set('setup.geoUnsupported');
-      return;
-    }
     locating.set(true);
     this.locationError.set(null);
-    navigator.geolocation.getCurrentPosition(
+    requestLocation(
       pos => {
         locating.set(false);
         form.patchValue({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
       },
-      () => {
-        locating.set(false);
-        this.locationError.set('setup.geoDenied');
-      },
-      { enableHighAccuracy: true, timeout: 10000 },
+      () => { locating.set(false); this.locationError.set('setup.geoDenied'); },
+      () => { locating.set(false); this.locationError.set('setup.geoUnsupported'); },
     );
   }
 

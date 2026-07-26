@@ -1241,6 +1241,7 @@
       "editTitle": "Edit Holiday",
       "deleteTitle": "Delete Holiday?",
       "deleteMsg": "This holiday will be permanently removed.",
+      "deleteGroupMsg": "This will permanently remove all {count} days of this holiday.",
       "filterName": "Name",
       "filterNamePlaceholder": "Search by name…",
       "filterYear": "Year",

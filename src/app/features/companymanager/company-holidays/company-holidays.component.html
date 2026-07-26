@@ -97,18 +97,28 @@
           </tr>
         </thead>
         <tbody>
-          @for (h of holidays(); track h.id) {
+          @for (g of groupedHolidays(); track g.ids[0]) {
             <tr>
-              <td class="text-sm font-medium" style="color: var(--text-base);">{{ h.name }}</td>
-              <td style="color: var(--text-muted);">{{ formatDate(h.date) }}</td>
+              <td class="text-sm font-medium" style="color: var(--text-base);">
+                {{ g.name }}
+                @if (g.ids.length > 1) {
+                  <span class="text-[10px] font-semibold ms-1.5 px-1.5 py-0.5 rounded-md" style="color: var(--text-faint); background: var(--bg-subtle-sm);">{{ g.ids.length }}</span>
+                }
+              </td>
+              <td style="color: var(--text-muted);">
+                {{ formatDate(g.startDate) }}
+                @if (g.endDate !== g.startDate) {
+                  – {{ formatDate(g.endDate) }}
+                }
+              </td>
               <td>
                 <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
                   style="color: var(--text-faint); background: var(--bg-subtle-sm); border: 1px solid var(--border);">
-                  {{ recurrenceLabel(h.holidayRecurrence) }}
+                  {{ recurrenceLabel(g.holidayRecurrence) }}
                 </span>
               </td>
               <td>
-                @if (h.isPaid) {
+                @if (g.isPaid) {
                   <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
                     style="color: rgba(52,211,153,0.9); background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2);">
                     {{ 'manager.companyHolidays.paid' | translate }}
@@ -122,15 +132,17 @@
               </td>
               <td>
                 <div class="flex items-center justify-end gap-1.5">
-                  <button (click)="openEdit(h, $event)"
-                    class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    style="color: var(--text-faint); background: var(--bg-subtle-sm);"
-                    [title]="'common.edit' | translate">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
-                    </svg>
-                  </button>
-                  <button (click)="confirmDelete(h, $event)"
+                  @if (g.single) {
+                    <button (click)="openEdit(g.single, $event)"
+                      class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                      style="color: var(--text-faint); background: var(--bg-subtle-sm);"
+                      [title]="'common.edit' | translate">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                      </svg>
+                    </button>
+                  }
+                  <button (click)="confirmDelete(g, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);"
                     [title]="'common.delete' | translate">
@@ -196,7 +208,7 @@
             <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ modalError() }}</span>
           </div>
         }
-        <form [formGroup]="addForm" (ngSubmit)="submitAdd()" class="space-y-4" novalidate>
+        <form id="add-holiday-form" [formGroup]="addForm" (ngSubmit)="submitAdd()" class="space-y-4" novalidate>
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.companyHolidays.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
@@ -249,15 +261,15 @@
               {{ 'manager.companyHolidays.isPaidLabel' | translate }}
             </label>
           </div>
-          <div class="flex gap-3 pt-1">
-            <button type="button" (click)="showAddModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-              style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
-            <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
-              style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
-              {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
-            </button>
-          </div>
         </form>
+      </div>
+      <div class="flex gap-3 px-6 py-5 flex-shrink-0" style="border-top: 1px solid var(--border);">
+        <button type="button" (click)="showAddModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+        <button type="submit" form="add-holiday-form" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+          style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
+          {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
+        </button>
       </div>
     </div>
   </div>
@@ -285,7 +297,7 @@
             <span class="text-sm" style="color: rgba(239,68,68,0.9);">{{ modalError() }}</span>
           </div>
         }
-        <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
+        <form id="edit-holiday-form" [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.companyHolidays.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
@@ -324,15 +336,15 @@
               {{ 'manager.companyHolidays.isPaidLabel' | translate }}
             </label>
           </div>
-          <div class="flex gap-3 pt-1">
-            <button type="button" (click)="showEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-              style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
-            <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
-              style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
-              {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
-            </button>
-          </div>
         </form>
+      </div>
+      <div class="flex gap-3 px-6 py-5 flex-shrink-0" style="border-top: 1px solid var(--border);">
+        <button type="button" (click)="showEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+          style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+        <button type="submit" form="edit-holiday-form" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
+          style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
+          {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
+        </button>
       </div>
     </div>
   </div>
@@ -345,7 +357,11 @@
     <div class="w-full max-w-sm rounded-2xl p-6" style="background: var(--bg-surface-2); border: 1px solid var(--border);"
       (click)="$event.stopPropagation()">
       <h3 class="font-bold text-base mb-1" style="color: var(--text-base);">{{ 'manager.companyHolidays.deleteTitle' | translate }}</h3>
-      <p class="text-sm mb-5" style="color: var(--text-faint);">{{ 'manager.companyHolidays.deleteMsg' | translate }}</p>
+      <p class="text-sm mb-5" style="color: var(--text-faint);">
+        {{ deleteTargetIds().length > 1
+          ? ('manager.companyHolidays.deleteGroupMsg' | translate).replace('{count}', deleteTargetIds().length.toString())
+          : ('manager.companyHolidays.deleteMsg' | translate) }}
+      </p>
       <div class="flex gap-3">
         <button (click)="showDeleteModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
           style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>

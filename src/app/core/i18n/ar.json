@@ -1241,6 +1241,7 @@
       "editTitle": "تعديل العطلة",
       "deleteTitle": "حذف العطلة؟",
       "deleteMsg": "سيتم حذف هذه العطلة نهائياً.",
+      "deleteGroupMsg": "سيتم حذف كل أيام هذه العطلة ({count} يوم) نهائياً.",
       "filterName": "الاسم",
       "filterNamePlaceholder": "ابحث بالاسم…",
       "filterYear": "السنة",
