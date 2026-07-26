@@ -62,11 +62,13 @@ export class EmployeesComponent implements OnInit {
   loading   = signal(true);
   hasMore   = signal(false);
 
-  // ── Payroll modal (incentives & deductions) ──────────────────────────────────
-  payrollEmployee = signal<Employee | null>(null);
+  // ── Payroll modal (incentives, deductions, leaves, leave balance) ────────────
+  payrollEmployee  = signal<Employee | null>(null);
+  payrollInitialTab: 'incentives' | 'deductions' | 'leaves' | 'balance' = 'incentives';
 
-  openPayroll(emp: Employee, event: Event): void {
+  openPayroll(emp: Employee, event: Event, tab: 'incentives' | 'deductions' | 'leaves' | 'balance' = 'incentives'): void {
     event.stopPropagation();
+    this.payrollInitialTab = tab;
     this.payrollEmployee.set(emp);
   }
 

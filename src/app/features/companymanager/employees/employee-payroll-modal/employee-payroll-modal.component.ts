@@ -37,6 +37,7 @@ interface DateFilter {
 })
 export class EmployeePayrollModalComponent implements OnInit {
   @Input({ required: true }) employee!: Employee;
+  @Input() initialTab: Tab = 'incentives';
   @Output() closed = new EventEmitter<void>();
 
   private readonly incentiveService     = inject(IncentiveService);
@@ -158,7 +159,7 @@ export class EmployeePayrollModalComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadIncentives();
+    this.setTab(this.initialTab);
   }
 
   close(): void {
