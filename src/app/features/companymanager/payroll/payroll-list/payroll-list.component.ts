@@ -70,13 +70,17 @@ export class PayrollListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadRuns();
-    // Silent — we show our own friendly "no country set" message on 412 instead
-    // of letting the generic interceptor toast fire with a raw server string.
+    // Silent — /currencies/me returns an empty array (not an error) when the
+    // Admin hasn't granted this company any currency yet; we show our own
+    // friendly empty-state message for that instead of a blank dropdown.
     this.currencyService.getMe(true).subscribe({
-      next: list => { this.myCurrencies.set(list ?? []); this.currencyLoadError.set(null); },
-      error: (err: any) => {
+      next: list => {
+        this.myCurrencies.set(list ?? []);
+        this.currencyLoadError.set(list?.length ? null : this.lang.t('errors.noCurrenciesGrantedForCompany'));
+      },
+      error: () => {
         this.myCurrencies.set([]);
-        this.currencyLoadError.set(err?.status === 412 ? this.lang.t('errors.noCountryForCompany') : null);
+        this.currencyLoadError.set(this.lang.t('errors.noCurrenciesGrantedForCompany'));
       },
     });
   }

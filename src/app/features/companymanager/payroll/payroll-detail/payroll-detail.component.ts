@@ -308,7 +308,8 @@ export class PayrollDetailComponent implements OnInit {
       },
       error: err => {
         this.submitting.set(false);
-        this.showRecalculateModal.set(false);
+        // Keep the modal open so the error is actually visible — closing it
+        // here would discard the message we just set into the void.
         this.modalError.set(this.apiErr(err, 'Failed to recalculate.'));
       },
     });

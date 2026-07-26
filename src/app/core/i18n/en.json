@@ -472,6 +472,7 @@
       "colActions": "Actions",
       "baseCurrency": "Base Currency",
       "viewRates": "Rate history",
+      "lockedDeleteHint": "Someone is paid in this currency, it's on a payslip, or it's granted to a company — it can't be deleted.",
       "arabicName": "Arabic Name",
       "englishName": "English Name",
       "code": "Code",
@@ -1351,7 +1352,7 @@
       "currencyLabel": "Currency",
       "selectCurrency": "Select a currency…",
       "errSameCurrencyOverlap": "A run in the same currency already covers this period.",
-      "errCurrencyNotAllowed": "This currency is not available for your company's country.",
+      "errCurrencyNotAllowed": "This currency is not granted to your company.",
       "errMixedCurrency": "The selected employees are paid in a different currency than this payroll run.",
       "uncoveredMsg": "{count} employees are not covered by any run for this period ({currency})",
       "createMissingRun": "Create missing run",
@@ -1567,7 +1568,7 @@
   "errors": {
     "unexpected": "An unexpected error occurred",
     "consumedItemLocked": "This item can't be edited — it has already been paid out in a payslip.",
-    "noCountryForCompany": "No country has been set for your company — contact your system administrator."
+    "noCurrenciesGrantedForCompany": "Contact your system administrator to have currencies granted to your company."
   },
   "employee": {
     "subtitle0": "Your personal workspace",

@@ -472,6 +472,7 @@
       "colActions": "الإجراءات",
       "baseCurrency": "العملة الأساسية",
       "viewRates": "سجل أسعار الصرف",
+      "lockedDeleteHint": "هذه العملة مستخدمة — موظف متقاضٍ فيها، أو بقسيمة راتب، أو ممنوحة لشركة — لا يمكن حذفها.",
       "arabicName": "الاسم بالعربي",
       "englishName": "الاسم بالإنجليزي",
       "code": "الرمز",
@@ -1351,7 +1352,7 @@
       "currencyLabel": "العملة",
       "selectCurrency": "اختر العملة…",
       "errSameCurrencyOverlap": "يوجد كشف بنفس العملة يغطي هذه الفترة",
-      "errCurrencyNotAllowed": "العملة المحددة غير متاحة لدولة شركتك",
+      "errCurrencyNotAllowed": "العملة المحددة غير ممنوحة لهذه الشركة",
       "errMixedCurrency": "الموظفين المحددين رواتبهم بعملة مختلفة عن كشف الرواتب",
       "uncoveredMsg": "{count} موظف غير مشمولين بأي كشف راتب لهذه الفترة ({currency})",
       "createMissingRun": "إنشاء الكشف الناقص",
@@ -1567,7 +1568,7 @@
   "errors": {
     "unexpected": "حدث خطأ غير متوقع",
     "consumedItemLocked": "لا يمكن تعديل بند تم صرفه ضمن كشف راتب",
-    "noCountryForCompany": "لم يتم تحديد دولة لشركتك — تواصل مع مدير النظام"
+    "noCurrenciesGrantedForCompany": "تواصل مع مدير النظام لتحديد عملات شركتك"
   },
   "employee": {
     "subtitle0": "مساحة العمل الشخصية",
