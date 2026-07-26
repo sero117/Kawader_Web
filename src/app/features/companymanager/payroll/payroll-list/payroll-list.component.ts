@@ -29,6 +29,7 @@ export class PayrollListComponent implements OnInit {
   private readonly lang            = inject(LanguageService);
 
   myCurrencies = signal<Currency[]>([]);
+  currencyLoadError = signal<string | null>(null);
 
   uncovered        = signal<UncoveredEmployee[]>([]);
   uncoveredGroups   = computed(() => {
@@ -69,9 +70,14 @@ export class PayrollListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadRuns();
-    this.currencyService.getMe().subscribe({
-      next: list => this.myCurrencies.set(list ?? []),
-      error: () => {},
+    // Silent — we show our own friendly "no country set" message on 412 instead
+    // of letting the generic interceptor toast fire with a raw server string.
+    this.currencyService.getMe(true).subscribe({
+      next: list => { this.myCurrencies.set(list ?? []); this.currencyLoadError.set(null); },
+      error: (err: any) => {
+        this.myCurrencies.set([]);
+        this.currencyLoadError.set(err?.status === 412 ? this.lang.t('errors.noCountryForCompany') : null);
+      },
     });
   }
 

@@ -54,6 +54,7 @@ export class EmployeesComponent implements OnInit {
   addSections  = signal<Section[]>([]);
   editSections = signal<Section[]>([]);
   myCurrencies = signal<Currency[]>([]);
+  currencyLoadError = signal<string | null>(null);
   originalEditCurrencyId = signal<number | null>(null);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
@@ -269,9 +270,14 @@ export class EmployeesComponent implements OnInit {
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
   ngOnInit(): void {
-    this.currencyService.getMe().subscribe({
-      next: list => this.myCurrencies.set(list ?? []),
-      error: () => {},
+    // Silent — we show our own friendly "no country set" message on 412 instead
+    // of letting the generic interceptor toast fire with a raw server string.
+    this.currencyService.getMe(true).subscribe({
+      next: list => { this.myCurrencies.set(list ?? []); this.currencyLoadError.set(null); },
+      error: (err: any) => {
+        this.myCurrencies.set([]);
+        this.currencyLoadError.set(err?.status === 412 ? this.lang.t('errors.noCountryForCompany') : null);
+      },
     });
     this.branchId  = Number(this.route.snapshot.paramMap.get('branchId'));
     this.sectionId = Number(this.route.snapshot.paramMap.get('sectionId'));
