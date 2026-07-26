@@ -1,4 +1,5 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CardService } from '../../../core/services/card.service';
 import { PlanService } from '../../../core/services/plan.service';
 import { Card, CardStatus, CreateCardRequest, GetCardsParams } from '../../../core/models/card.models';
@@ -7,6 +8,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../../environments/environment';
+import { UrlFilter } from '../../../core/utils/url-filter';
 
 @Component({
   selector: 'app-cards',
@@ -39,15 +41,15 @@ import { environment } from '../../../../environments/environment';
 
       <!-- Filters -->
       <div class="filter-bar">
-        <input class="filter-input" type="text" [value]="filterSerial()" (input)="filterSerial.set($any($event.target).value)" placeholder="{{ 'admin.cards.searchSerial' | translate }}" />
-        <input class="filter-input" type="text" [value]="filterDistinct()" (input)="filterDistinct.set($any($event.target).value)" placeholder="{{ 'admin.cards.searchBatch' | translate }}" />
-        <select class="filter-select" [value]="filterStatus()" (change)="onStatusFilter($any($event.target).value)">
+        <input class="filter-input" type="text" [value]="filter.value().serial" (input)="filter.patch({serial: $any($event.target).value})" placeholder="{{ 'admin.cards.searchSerial' | translate }}" />
+        <input class="filter-input" type="text" [value]="filter.value().distinct" (input)="filter.patch({distinct: $any($event.target).value})" placeholder="{{ 'admin.cards.searchBatch' | translate }}" />
+        <select class="filter-select" [value]="filter.value().status" (change)="onStatusFilter($any($event.target).value)">
           <option value="">{{ 'admin.cards.allStatuses' | translate }}</option>
           <option value="1">{{ 'admin.cards.available' | translate }}</option>
           <option value="2">{{ 'admin.cards.used' | translate }}</option>
           <option value="3">{{ 'admin.cards.revoked' | translate }}</option>
         </select>
-        <select class="filter-select" [value]="filterPlan()" (change)="onPlanFilter($any($event.target).value)">
+        <select class="filter-select" [value]="filter.value().planId" (change)="onPlanFilter($any($event.target).value)">
           <option value="">{{ 'admin.cards.allPlans' | translate }}</option>
           @for (p of plans(); track p.id) {
             <option [value]="p.id">{{ p.name }}</option>
@@ -133,8 +135,8 @@ import { environment } from '../../../../environments/environment';
 
         <!-- Pagination -->
         <div class="pagination-row">
-          <button class="pagination-btn" [disabled]="page() <= 1" (click)="prevPage()">{{ 'common.back' | translate }}</button>
-          <span class="pagination-info">{{ 'common.page' | translate }} {{ page() }}</span>
+          <button class="pagination-btn" [disabled]="filter.value().pageNumber <= 1" (click)="prevPage()">{{ 'common.back' | translate }}</button>
+          <span class="pagination-info">{{ 'common.page' | translate }} {{ filter.value().pageNumber }}</span>
           <button class="pagination-btn" [disabled]="!hasMore()" (click)="nextPage()">{{ 'common.next' | translate }}</button>
         </div>
       }
@@ -244,12 +246,15 @@ export class CardsComponent implements OnInit {
   loading   = signal(true);
   listError = signal<string | null>(null);
   hasMore   = signal(false);
-  page      = signal(1);
 
-  filterSerial   = signal('');
-  filterDistinct = signal('');
-  filterStatus   = signal('');
-  filterPlan     = signal('');
+  filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
+    serial:     '',
+    distinct:   '',
+    status:     '',
+    planId:     '',
+    pageNumber: 1,
+    pageSize:   12,
+  });
 
   showGenerate = signal(false);
   revokeTarget = signal<Card | null>(null);
@@ -276,11 +281,12 @@ export class CardsComponent implements OnInit {
 
   load(): void {
     this.loading.set(true);
-    const params: GetCardsParams = { pageNumber: this.page(), pageSize: 12 };
-    if (this.filterSerial())   params.serialNumber = this.filterSerial();
-    if (this.filterDistinct()) params.distinct      = this.filterDistinct();
-    if (this.filterStatus())   params.status        = +this.filterStatus() as CardStatus;
-    if (this.filterPlan())     params.planId        = +this.filterPlan();
+    const { serial, distinct, status, planId, pageNumber, pageSize } = this.filter.value();
+    const params: GetCardsParams = { pageNumber, pageSize };
+    if (serial)   params.serialNumber = serial;
+    if (distinct) params.distinct     = distinct;
+    if (status)   params.status       = +status as CardStatus;
+    if (planId)   params.planId       = +planId;
 
     this.cardService.getAll(params).subscribe({
       next: (res: any) => {
@@ -288,7 +294,7 @@ export class CardsComponent implements OnInit {
         const items: Card[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
         const total = raw?.totalCount ?? items.length;
         this.cards.set(items);
-        this.hasMore.set(this.page() * 12 < total);
+        this.hasMore.set(pageNumber * pageSize < total);
         this.loading.set(false);
         this.listError.set(null);
       },
@@ -296,14 +302,24 @@ export class CardsComponent implements OnInit {
     });
   }
 
-  applyFilter(): void { this.page.set(1); this.load(); }
+  applyFilter(): void { this.filter.patch({ pageNumber: 1 }); this.load(); }
   // Select filters apply immediately on change — unlike free-text inputs, a
   // selection is always a complete value, so there's no need to wait for a
   // separate "search" click.
-  onStatusFilter(v: string): void { this.filterStatus.set(v); this.applyFilter(); }
-  onPlanFilter(v: string): void { this.filterPlan.set(v); this.applyFilter(); }
-  prevPage(): void { this.page.update(p => p - 1); this.load(); }
-  nextPage(): void { this.page.update(p => p + 1); this.load(); }
+  onStatusFilter(v: string): void { this.filter.set({ status: v }); this.load(); }
+  onPlanFilter(v: string): void { this.filter.set({ planId: v }); this.load(); }
+
+  prevPage(): void {
+    if (this.filter.value().pageNumber <= 1) return;
+    this.filter.patch({ pageNumber: this.filter.value().pageNumber - 1 });
+    this.load();
+  }
+
+  nextPage(): void {
+    if (!this.hasMore()) return;
+    this.filter.patch({ pageNumber: this.filter.value().pageNumber + 1 });
+    this.load();
+  }
 
   openGenerate(): void {
     this.genForm = { planId: 0, count: 10, distinct: '' };

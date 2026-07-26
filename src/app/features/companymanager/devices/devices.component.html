@@ -122,9 +122,9 @@
       </table>
     </div>
     <div class="flex items-center justify-between px-5 py-4" style="border-top: 1px solid var(--border);">
-      <p class="text-xs" style="color: var(--text-faint);">{{ 'manager.devices.page' | translate }} {{ pageNumber() }}</p>
+      <p class="text-xs" style="color: var(--text-faint);">{{ 'manager.devices.page' | translate }} {{ filter.value().pageNumber }}</p>
       <div class="flex items-center gap-2">
-        <button (click)="prevPage()" [disabled]="pageNumber() === 1" [style.opacity]="pageNumber() === 1 ? '0.3' : '1'"
+        <button (click)="prevPage()" [disabled]="filter.value().pageNumber === 1" [style.opacity]="filter.value().pageNumber === 1 ? '0.3' : '1'"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
           style="background: var(--bg-subtle-sm); color: var(--text-muted);">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -133,7 +133,7 @@
           {{ 'manager.devices.prev' | translate }}
         </button>
         <span class="w-8 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
-          style="background: var(--bg-subtle-md); color: var(--text-base);">{{ pageNumber() }}</span>
+          style="background: var(--bg-subtle-md); color: var(--text-base);">{{ filter.value().pageNumber }}</span>
         <button (click)="nextPage()" [disabled]="!hasMore()" [style.opacity]="!hasMore() ? '0.3' : '1'"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
           style="background: var(--bg-subtle-sm); color: var(--text-muted);">

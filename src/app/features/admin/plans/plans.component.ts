@@ -1,8 +1,10 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PlanService } from '../../../core/services/plan.service';
 import { Plan, PlanCurrency, CreatePlanRequest, UpdatePlanRequest } from '../../../core/models/plan.models';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
+import { UrlFilter } from '../../../core/utils/url-filter';
 
 @Component({
   selector: 'app-plans',
@@ -144,8 +146,8 @@ import { LanguageService } from '../../../core/services/language.service';
       <!-- Pagination -->
       @if (plans().length > 0) {
         <div class="pagination-row">
-          <button class="pagination-btn" [disabled]="page() <= 1" (click)="prevPage()">{{ 'common.back' | translate }}</button>
-          <span class="pagination-info">{{ 'common.page' | translate }} {{ page() }}</span>
+          <button class="pagination-btn" [disabled]="filter.value().pageNumber <= 1" (click)="prevPage()">{{ 'common.back' | translate }}</button>
+          <span class="pagination-info">{{ 'common.page' | translate }} {{ filter.value().pageNumber }}</span>
           <button class="pagination-btn" [disabled]="!hasMore()" (click)="nextPage()">{{ 'common.next' | translate }}</button>
         </div>
       }
@@ -246,7 +248,11 @@ export class PlansComponent implements OnInit {
   loading    = signal(true);
   listError  = signal<string | null>(null);
   hasMore    = signal(false);
-  page       = signal(1);
+
+  filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
+    pageNumber: 1,
+    pageSize:   12,
+  });
 
   showModal    = signal(false);
   editingPlan  = signal<Plan | null>(null);
@@ -261,13 +267,14 @@ export class PlansComponent implements OnInit {
 
   load(): void {
     this.loading.set(true);
-    this.planService.getAll({ pageNumber: this.page(), pageSize: 12 }).subscribe({
+    const { pageNumber, pageSize } = this.filter.value();
+    this.planService.getAll({ pageNumber, pageSize }).subscribe({
       next: (res: any) => {
         const raw   = res?.data ?? res;
         const items: Plan[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
         const total = raw?.totalCount ?? items.length;
         this.plans.set(items);
-        this.hasMore.set(this.page() * 12 < total);
+        this.hasMore.set(pageNumber * pageSize < total);
         this.loading.set(false);
         this.listError.set(null);
       },
@@ -275,8 +282,17 @@ export class PlansComponent implements OnInit {
     });
   }
 
-  prevPage(): void { this.page.update(p => p - 1); this.load(); }
-  nextPage(): void { this.page.update(p => p + 1); this.load(); }
+  prevPage(): void {
+    if (this.filter.value().pageNumber <= 1) return;
+    this.filter.patch({ pageNumber: this.filter.value().pageNumber - 1 });
+    this.load();
+  }
+
+  nextPage(): void {
+    if (!this.hasMore()) return;
+    this.filter.patch({ pageNumber: this.filter.value().pageNumber + 1 });
+    this.load();
+  }
 
   openCreate(): void {
     this.editingPlan.set(null);

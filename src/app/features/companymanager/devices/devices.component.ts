@@ -1,10 +1,12 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { DeviceService } from '../../../core/services/device.service';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { Device, DeviceEmployee } from '../../../core/models/device.models';
 import { ActiveEmployee } from '../../../core/models/employee.models';
+import { UrlFilter } from '../../../core/utils/url-filter';
 
 @Component({
   selector: 'app-devices',
@@ -22,8 +24,11 @@ export class DevicesComponent implements OnInit {
   loading    = signal(true);
   listError  = signal<string | null>(null);
   hasMore    = signal(false);
-  pageNumber = signal(1);
-  readonly pageSize = 10;
+
+  filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
+    pageNumber: 1,
+    pageSize:   10,
+  });
 
   // ── Device Create / Edit modal ────────────────────────────────────────────
   showDeviceModal = signal(false);
@@ -97,7 +102,8 @@ export class DevicesComponent implements OnInit {
   loadDevices(): void {
     this.loading.set(true);
     this.listError.set(null);
-    this.deviceService.getAll(this.pageNumber(), this.pageSize).subscribe({
+    const { pageNumber, pageSize } = this.filter.value();
+    this.deviceService.getAll(pageNumber, pageSize).subscribe({
       next: (res: any) => {
         const items = res?.data?.items ?? res?.items ?? [];
         this.devices.set(items);
@@ -112,14 +118,14 @@ export class DevicesComponent implements OnInit {
   }
 
   prevPage(): void {
-    if (this.pageNumber() <= 1) return;
-    this.pageNumber.update(n => n - 1);
+    if (this.filter.value().pageNumber <= 1) return;
+    this.filter.patch({ pageNumber: this.filter.value().pageNumber - 1 });
     this.loadDevices();
   }
 
   nextPage(): void {
     if (!this.hasMore()) return;
-    this.pageNumber.update(n => n + 1);
+    this.filter.patch({ pageNumber: this.filter.value().pageNumber + 1 });
     this.loadDevices();
   }
 

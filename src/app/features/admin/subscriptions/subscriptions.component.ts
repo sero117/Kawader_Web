@@ -1,11 +1,13 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SubscriptionService } from '../../../core/services/subscription.service';
 import { PlanService } from '../../../core/services/plan.service';
 import { Subscription, SubscriptionStatus, GetSubscriptionsParams } from '../../../core/models/subscription.models';
 import { Plan } from '../../../core/models/plan.models';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
+import { UrlFilter } from '../../../core/utils/url-filter';
 
 @Component({
   selector: 'app-subscriptions',
@@ -24,13 +26,13 @@ import { LanguageService } from '../../../core/services/language.service';
 
       <!-- Filters -->
       <div class="filter-bar">
-        <select class="filter-select" [value]="filterStatus()" (change)="onStatusFilter($any($event.target).value)">
+        <select class="filter-select" [value]="filter.value().status" (change)="onStatusFilter($any($event.target).value)">
           <option value="">{{ 'admin.subscriptions.allStatuses' | translate }}</option>
           <option value="1">{{ 'admin.subscriptions.active' | translate }}</option>
           <option value="2">{{ 'admin.subscriptions.expired' | translate }}</option>
           <option value="3">{{ 'admin.subscriptions.pending' | translate }}</option>
         </select>
-        <select class="filter-select" [value]="filterPlan()" (change)="onPlanFilter($any($event.target).value)">
+        <select class="filter-select" [value]="filter.value().planId" (change)="onPlanFilter($any($event.target).value)">
           <option value="">{{ 'admin.subscriptions.allPlans' | translate }}</option>
           @for (p of plans(); track p.id) {
             <option [value]="p.id">{{ p.name }}</option>
@@ -89,8 +91,8 @@ import { LanguageService } from '../../../core/services/language.service';
 
         <!-- Pagination -->
         <div class="pagination-row">
-          <button class="pagination-btn" [disabled]="page() <= 1" (click)="prevPage()">{{ 'common.back' | translate }}</button>
-          <span class="pagination-info">{{ 'common.page' | translate }} {{ page() }}</span>
+          <button class="pagination-btn" [disabled]="filter.value().pageNumber <= 1" (click)="prevPage()">{{ 'common.back' | translate }}</button>
+          <span class="pagination-info">{{ 'common.page' | translate }} {{ filter.value().pageNumber }}</span>
           <button class="pagination-btn" [disabled]="!hasMore()" (click)="nextPage()">{{ 'common.next' | translate }}</button>
         </div>
       }
@@ -109,10 +111,13 @@ export class SubscriptionsComponent implements OnInit {
   loading   = signal(true);
   listError = signal<string | null>(null);
   hasMore   = signal(false);
-  page      = signal(1);
 
-  filterStatus = signal('');
-  filterPlan   = signal('');
+  filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
+    status:     '',
+    planId:     '',
+    pageNumber: 1,
+    pageSize:   15,
+  });
 
   ngOnInit(): void {
     this.load();
@@ -127,9 +132,10 @@ export class SubscriptionsComponent implements OnInit {
 
   load(): void {
     this.loading.set(true);
-    const params: GetSubscriptionsParams = { pageNumber: this.page(), pageSize: 15 };
-    if (this.filterStatus()) params.status = +this.filterStatus() as SubscriptionStatus;
-    if (this.filterPlan())   params.planId = +this.filterPlan();
+    const { status, planId, pageNumber, pageSize } = this.filter.value();
+    const params: GetSubscriptionsParams = { pageNumber, pageSize };
+    if (status) params.status = +status as SubscriptionStatus;
+    if (planId) params.planId = +planId;
 
     this.subService.getAll(params).subscribe({
       next: (res: any) => {
@@ -141,7 +147,7 @@ export class SubscriptionsComponent implements OnInit {
         }));
         const total = raw?.totalCount ?? items.length;
         this.subs.set(items);
-        this.hasMore.set(this.page() * 15 < total);
+        this.hasMore.set(pageNumber * pageSize < total);
         this.loading.set(false);
         this.listError.set(null);
       },
@@ -149,13 +155,22 @@ export class SubscriptionsComponent implements OnInit {
     });
   }
 
-  applyFilter(): void { this.page.set(1); this.load(); }
   // A selection is always a complete value (unlike a partially-typed text
   // field), so apply it immediately instead of waiting for a "search" click.
-  onStatusFilter(v: string): void { this.filterStatus.set(v); this.applyFilter(); }
-  onPlanFilter(v: string): void { this.filterPlan.set(v); this.applyFilter(); }
-  prevPage(): void { this.page.update(p => p - 1); this.load(); }
-  nextPage(): void { this.page.update(p => p + 1); this.load(); }
+  onStatusFilter(v: string): void { this.filter.set({ status: v }); this.load(); }
+  onPlanFilter(v: string): void { this.filter.set({ planId: v }); this.load(); }
+
+  prevPage(): void {
+    if (this.filter.value().pageNumber <= 1) return;
+    this.filter.patch({ pageNumber: this.filter.value().pageNumber - 1 });
+    this.load();
+  }
+
+  nextPage(): void {
+    if (!this.hasMore()) return;
+    this.filter.patch({ pageNumber: this.filter.value().pageNumber + 1 });
+    this.load();
+  }
 
   statusLabel(s: SubscriptionStatus): string {
     switch (s) {

@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Plain checkboxes app-wide use the brand accent instead of the browser's
+   default system color, so they read as part of the same design language
+   as the custom chip/toggle controls. */
+input[type="checkbox"] {
+  accent-color: var(--nav-accent);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
 /* ── Theme tokens ─────────────────────────────────────────────────── */
 
 :root {
