@@ -999,10 +999,7 @@
             <div>
               <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.baseSalaryLabel' | translate }}</p>
               <p class="text-sm font-semibold" style="color: var(--text-base);">
-                {{ e.baseSalary != null ? (e.baseSalary | number:'1.2-2') : '—' }}
-                @if (e.currencySymbol || currencySymbolFor(e.currencyId)) {
-                  <span>{{ e.currencySymbol || currencySymbolFor(e.currencyId) }}</span>
-                }
+                {{ formatSalary(e) }}
                 @if (e.lastSalaryModifiedAt) {
                   <span class="text-[10px] font-normal ml-1" style="color: var(--text-very-faint);">({{ formatDate(e.lastSalaryModifiedAt) }})</span>
                 }

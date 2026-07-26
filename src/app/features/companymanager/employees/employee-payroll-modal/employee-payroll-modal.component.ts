@@ -19,6 +19,7 @@ import {
 import {
   EmployeeLeaveBalance,
 } from '../../../../core/models/leave-balance.models';
+import { formatCurrencyAmount } from '../../../../core/utils/currency-format';
 
 type Tab = 'incentives' | 'deductions' | 'leaves' | 'balance';
 
@@ -778,7 +779,7 @@ export class EmployeePayrollModalComponent implements OnInit {
   }
 
   formatAmount(a: number): string {
-    return a.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return formatCurrencyAmount(a, this.employee.currencySymbol);
   }
 
   private flash(msg: string): void {

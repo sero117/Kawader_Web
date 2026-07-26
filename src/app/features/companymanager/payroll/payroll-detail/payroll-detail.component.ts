@@ -15,6 +15,7 @@ import { parsePayrollNotificationData } from '../../../../core/models/notificati
 import {
   PayrollRunDetail, Payslip, ProcessingStatus,
 } from '../../../../core/models/payroll.models';
+import { formatCurrencyAmount } from '../../../../core/utils/currency-format';
 
 const POLL_INTERVAL_MS = 6000;
 
@@ -363,9 +364,7 @@ export class PayrollDetailComponent implements OnInit {
   }
 
   formatAmount(a: number): string {
-    const symbol = this.run()?.currencySymbol;
-    const num = (a ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    return symbol ? `${num} ${symbol}` : num;
+    return formatCurrencyAmount(a, this.run()?.currencySymbol);
   }
 
   exportExcel(): void {

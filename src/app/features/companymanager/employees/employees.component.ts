@@ -25,6 +25,7 @@ import {
 } from '../../../core/models/employee.models';
 import { EmployeeShiftSystem, ShiftSystem, DayOfWeek, ShiftLog, AttendanceStatus, Shift, CreateShiftLogRequest } from '../../../core/models/shift.models';
 import { EmployeePayrollModalComponent } from './employee-payroll-modal/employee-payroll-modal.component';
+import { formatCurrencyAmount } from '../../../core/utils/currency-format';
 
 @Component({
   selector: 'app-employees',
@@ -792,6 +793,11 @@ export class EmployeesComponent implements OnInit {
   currencySymbolFor(currencyId?: number | null): string {
     if (!currencyId) return '';
     return this.myCurrencies().find(c => c.id === currencyId)?.symbol ?? '';
+  }
+
+  formatSalary(e: Employee): string {
+    if (e.baseSalary == null) return '—';
+    return formatCurrencyAmount(e.baseSalary, e.currencySymbol || this.currencySymbolFor(e.currencyId));
   }
 
   // ── Attachments modal open ─────────────────────────────────────────────────
