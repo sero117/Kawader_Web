@@ -6,7 +6,7 @@
 
     <div class="flex items-center justify-between px-6 pt-6 pb-5 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
       <div>
-        <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.incentivesDeductions.title' | translate }}</h2>
+        <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ (leavesOnly ? 'manager.leaves.tab' : 'manager.incentivesDeductions.title') | translate }}</h2>
         <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ employee.firstName }} {{ employee.lastName }} — #{{ employee.id }}</p>
       </div>
       <button (click)="close()" class="w-8 h-8 rounded-lg flex items-center justify-center"
@@ -30,6 +30,7 @@
 
       <!-- Tabs -->
       <div class="flex items-center gap-2 mb-5">
+        @if (!leavesOnly) {
         <button (click)="setTab('incentives')"
           class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
           [style.background]="activeTab() === 'incentives' ? 'var(--bg-subtle-md)' : 'var(--bg-subtle-sm)'"
@@ -42,6 +43,7 @@
           [style.color]="activeTab() === 'deductions' ? 'var(--text-base)' : 'var(--text-faint)'">
           {{ 'manager.incentivesDeductions.deductionsTab' | translate }}
         </button>
+        }
         <button (click)="setTab('leaves')"
           class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
           [style.background]="activeTab() === 'leaves' ? 'var(--bg-subtle-md)' : 'var(--bg-subtle-sm)'"

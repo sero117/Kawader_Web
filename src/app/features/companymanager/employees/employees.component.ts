@@ -63,12 +63,14 @@ export class EmployeesComponent implements OnInit {
   hasMore   = signal(false);
 
   // ── Payroll modal (incentives, deductions, leaves, leave balance) ────────────
-  payrollEmployee  = signal<Employee | null>(null);
+  payrollEmployee   = signal<Employee | null>(null);
   payrollInitialTab: 'incentives' | 'deductions' | 'leaves' | 'balance' = 'incentives';
+  payrollLeavesOnly = false;
 
-  openPayroll(emp: Employee, event: Event, tab: 'incentives' | 'deductions' | 'leaves' | 'balance' = 'incentives'): void {
+  openPayroll(emp: Employee, event: Event, tab: 'incentives' | 'deductions' | 'leaves' | 'balance' = 'incentives', leavesOnly = false): void {
     event.stopPropagation();
     this.payrollInitialTab = tab;
+    this.payrollLeavesOnly = leavesOnly;
     this.payrollEmployee.set(emp);
   }
 

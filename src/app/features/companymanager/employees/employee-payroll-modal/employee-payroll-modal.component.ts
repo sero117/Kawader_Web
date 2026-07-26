@@ -38,6 +38,10 @@ interface DateFilter {
 export class EmployeePayrollModalComponent implements OnInit {
   @Input({ required: true }) employee!: Employee;
   @Input() initialTab: Tab = 'incentives';
+  /** Shows only the Leaves/Leave-Balance tabs, hiding Incentives/Deductions —
+   *  used when opened from the dedicated "Leaves" entry point so it reads as
+   *  its own standalone dialog rather than a corner of the payroll modal. */
+  @Input() leavesOnly = false;
   @Output() closed = new EventEmitter<void>();
 
   private readonly incentiveService     = inject(IncentiveService);
