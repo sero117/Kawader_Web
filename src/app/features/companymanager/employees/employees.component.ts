@@ -128,6 +128,7 @@ export class EmployeesComponent implements OnInit {
   attachmentError    = signal<string | null>(null);
   attachedTypes      = signal<Set<AttachmentType>>(new Set());
   attachmentUrls     = signal<Map<AttachmentType, string>>(new Map());
+  previewImageUrl    = signal<string | null>(null);
   // Cache persists for the lifetime of the component (page session)
   private readonly attachCache = new Map<number, Set<AttachmentType>>();
 
@@ -798,6 +799,19 @@ export class EmployeesComponent implements OnInit {
   formatSalary(e: Employee): string {
     if (e.baseSalary == null) return '—';
     return formatCurrencyAmount(e.baseSalary, e.currencySymbol || this.currencySymbolFor(e.currencyId));
+  }
+
+  isImageAttachment(url: string): boolean {
+    return /\.(jpe?g|png|webp|gif)(\?.*)?$/i.test(url);
+  }
+
+  openImagePreview(url: string, event: Event): void {
+    event.stopPropagation();
+    this.previewImageUrl.set(url);
+  }
+
+  closeImagePreview(): void {
+    this.previewImageUrl.set(null);
   }
 
   // ── Attachments modal open ─────────────────────────────────────────────────
