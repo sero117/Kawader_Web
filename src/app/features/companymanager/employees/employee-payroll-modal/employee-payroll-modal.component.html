@@ -44,6 +44,7 @@
           {{ 'manager.incentivesDeductions.deductionsTab' | translate }}
         </button>
         }
+        @if (leavesOnly) {
         <button (click)="setTab('leaves')"
           class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
           [style.background]="activeTab() === 'leaves' ? 'var(--bg-subtle-md)' : 'var(--bg-subtle-sm)'"
@@ -56,6 +57,7 @@
           [style.color]="activeTab() === 'balance' ? 'var(--text-base)' : 'var(--text-faint)'">
           {{ 'manager.leaveBalance.tab' | translate }}
         </button>
+        }
       </div>
 
       <!-- ══ INCENTIVES TAB ══ -->
