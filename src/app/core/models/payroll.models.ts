@@ -61,6 +61,10 @@ export interface CreatePayrollRequest {
   idempotencyKey: string;
 }
 
+export interface RecalculateRequest {
+  employeeIds: number[];
+}
+
 export interface UncoveredEmployee {
   id: number;
   firstName: string;

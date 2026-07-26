@@ -17,6 +17,7 @@ import {
   GetPayrollDetailParams,
   UncoveredEmployee,
   GetUncoveredParams,
+  RecalculateRequest,
   PagedResult,
 } from '../models/payroll.models';
 
@@ -93,6 +94,15 @@ export class PayrollService {
 
   pay(payrollRunId: number): Observable<void> {
     return this.api.put<void>(`${this.baseUrl}/${payrollRunId}/pay`, {});
+  }
+
+  /** Recomputes a draft run's payslips against current inputs. Omit employeeIds
+   *  (or pass an empty array) to recalculate the whole run — otherwise only the
+   *  named employees' payslips are touched. Async: poll getById() until the
+   *  run leaves 'Processing'. Discards any isManuallyAdjusted override on the
+   *  payslips it recalculates. */
+  recalculate(payrollRunId: number, payload?: RecalculateRequest): Observable<void> {
+    return this.api.post<void>(`${this.baseUrl}/${payrollRunId}/recalculate`, payload ?? { employeeIds: [] });
   }
 
   /** Active/probation employees with no payslip anywhere in the given period, grouped

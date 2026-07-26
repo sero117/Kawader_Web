@@ -337,6 +337,7 @@
               }
             </select>
           </div>
+          <p style="font-size:0.72rem;color:var(--text-faint);margin-top:-8px">{{ 'admin.companies.newCompanyNoCurrenciesHint' | translate }}</p>
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.agentLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
             <select formControlName="agentId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">

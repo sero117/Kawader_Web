@@ -258,7 +258,58 @@ export class PayrollDetailComponent implements OnInit {
           this.modalError.set(this.lang.t('manager.payroll.errMixedCurrency'));
           return;
         }
+        // Distinct from a plain "already on this run" duplicate — this specific
+        // 409 means the employee already has a payslip covering this period on
+        // a DIFFERENT run (guards against being paid twice across currencies).
+        if (err?.status === 409) {
+          this.modalError.set(this.lang.t('manager.payroll.errAlreadyPaidThisPeriod'));
+          return;
+        }
         this.modalError.set(this.apiErr(err, 'Failed to add employees.'));
+      },
+    });
+  }
+
+  // ── Recalculate ────────────────────────────────────────────────────────────────
+  showRecalculateModal = signal(false);
+  recalculateTarget    = signal<Payslip | null>(null); // null = whole run
+
+  adjustedCount = computed(() => (this.run()?.payslips ?? []).filter(p => p.isManuallyAdjusted).length);
+
+  canRecalculate = computed(() => {
+    const r = this.run();
+    return this.isCompanyManager && !!r && r.status === 'Draft' && this.processingStatus() !== 'Processing' && r.payslips.length > 0;
+  });
+
+  confirmRecalculateAll(): void {
+    this.recalculateTarget.set(null);
+    this.modalError.set(null);
+    this.showRecalculateModal.set(true);
+  }
+
+  confirmRecalculateOne(p: Payslip, event: Event): void {
+    event.stopPropagation();
+    this.recalculateTarget.set(p);
+    this.modalError.set(null);
+    this.showRecalculateModal.set(true);
+  }
+
+  executeRecalculate(): void {
+    const target = this.recalculateTarget();
+    this.submitting.set(true);
+    this.modalError.set(null);
+    const payload = target ? { employeeIds: [target.employeeId] } : { employeeIds: [] };
+    this.payrollService.recalculate(this.payrollRunId, payload).subscribe({
+      next: () => {
+        this.submitting.set(false);
+        this.showRecalculateModal.set(false);
+        this.localProcessing.set('Processing');
+        this.flash(this.t('recalculateSuccess'));
+      },
+      error: err => {
+        this.submitting.set(false);
+        this.showRecalculateModal.set(false);
+        this.modalError.set(this.apiErr(err, 'Failed to recalculate.'));
       },
     });
   }
