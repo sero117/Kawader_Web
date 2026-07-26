@@ -1,0 +1,1 @@
+function a(t,i,e){if(!navigator.geolocation){e();return}let o=()=>{navigator.geolocation.getCurrentPosition(t,i,{enableHighAccuracy:!0,timeout:1e4})};navigator.permissions?.query?navigator.permissions.query({name:"geolocation"}).then(n=>n.state==="denied"?i():o()).catch(o):o()}export{a};
