@@ -163,6 +163,26 @@ export const routes: Routes = [
           import('./features/companymanager/employees/employees.component').then(m => m.EmployeesComponent),
       },
       {
+        path: 'employees/:employeeId/shift-logs',
+        title: 'سجل الحضور',
+        loadComponent: () =>
+          import('./features/companymanager/employees/employee-shift-logs/employee-shift-logs.component').then(m => m.EmployeeShiftLogsComponent),
+      },
+      {
+        path: 'employees/:employeeId/incentives-deductions',
+        title: 'الحوافز والخصومات',
+        data: { leavesOnly: false },
+        loadComponent: () =>
+          import('./features/companymanager/employees/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollPageComponent),
+      },
+      {
+        path: 'employees/:employeeId/leaves',
+        title: 'الإجازات',
+        data: { leavesOnly: true },
+        loadComponent: () =>
+          import('./features/companymanager/employees/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollPageComponent),
+      },
+      {
         path: 'branches/:branchId/sections/:sectionId/employees',
         title: 'الموظفون',
         loadComponent: () =>
@@ -279,6 +299,26 @@ export const routes: Routes = [
         title: 'الموظفون',
         loadComponent: () =>
           import('./features/companymanager/employees/employees.component').then(m => m.EmployeesComponent),
+      },
+      {
+        path: 'employees/:employeeId/shift-logs',
+        title: 'سجل الحضور',
+        loadComponent: () =>
+          import('./features/companymanager/employees/employee-shift-logs/employee-shift-logs.component').then(m => m.EmployeeShiftLogsComponent),
+      },
+      {
+        path: 'employees/:employeeId/incentives-deductions',
+        title: 'الحوافز والخصومات',
+        data: { leavesOnly: false },
+        loadComponent: () =>
+          import('./features/companymanager/employees/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollPageComponent),
+      },
+      {
+        path: 'employees/:employeeId/leaves',
+        title: 'الإجازات',
+        data: { leavesOnly: true },
+        loadComponent: () =>
+          import('./features/companymanager/employees/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollPageComponent),
       },
       {
         path: 'branches/:branchId/sections/:sectionId/employees',

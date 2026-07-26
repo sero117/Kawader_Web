@@ -1,7 +1,9 @@
-import { Component, signal, inject, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { TranslatePipe } from '../../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../../core/services/language.service';
+import { EmployeeService } from '../../../../core/services/employee.service';
 import { Employee } from '../../../../core/models/employee.models';
 import { IncentiveService } from '../../../../core/services/incentive.service';
 import { DeductionService } from '../../../../core/services/deduction.service';
@@ -31,26 +33,21 @@ interface DateFilter {
 }
 
 @Component({
-  selector: 'app-employee-payroll-modal',
+  selector: 'app-employee-payroll',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe],
-  templateUrl: './employee-payroll-modal.component.html',
+  imports: [ReactiveFormsModule, TranslatePipe, RouterLink],
+  templateUrl: './employee-payroll.component.html',
 })
-export class EmployeePayrollModalComponent implements OnInit {
-  @Input({ required: true }) employee!: Employee;
-  @Input() initialTab: Tab = 'incentives';
-  /** Shows only the Leaves/Leave-Balance tabs, hiding Incentives/Deductions —
-   *  used when opened from the dedicated "Leaves" entry point so it reads as
-   *  its own standalone dialog rather than a corner of the payroll modal. */
-  @Input() leavesOnly = false;
-  @Output() closed = new EventEmitter<void>();
-
+export class EmployeePayrollPageComponent implements OnInit {
   private readonly incentiveService     = inject(IncentiveService);
   private readonly deductionService    = inject(DeductionService);
   private readonly employeeLeaveService = inject(EmployeeLeaveService);
   private readonly leaveBalanceService  = inject(LeaveBalanceService);
+  private readonly employeeService     = inject(EmployeeService);
   private readonly fb                  = inject(FormBuilder);
   private readonly lang                = inject(LanguageService);
+  private readonly route               = inject(ActivatedRoute);
+  private readonly router              = inject(Router);
 
   private readonly PAGE_SIZE = 10;
 
@@ -58,6 +55,13 @@ export class EmployeePayrollModalComponent implements OnInit {
   readonly DeductionType = DeductionType;
   readonly incentiveTypeList = [IncentiveType.Performance, IncentiveType.Bonus];
   readonly deductionTypeList = [DeductionType.Late, DeductionType.Absence, DeductionType.Advance];
+
+  employeeId = 0;
+  /** Shows only the Leaves/Leave-Balance tabs, hiding Incentives/Deductions —
+   *  driven by route data so the same component serves two distinct pages. */
+  leavesOnly = false;
+  employee = signal<Employee | null>(null);
+  backUrl   = signal('/dashboard/manager/employees');
 
   activeTab = signal<Tab>('incentives');
 
@@ -164,11 +168,14 @@ export class EmployeePayrollModalComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.setTab(this.initialTab);
-  }
-
-  close(): void {
-    this.closed.emit();
+    this.employeeId = Number(this.route.snapshot.paramMap.get('employeeId'));
+    this.leavesOnly = this.route.snapshot.data['leavesOnly'] === true;
+    this.backUrl.set(this.router.url.startsWith('/dashboard/hr') ? '/dashboard/hr/employees' : '/dashboard/manager/employees');
+    this.employeeService.getById(this.employeeId).subscribe({
+      next: (res: any) => this.employee.set(res?.data ?? res),
+      error: () => {},
+    });
+    this.setTab(this.leavesOnly ? 'leaves' : 'incentives');
   }
 
   setTab(tab: Tab): void {
@@ -194,7 +201,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     if (f.type !== null) params.type = f.type;
     if (f.isConsumed !== null) params.isConsumed = f.isConsumed;
 
-    this.incentiveService.getAll(this.employee.id, params).subscribe({
+    this.incentiveService.getAll(this.employeeId, params).subscribe({
       next: (res: any) => {
         this.incentivesListError.set(null);
         const raw   = res?.data ?? res;
@@ -256,7 +263,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     if (f.type !== null) params.type = f.type;
     if (f.isConsumed !== null) params.isConsumed = f.isConsumed;
 
-    this.deductionService.getAll(this.employee.id, params).subscribe({
+    this.deductionService.getAll(this.employeeId, params).subscribe({
       next: (res: any) => {
         this.deductionsListError.set(null);
         const raw   = res?.data ?? res;
@@ -315,7 +322,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     this.submitting.set(true);
     this.modalError.set(null);
     const v = this.incentiveForm.value;
-    this.incentiveService.create(this.employee.id, {
+    this.incentiveService.create(this.employeeId, {
       incentiveType:  v.incentiveType!,
       amount:         Number(v.amount),
       date:           v.date!,
@@ -354,7 +361,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     this.submitting.set(true);
     this.modalError.set(null);
     const v = this.incentiveForm.value;
-    this.incentiveService.update(this.employee.id, inc.id, {
+    this.incentiveService.update(this.employeeId, inc.id, {
       incentiveType: v.incentiveType!,
       amount:        Number(v.amount),
       date:          v.date!,
@@ -381,7 +388,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     const id = this.deleteIncentiveTarget();
     if (!id) return;
     this.submitting.set(true);
-    this.incentiveService.delete(this.employee.id, id).subscribe({
+    this.incentiveService.delete(this.employeeId, id).subscribe({
       next: () => {
         this.submitting.set(false);
         this.showIncentiveDeleteModal.set(false);
@@ -408,7 +415,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     this.submitting.set(true);
     this.modalError.set(null);
     const v = this.deductionForm.value;
-    this.deductionService.create(this.employee.id, {
+    this.deductionService.create(this.employeeId, {
       deductionType:  v.deductionType!,
       amount:         Number(v.amount),
       date:           v.date!,
@@ -447,7 +454,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     this.submitting.set(true);
     this.modalError.set(null);
     const v = this.deductionForm.value;
-    this.deductionService.update(this.employee.id, ded.id, {
+    this.deductionService.update(this.employeeId, ded.id, {
       deductionType: v.deductionType!,
       amount:        Number(v.amount),
       date:          v.date!,
@@ -474,7 +481,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     const id = this.deleteDeductionTarget();
     if (!id) return;
     this.submitting.set(true);
-    this.deductionService.delete(this.employee.id, id).subscribe({
+    this.deductionService.delete(this.employeeId, id).subscribe({
       next: () => {
         this.submitting.set(false);
         this.showDeductionDeleteModal.set(false);
@@ -503,7 +510,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     if (f.toDate)   params.toDate   = f.toDate;
     if (f.isPaid !== null) params.isPaid = f.isPaid;
 
-    this.employeeLeaveService.getAll(this.employee.id, params).subscribe({
+    this.employeeLeaveService.getAll(this.employeeId, params).subscribe({
       next: (res: any) => {
         this.leavesListError.set(null);
         const raw   = res?.data ?? res;
@@ -557,7 +564,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     this.submitting.set(true);
     this.modalError.set(null);
     const v = this.leaveForm.value;
-    this.employeeLeaveService.create(this.employee.id, {
+    this.employeeLeaveService.create(this.employeeId, {
       startDate:      v.startDate!,
       endDate:        v.endDate!,
       isPaid:         v.isPaid!,
@@ -598,7 +605,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     this.submitting.set(true);
     this.modalError.set(null);
     const v = this.leaveForm.value;
-    this.employeeLeaveService.update(this.employee.id, leave.id, {
+    this.employeeLeaveService.update(this.employeeId, leave.id, {
       startDate: v.startDate!,
       endDate:   v.endDate!,
       isPaid:    v.isPaid!,
@@ -627,7 +634,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     const id = this.deleteLeaveTarget();
     if (!id) return;
     this.submitting.set(true);
-    this.employeeLeaveService.delete(this.employee.id, id).subscribe({
+    this.employeeLeaveService.delete(this.employeeId, id).subscribe({
       next: () => {
         this.submitting.set(false);
         this.showLeaveDeleteModal.set(false);
@@ -645,7 +652,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     this.balanceLoading.set(true);
     this.balanceError.set(null);
     this.balanceNotFound.set(false);
-    this.leaveBalanceService.getByYear(this.employee.id, this.balanceYear()).subscribe({
+    this.leaveBalanceService.getByYear(this.employeeId, this.balanceYear()).subscribe({
       next: (res: any) => {
         const raw   = res?.data ?? res;
         const items = Array.isArray(raw) ? raw : (raw?.items ?? []);
@@ -677,7 +684,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     if (this.balanceAddForm.invalid) { this.balanceAddForm.markAllAsTouched(); return; }
     this.submitting.set(true);
     this.modalError.set(null);
-    this.leaveBalanceService.create(this.employee.id, {
+    this.leaveBalanceService.create(this.employeeId, {
       year:      this.balanceYear(),
       totalDays: this.balanceAddForm.value.totalDays!,
     }).subscribe({
@@ -705,7 +712,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     if (!b) return;
     this.submitting.set(true);
     this.modalError.set(null);
-    this.leaveBalanceService.update(this.employee.id, b.id, {
+    this.leaveBalanceService.update(this.employeeId, b.id, {
       totalDays: this.balanceEditForm.value.totalDays!,
     }).subscribe({
       next: () => {
@@ -726,7 +733,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     const b = this.balance();
     if (!b) return;
     this.submitting.set(true);
-    this.leaveBalanceService.delete(this.employee.id, b.id).subscribe({
+    this.leaveBalanceService.delete(this.employeeId, b.id).subscribe({
       next: () => {
         this.submitting.set(false);
         this.showBalanceDeleteModal.set(false);
@@ -749,7 +756,7 @@ export class EmployeePayrollModalComponent implements OnInit {
     this.submitting.set(true);
     this.modalError.set(null);
     const v = this.carryOverForm.value;
-    this.leaveBalanceService.carryOver(this.employee.id, {
+    this.leaveBalanceService.carryOver(this.employeeId, {
       fromYear: v.fromYear!,
       toYear:   v.toYear!,
     }).subscribe({
@@ -779,7 +786,7 @@ export class EmployeePayrollModalComponent implements OnInit {
   }
 
   formatAmount(a: number): string {
-    return formatCurrencyAmount(a, this.employee.currencySymbol);
+    return formatCurrencyAmount(a, this.employee()?.currencySymbol);
   }
 
   private flash(msg: string): void {

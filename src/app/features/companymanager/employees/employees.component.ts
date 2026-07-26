@@ -8,7 +8,6 @@ import { UrlFilter } from '../../../core/utils/url-filter';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { EmployeeStatusService } from '../../../core/services/employee-status.service';
 import { ShiftSystemService } from '../../../core/services/shift-system.service';
-import { ShiftLogService } from '../../../core/services/shift-log.service';
 import { ShiftService } from '../../../core/services/shift.service';
 import { BranchService } from '../../../core/services/branch.service';
 import { SectionService } from '../../../core/services/section.service';
@@ -23,21 +22,19 @@ import {
   GetEmployeesParams,
   EmergencyContact, CreateEmergencyContactRequest,
 } from '../../../core/models/employee.models';
-import { EmployeeShiftSystem, ShiftSystem, DayOfWeek, ShiftLog, AttendanceStatus, Shift, CreateShiftLogRequest } from '../../../core/models/shift.models';
-import { EmployeePayrollModalComponent } from './employee-payroll-modal/employee-payroll-modal.component';
+import { EmployeeShiftSystem, ShiftSystem, DayOfWeek } from '../../../core/models/shift.models';
 import { formatCurrencyAmount } from '../../../core/utils/currency-format';
 
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, RouterLink, DecimalPipe, EmployeePayrollModalComponent],
+  imports: [ReactiveFormsModule, TranslatePipe, RouterLink, DecimalPipe],
   templateUrl: './employees.component.html',
 })
 export class EmployeesComponent implements OnInit {
   private readonly employeeService       = inject(EmployeeService);
   private readonly employeeStatusService = inject(EmployeeStatusService);
   private readonly shiftSystemService    = inject(ShiftSystemService);
-  private readonly shiftLogService       = inject(ShiftLogService);
   private readonly shiftService          = inject(ShiftService);
   private readonly branchService         = inject(BranchService);
   private readonly sectionService        = inject(SectionService);
@@ -49,6 +46,7 @@ export class EmployeesComponent implements OnInit {
 
   branchId    = 0;
   sectionId   = 0;
+  dashboardBase = '/dashboard/manager';
   sectionName  = signal<string>('');
   backUrl      = signal<string>('/dashboard/manager/branches');
   formBranches = signal<Branch[]>([]);
@@ -68,18 +66,6 @@ export class EmployeesComponent implements OnInit {
   employees = signal<Employee[]>([]);
   loading   = signal(true);
   hasMore   = signal(false);
-
-  // ── Payroll modal (incentives, deductions, leaves, leave balance) ────────────
-  payrollEmployee   = signal<Employee | null>(null);
-  payrollInitialTab: 'incentives' | 'deductions' | 'leaves' | 'balance' = 'incentives';
-  payrollLeavesOnly = false;
-
-  openPayroll(emp: Employee, event: Event, tab: 'incentives' | 'deductions' | 'leaves' | 'balance' = 'incentives', leavesOnly = false): void {
-    event.stopPropagation();
-    this.payrollInitialTab = tab;
-    this.payrollLeavesOnly = leavesOnly;
-    this.payrollEmployee.set(emp);
-  }
 
   // ── Flash / error ──────────────────────────────────────────────────────────
   successMsg = signal<string | null>(null);
@@ -178,44 +164,6 @@ export class EmployeesComponent implements OnInit {
   readonly EmployeeType     = EmployeeType;
   readonly EmployeeStatus   = EmployeeStatus;
   readonly AttachmentType   = AttachmentType;
-  readonly AttendanceStatus = AttendanceStatus;
-
-  // ── Shift Logs modal ───────────────────────────────────────────────────────
-  showLogsModal  = signal(false);
-  logsEmployee   = signal<Employee | null>(null);
-  shiftLogsList  = signal<ShiftLog[]>([]);
-  logsLoading    = signal(false);
-  logsError      = signal<string | null>(null);
-  logsHasMore    = signal(false);
-  logsPage       = signal(1);
-  logsView       = signal<'list' | 'add' | 'edit'>('list');
-  logsSubmitting = signal(false);
-  logsModalError = signal<string | null>(null);
-  logsHasShift   = signal<boolean | null>(null);
-  availableShifts = signal<Shift[]>([]);
-  logsEditTarget  = signal<ShiftLog | null>(null);
-  logsDeleteTarget = signal<ShiftLog | null>(null);
-  showLogsDeleteConfirm = signal(false);
-
-  logsAddForm = this.fb.group({
-    shiftId:      [null as number | null, [Validators.required]],
-    date:         ['', [Validators.required]],
-    checkInTime:  ['', [Validators.required]],
-    notes:        [''],
-  });
-
-  logsEditForm = this.fb.group({
-    checkOutTime: [''],
-    status:       [AttendanceStatus.Present, Validators.required],
-    notes:        [''],
-  });
-
-  readonly statusList = [
-    AttendanceStatus.Present,
-    AttendanceStatus.Absent,
-    AttendanceStatus.Late,
-    AttendanceStatus.EarlyLeave,
-  ];
 
   readonly GenderType     = GenderType;
   readonly ContractType   = ContractType;
@@ -290,6 +238,7 @@ export class EmployeesComponent implements OnInit {
     const state = history.state as { sectionName?: string };
     if (state?.sectionName) this.sectionName.set(state.sectionName);
     const base = this.router.url.startsWith('/dashboard/hr') ? '/dashboard/hr' : '/dashboard/manager';
+    this.dashboardBase = base;
     this.backUrl.set(`${base}/branches`);
     if (this.branchId && this.sectionId) {
       this.backUrl.set(`${base}/branches/${this.branchId}/sections`);
@@ -791,6 +740,12 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
+  /** Absolute route to a per-employee sub-page (shift-logs, leaves, incentives-deductions),
+   *  respecting whichever of /dashboard/manager or /dashboard/hr this list is rendered under. */
+  employeeSubRoute(empId: number, sub: string): string[] {
+    return [`${this.dashboardBase}/employees`, String(empId), sub];
+  }
+
   dayLabel(dow: DayOfWeek): string {
     return this.lang.t(`manager.dayOfWeek.${dow}`);
   }
@@ -1045,177 +1000,6 @@ export class EmployeesComponent implements OnInit {
       },
       error: () => {},
     });
-  }
-
-  // ── Shift Logs modal methods ───────────────────────────────────────────────
-  openLogs(emp: Employee, event: Event): void {
-    event.stopPropagation();
-    this.logsEmployee.set(emp);
-    this.logsPage.set(1);
-    this.logsError.set(null);
-    this.logsView.set('list');
-    this.shiftLogsList.set([]);
-    this.showLogsModal.set(true);
-    this.loadShiftLogs();
-    this.shiftService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
-      next: (res: any) => {
-        const raw = res?.data ?? res;
-        this.availableShifts.set(Array.isArray(raw) ? raw : (raw?.items ?? []));
-      },
-      error: () => {},
-    });
-  }
-
-  openAddLog(): void {
-    this.logsAddForm.reset();
-    this.logsModalError.set(null);
-    this.logsHasShift.set(null);
-    this.logsView.set('add');
-    const empId = this.logsEmployee()?.id;
-    if (!empId) return;
-    this.shiftSystemService.getEmployeeShiftSystem(empId).subscribe({
-      next: () => this.logsHasShift.set(true),
-      error: (err: any) => this.logsHasShift.set(err?.status === 404 ? false : true),
-    });
-  }
-
-  cancelAddLog(): void { this.logsView.set('list'); }
-
-  submitAddLog(): void {
-    if (this.logsAddForm.invalid) { this.logsAddForm.markAllAsTouched(); return; }
-    const empId = this.logsEmployee()?.id;
-    if (!empId) return;
-    this.logsSubmitting.set(true);
-    this.logsModalError.set(null);
-    const v = this.logsAddForm.value;
-    const payload: CreateShiftLogRequest = {
-      shiftId:        v.shiftId!,
-      date:           v.date!,
-      checkInTime:    this.toTimeString(v.checkInTime!),
-      notes:          v.notes || null,
-      idempotencyKey: crypto.randomUUID(),
-    };
-    this.shiftLogService.create(empId, payload).subscribe({
-      next: () => {
-        this.logsSubmitting.set(false);
-        this.logsView.set('list');
-        this.logsPage.set(1);
-        this.loadShiftLogs();
-        this.flash('Attendance recorded.');
-      },
-      error: (err: any) => {
-        this.logsSubmitting.set(false);
-        let msg = this.apiErr(err, 'Failed to record attendance.');
-        if (err?.status === 404) msg = 'الموظف غير مسند لنظام دوام نشط. يرجى تعيين الموظف على نظام دوام أولاً.';
-        else if (err?.status === 412) msg = 'تم تسجيل الحضور لهذا اليوم مسبقاً.';
-        this.logsModalError.set(msg);
-      },
-    });
-  }
-
-  loadShiftLogs(): void {
-    const empId = this.logsEmployee()?.id;
-    if (!empId) return;
-    this.logsLoading.set(true);
-    this.shiftLogService.getAll({
-      pageNumber: this.logsPage(),
-      pageSize: 10,
-      employeeId: empId,
-    }).subscribe({
-      next: (res: any) => {
-        const raw   = res?.data ?? res;
-        const items: ShiftLog[] = Array.isArray(raw) ? raw : (raw?.items ?? raw?.data ?? []);
-        const total = raw?.totalCount ?? items.length;
-        this.shiftLogsList.set(items);
-        this.logsHasMore.set(this.logsPage() * 10 < total);
-        this.logsLoading.set(false);
-      },
-      error: err => {
-        this.logsLoading.set(false);
-        this.logsError.set(this.apiErr(err, 'Failed to load attendance logs.'));
-      },
-    });
-  }
-
-  logsPrev(): void {
-    if (this.logsPage() <= 1) return;
-    this.logsPage.update(p => p - 1);
-    this.loadShiftLogs();
-  }
-
-  logsNext(): void {
-    if (!this.logsHasMore()) return;
-    this.logsPage.update(p => p + 1);
-    this.loadShiftLogs();
-  }
-
-  openLogsEdit(log: ShiftLog): void {
-    this.logsEditTarget.set(log);
-    this.logsEditForm.patchValue({
-      checkOutTime: log.checkOutTime ? log.checkOutTime.substring(0, 5) : '',
-      status:       log.status,
-      notes:        log.notes ?? '',
-    });
-    this.logsModalError.set(null);
-    this.logsView.set('edit');
-  }
-
-  cancelLogsEdit(): void { this.logsView.set('list'); }
-
-  submitLogsEdit(): void {
-    if (this.logsEditForm.invalid) { this.logsEditForm.markAllAsTouched(); return; }
-    const log   = this.logsEditTarget();
-    const empId = this.logsEmployee()?.id;
-    if (!log || !empId) return;
-    this.logsSubmitting.set(true);
-    this.logsModalError.set(null);
-    const v = this.logsEditForm.value;
-    this.shiftLogService.update(empId, log.id, {
-      checkOutTime: v.checkOutTime ? this.toTimeString(v.checkOutTime) : null,
-      status:       v.status!,
-      notes:        v.notes || null,
-    }).subscribe({
-      next: () => {
-        this.logsSubmitting.set(false);
-        this.logsView.set('list');
-        this.loadShiftLogs();
-        this.flash('Attendance updated.');
-      },
-      error: (err: any) => {
-        this.logsSubmitting.set(false);
-        this.logsModalError.set(this.apiErr(err, 'Failed to update attendance log.'));
-      },
-    });
-  }
-
-  openLogsDelete(log: ShiftLog): void {
-    this.logsDeleteTarget.set(log);
-    this.showLogsDeleteConfirm.set(true);
-  }
-
-  cancelLogsDelete(): void { this.showLogsDeleteConfirm.set(false); }
-
-  executeLogsDelete(): void {
-    const log   = this.logsDeleteTarget();
-    const empId = this.logsEmployee()?.id;
-    if (!log || !empId) return;
-    this.logsSubmitting.set(true);
-    this.shiftLogService.delete(empId, log.id).subscribe({
-      next: () => {
-        this.logsSubmitting.set(false);
-        this.showLogsDeleteConfirm.set(false);
-        this.shiftLogsList.update(list => list.filter(l => l.id !== log.id));
-        this.flash('Attendance deleted.');
-      },
-      error: () => {
-        this.logsSubmitting.set(false);
-        this.showLogsDeleteConfirm.set(false);
-      },
-    });
-  }
-
-  logsStatusLabel(s: AttendanceStatus): string {
-    return this.lang.t(`manager.attendanceStatus.${s}`);
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
