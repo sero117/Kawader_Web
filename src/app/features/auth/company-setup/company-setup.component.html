@@ -2,9 +2,22 @@
 
   <!-- Brand -->
   <div class="mb-5 text-center">
-    <h1 class="font-bold text-[1.85rem] sm:text-[2.5rem] leading-none tracking-tight" style="color: var(--auth-fg);">
-      <span class="auth-word" style="animation-delay: 0.04s">{{ 'brand.name' | translate }}</span>
-    </h1>
+    <div class="auth-brand-row">
+      <div class="auth-logo-wrap">
+        <div class="auth-logo-glow"></div>
+        <svg class="auth-logo-icon" viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="96" height="96" rx="28" fill="var(--nav-accent)"/>
+          <g fill="#FFFFFF">
+            <g opacity="0.72"><circle cx="31" cy="45" r="7"/><rect x="24" y="53" width="14" height="25" rx="7"/></g>
+            <g opacity="0.72"><circle cx="69" cy="45" r="7"/><rect x="62" y="53" width="14" height="25" rx="7"/></g>
+            <circle cx="50" cy="37" r="9.5"/><rect x="38.5" y="48" width="23" height="32" rx="11.5"/>
+          </g>
+        </svg>
+      </div>
+      <h1 class="font-bold text-[1.85rem] sm:text-[2.5rem] leading-none tracking-tight" style="color: var(--auth-fg);">
+        <span class="auth-word" style="animation-delay: 0.04s">{{ 'brand.name' | translate }}</span>
+      </h1>
+    </div>
     <p class="text-[10px] font-medium uppercase tracking-[0.22em] mt-1.5" style="color: var(--auth-fg-25);">
       <span class="auth-word" style="animation-delay: 0.22s">{{ 'brand.tagline' | translate }}</span>
     </p>
