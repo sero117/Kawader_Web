@@ -77,6 +77,11 @@
     "employeeActivate": "Activate your account",
     "isAgent": "Agent?",
     "agentActivate": "Activate your account",
+    "roleShortcutLabel": "Company manager, new employee, or agent?",
+    "roleShortcutPlaceholder": "Set up or activate your account here",
+    "roleOptionManager": "Company manager — finish setting up your account",
+    "roleOptionEmployee": "New employee — activate your account",
+    "roleOptionAgent": "Agent — activate your account",
     "login": {
       "phoneLabel": "Phone Number",
       "phonePlaceholder": "Enter your number",

@@ -132,17 +132,17 @@
     <a routerLink="/auth/register" class="auth-link-main ml-1">{{ 'auth.createAccount' | translate }}</a>
   </p>
 
-  <p class="mt-3 text-sm" style="color: var(--auth-fg-30);">
-    {{ 'auth.isManager' | translate }}
-    <a routerLink="/auth/company-setup" class="auth-link-main ml-1">{{ 'auth.managerSetup' | translate }}</a>
-  </p>
-
-  <p class="mt-2 text-sm" style="color: var(--auth-fg-30);">
-    {{ 'auth.isEmployee' | translate }}
-    <a routerLink="/auth/employee-activation" class="auth-link-main ml-1">{{ 'auth.employeeActivate' | translate }}</a>
-    <span class="mx-1" style="color: var(--auth-fg-20);">·</span>
-    {{ 'auth.isAgent' | translate }}
-    <a routerLink="/auth/agent-activation" class="auth-link-main ml-1">{{ 'auth.agentActivate' | translate }}</a>
-  </p>
+  <div class="mt-4 w-full max-w-[400px]">
+    <label class="block text-[10px] font-semibold uppercase tracking-[0.16em] mb-1.5 text-center" style="color: var(--auth-fg-30);">
+      {{ 'auth.roleShortcutLabel' | translate }}
+    </label>
+    <select class="auth-input" style="appearance: none; -webkit-appearance: none; text-align: center; cursor: pointer;"
+      (change)="onRoleShortcut($any($event.target).value)">
+      <option value="">{{ 'auth.roleShortcutPlaceholder' | translate }}</option>
+      <option value="/auth/company-setup">{{ 'auth.roleOptionManager' | translate }}</option>
+      <option value="/auth/employee-activation">{{ 'auth.roleOptionEmployee' | translate }}</option>
+      <option value="/auth/agent-activation">{{ 'auth.roleOptionAgent' | translate }}</option>
+    </select>
+  </div>
 
 </div>

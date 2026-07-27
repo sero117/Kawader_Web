@@ -99,6 +99,10 @@ export class LoginComponent implements OnInit {
 
   togglePassword(): void { this.showPassword.update(v => !v); }
 
+  onRoleShortcut(route: string): void {
+    if (route) this.router.navigate([route]);
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();

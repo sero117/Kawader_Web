@@ -509,8 +509,11 @@ input[type="checkbox"] {
 
 .auth-btn {
   width: 100%;
-  background: #ffffff;
-  color: #0d0c1e;
+  /* A solid brand color (not a hardcoded white) so the button never blends
+     into the card — the card itself is white in light theme, which made a
+     white button invisible against it. */
+  background: var(--nav-accent);
+  color: #ffffff;
   font-weight: 700;
   font-size: 0.8rem;
   letter-spacing: 0.11em;
@@ -527,8 +530,8 @@ input[type="checkbox"] {
 }
 
 .auth-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 6px 30px rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--nav-accent) 85%, #000);
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--nav-accent) 45%, transparent);
   transform: scale(1.012);
 }
 
@@ -540,8 +543,8 @@ input[type="checkbox"] {
   width: 2.2rem;
   height: 2.2rem;
   border-radius: 50%;
-  background: var(--auth-step-active-text);
-  color: var(--auth-step-active);
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -77,6 +77,11 @@
     "employeeActivate": "فعّل حسابك",
     "isAgent": "مندوب؟",
     "agentActivate": "فعّل حسابك",
+    "roleShortcutLabel": "مدير شركة أو موظف جديد أو مندوب؟",
+    "roleShortcutPlaceholder": "أكمل إعداد الحساب أو فعّله من هنا",
+    "roleOptionManager": "مدير شركة — أكمل إعداد حسابك",
+    "roleOptionEmployee": "موظف جديد — فعّل حسابك",
+    "roleOptionAgent": "مندوب — فعّل حسابك",
     "login": {
       "phoneLabel": "رقم الهاتف",
       "phonePlaceholder": "أدخل الرقم",
