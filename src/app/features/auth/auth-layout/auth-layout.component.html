@@ -1,4 +1,4 @@
-<div class="relative overflow-hidden" style="background: var(--auth-bg); transition: background 0.25s; height: 100dvh;">
+<div class="relative overflow-hidden" style="background: var(--auth-bg); transition: background 0.25s; height: 101dvh;">
 
   <!-- Blob shapes -->
   @for (b of blobs; track $index) {
@@ -30,7 +30,7 @@
   <!-- Page content — confined to the viewport height; if a route's content is
        ever taller than the screen, this region scrolls on its own instead of
        the whole page (which would otherwise drag the fixed blobs along with it). -->
-  <div class="relative z-10 flex flex-col items-center px-4 py-8 overflow-y-auto" style="height: 100dvh;">
+  <div class="relative z-10 flex flex-col items-center px-4 py-8 overflow-y-auto" style="height: 101dvh;">
     <div [@routeAnim]="routeAnim()" class="w-full flex flex-col items-center my-auto">
       <router-outlet />
     </div>
