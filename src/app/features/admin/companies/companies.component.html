@@ -118,6 +118,7 @@
             <th>{{ 'admin.companies.colPhone' | translate }}</th>
             <th>{{ 'admin.companies.colEmail' | translate }}</th>
             <th>{{ 'admin.companies.agentLabel' | translate }}</th>
+            <th>{{ 'admin.companies.countryLabel' | translate }}</th>
             <th>{{ 'admin.companies.colStatus' | translate }}</th>
             <th style="text-align: right;">{{ 'admin.companies.colActions' | translate }}</th>
           </tr>
@@ -165,6 +166,7 @@
               <td class="font-medium" style="color: var(--text-muted);">{{ c.phoneNumber }}</td>
               <td style="color: var(--text-faint);">{{ c.email ?? '—' }}</td>
               <td style="color: var(--text-faint);">{{ agentName(c.agentId) ?? '—' }}</td>
+              <td style="color: var(--text-faint);">{{ countryDisplayName(c) ?? '—' }}</td>
 
               <!-- Status badge -->
               <td>
