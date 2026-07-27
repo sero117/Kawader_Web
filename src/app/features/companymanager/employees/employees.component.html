@@ -17,7 +17,7 @@
       </nav>
     </div>
   </div>
-  <button (click)="openAdd()" class="btn-primary">
+  <button (click)="openAdd()" class="btn-primary" [disabled]="!!currencyLoadError()" [style.opacity]="currencyLoadError() ? '0.5' : '1'">
     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
       <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
     </svg>
@@ -200,9 +200,10 @@
               <td>
                 <div class="flex items-center justify-end gap-1.5">
                   <!-- Shift Assignment -->
-                  <button (click)="openShift(emp, $event)"
+                  <button (click)="openShift(emp, $event)" [disabled]="!!currencyLoadError()"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: rgba(20,184,166,0.7); background: rgba(20,184,166,0.08);"
+                    [style.opacity]="currencyLoadError() ? '0.4' : '1'"
                     [title]="'manager.shiftAssignment.title' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -212,6 +213,7 @@
                   <a [routerLink]="employeeSubRoute(emp.id, 'shift-logs')" (click)="$event.stopPropagation()"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: rgba(249,115,22,0.75); background: rgba(249,115,22,0.08);"
+                    [style.opacity]="currencyLoadError() ? '0.4' : '1'" [style.pointer-events]="currencyLoadError() ? 'none' : null"
                     [title]="'manager.shiftLogs.title' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
@@ -221,6 +223,7 @@
                   <a [routerLink]="employeeSubRoute(emp.id, 'leaves')" (click)="$event.stopPropagation()"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: rgba(168,85,247,0.75); background: rgba(168,85,247,0.08);"
+                    [style.opacity]="currencyLoadError() ? '0.4' : '1'" [style.pointer-events]="currencyLoadError() ? 'none' : null"
                     [title]="'manager.leaves.tab' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-13.5 3h.008v.008H9v-.008zm3 0h.008v.008H12v-.008zm3 0h.008v.008H15v-.008z" />
@@ -230,6 +233,7 @@
                   <a [routerLink]="employeeSubRoute(emp.id, 'incentives-deductions')" (click)="$event.stopPropagation()"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: rgba(52,211,153,0.75); background: rgba(52,211,153,0.08);"
+                    [style.opacity]="currencyLoadError() ? '0.4' : '1'" [style.pointer-events]="currencyLoadError() ? 'none' : null"
                     [title]="'manager.incentivesDeductions.title' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round"
@@ -237,35 +241,39 @@
                     </svg>
                   </a>
                   <!-- Attachments -->
-                  <button (click)="openAttach(emp, $event)"
+                  <button (click)="openAttach(emp, $event)" [disabled]="!!currencyLoadError()"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: rgba(234,179,8,0.75); background: rgba(234,179,8,0.08);"
+                    [style.opacity]="currencyLoadError() ? '0.4' : '1'"
                     [title]="'manager.employees.attachmentsTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
                     </svg>
                   </button>
                   <!-- Status History -->
-                  <button (click)="openHistory(emp, $event)"
+                  <button (click)="openHistory(emp, $event)" [disabled]="!!currencyLoadError()"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: rgba(99,102,241,0.7); background: rgba(99,102,241,0.08);"
+                    [style.opacity]="currencyLoadError() ? '0.4' : '1'"
                     [title]="'manager.statusHistory.title' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>
                   </button>
                   <!-- Edit -->
-                  <button (click)="openEdit(emp, $event)"
+                  <button (click)="openEdit(emp, $event)" [disabled]="!!currencyLoadError()"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: var(--text-faint); background: var(--bg-subtle-sm);"
+                    [style.opacity]="currencyLoadError() ? '0.4' : '1'"
                     [title]="'manager.employees.editTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
                     </svg>
                   </button>
-                  <button (click)="confirmDelete(emp.id, $event)"
+                  <button (click)="confirmDelete(emp.id, $event)" [disabled]="!!currencyLoadError()"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);"
+                    [style.opacity]="currencyLoadError() ? '0.4' : '1'"
                     [title]="'manager.employees.deleteTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />

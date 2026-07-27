@@ -1111,7 +1111,7 @@
       "notesLabel": "Notes",
       "notesPlaceholder": "Optional note…",
       "submitBtn": "Record Attendance",
-      "editTitle": "Edit Attendance",
+      "editTitle": "Complete Data",
       "checkOutLabel": "Check-out Time",
       "loadError": "Failed to load attendance logs",
       "noResults": "No logs found",

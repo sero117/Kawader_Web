@@ -106,9 +106,9 @@
                 }
               </td>
               <td style="color: var(--text-muted);">
-                {{ formatDate(g.startDate) }}
+                {{ formatDate(g.startDate, g.holidayRecurrence) }}
                 @if (g.endDate !== g.startDate) {
-                  – {{ formatDate(g.endDate) }}
+                  – {{ formatDate(g.endDate, g.holidayRecurrence) }}
                 }
               </td>
               <td>
@@ -244,7 +244,7 @@
               }
             </div>
           </div>
-          <p style="font-size:0.72rem;color:var(--text-faint);margin-top:-8px">{{ 'manager.companyHolidays.rangeHint' | translate }}</p>
+          <p class="text-xs" style="color: var(--text-faint);">{{ 'manager.companyHolidays.rangeHint' | translate }}</p>
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.companyHolidays.recurrenceLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>

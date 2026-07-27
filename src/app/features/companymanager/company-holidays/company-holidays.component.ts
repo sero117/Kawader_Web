@@ -267,9 +267,13 @@ export class CompanyHolidaysComponent implements OnInit {
     return this.lang.t(`manager.holidayRecurrence.${r}`);
   }
 
-  formatDate(d?: string): string {
+  /** Yearly-recurring holidays repeat every year, so the specific year they were
+   *  first created in isn't meaningful — only show day + month for those. */
+  formatDate(d?: string, recurrence?: HolidayRecurrence): string {
     if (!d) return '—';
-    return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const opts: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short' };
+    if (recurrence !== HolidayRecurrence.Yearly) opts.year = 'numeric';
+    return new Date(d).toLocaleDateString('en-GB', opts);
   }
 
   private flash(msg: string): void {

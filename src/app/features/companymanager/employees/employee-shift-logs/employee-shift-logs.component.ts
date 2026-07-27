@@ -81,7 +81,7 @@ export class EmployeeShiftLogsComponent implements OnInit {
   }
 
   openAdd(): void {
-    this.addForm.reset();
+    this.addForm.reset({ date: new Date().toISOString().substring(0, 10) });
     this.modalError.set(null);
     this.hasShift.set(null);
     this.view.set('add');

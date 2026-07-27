@@ -351,6 +351,7 @@ export class EmployeesComponent implements OnInit {
       gender:       GenderType.Male,
       contractType: ContractType.FullTime,
       currencyId:   this.myCurrencies()[0]?.id ?? null,
+      hireDate:     new Date().toISOString().substring(0, 10),
     });
     this.addSections.set([]);
     this.modalError.set(null);
