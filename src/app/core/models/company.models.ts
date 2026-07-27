@@ -32,7 +32,7 @@ export interface CreateCompanyRequest {
 
 export interface UpdateCompanyRequest {
   phoneNumber?: string;
-  email?: string;
+  email?: string | null;
   countryId?: number;
   agentId?: number | null;
 }

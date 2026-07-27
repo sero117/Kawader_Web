@@ -80,9 +80,16 @@ export class CompaniesComponent implements OnInit {
   hasMore             = signal(false);
   frozenCount         = computed(() => this.companies().filter(c => c.isFrozen === true).length);
   companiesWithStatus = computed(() =>
-    this.filter.filterItems(this.companies(), 'emailSearch', (c, term) =>
-      (c.email?.toLowerCase() ?? '').includes(term) ||
-      (c.companyName?.toLowerCase() ?? '').includes(term)
+    this.filter.filterItems(
+      // Live-filter the already-loaded page as the admin types, so results
+      // narrow immediately instead of waiting for a full 10-digit number
+      // (the backend only accepts a complete phone number, per loadCompanies()).
+      this.filter.filterItems(this.companies(), 'search', (c, term) =>
+        (c.phoneNumber ?? '').toLowerCase().includes(term)
+      ),
+      'emailSearch', (c, term) =>
+        (c.email?.toLowerCase() ?? '').includes(term) ||
+        (c.companyName?.toLowerCase() ?? '').includes(term)
     )
   );
 
@@ -392,9 +399,12 @@ export class CompaniesComponent implements OnInit {
 
     this.companyService.update(id, {
       phoneNumber: this.editForm.value.phoneNumber || undefined,
-      email:       this.editForm.value.email       || undefined,
+      email:       this.editForm.value.email       || null,
       countryId:   this.editForm.value.countryId   ?? undefined,
-      agentId:     this.editForm.value.agentId      || undefined,
+      // `?? null` (not `|| undefined`) so picking "no agent" actually sends a
+      // clearing value — `undefined` would drop the key from the JSON body
+      // entirely and the backend would just leave the previous agent in place.
+      agentId:     this.editForm.value.agentId ?? null,
     }).subscribe({
       next: (res: any) => {
         this.submitting.set(false);
