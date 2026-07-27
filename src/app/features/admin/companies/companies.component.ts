@@ -1,8 +1,6 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { CompanyService } from '../../../core/services/company.service';
@@ -250,23 +248,6 @@ export class CompaniesComponent implements OnInit {
         this.companies.set(normalized);
         this.hasMore.set(items.length >= this.filter.value().pageSize);
         this.loading.set(false);
-
-        // The list endpoint also omits createdAt (unlike the single-company
-        // endpoint) — backfill it per row so the column isn't always blank.
-        if (normalized.length) {
-          const thisSeq = seq;
-          forkJoin(normalized.map((c: Company) =>
-            this.companyService.getById(c.id).pipe(catchError(() => of(null)))
-          )).subscribe(results => {
-            if (thisSeq !== this.requestSeq) return;
-            this.companies.update(list => list.map(c => {
-              const idx = normalized.findIndex((n: Company) => n.id === c.id);
-              const d: any = idx >= 0 ? results[idx] : null;
-              const data = d?.data ?? d;
-              return data?.createdAt ? { ...c, createdAt: data.createdAt } : c;
-            }));
-          });
-        }
       },
       error: err => {
         if (seq !== this.requestSeq) return;

@@ -98,7 +98,6 @@
             <th>{{ 'manager.branches.colName' | translate }}</th>
             <th>{{ 'manager.branches.colCode' | translate }}</th>
             <th>{{ 'manager.branches.colCity' | translate }}</th>
-            <th>{{ 'manager.branches.colCreated' | translate }}</th>
             <th style="text-align: right;">{{ 'manager.branches.colActions' | translate }}</th>
           </tr>
         </thead>
@@ -129,7 +128,6 @@
                 </span>
               </td>
               <td style="color: var(--text-faint);">{{ b.city ?? '—' }}</td>
-              <td style="color: var(--text-faint);">{{ formatDate(b.createdAt) }}</td>
               <td>
                 <div class="flex items-center justify-end gap-1.5">
                   <!-- View sections -->
