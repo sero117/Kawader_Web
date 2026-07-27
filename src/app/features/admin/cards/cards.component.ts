@@ -41,8 +41,8 @@ import { UrlFilter } from '../../../core/utils/url-filter';
 
       <!-- Filters -->
       <div class="filter-bar">
-        <input class="filter-input" type="text" [value]="filter.value().serial" (input)="filter.patch({serial: $any($event.target).value})" placeholder="{{ 'admin.cards.searchSerial' | translate }}" />
-        <input class="filter-input" type="text" [value]="filter.value().distinct" (input)="filter.patch({distinct: $any($event.target).value})" placeholder="{{ 'admin.cards.searchBatch' | translate }}" />
+        <input class="filter-input" type="text" [value]="filter.value().serial" (input)="onTextFilter({serial: $any($event.target).value})" placeholder="{{ 'admin.cards.searchSerial' | translate }}" />
+        <input class="filter-input" type="text" [value]="filter.value().distinct" (input)="onTextFilter({distinct: $any($event.target).value})" placeholder="{{ 'admin.cards.searchBatch' | translate }}" />
         <select class="filter-select" [value]="filter.value().status" (change)="onStatusFilter($any($event.target).value)">
           <option value="">{{ 'admin.cards.allStatuses' | translate }}</option>
           <option value="1">{{ 'admin.cards.available' | translate }}</option>
@@ -55,7 +55,6 @@ import { UrlFilter } from '../../../core/utils/url-filter';
             <option [value]="p.id">{{ p.name }}</option>
           }
         </select>
-        <button class="btn-ghost" (click)="applyFilter()">{{ 'admin.cards.search' | translate }}</button>
       </div>
 
       <!-- Error -->
@@ -302,10 +301,17 @@ export class CardsComponent implements OnInit {
     });
   }
 
-  applyFilter(): void { this.filter.patch({ pageNumber: 1 }); this.load(); }
+  private searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** Debounced so fast typing doesn't fire a request per keystroke. */
+  onTextFilter(patch: Partial<{ serial: string; distinct: string }>): void {
+    this.filter.set(patch);
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.load(), 350);
+  }
+
   // Select filters apply immediately on change — unlike free-text inputs, a
-  // selection is always a complete value, so there's no need to wait for a
-  // separate "search" click.
+  // selection is always a complete value, so there's no need to debounce it.
   onStatusFilter(v: string): void { this.filter.set({ status: v }); this.load(); }
   onPlanFilter(v: string): void { this.filter.set({ planId: v }); this.load(); }
 
