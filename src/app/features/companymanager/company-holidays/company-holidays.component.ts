@@ -45,6 +45,47 @@ export class CompanyHolidaysComponent implements OnInit {
   readonly HolidayRecurrence = HolidayRecurrence;
   readonly recurrenceList = [HolidayRecurrence.None, HolidayRecurrence.Yearly];
 
+  // ── Yearly recurrence: day+month pickers (the specific year isn't meaningful
+  // for a holiday that repeats every year, so the add form hides it entirely
+  // instead of using a native date input) ─────────────────────────────────────
+  readonly dayOptions = Array.from({ length: 31 }, (_, i) => i + 1);
+  monthNames = computed(() => {
+    const locale = this.lang.current() === 'ar' ? 'ar' : 'en-GB';
+    return Array.from({ length: 12 }, (_, i) => new Date(2000, i, 1).toLocaleDateString(locale, { month: 'long' }));
+  });
+  startDay   = signal(1);
+  startMonth = signal(1);
+  endDay     = signal(1);
+  endMonth   = signal(1);
+
+  private readonly YEARLY_PLACEHOLDER_YEAR = new Date().getFullYear();
+
+  private applyYearlyDates(): void {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    this.addForm.patchValue({
+      startDate: `${this.YEARLY_PLACEHOLDER_YEAR}-${pad(this.startMonth())}-${pad(this.startDay())}`,
+      endDate:   `${this.YEARLY_PLACEHOLDER_YEAR}-${pad(this.endMonth())}-${pad(this.endDay())}`,
+    });
+  }
+
+  setStartDay(v: number):   void { this.startDay.set(v);   this.applyYearlyDates(); }
+  setStartMonth(v: number): void { this.startMonth.set(v); this.applyYearlyDates(); }
+  setEndDay(v: number):     void { this.endDay.set(v);     this.applyYearlyDates(); }
+  setEndMonth(v: number):   void { this.endMonth.set(v);   this.applyYearlyDates(); }
+
+  /** formControlName already syncs the value — this just seeds the day/month
+   *  pickers with today's date when switching into Yearly mode. */
+  onRecurrenceChange(v: HolidayRecurrence | null): void {
+    if (v === HolidayRecurrence.Yearly) {
+      const today = new Date();
+      this.startDay.set(today.getDate());
+      this.startMonth.set(today.getMonth() + 1);
+      this.endDay.set(today.getDate());
+      this.endMonth.set(today.getMonth() + 1);
+      this.applyYearlyDates();
+    }
+  }
+
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     name:       '',
     year:       '',
@@ -138,9 +179,13 @@ export class CompanyHolidaysComponent implements OnInit {
   }
 
   // ── Filter & Pagination ───────────────────────────────────────────────────────
-  applyFilter(): void {
-    this.filter.patch({ pageNumber: 1 });
-    this.loadHolidays();
+  private searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** Debounced so fast typing doesn't fire a request per keystroke. */
+  onTextFilter(patch: Partial<{ name: string; year: string }>): void {
+    this.filter.patch({ pageNumber: 1, ...patch });
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.loadHolidays(), 350);
   }
 
   prevPage(): void {
@@ -158,6 +203,11 @@ export class CompanyHolidaysComponent implements OnInit {
   // ── Add ──────────────────────────────────────────────────────────────────────
   openAdd(): void {
     this.addForm.reset({ holidayRecurrence: HolidayRecurrence.None, isPaid: true });
+    const today = new Date();
+    this.startDay.set(today.getDate());
+    this.startMonth.set(today.getMonth() + 1);
+    this.endDay.set(today.getDate());
+    this.endMonth.set(today.getMonth() + 1);
     this.modalError.set(null);
     this.showAddModal.set(true);
   }

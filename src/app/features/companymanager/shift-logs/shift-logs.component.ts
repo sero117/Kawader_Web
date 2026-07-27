@@ -100,8 +100,19 @@ export class ShiftLogsComponent implements OnInit {
   }
 
   // ── Filter & Pagination ───────────────────────────────────────────────────────
-  applyFilter(): void {
-    this.filter.patch({ pageNumber: 1 });
+  private searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** Debounced so fast typing doesn't fire a request per keystroke. */
+  onEmployeeIdFilter(value: string): void {
+    this.filter.patch({ employeeId: value, pageNumber: 1 });
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.loadLogs(), 350);
+  }
+
+  // Selects and date pickers apply immediately — a picked value is always
+  // complete, so there's no need to debounce it.
+  onImmediateFilter(patch: Partial<{ shiftSystemId: string; fromDate: string; toDate: string }>): void {
+    this.filter.patch({ ...patch, pageNumber: 1 });
     this.loadLogs();
   }
 
