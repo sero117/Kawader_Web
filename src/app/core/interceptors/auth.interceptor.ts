@@ -106,9 +106,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       // itself is dead — fall through to the normal error toast instead of nuking
       // the session over one blocked action.
       if (err.status === 403 && auth.isAuthenticated() && req.method === 'GET') {
-        const isHr = auth.getStoredRole() === 1 && auth.getStoredEmployeeType() === 1;
-        if (isHr) {
-          // HR: background data fetch failed silently — component handles the
+        const role = auth.getStoredRole();
+        const isHr = role === 1 && auth.getStoredEmployeeType() === 1;
+        // Only CompanyManager/Employee accounts are tenant-scoped and can
+        // plausibly be frozen/suspended — an Admin or Agent 403 here just means
+        // this one background call hit a permission it shouldn't have, not that
+        // their account is dead, so don't force-logout them over it.
+        const canBeFrozen = role === 2 /* CompanyManager */ || role === 1 /* Employee */;
+        if (isHr || !canBeFrozen) {
+          // Background data fetch failed silently — component handles the
           // empty/error state itself; no toast needed (avoids spam on branch/device calls).
           return throwError(() => err);
         }
