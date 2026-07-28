@@ -119,10 +119,15 @@ export class EmployeeShiftLogsComponent implements OnInit {
       },
       error: (err: any) => {
         this.submitting.set(false);
-        let msg = this.apiErr(err, 'Failed to record attendance.');
-        if (err?.status === 404) msg = 'الموظف غير مسند لنظام دوام نشط. يرجى تعيين الموظف على نظام دوام أولاً.';
-        else if (err?.status === 412) msg = 'تم تسجيل الحضور لهذا اليوم مسبقاً.';
-        this.snackbar.show(msg, 'error');
+        // 404 is the only status the global interceptor skips (it has no
+        // generic toast for it), so it needs its own message here. Every
+        // other status — including 412, which covers more than one business
+        // rule (already recorded, no shift scheduled that day, ...) — is
+        // already shown as a snackbar by the interceptor with the backend's
+        // real reason; duplicating it here with a hardcoded guess was wrong.
+        if (err?.status === 404) {
+          this.snackbar.show('الموظف غير مسند لنظام دوام نشط. يرجى تعيين الموظف على نظام دوام أولاً.', 'error');
+        }
       },
     });
   }

@@ -16,6 +16,7 @@ export interface CreateLeaveBalanceRequest {
 }
 
 export interface UpdateLeaveBalanceRequest {
+  year: number;
   totalDays: number;
 }
 

@@ -23,6 +23,7 @@ import {
 } from '../../../../core/models/leave-balance.models';
 import { formatCurrencyAmount } from '../../../../core/utils/currency-format';
 import { CompanyTimeService } from '../../../../core/services/company-time.service';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 type Tab = 'incentives' | 'deductions' | 'leaves' | 'balance';
 
@@ -50,6 +51,7 @@ export class EmployeePayrollPageComponent implements OnInit {
   private readonly route               = inject(ActivatedRoute);
   private readonly router              = inject(Router);
   private readonly companyTime         = inject(CompanyTimeService);
+  private readonly snackbar            = inject(SnackbarService);
 
   private readonly PAGE_SIZE = 10;
 
@@ -582,7 +584,14 @@ export class EmployeePayrollPageComponent implements OnInit {
         this.balance.set(null);
         this.balanceNotFound.set(false);
       },
-      error: () => { this.submitting.set(false); },
+      // 404 here means "no leave balance record for this employee/year" — the
+      // global interceptor intentionally skips showing a toast for 404s (many
+      // components treat it as a normal empty state), so without this the
+      // request would fail completely silently.
+      error: (err: any) => {
+        this.submitting.set(false);
+        if (err?.status === 404) this.snackbar.show(this.apiErr(err, 'Leave balance not found.'), 'error');
+      },
     });
   }
 
@@ -621,7 +630,10 @@ export class EmployeePayrollPageComponent implements OnInit {
         this.balance.set(null);
         this.balanceNotFound.set(false);
       },
-      error: () => { this.submitting.set(false); },
+      error: (err: any) => {
+        this.submitting.set(false);
+        if (err?.status === 404) this.snackbar.show(this.apiErr(err, 'Leave balance not found.'), 'error');
+      },
     });
   }
 
@@ -715,6 +727,7 @@ export class EmployeePayrollPageComponent implements OnInit {
     this.submitting.set(true);
     this.modalError.set(null);
     this.leaveBalanceService.update(this.employeeId, b.id, {
+      year:      b.year,
       totalDays: this.balanceEditForm.value.totalDays!,
     }).subscribe({
       next: () => {
