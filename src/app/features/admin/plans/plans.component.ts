@@ -382,6 +382,11 @@ export class PlansComponent implements OnInit {
   submit(): void {
     if (!this.form.name.trim()) { this.snackbar.show(this.lang.t('admin.plans.nameRequired'), 'error'); return; }
     if (!this.form.subscriptionCategoryId) { this.snackbar.show(this.lang.t('admin.plans.categoryRequired'), 'error'); return; }
+    if (this.form.price < 0) { this.snackbar.show(this.lang.t('admin.plans.priceRequired'), 'error'); return; }
+    if (this.form.maxEmployees < 1 || this.form.maxBranches < 1 || this.form.maxSections < 1) {
+      this.snackbar.show(this.lang.t('admin.plans.limitsRequired'), 'error');
+      return;
+    }
     this.submitting.set(true);
     this.modalError.set(null);
     this.usdMissing.set(false);

@@ -360,6 +360,8 @@
       "isRecommended": "Featured (Recommended)",
       "nameRequired": "Plan name is required.",
       "categoryRequired": "A subscription category must be selected.",
+      "priceRequired": "Price can't be negative.",
+      "limitsRequired": "Max employees, branches, and sections must all be at least 1.",
       "categoryNotFound": "The selected subscription category doesn't exist.",
       "confirmDelete": "Delete Plan?",
       "confirmDeleteMsg": "This plan will be permanently removed:",

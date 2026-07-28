@@ -360,6 +360,8 @@
       "isRecommended": "مميزة (موصى بها)",
       "nameRequired": "اسم الخطة مطلوب.",
       "categoryRequired": "يجب اختيار تصنيف اشتراك.",
+      "priceRequired": "السعر لا يمكن أن يكون رقماً سالباً.",
+      "limitsRequired": "أقصى عدد الموظفين والفروع والأقسام يجب أن تكون 1 على الأقل.",
       "categoryNotFound": "تصنيف الاشتراك المختار غير موجود.",
       "confirmDelete": "حذف الخطة؟",
       "confirmDeleteMsg": "سيتم حذف الخطة نهائياً:",
