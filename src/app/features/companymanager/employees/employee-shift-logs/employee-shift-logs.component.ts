@@ -7,6 +7,7 @@ import { EmployeeService } from '../../../../core/services/employee.service';
 import { ShiftLogService } from '../../../../core/services/shift-log.service';
 import { ShiftService } from '../../../../core/services/shift.service';
 import { ShiftSystemService } from '../../../../core/services/shift-system.service';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 import { Employee } from '../../../../core/models/employee.models';
 import { ShiftLog, Shift, AttendanceStatus, CreateShiftLogRequest } from '../../../../core/models/shift.models';
 
@@ -21,6 +22,7 @@ export class EmployeeShiftLogsComponent implements OnInit {
   private readonly shiftLogService   = inject(ShiftLogService);
   private readonly shiftService      = inject(ShiftService);
   private readonly shiftSystemService = inject(ShiftSystemService);
+  private readonly snackbar          = inject(SnackbarService);
   private readonly fb                = inject(FormBuilder);
   private readonly lang              = inject(LanguageService);
   private readonly route             = inject(ActivatedRoute);
@@ -118,7 +120,7 @@ export class EmployeeShiftLogsComponent implements OnInit {
         let msg = this.apiErr(err, 'Failed to record attendance.');
         if (err?.status === 404) msg = 'الموظف غير مسند لنظام دوام نشط. يرجى تعيين الموظف على نظام دوام أولاً.';
         else if (err?.status === 412) msg = 'تم تسجيل الحضور لهذا اليوم مسبقاً.';
-        this.modalError.set(msg);
+        this.snackbar.show(msg, 'error');
       },
     });
   }
@@ -175,7 +177,9 @@ export class EmployeeShiftLogsComponent implements OnInit {
         this.loadShiftLogs();
         this.flash('Attendance updated.');
       },
-      error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to update attendance log.')); },
+      // No local error banner — the global interceptor already shows this
+      // failure as a snackbar.
+      error: () => { this.submitting.set(false); },
     });
   }
 

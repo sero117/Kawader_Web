@@ -4,6 +4,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { CountryService } from '../../../core/services/country.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Country, CreateCountryRequest, UpdateCountryRequest } from '../../../core/models/country.models';
 
 @Component({
@@ -173,6 +174,7 @@ import { Country, CreateCountryRequest, UpdateCountryRequest } from '../../../co
 export class CountriesComponent implements OnInit {
   private readonly countryService = inject(CountryService);
   private readonly lang           = inject(LanguageService);
+  private readonly snackbar       = inject(SnackbarService);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     name:       '',
@@ -244,7 +246,7 @@ export class CountriesComponent implements OnInit {
 
   submit(): void {
     if (!this.form.arabicName.trim() || !this.form.englishName.trim()) {
-      this.modalError.set(this.lang.t('admin.countries.nameRequired'));
+      this.snackbar.show(this.lang.t('admin.countries.nameRequired'), 'error');
       return;
     }
     this.submitting.set(true);
@@ -258,7 +260,7 @@ export class CountriesComponent implements OnInit {
         error: (err: any) => {
           this.submitting.set(false);
           if (err?.status === 412) { this.closeModal(); this.load(); return; }
-          this.modalError.set(this.apiErr(err));
+          // Anything else: the global interceptor already shows it as a snackbar.
         },
       });
     } else {
@@ -268,7 +270,7 @@ export class CountriesComponent implements OnInit {
       };
       this.countryService.create(payload).subscribe({
         next: () => { this.submitting.set(false); this.closeModal(); this.filter.set({ pageNumber: 1 }); this.load(); },
-        error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+        error: () => { this.submitting.set(false); },
       });
     }
   }
@@ -283,7 +285,8 @@ export class CountriesComponent implements OnInit {
       next: () => { this.submitting.set(false); this.deleteTarget.set(null); this.load(); },
       error: (err: any) => {
         this.submitting.set(false);
-        this.modalError.set(err?.status === 412 ? this.lang.t('admin.countries.lockedDeleteHint') : this.apiErr(err));
+        if (err?.status === 412) { this.snackbar.show(this.lang.t('admin.countries.lockedDeleteHint'), 'error'); return; }
+        // Anything else: the global interceptor already shows it as a snackbar.
       },
     });
   }

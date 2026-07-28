@@ -135,7 +135,7 @@ export class ShiftSystemDaysComponent implements OnInit {
         this.flash('Day added successfully.');
         this.loadDays();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add day.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -166,7 +166,7 @@ export class ShiftSystemDaysComponent implements OnInit {
         this.flash('Day updated.');
         this.loadDays();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Update failed.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 

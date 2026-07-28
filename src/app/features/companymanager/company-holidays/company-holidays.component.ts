@@ -6,6 +6,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { CompanyHolidayService } from '../../../core/services/company-holiday.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import {
   CompanyHoliday, HolidayRecurrence, GetCompanyHolidaysParams,
 } from '../../../core/models/company-holiday.models';
@@ -41,6 +42,7 @@ export class CompanyHolidaysComponent implements OnInit {
   private readonly holidayService = inject(CompanyHolidayService);
   private readonly fb             = inject(FormBuilder);
   private readonly lang           = inject(LanguageService);
+  private readonly snackbar       = inject(SnackbarService);
 
   readonly HolidayRecurrence = HolidayRecurrence;
   readonly recurrenceList = [HolidayRecurrence.None, HolidayRecurrence.Yearly];
@@ -218,12 +220,12 @@ export class CompanyHolidaysComponent implements OnInit {
     const start = new Date(v.startDate!);
     const end   = new Date(v.endDate!);
     if (end < start) {
-      this.modalError.set(this.lang.t('manager.companyHolidays.endBeforeStart'));
+      this.snackbar.show(this.lang.t('manager.companyHolidays.endBeforeStart'), 'error');
       return;
     }
     const rangeDays = Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
     if (rangeDays >= 366) {
-      this.modalError.set(this.lang.t('manager.companyHolidays.rangeTooLong'));
+      this.snackbar.show(this.lang.t('manager.companyHolidays.rangeTooLong'), 'error');
       return;
     }
     this.submitting.set(true);
@@ -246,7 +248,7 @@ export class CompanyHolidaysComponent implements OnInit {
         this.filter.patch({ pageNumber: 1 });
         this.loadHolidays();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add holiday.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -284,7 +286,7 @@ export class CompanyHolidaysComponent implements OnInit {
         this.flash(this.lang.t('manager.companyHolidays.updated'));
         this.loadHolidays();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to update holiday.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 

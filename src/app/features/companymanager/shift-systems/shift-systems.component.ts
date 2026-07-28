@@ -128,7 +128,7 @@ export class ShiftSystemsComponent implements OnInit {
         this.filter.patch({ pageNumber: 1 });
         this.loadSystems();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add shift system.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -154,7 +154,7 @@ export class ShiftSystemsComponent implements OnInit {
         this.flash('Shift system updated.');
         this.loadSystems();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Update failed.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 

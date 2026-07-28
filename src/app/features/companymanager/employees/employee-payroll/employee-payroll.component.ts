@@ -336,7 +336,7 @@ export class EmployeePayrollPageComponent implements OnInit {
         this.incentivesFilter.update(f => ({ ...f, pageNumber: 1 }));
         this.loadIncentives();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add incentive.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -373,7 +373,7 @@ export class EmployeePayrollPageComponent implements OnInit {
         this.flash(this.lang.t('manager.incentivesDeductions.incentiveUpdated'));
         this.loadIncentives();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.consumedAwareErr(err, 'Failed to update incentive.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -429,7 +429,7 @@ export class EmployeePayrollPageComponent implements OnInit {
         this.deductionsFilter.update(f => ({ ...f, pageNumber: 1 }));
         this.loadDeductions();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add deduction.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -466,7 +466,7 @@ export class EmployeePayrollPageComponent implements OnInit {
         this.flash(this.lang.t('manager.incentivesDeductions.deductionUpdated'));
         this.loadDeductions();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.consumedAwareErr(err, 'Failed to update deduction.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -580,7 +580,7 @@ export class EmployeePayrollPageComponent implements OnInit {
         this.balance.set(null);
         this.balanceNotFound.set(false);
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add leave.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -619,7 +619,7 @@ export class EmployeePayrollPageComponent implements OnInit {
         this.balance.set(null);
         this.balanceNotFound.set(false);
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to update leave.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -694,7 +694,7 @@ export class EmployeePayrollPageComponent implements OnInit {
         this.flash(this.lang.t('manager.leaveBalance.added'));
         this.loadBalance();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to create leave balance.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -721,7 +721,7 @@ export class EmployeePayrollPageComponent implements OnInit {
         this.flash(this.lang.t('manager.leaveBalance.updated'));
         this.loadBalance();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to update leave balance.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -767,7 +767,7 @@ export class EmployeePayrollPageComponent implements OnInit {
         this.balanceYear.set(v.toYear!);
         this.loadBalance();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to carry over leave balance.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 

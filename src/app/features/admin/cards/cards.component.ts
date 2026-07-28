@@ -6,6 +6,7 @@ import { Card, CardStatus, CreateCardRequest, GetCardsParams } from '../../../co
 import { Plan } from '../../../core/models/plan.models';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../../environments/environment';
 import { UrlFilter } from '../../../core/utils/url-filter';
@@ -237,6 +238,7 @@ export class CardsComponent implements OnInit {
   private readonly planService = inject(PlanService);
   private readonly auth        = inject(AuthService);
   private readonly lang        = inject(LanguageService);
+  private readonly snackbar    = inject(SnackbarService);
 
   readonly CardStatus = CardStatus;
 
@@ -334,13 +336,15 @@ export class CardsComponent implements OnInit {
   }
 
   generate(): void {
-    if (!this.genForm.planId) { this.modalError.set(this.lang.t('admin.cards.selectPlanRequired')); return; }
-    if (this.genForm.count < 1) { this.modalError.set(this.lang.t('admin.cards.countRequired')); return; }
+    if (!this.genForm.planId) { this.snackbar.show(this.lang.t('admin.cards.selectPlanRequired'), 'error'); return; }
+    if (this.genForm.count < 1) { this.snackbar.show(this.lang.t('admin.cards.countRequired'), 'error'); return; }
     this.submitting.set(true);
     const payload: CreateCardRequest = { planId: this.genForm.planId, count: this.genForm.count, distinct: this.genForm.distinct, idempotencyKey: crypto.randomUUID() };
     this.cardService.create(payload).subscribe({
       next: () => { this.submitting.set(false); this.showGenerate.set(false); this.load(); },
-      error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+      // No local error banner — the global interceptor already shows this
+      // failure as a snackbar.
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -351,7 +355,7 @@ export class CardsComponent implements OnInit {
     this.submitting.set(true);
     this.cardService.revoke(t.id).subscribe({
       next: () => { this.submitting.set(false); this.revokeTarget.set(null); this.load(); },
-      error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+      error: () => { this.submitting.set(false); },
     });
   }
 

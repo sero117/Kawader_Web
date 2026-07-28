@@ -4,6 +4,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import {
   Currency, CreateCurrencyRequest, UpdateCurrencyRequest, CurrencyRate,
 } from '../../../core/models/currency.models';
@@ -250,6 +251,7 @@ import {
 export class CurrenciesComponent implements OnInit {
   private readonly currencyService = inject(CurrencyService);
   private readonly lang            = inject(LanguageService);
+  private readonly snackbar        = inject(SnackbarService);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     code:       '',
@@ -331,12 +333,12 @@ export class CurrenciesComponent implements OnInit {
 
   submit(): void {
     if (!this.form.arabicName.trim() || !this.form.englishName.trim() || !this.form.code.trim() || !this.form.symbol.trim()) {
-      this.modalError.set(this.lang.t('admin.currencies.fieldsRequired'));
+      this.snackbar.show(this.lang.t('admin.currencies.fieldsRequired'), 'error');
       return;
     }
     if (this.isUsdCode(this.form.code)) this.form.rate = 1;
     if (!(this.form.rate > 0)) {
-      this.modalError.set(this.lang.t('admin.currencies.rateMustBePositive'));
+      this.snackbar.show(this.lang.t('admin.currencies.rateMustBePositive'), 'error');
       return;
     }
     this.submitting.set(true);
@@ -350,7 +352,7 @@ export class CurrenciesComponent implements OnInit {
       };
       this.currencyService.update(editing.id, payload).subscribe({
         next: () => { this.submitting.set(false); this.closeModal(); this.load(); },
-        error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+        error: () => { this.submitting.set(false); },
       });
     } else {
       const payload: CreateCurrencyRequest = {
@@ -360,7 +362,7 @@ export class CurrenciesComponent implements OnInit {
       };
       this.currencyService.create(payload).subscribe({
         next: () => { this.submitting.set(false); this.closeModal(); this.filter.set({ pageNumber: 1 }); this.load(); },
-        error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+        error: () => { this.submitting.set(false); },
       });
     }
   }
@@ -373,7 +375,7 @@ export class CurrenciesComponent implements OnInit {
     this.submitting.set(true);
     this.currencyService.delete(t.id).subscribe({
       next: () => { this.submitting.set(false); this.deleteTarget.set(null); this.load(); },
-      error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+      error: () => { this.submitting.set(false); },
     });
   }
 

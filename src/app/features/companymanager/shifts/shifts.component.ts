@@ -137,7 +137,7 @@ export class ShiftsComponent implements OnInit {
         this.filter.patch({ pageNumber: 1 });
         this.loadShifts();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add shift.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -174,7 +174,7 @@ export class ShiftsComponent implements OnInit {
         this.flash('Shift updated.');
         this.loadShifts();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Update failed.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 

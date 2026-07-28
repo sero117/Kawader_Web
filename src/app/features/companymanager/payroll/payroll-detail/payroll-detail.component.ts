@@ -9,6 +9,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { PayrollService } from '../../../../core/services/payroll.service';
 import { EmployeeService } from '../../../../core/services/employee.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 import { Role } from '../../../../core/models/auth.models';
 import { ActiveEmployee } from '../../../../core/models/employee.models';
 import { parsePayrollNotificationData } from '../../../../core/models/notification.models';
@@ -35,6 +36,7 @@ export class PayrollDetailComponent implements OnInit {
   private readonly payrollService     = inject(PayrollService);
   private readonly employeeService    = inject(EmployeeService);
   private readonly notificationService = inject(NotificationService);
+  private readonly snackbar            = inject(SnackbarService);
   private readonly authService        = inject(AuthService);
   private readonly lang               = inject(LanguageService);
   private readonly fb                 = inject(FormBuilder);
@@ -198,7 +200,7 @@ export class PayrollDetailComponent implements OnInit {
         this.flash(this.t('updatePeriodSuccess'));
         this.refreshSilently();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to update period.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -255,17 +257,17 @@ export class PayrollDetailComponent implements OnInit {
       error: err => {
         this.submitting.set(false);
         if (err?.status === 412) {
-          this.modalError.set(this.lang.t('manager.payroll.errMixedCurrency'));
+          this.snackbar.show(this.lang.t('manager.payroll.errMixedCurrency'), 'error');
           return;
         }
         // Distinct from a plain "already on this run" duplicate — this specific
         // 409 means the employee already has a payslip covering this period on
         // a DIFFERENT run (guards against being paid twice across currencies).
         if (err?.status === 409) {
-          this.modalError.set(this.lang.t('manager.payroll.errAlreadyPaidThisPeriod'));
+          this.snackbar.show(this.lang.t('manager.payroll.errAlreadyPaidThisPeriod'), 'error');
           return;
         }
-        this.modalError.set(this.apiErr(err, 'Failed to add employees.'));
+        // Anything else: the global interceptor already shows it as a snackbar.
       },
     });
   }
@@ -306,12 +308,9 @@ export class PayrollDetailComponent implements OnInit {
         this.localProcessing.set('Processing');
         this.flash(this.t('recalculateSuccess'));
       },
-      error: err => {
-        this.submitting.set(false);
-        // Keep the modal open so the error is actually visible — closing it
-        // here would discard the message we just set into the void.
-        this.modalError.set(this.apiErr(err, 'Failed to recalculate.'));
-      },
+      // Modal stays open on failure (we never close it here) — the global
+      // interceptor already shows the error as a snackbar.
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -341,7 +340,7 @@ export class PayrollDetailComponent implements OnInit {
         this.flash(this.t('adjustSuccess'));
         this.refreshSilently();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to adjust payslip.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -390,7 +389,7 @@ export class PayrollDetailComponent implements OnInit {
         this.flash(this.t('approved'));
         this.refreshSilently();
       },
-      error: err => { this.submitting.set(false); this.showApproveModal.set(false); this.modalError.set(this.apiErr(err, 'Failed to approve.')); },
+      error: () => { this.submitting.set(false); this.showApproveModal.set(false); },
     });
   }
 
@@ -405,7 +404,7 @@ export class PayrollDetailComponent implements OnInit {
         this.flash(this.t('paid'));
         this.refreshSilently();
       },
-      error: err => { this.submitting.set(false); this.showPayModal.set(false); this.modalError.set(this.apiErr(err, 'Failed to mark as paid.')); },
+      error: () => { this.submitting.set(false); this.showPayModal.set(false); },
     });
   }
 

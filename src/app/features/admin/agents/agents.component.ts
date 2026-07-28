@@ -4,6 +4,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { AgentService } from '../../../core/services/agent.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Agent, CreateAgentRequest, UpdateAgentRequest } from '../../../core/models/agent.models';
 import { CountryService } from '../../../core/services/country.service';
 import { Country } from '../../../core/models/country.models';
@@ -202,6 +203,7 @@ import { Country } from '../../../core/models/country.models';
 export class AgentsComponent implements OnInit {
   private readonly agentService  = inject(AgentService);
   private readonly countryService = inject(CountryService);
+  private readonly snackbar      = inject(SnackbarService);
   readonly lang = inject(LanguageService);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
@@ -291,15 +293,15 @@ export class AgentsComponent implements OnInit {
 
   submit(): void {
     if (!this.form.firstName.trim() || !this.form.lastName.trim()) {
-      this.modalError.set(this.lang.t('admin.agents.nameRequired'));
+      this.snackbar.show(this.lang.t('admin.agents.nameRequired'), 'error');
       return;
     }
     if (!/^09\d{8}$/.test(this.form.phoneNumber)) {
-      this.modalError.set(this.lang.t('validation.phone09'));
+      this.snackbar.show(this.lang.t('validation.phone09'), 'error');
       return;
     }
     if (!this.form.countryId) {
-      this.modalError.set(this.lang.t('admin.agents.selectCountry'));
+      this.snackbar.show(this.lang.t('admin.agents.selectCountry'), 'error');
       return;
     }
     this.submitting.set(true);
@@ -313,7 +315,7 @@ export class AgentsComponent implements OnInit {
       };
       this.agentService.update(editing.id, payload).subscribe({
         next: () => { this.submitting.set(false); this.closeModal(); this.load(); },
-        error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+        error: () => { this.submitting.set(false); },
       });
     } else {
       const payload: CreateAgentRequest = {
@@ -323,7 +325,7 @@ export class AgentsComponent implements OnInit {
       };
       this.agentService.create(payload).subscribe({
         next: () => { this.submitting.set(false); this.closeModal(); this.filter.set({ pageNumber: 1 }); this.load(); },
-        error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+        error: () => { this.submitting.set(false); },
       });
     }
   }
@@ -336,7 +338,7 @@ export class AgentsComponent implements OnInit {
     this.submitting.set(true);
     this.agentService.delete(t.id).subscribe({
       next: () => { this.submitting.set(false); this.deleteTarget.set(null); this.load(); },
-      error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+      error: () => { this.submitting.set(false); },
     });
   }
 

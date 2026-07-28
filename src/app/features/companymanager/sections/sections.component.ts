@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { SectionService } from '../../../core/services/section.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { BranchService } from '../../../core/services/branch.service';
 import { Section, GetSectionsParams } from '../../../core/models/section.models';
 import { Branch } from '../../../core/models/branch.models';
@@ -17,6 +18,7 @@ import { Branch } from '../../../core/models/branch.models';
 export class SectionsComponent implements OnInit {
   private readonly sectionService = inject(SectionService);
   private readonly branchService  = inject(BranchService);
+  private readonly snackbar       = inject(SnackbarService);
   private readonly fb             = inject(FormBuilder);
   private readonly route          = inject(ActivatedRoute);
   private readonly router         = inject(Router);
@@ -163,17 +165,17 @@ export class SectionsComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         this.submitting.set(false);
-        if (res?.isSuccess === false) { this.modalError.set(res.message || 'Failed to add section.'); return; }
+        if (res?.isSuccess === false) { this.snackbar.show(res.message || 'Failed to add section.', 'error'); return; }
         if (res?.data != null || res?.id != null || res?.isSuccess === true) {
           this.showAddModal.set(false);
           this.flash('Section added successfully!');
           this.filter.patch({ pageNumber: 1 });
           this.loadSections();
         } else {
-          this.modalError.set(res?.message || 'Failed to add section.');
+          this.snackbar.show(res?.message || 'Failed to add section.', 'error');
         }
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add section.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -196,12 +198,12 @@ export class SectionsComponent implements OnInit {
     this.sectionService.update(id, { name: v.name || undefined, code: v.code || undefined }).subscribe({
       next: (res: any) => {
         this.submitting.set(false);
-        if (res?.isSuccess === false) { this.modalError.set(res.message || 'Update failed.'); return; }
+        if (res?.isSuccess === false) { this.snackbar.show(res.message || 'Update failed.', 'error'); return; }
         this.showEditModal.set(false);
         this.flash('Section updated.');
         this.loadSections();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Update failed.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 

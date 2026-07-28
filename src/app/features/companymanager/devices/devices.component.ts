@@ -4,6 +4,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { DeviceService } from '../../../core/services/device.service';
 import { EmployeeService } from '../../../core/services/employee.service';
+import { LanguageService } from '../../../core/services/language.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Device, DeviceEmployee } from '../../../core/models/device.models';
 import { ActiveEmployee } from '../../../core/models/employee.models';
 import { UrlFilter } from '../../../core/utils/url-filter';
@@ -17,6 +19,8 @@ import { UrlFilter } from '../../../core/utils/url-filter';
 export class DevicesComponent implements OnInit {
   private readonly deviceService   = inject(DeviceService);
   private readonly employeeService = inject(EmployeeService);
+  private readonly lang            = inject(LanguageService);
+  private readonly snackbar        = inject(SnackbarService);
   private readonly fb              = inject(FormBuilder);
 
   // ── Devices list ──────────────────────────────────────────────────────────
@@ -168,7 +172,7 @@ export class DevicesComponent implements OnInit {
         },
         error: err => {
           this.submitting.set(false);
-          this.modalError.set(this.apiErr(err, 'common.saveFailed', { 409: 'manager.devices.nameTaken', 412: 'manager.devices.noChange' }));
+          this.snackbar.show(this.apiErr(err, 'common.saveFailed', { 409: 'manager.devices.nameTaken', 412: 'manager.devices.noChange' }), 'error');
         },
       });
     } else {
@@ -191,7 +195,7 @@ export class DevicesComponent implements OnInit {
         },
         error: err => {
           this.submitting.set(false);
-          this.modalError.set(this.apiErr(err, 'common.saveFailed', { 409: 'manager.devices.serialTaken' }));
+          this.snackbar.show(this.apiErr(err, 'common.saveFailed', { 409: 'manager.devices.serialTaken' }), 'error');
         },
       });
     }
@@ -329,7 +333,7 @@ export class DevicesComponent implements OnInit {
   submitAddEmployee(): void {
     const emp = this.selectedEmployee();
     const num = this.addEmpNumber().trim();
-    if (!emp || !num) { this.empModalError.set('يرجى اختيار موظف وإدخال رقم التسجيل'); return; }
+    if (!emp || !num) { this.snackbar.show('يرجى اختيار موظف وإدخال رقم التسجيل', 'error'); return; }
     const device = this.empDialogDevice();
     if (!device) return;
     this.empSubmitting.set(true);
@@ -342,9 +346,9 @@ export class DevicesComponent implements OnInit {
       },
       error: err => {
         this.empSubmitting.set(false);
-        this.empModalError.set(this.apiErr(err, 'common.saveFailed', {
+        this.snackbar.show(this.apiErr(err, 'common.saveFailed', {
           409: 'manager.devices.employees.conflict',
-        }));
+        }), 'error');
       },
     });
   }
@@ -374,10 +378,10 @@ export class DevicesComponent implements OnInit {
       },
       error: err => {
         this.editEmpSubmit.set(false);
-        this.editEmpError.set(this.apiErr(err, 'common.saveFailed', {
+        this.snackbar.show(this.apiErr(err, 'common.saveFailed', {
           409: 'manager.devices.employees.numberTaken',
           412: 'manager.devices.noChange',
-        }));
+        }), 'error');
       },
     });
   }
@@ -414,14 +418,14 @@ export class DevicesComponent implements OnInit {
 
   apiErr(err: any, fallback: string, statusMap: Record<number, string> = {}): string {
     if (err?.status === 0) return 'Cannot connect to server.';
-    if (statusMap[err?.status]) return statusMap[err.status];
+    if (statusMap[err?.status]) return this.lang.t(statusMap[err.status]);
     const body = err?.error;
-    if (!body) return fallback;
+    if (!body) return this.lang.t(fallback);
     if (typeof body === 'string' && body.trim()) return body.trim();
     for (const key of ['message', 'title', 'detail', 'error']) {
       const v = body[key];
       if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
     }
-    return fallback;
+    return this.lang.t(fallback);
   }
 }

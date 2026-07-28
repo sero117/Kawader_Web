@@ -6,6 +6,7 @@ import { LanguageService } from '../../../../core/services/language.service';
 import { UrlFilter } from '../../../../core/utils/url-filter';
 import { PayrollService } from '../../../../core/services/payroll.service';
 import { CurrencyService } from '../../../../core/services/currency.service';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 import { PayrollRun, PayrollStatus, UncoveredEmployee } from '../../../../core/models/payroll.models';
 import { Currency } from '../../../../core/models/currency.models';
 
@@ -24,6 +25,7 @@ function periodRangeValidator(group: AbstractControl): ValidationErrors | null {
 export class PayrollListComponent implements OnInit {
   private readonly payrollService  = inject(PayrollService);
   private readonly currencyService = inject(CurrencyService);
+  private readonly snackbar        = inject(SnackbarService);
   private readonly fb              = inject(FormBuilder);
   private readonly router          = inject(Router);
   private readonly lang            = inject(LanguageService);
@@ -173,7 +175,7 @@ export class PayrollListComponent implements OnInit {
       next: (res: any) => {
         this.submitting.set(false);
         if (res?.isSuccess === false) {
-          this.modalError.set(res.message || 'Failed to create payroll run.');
+          this.snackbar.show(res.message || 'Failed to create payroll run.', 'error');
           return;
         }
         this.showCreateModal.set(false);
@@ -188,14 +190,14 @@ export class PayrollListComponent implements OnInit {
       error: err => {
         this.submitting.set(false);
         if (err?.status === 409) {
-          this.modalError.set(this.lang.t('manager.payroll.errSameCurrencyOverlap'));
+          this.snackbar.show(this.lang.t('manager.payroll.errSameCurrencyOverlap'), 'error');
           return;
         }
         if (err?.status === 412) {
-          this.modalError.set(this.lang.t('manager.payroll.errCurrencyNotAllowed'));
+          this.snackbar.show(this.lang.t('manager.payroll.errCurrencyNotAllowed'), 'error');
           return;
         }
-        this.modalError.set(this.apiErr(err, 'Failed to create payroll run.'));
+        // Anything else: the global interceptor already shows it as a snackbar.
       },
     });
   }

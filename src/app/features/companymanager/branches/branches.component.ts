@@ -5,6 +5,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { BranchService } from '../../../core/services/branch.service';
 import { VisitTrackingService } from '../../../core/services/visit-tracking.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Branch, GetBranchesParams } from '../../../core/models/branch.models';
 import { requestLocation } from '../../../core/utils/geolocation';
 
@@ -17,6 +18,7 @@ import { requestLocation } from '../../../core/utils/geolocation';
 export class BranchesComponent implements OnInit {
   private readonly branchService  = inject(BranchService);
   private readonly visitTracking  = inject(VisitTrackingService);
+  private readonly snackbar       = inject(SnackbarService);
   private readonly fb             = inject(FormBuilder);
   private readonly router         = inject(Router);
 
@@ -162,17 +164,19 @@ export class BranchesComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         this.submitting.set(false);
-        if (res?.isSuccess === false) { this.modalError.set(res.message || 'Failed to add branch.'); return; }
+        if (res?.isSuccess === false) { this.snackbar.show(res.message || 'Failed to add branch.', 'error'); return; }
         if (res?.data != null || res?.id != null || res?.isSuccess === true) {
           this.showAddModal.set(false);
           this.flash('Branch added successfully!');
           this.filter.patch({ pageNumber: 1 });
           this.loadBranches();
         } else {
-          this.modalError.set(res?.message || 'Failed to add branch.');
+          this.snackbar.show(res?.message || 'Failed to add branch.', 'error');
         }
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Failed to add branch.')); },
+      // No local error banner — the global interceptor already shows this
+      // failure as a snackbar.
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -209,12 +213,14 @@ export class BranchesComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         this.submitting.set(false);
-        if (res?.isSuccess === false) { this.modalError.set(res.message || 'Update failed.'); return; }
+        if (res?.isSuccess === false) { this.snackbar.show(res.message || 'Update failed.', 'error'); return; }
         this.showEditModal.set(false);
         this.flash('Branch updated.');
         this.loadBranches();
       },
-      error: err => { this.submitting.set(false); this.modalError.set(this.apiErr(err, 'Update failed.')); },
+      // No local error banner — the global interceptor already shows this
+      // failure as a snackbar.
+      error: () => { this.submitting.set(false); },
     });
   }
 

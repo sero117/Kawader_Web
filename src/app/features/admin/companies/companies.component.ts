@@ -182,7 +182,7 @@ export class CompaniesComponent implements OnInit {
         this.grantPriority.set(this.companyCurrencies().length + 2);
         this.loadCompanyCurrencies();
       },
-      error: (err: any) => { this.submitting.set(false); this.currenciesError.set(this.apiErr(err, 'Failed to grant currency.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -193,7 +193,7 @@ export class CompaniesComponent implements OnInit {
     this.currenciesError.set(null);
     this.companyService.revokeCurrency(company.id, currencyId).subscribe({
       next: () => { this.submitting.set(false); this.loadCompanyCurrencies(); },
-      error: (err: any) => { this.submitting.set(false); this.currenciesError.set(this.apiErr(err, 'Failed to revoke currency.')); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -340,13 +340,12 @@ export class CompaniesComponent implements OnInit {
           this.filter.patch({ pageNumber: 1 });
           this.companies.update(list => [newCompany, ...list]);
         } else {
-          this.modalError.set(res?.message || 'Failed to create company.');
+          this.snackbar.show(res?.message || 'Failed to create company.', 'error');
         }
       },
-      error: err => {
-        this.submitting.set(false);
-        this.modalError.set(this.apiErr(err, 'Failed to create company.'));
-      },
+      // No local error banner — the global interceptor already shows this
+      // failure as a snackbar.
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -471,9 +470,9 @@ export class CompaniesComponent implements OnInit {
           this.saveFrozenId(id, true);
           this.companies.update(list => list.map(c => c.id === id ? { ...c, isFrozen: true } : c));
           this.showFreezeModal.set(false);
-        } else {
-          this.modalError.set(this.apiErr(err, 'Failed to freeze company.'));
         }
+        // Any other status: no local error banner — the global interceptor
+        // already shows it as a snackbar.
       },
     });
   }
@@ -490,10 +489,9 @@ export class CompaniesComponent implements OnInit {
         this.companies.update(list => list.map(c => c.id === id ? { ...c, isFrozen: false } : c));
         this.flash('Company unfrozen.');
       },
-      error: err => {
-        this.submitting.set(false);
-        this.modalError.set(this.apiErr(err, 'Failed to unfreeze company.'));
-      },
+      // No local error banner — the global interceptor already shows this
+      // failure as a snackbar.
+      error: () => { this.submitting.set(false); },
     });
   }
 

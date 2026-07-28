@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service';
 import { LanguageService } from '../services/language.service';
 import { SnackbarService } from '../services/snackbar.service';
 import { ServiceProblemDetails, extractErrorMessage } from '../models/problem-details.model';
+import { translateBackendMessage } from '../utils/backend-error-translations';
 
 const AUTH_ERROR_KEY = 'kawader_auth_error';
 
@@ -102,7 +103,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         if (!isHr) {
           // CompanyManager: account locked / frozen / employee suspended — force logout.
           const problem = err.error as ServiceProblemDetails | null;
-          const message = extractErrorMessage(problem) ?? language.t('errors.unexpected');
+          const message = translateBackendMessage(extractErrorMessage(problem) ?? language.t('errors.unexpected'));
           sessionStorage.setItem(AUTH_ERROR_KEY, message);
           auth.clearTokens();
           router.navigate(['/auth/login']);
@@ -121,8 +122,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       // generic toast here would just duplicate that same message.
       if (err.status !== 404 && !isAuthUrl) {
         const problem = err.error as ServiceProblemDetails | null;
-        const message = extractErrorMessage(problem) ?? language.t('errors.unexpected');
-        snackbar.show(message, 'error');
+        const rawMessage = extractErrorMessage(problem) ?? language.t('errors.unexpected');
+        snackbar.show(translateBackendMessage(rawMessage), 'error');
       }
       return throwError(() => err);
     }),

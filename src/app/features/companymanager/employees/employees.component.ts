@@ -397,10 +397,9 @@ export class EmployeesComponent implements OnInit {
         this.filter.patch({ pageNumber: 1 });
         this.loadEmployees();
       },
-      error: (err: any) => {
-        this.submitting.set(false);
-        this.modalError.set(this.apiErr(err, this.lang.t('errors.unexpected')));
-      },
+      // No local error banner — the global interceptor already shows this
+      // failure as a snackbar.
+      error: () => { this.submitting.set(false); },
     });
   }
 
@@ -499,10 +498,9 @@ export class EmployeesComponent implements OnInit {
         this.flash('Employee updated.');
         this.loadEmployees();
       },
-      error: (err: any) => {
-        this.submitting.set(false);
-        this.modalError.set(this.apiErr(err, this.lang.t('errors.unexpected')));
-      },
+      // No local error banner — the global interceptor already shows this
+      // failure as a snackbar.
+      error: () => { this.submitting.set(false); },
     });
   }
 

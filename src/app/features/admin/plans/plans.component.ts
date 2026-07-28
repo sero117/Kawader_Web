@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlanService } from '../../../core/services/plan.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Plan, PlanCurrency, CreatePlanRequest, UpdatePlanRequest } from '../../../core/models/plan.models';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
@@ -255,6 +256,7 @@ export class PlansComponent implements OnInit {
   private readonly planService = inject(PlanService);
   private readonly lang        = inject(LanguageService);
   private readonly router      = inject(Router);
+  private readonly snackbar    = inject(SnackbarService);
 
   plans      = signal<Plan[]>([]);
   loading    = signal(true);
@@ -330,7 +332,7 @@ export class PlansComponent implements OnInit {
   closeModal(): void { this.showModal.set(false); }
 
   submit(): void {
-    if (!this.form.name.trim()) { this.modalError.set(this.lang.t('admin.plans.nameRequired')); return; }
+    if (!this.form.name.trim()) { this.snackbar.show(this.lang.t('admin.plans.nameRequired'), 'error'); return; }
     this.submitting.set(true);
     this.modalError.set(null);
     this.usdMissing.set(false);
@@ -341,7 +343,7 @@ export class PlansComponent implements OnInit {
       const payload: UpdatePlanRequest = { name: this.form.name, price: this.form.price, currency: this.form.currency, durationDays: this.form.durationDays, details, maxEmployees: this.form.maxEmployees, maxSections: this.form.maxSections, maxBranches: this.form.maxBranches };
       this.planService.update(editing.id, payload).subscribe({
         next: () => { this.submitting.set(false); this.closeModal(); this.load(); },
-        error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+        error: () => { this.submitting.set(false); },
       });
     } else {
       const payload: CreatePlanRequest = { name: this.form.name, price: this.form.price, currency: this.form.currency, durationDays: this.form.durationDays, details, showPlan: this.form.showPlan, isRecommended: this.form.isRecommended, maxEmployees: this.form.maxEmployees, maxSections: this.form.maxSections, maxBranches: this.form.maxBranches, idempotencyKey: crypto.randomUUID() };
@@ -351,10 +353,10 @@ export class PlansComponent implements OnInit {
           this.submitting.set(false);
           if (err?.status === 412) {
             this.usdMissing.set(true);
-            this.modalError.set(this.lang.t('admin.plans.usdMissingError'));
+            this.snackbar.show(this.lang.t('admin.plans.usdMissingError'), 'error');
             return;
           }
-          this.modalError.set(this.apiErr(err));
+          // Anything else: the global interceptor already shows it as a snackbar.
         },
       });
     }
@@ -382,7 +384,7 @@ export class PlansComponent implements OnInit {
     this.submitting.set(true);
     this.planService.delete(t.id).subscribe({
       next: () => { this.submitting.set(false); this.deleteTarget.set(null); this.load(); },
-      error: (err: any) => { this.submitting.set(false); this.modalError.set(this.apiErr(err)); },
+      error: () => { this.submitting.set(false); },
     });
   }
 
