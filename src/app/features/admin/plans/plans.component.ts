@@ -1,8 +1,10 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlanService } from '../../../core/services/plan.service';
+import { SubscriptionCategoryService } from '../../../core/services/subscription-category.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Plan, PlanCurrency, CreatePlanRequest, UpdatePlanRequest } from '../../../core/models/plan.models';
+import { SubscriptionCategory } from '../../../core/models/subscription-category.models';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
@@ -30,6 +32,16 @@ import { UrlFilter } from '../../../core/utils/url-filter';
 
       <div class="admin-card" style="margin-bottom:16px;padding:12px 16px;background:var(--bg-subtle-sm);font-size:0.8125rem;color:var(--text-faint)">
         {{ 'admin.plans.usdBanner' | translate }}
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <select class="filter-select" [value]="filter.value().subscriptionCategoryId" (change)="onCategoryFilter($any($event.target).value)">
+          <option value="">{{ 'admin.plans.allCategories' | translate }}</option>
+          @for (c of categories(); track c.id) {
+            <option [value]="c.id">{{ categoryLabel(c) }}</option>
+          }
+        </select>
       </div>
 
       <!-- Error -->
@@ -71,7 +83,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
                   <span class="plan-price-amount">{{ plan.price }}</span>
                   <span class="plan-price-currency">{{ plan.currency === 'LYD' ? 'د.ل' : 'USD' }}</span>
                 </div>
-                <p class="plan-duration">{{ plan.durationDays }} {{ 'admin.plans.days' | translate }}</p>
+                <p class="plan-duration">{{ plan.durationDays }} {{ 'admin.plans.days' | translate }} — {{ planCategoryName(plan) }}</p>
               </div>
 
               <div class="plan-limits">
@@ -112,6 +124,12 @@ import { UrlFilter } from '../../../core/utils/url-filter';
                 <span class="plan-status-badge" [class.plan-status-visible]="plan.showPlan" [class.plan-status-hidden]="!plan.showPlan">
                   {{ plan.showPlan ? ('admin.plans.visible' | translate) : ('admin.plans.hidden' | translate) }}
                 </span>
+                @if (plan.locked) {
+                  <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
+                    style="background: rgba(99,102,241,0.1); color: rgba(99,102,241,0.9);">
+                    {{ 'admin.subscriptionCategories.locked' | translate }}
+                  </span>
+                }
               </div>
 
               <!-- Actions -->
@@ -175,6 +193,10 @@ import { UrlFilter } from '../../../core/utils/url-filter';
           </div>
         }
 
+        @if (editingPlan()?.locked) {
+          <p style="font-size:0.78rem;color:var(--text-faint);margin-bottom:12px">{{ 'admin.plans.lockedEditHint' | translate }}</p>
+        }
+
         <div class="form-grid">
           <div class="form-field form-field-full">
             <label class="form-label">{{ 'admin.plans.name' | translate }}</label>
@@ -185,21 +207,26 @@ import { UrlFilter } from '../../../core/utils/url-filter';
             <input class="form-input" type="number" min="0" [value]="form.price" (input)="form.price = +$any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field">
-            <label class="form-label">{{ 'admin.plans.duration' | translate }}</label>
-            <input class="form-input" type="number" min="1" [value]="form.durationDays" (input)="form.durationDays = +$any($event.target).value" [disabled]="submitting()" />
+            <label class="form-label">{{ 'admin.plans.category' | translate }}</label>
+            <select class="form-input" [value]="form.subscriptionCategoryId" (change)="form.subscriptionCategoryId = +$any($event.target).value" [disabled]="submitting() || isLocked()">
+              <option value="0">{{ 'admin.plans.selectCategory' | translate }}</option>
+              @for (c of categories(); track c.id) {
+                <option [value]="c.id">{{ categoryLabel(c) }}</option>
+              }
+            </select>
           </div>
           <div class="form-field-full form-divider"></div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.plans.maxEmployees' | translate }}</label>
-            <input class="form-input" type="number" min="0" [value]="form.maxEmployees" (input)="form.maxEmployees = +$any($event.target).value" [disabled]="submitting()" />
+            <input class="form-input" type="number" min="0" [value]="form.maxEmployees" (input)="form.maxEmployees = +$any($event.target).value" [disabled]="submitting() || isLocked()" />
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.plans.maxBranches' | translate }}</label>
-            <input class="form-input" type="number" min="0" [value]="form.maxBranches" (input)="form.maxBranches = +$any($event.target).value" [disabled]="submitting()" />
+            <input class="form-input" type="number" min="0" [value]="form.maxBranches" (input)="form.maxBranches = +$any($event.target).value" [disabled]="submitting() || isLocked()" />
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.plans.maxSections' | translate }}</label>
-            <input class="form-input" type="number" min="0" [value]="form.maxSections" (input)="form.maxSections = +$any($event.target).value" [disabled]="submitting()" />
+            <input class="form-input" type="number" min="0" [value]="form.maxSections" (input)="form.maxSections = +$any($event.target).value" [disabled]="submitting() || isLocked()" />
           </div>
           <div class="form-field-full form-divider"></div>
           <div class="form-field form-field-full">
@@ -253,17 +280,20 @@ import { UrlFilter } from '../../../core/utils/url-filter';
   `,
 })
 export class PlansComponent implements OnInit {
-  private readonly planService = inject(PlanService);
-  private readonly lang        = inject(LanguageService);
-  private readonly router      = inject(Router);
-  private readonly snackbar    = inject(SnackbarService);
+  private readonly planService     = inject(PlanService);
+  private readonly categoryService = inject(SubscriptionCategoryService);
+  private readonly lang            = inject(LanguageService);
+  private readonly router          = inject(Router);
+  private readonly snackbar        = inject(SnackbarService);
 
   plans      = signal<Plan[]>([]);
+  categories = signal<SubscriptionCategory[]>([]);
   loading    = signal(true);
   listError  = signal<string | null>(null);
   hasMore    = signal(false);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
+    subscriptionCategoryId: '',
     pageNumber: 1,
     pageSize:   12,
   });
@@ -275,15 +305,28 @@ export class PlansComponent implements OnInit {
   modalError   = signal<string | null>(null);
   usdMissing   = signal(false);
 
-  form: { name: string; price: number; currency: PlanCurrency; durationDays: number; maxEmployees: number; maxBranches: number; maxSections: number; showPlan: boolean; isRecommended: boolean; detailsText: string } =
-    { name: '', price: 0, currency: 'USD', durationDays: 30, maxEmployees: 10, maxBranches: 1, maxSections: 5, showPlan: true, isRecommended: false, detailsText: '' };
+  /** Locked plans keep price/name/details editable but not the category or unit limits. */
+  isLocked(): boolean { return !!this.editingPlan()?.locked; }
 
-  ngOnInit(): void { this.load(); }
+  form: { name: string; price: number; currency: PlanCurrency; subscriptionCategoryId: number; maxEmployees: number; maxBranches: number; maxSections: number; showPlan: boolean; isRecommended: boolean; detailsText: string } =
+    { name: '', price: 0, currency: 'USD', subscriptionCategoryId: 0, maxEmployees: 10, maxBranches: 1, maxSections: 5, showPlan: true, isRecommended: false, detailsText: '' };
+
+  ngOnInit(): void {
+    this.load();
+    // Backend returns these sorted by durationDays ascending already.
+    this.categoryService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+      next: res => this.categories.set(res.items ?? []),
+      error: () => {},
+    });
+  }
 
   load(): void {
     this.loading.set(true);
-    const { pageNumber, pageSize } = this.filter.value();
-    this.planService.getAll({ pageNumber, pageSize }).subscribe({
+    const { subscriptionCategoryId, pageNumber, pageSize } = this.filter.value();
+    this.planService.getAll({
+      pageNumber, pageSize,
+      subscriptionCategoryId: subscriptionCategoryId ? +subscriptionCategoryId : undefined,
+    }).subscribe({
       next: (res: any) => {
         const raw   = res?.data ?? res;
         const items: Plan[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
@@ -295,6 +338,11 @@ export class PlansComponent implements OnInit {
       },
       error: (err: any) => { this.loading.set(false); this.listError.set(this.apiErr(err)); },
     });
+  }
+
+  onCategoryFilter(value: string): void {
+    this.filter.set({ subscriptionCategoryId: value, pageNumber: 1 });
+    this.load();
   }
 
   prevPage(): void {
@@ -311,7 +359,7 @@ export class PlansComponent implements OnInit {
 
   openCreate(): void {
     this.editingPlan.set(null);
-    this.form = { name: '', price: 0, currency: 'USD', durationDays: 30, maxEmployees: 10, maxBranches: 1, maxSections: 5, showPlan: true, isRecommended: false, detailsText: '' };
+    this.form = { name: '', price: 0, currency: 'USD', subscriptionCategoryId: this.categories()[0]?.id ?? 0, maxEmployees: 10, maxBranches: 1, maxSections: 5, showPlan: true, isRecommended: false, detailsText: '' };
     this.modalError.set(null);
     this.usdMissing.set(false);
     this.showModal.set(true);
@@ -320,7 +368,7 @@ export class PlansComponent implements OnInit {
   openEdit(plan: Plan): void {
     this.editingPlan.set(plan);
     this.form = {
-      name: plan.name, price: plan.price, currency: plan.currency ?? 'USD', durationDays: plan.durationDays,
+      name: plan.name, price: plan.price, currency: plan.currency ?? 'USD', subscriptionCategoryId: plan.subscriptionCategoryId,
       maxEmployees: plan.maxEmployees, maxBranches: plan.maxBranches, maxSections: plan.maxSections,
       showPlan: plan.showPlan, isRecommended: plan.isRecommended,
       detailsText: (plan.details ?? []).join('\n'),
@@ -333,6 +381,7 @@ export class PlansComponent implements OnInit {
 
   submit(): void {
     if (!this.form.name.trim()) { this.snackbar.show(this.lang.t('admin.plans.nameRequired'), 'error'); return; }
+    if (!this.form.subscriptionCategoryId) { this.snackbar.show(this.lang.t('admin.plans.categoryRequired'), 'error'); return; }
     this.submitting.set(true);
     this.modalError.set(null);
     this.usdMissing.set(false);
@@ -340,18 +389,31 @@ export class PlansComponent implements OnInit {
     const editing = this.editingPlan();
 
     if (editing) {
-      const payload: UpdatePlanRequest = { name: this.form.name, price: this.form.price, currency: this.form.currency, durationDays: this.form.durationDays, details, maxEmployees: this.form.maxEmployees, maxSections: this.form.maxSections, maxBranches: this.form.maxBranches };
+      const payload: UpdatePlanRequest = { name: this.form.name, price: this.form.price, currency: this.form.currency, subscriptionCategoryId: this.form.subscriptionCategoryId, details, maxEmployees: this.form.maxEmployees, maxSections: this.form.maxSections, maxBranches: this.form.maxBranches };
       this.planService.update(editing.id, payload).subscribe({
         next: () => { this.submitting.set(false); this.closeModal(); this.load(); },
-        error: () => { this.submitting.set(false); },
+        error: (err: any) => {
+          this.submitting.set(false);
+          if (err?.status === 412) { this.snackbar.show(this.lang.t('admin.plans.categoryNotFound'), 'error'); return; }
+          // Anything else: the global interceptor already shows it as a snackbar.
+        },
       });
     } else {
-      const payload: CreatePlanRequest = { name: this.form.name, price: this.form.price, currency: this.form.currency, durationDays: this.form.durationDays, details, showPlan: this.form.showPlan, isRecommended: this.form.isRecommended, maxEmployees: this.form.maxEmployees, maxSections: this.form.maxSections, maxBranches: this.form.maxBranches, idempotencyKey: crypto.randomUUID() };
+      const payload: CreatePlanRequest = { name: this.form.name, price: this.form.price, currency: this.form.currency, subscriptionCategoryId: this.form.subscriptionCategoryId, details, showPlan: this.form.showPlan, isRecommended: this.form.isRecommended, maxEmployees: this.form.maxEmployees, maxSections: this.form.maxSections, maxBranches: this.form.maxBranches, idempotencyKey: crypto.randomUUID() };
       this.planService.create(payload).subscribe({
         next: () => { this.submitting.set(false); this.closeModal(); this.load(); },
         error: (err: any) => {
           this.submitting.set(false);
           if (err?.status === 412) {
+            // Two distinct preconditions share 412 here: USD currency missing
+            // (existing) or the chosen category no longer existing (new) —
+            // tell them apart by the backend's own message text since there's
+            // no separate status code for each.
+            const msg = this.apiErr(err);
+            if (/تصنيف|categor/i.test(msg)) {
+              this.snackbar.show(msg, 'error');
+              return;
+            }
             this.usdMissing.set(true);
             this.snackbar.show(this.lang.t('admin.plans.usdMissingError'), 'error');
             return;
@@ -386,6 +448,21 @@ export class PlansComponent implements OnInit {
       next: () => { this.submitting.set(false); this.deleteTarget.set(null); this.load(); },
       error: () => { this.submitting.set(false); },
     });
+  }
+
+  /** Arabic/English name + duration for a category dropdown option, in the
+   *  currently active language. */
+  categoryLabel(c: SubscriptionCategory): string {
+    const name = this.lang.getLanguage() === 'ar' ? c.arabicName : c.englishName;
+    return `${name} (${c.durationDays} ${this.lang.t('admin.plans.days')})`;
+  }
+
+  /** The linked category's name straight from the plan's own GET response —
+   *  no extra lookup needed. */
+  planCategoryName(plan: Plan): string {
+    return this.lang.getLanguage() === 'ar'
+      ? (plan.subscriptionCategoryArabicName || '—')
+      : (plan.subscriptionCategoryEnglishName || '—');
   }
 
   apiErr(err: any): string {

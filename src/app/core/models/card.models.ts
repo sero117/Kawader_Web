@@ -11,6 +11,9 @@ export interface Card {
   status: CardStatus;
   planId: number;
   planName: string;
+  /** Copied from the plan's price at the moment this card was generated —
+   *  frozen forever, independent of later changes to the plan's price. */
+  price: number;
   distinct: string;
   createdAt: string;
   usedAt?: string | null;

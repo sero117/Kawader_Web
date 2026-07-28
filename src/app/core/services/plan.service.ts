@@ -11,9 +11,10 @@ export class PlanService {
   private readonly baseUrl = `${environment.apiUrl}/Plans`;
 
   getAll(params: GetPlansParams): Observable<any> {
-    const p = new HttpParams()
+    let p = new HttpParams()
       .set('PageNumber', params.pageNumber)
       .set('PageSize', params.pageSize);
+    if (params.subscriptionCategoryId) p = p.set('SubscriptionCategoryId', params.subscriptionCategoryId);
     return this.api.get<any>(this.baseUrl, p);
   }
 

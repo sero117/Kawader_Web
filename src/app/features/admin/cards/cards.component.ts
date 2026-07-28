@@ -91,7 +91,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
                       <circle cx="50" cy="37" r="9.5"/><rect x="38.5" y="48" width="23" height="32" rx="11.5"/>
                     </g>
                   </svg>
-                  <span class="gift-card-plan">{{ card.planName }}</span>
+                  <span class="gift-card-plan">{{ card.planName }} — {{ card.price }} USD</span>
                 </div>
                 <span class="gift-card-status-badge" [class.badge-available]="card.status === CardStatus.Available" [class.badge-used]="card.status === CardStatus.Used" [class.badge-revoked]="card.status === CardStatus.Revoked">
                   {{ statusLabel(card.status) }}

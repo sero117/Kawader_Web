@@ -86,6 +86,12 @@ export const routes: Routes = [
           import('./features/admin/accounts/accounts.component').then(m => m.AccountsComponent),
       },
       {
+        path: 'subscription-categories',
+        title: 'تصنيفات الاشتراك',
+        loadComponent: () =>
+          import('./features/admin/subscription-categories/subscription-categories.component').then(m => m.SubscriptionCategoriesComponent),
+      },
+      {
         path: 'plans',
         title: 'الخطط',
         loadComponent: () =>
