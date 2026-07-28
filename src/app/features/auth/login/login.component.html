@@ -38,6 +38,7 @@
           type="tel"
           inputmode="numeric"
           maxlength="10"
+          (input)="onPhoneInput($event)"
           [placeholder]="'auth.login.phonePlaceholder' | translate"
           class="auth-input"
           [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched"

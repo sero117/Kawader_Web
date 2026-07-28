@@ -103,6 +103,13 @@ export class LoginComponent implements OnInit {
     if (route) this.router.navigate([route]);
   }
 
+  onPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '');
+    if (digits !== input.value) input.value = digits;
+    this.phoneNumber.setValue(digits);
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
