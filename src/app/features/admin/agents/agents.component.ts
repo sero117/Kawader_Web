@@ -4,6 +4,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
+import { lettersOnlyInput } from '../../../core/utils/letters-only-input';
 import { AgentService } from '../../../core/services/agent.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Agent, CreateAgentRequest, UpdateAgentRequest } from '../../../core/models/agent.models';
@@ -143,11 +144,11 @@ import { Country } from '../../../core/models/country.models';
         <div class="form-grid">
           <div class="form-field">
             <label class="form-label">{{ 'admin.agents.firstName' | translate }}</label>
-            <input class="form-input" type="text" maxlength="50" [value]="form.firstName" (input)="form.firstName = $any($event.target).value" [disabled]="submitting()" />
+            <input class="form-input" type="text" maxlength="50" [value]="form.firstName" (input)="form.firstName = lettersOnlyInput($event)" [disabled]="submitting()" />
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.agents.lastName' | translate }}</label>
-            <input class="form-input" type="text" maxlength="50" [value]="form.lastName" (input)="form.lastName = $any($event.target).value" [disabled]="submitting()" />
+            <input class="form-input" type="text" maxlength="50" [value]="form.lastName" (input)="form.lastName = lettersOnlyInput($event)" [disabled]="submitting()" />
           </div>
           <div class="form-field">
             <label class="form-label">{{ 'admin.agents.phone' | translate }}</label>
@@ -207,6 +208,7 @@ export class AgentsComponent implements OnInit {
   private readonly snackbar      = inject(SnackbarService);
   readonly lang = inject(LanguageService);
   readonly digitsOnlyInput = digitsOnlyInput;
+  readonly lettersOnlyInput = lettersOnlyInput;
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     name:       '',
@@ -304,6 +306,10 @@ export class AgentsComponent implements OnInit {
     }
     if (!this.form.countryId) {
       this.snackbar.show(this.lang.t('admin.agents.selectCountry'), 'error');
+      return;
+    }
+    if (this.form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email.trim())) {
+      this.snackbar.show(this.lang.t('validation.emailInvalid'), 'error');
       return;
     }
     this.submitting.set(true);

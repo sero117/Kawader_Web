@@ -11,6 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { SignUpRequest, GenerateCodeRequest, Role } from '../../../core/models/auth.models';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
+import { lettersOnlyInput } from '../../../core/utils/letters-only-input';
 
 /** Several Identity endpoints return the created resource directly on success
  *  (e.g. `{ id, code }`) with no `isSuccess` envelope at all — only an explicit
@@ -98,6 +99,8 @@ export class RegisterComponent {
   togglePassword():        void { this.showPassword.update(v => !v); }
 
   onPhoneInput(event: Event): void { this.phoneNumber.setValue(digitsOnlyInput(event)); }
+  onFirstNameInput(event: Event): void { this.firstName.setValue(lettersOnlyInput(event)); }
+  onLastNameInput(event: Event): void { this.lastName.setValue(lettersOnlyInput(event)); }
   toggleConfirmPassword(): void { this.showConfirmPassword.update(v => !v); }
 
   onSubmit(): void {

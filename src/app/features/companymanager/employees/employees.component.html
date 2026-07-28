@@ -366,7 +366,7 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addEmployee.firstNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="firstName" type="text" class="modal-input"
+              <input formControlName="firstName" type="text" (input)="onAddFirstNameInput($event)" class="modal-input"
                 [class.is-invalid]="addForm.get('firstName')!.invalid && addForm.get('firstName')!.touched"
                 [attr.disabled]="submitting() || null" />
               @if (addForm.get('firstName')!.invalid && addForm.get('firstName')!.touched) {
@@ -377,7 +377,7 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addEmployee.lastNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="lastName" type="text" class="modal-input"
+              <input formControlName="lastName" type="text" (input)="onAddLastNameInput($event)" class="modal-input"
                 [class.is-invalid]="addForm.get('lastName')!.invalid && addForm.get('lastName')!.touched"
                 [attr.disabled]="submitting() || null" />
               @if (addForm.get('lastName')!.invalid && addForm.get('lastName')!.touched) {
@@ -652,7 +652,7 @@
                 <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.firstNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <input formControlName="firstName" type="text" class="modal-input"
+                <input formControlName="firstName" type="text" (input)="onEditFirstNameInput($event)" class="modal-input"
                   [class.is-invalid]="editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched"
                   [attr.disabled]="submitting() || null" />
                 @if (editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched) {
@@ -663,7 +663,7 @@
                 <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.lastNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <input formControlName="lastName" type="text" class="modal-input"
+                <input formControlName="lastName" type="text" (input)="onEditLastNameInput($event)" class="modal-input"
                   [class.is-invalid]="editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched"
                   [attr.disabled]="submitting() || null" />
                 @if (editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched) {
@@ -742,7 +742,12 @@
                 {{ 'manager.editEmployee.emailLabel' | translate }}
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
-              <input formControlName="email" type="text" placeholder="employee@company.com" class="modal-input" [attr.disabled]="submitting() || null" />
+              <input formControlName="email" type="text" placeholder="employee@company.com" class="modal-input"
+                [class.is-invalid]="editForm.get('email')!.invalid && editForm.get('email')!.touched"
+                [attr.disabled]="submitting() || null" />
+              @if (editForm.get('email')!.invalid && editForm.get('email')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.emailInvalid' | translate }}</p>
+              }
             </div>
 
             <!-- Employee Role + Contract Type -->
@@ -1141,7 +1146,7 @@
                   <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                     {{ 'manager.emergencyContacts.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                   </label>
-                  <input formControlName="name" type="text" maxlength="100" class="modal-input"
+                  <input formControlName="name" type="text" maxlength="100" (input)="onEmContactNameInput($event)" class="modal-input"
                     [class.is-invalid]="emContactForm.get('name')!.invalid && emContactForm.get('name')!.touched"
                     [attr.disabled]="emContactsSubmitting() || null" />
                 </div>

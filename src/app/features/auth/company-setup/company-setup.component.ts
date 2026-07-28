@@ -14,6 +14,7 @@ import { LanguageService } from '../../../core/services/language.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Role } from '../../../core/models/auth.models';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
+import { lettersOnlyInput } from '../../../core/utils/letters-only-input';
 import { requestLocation } from '../../../core/utils/geolocation';
 import { ServiceProblemDetails, extractErrorMessage } from '../../../core/models/problem-details.model';
 
@@ -269,6 +270,8 @@ export class CompanySetupComponent {
 
   onPhoneInput(event: Event): void { this.phone.setValue(digitsOnlyInput(event)); }
   onLandlineInput(event: Event): void { this.landline.setValue(digitsOnlyInput(event)); }
+  onFirstNameInput(event: Event): void { this.fname.setValue(lettersOnlyInput(event)); }
+  onLastNameInput(event: Event): void { this.lname.setValue(lettersOnlyInput(event)); }
   get lng()       { return this.step3Form.get('longitude')!; }
 
   private apiErr(err: any, fallback: string): string {

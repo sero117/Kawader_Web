@@ -123,7 +123,7 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
                 {{ 'setup.firstNameLabel' | translate }}
               </label>
-              <input formControlName="firstName" type="text" [placeholder]="'setup.firstNamePlaceholder' | translate"
+              <input formControlName="firstName" type="text" (input)="onFirstNameInput($event)" [placeholder]="'setup.firstNamePlaceholder' | translate"
                 class="auth-input" [class.is-invalid]="fname.invalid && fname.touched"
                 [attr.disabled]="submitting() || null" />
               @if (fname.invalid && fname.touched) {
@@ -134,7 +134,7 @@
               <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
                 {{ 'setup.lastNameLabel' | translate }}
               </label>
-              <input formControlName="lastName" type="text" [placeholder]="'setup.lastNamePlaceholder' | translate"
+              <input formControlName="lastName" type="text" (input)="onLastNameInput($event)" [placeholder]="'setup.lastNamePlaceholder' | translate"
                 class="auth-input" [class.is-invalid]="lname.invalid && lname.touched"
                 [attr.disabled]="submitting() || null" />
               @if (lname.invalid && lname.touched) {

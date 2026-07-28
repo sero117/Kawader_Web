@@ -61,7 +61,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">{{ 'auth.register.firstNameLabel' | translate }}</label>
-          <input formControlName="firstName" type="text" [placeholder]="'auth.register.firstNamePlaceholder' | translate"
+          <input formControlName="firstName" type="text" (input)="onFirstNameInput($event)" [placeholder]="'auth.register.firstNamePlaceholder' | translate"
             class="auth-input text-sm" [class.is-invalid]="firstName.invalid && firstName.touched" [attr.disabled]="loading() || null" />
           @if (firstName.invalid && firstName.touched) {
             <p class="text-red-400/75 text-xs mt-1">
@@ -71,7 +71,7 @@
         </div>
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">{{ 'auth.register.lastNameLabel' | translate }}</label>
-          <input formControlName="lastName" type="text" [placeholder]="'auth.register.lastNamePlaceholder' | translate"
+          <input formControlName="lastName" type="text" (input)="onLastNameInput($event)" [placeholder]="'auth.register.lastNamePlaceholder' | translate"
             class="auth-input text-sm" [class.is-invalid]="lastName.invalid && lastName.touched" [attr.disabled]="loading() || null" />
           @if (lastName.invalid && lastName.touched) {
             <p class="text-red-400/75 text-xs mt-1">
