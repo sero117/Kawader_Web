@@ -6,6 +6,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
 import { CountryService } from '../../../core/services/country.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Country, CreateCountryRequest, UpdateCountryRequest } from '../../../core/models/country.models';
+import { formatCompanyDate } from '../../../core/utils/company-time';
 
 @Component({
   selector: 'app-countries',
@@ -292,8 +293,7 @@ export class CountriesComponent implements OnInit {
   }
 
   formatDate(dateStr?: string): string {
-    if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return formatCompanyDate(dateStr, 0);
   }
 
   apiErr(err: any): string {

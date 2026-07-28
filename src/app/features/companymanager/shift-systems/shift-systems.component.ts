@@ -6,6 +6,7 @@ import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { ShiftSystemService } from '../../../core/services/shift-system.service';
 import { ShiftSystem, GetShiftSystemsParams } from '../../../core/models/shift.models';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 
 @Component({
   selector: 'app-shift-systems',
@@ -18,6 +19,7 @@ export class ShiftSystemsComponent implements OnInit {
   private readonly fb            = inject(FormBuilder);
   private readonly lang          = inject(LanguageService);
   private readonly router        = inject(Router);
+  private readonly companyTime   = inject(CompanyTimeService);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     search:     '',
@@ -182,8 +184,7 @@ export class ShiftSystemsComponent implements OnInit {
 
   // ── Helpers ───────────────────────────────────────────────────────────────────
   formatDate(d?: string): string {
-    if (!d) return '—';
-    return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return this.companyTime.formatDate(d);
   }
 
   private flash(msg: string): void {

@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { AdmsService, AdmsLog } from '../../../core/services/adms.service';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 
 const VERIFY_ICONS: Record<number, string> = {
   0: '🖐',
@@ -17,6 +18,7 @@ const VERIFY_ICONS: Record<number, string> = {
 })
 export class AdmsLogsComponent implements OnInit {
   private readonly admsService = inject(AdmsService);
+  private readonly companyTime = inject(CompanyTimeService);
 
   logs      = signal<AdmsLog[]>([]);
   loading   = signal(true);
@@ -40,14 +42,14 @@ export class AdmsLogsComponent implements OnInit {
     }
     if (fd) {
       list = list.filter(l => {
-        const t = l.punchTime ?? l.timestamp ?? l.time ?? '';
-        return t >= fd;
+        const day = this.companyDayIso(l);
+        return !!day && day >= fd;
       });
     }
     if (td) {
       list = list.filter(l => {
-        const t = l.punchTime ?? l.timestamp ?? l.time ?? '';
-        return !t || t <= td + 'T23:59:59';
+        const day = this.companyDayIso(l);
+        return !day || day <= td;
       });
     }
     return list;
@@ -81,26 +83,32 @@ export class AdmsLogsComponent implements OnInit {
   punchTime(log: AdmsLog): string {
     const t = log.punchTime ?? log.timestamp ?? log.time;
     if (!t) return '—';
-    try {
-      return new Date(t).toLocaleString('en-GB', {
-        day: '2-digit', month: 'short', year: 'numeric',
-        hour: '2-digit', minute: '2-digit',
-      });
-    } catch { return t; }
+    return this.companyTime.formatDate(t, 'en-GB', {
+      day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
   }
 
   punchDate(log: AdmsLog): string {
     const t = log.punchTime ?? log.timestamp ?? log.time;
-    if (!t) return '—';
-    try { return new Date(t).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); }
-    catch { return t; }
+    return this.companyTime.formatDate(t);
   }
 
   punchHour(log: AdmsLog): string {
     const t = log.punchTime ?? log.timestamp ?? log.time;
-    if (!t) return '—';
-    try { return new Date(t).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); }
-    catch { return t; }
+    return this.companyTime.formatTime(t, 'en-GB');
+  }
+
+  /** "YYYY-MM-DD" of the punch, read in the company's own timezone — used by
+   *  the from/to date filters so a boundary picked in the company's calendar
+   *  matches punches near midnight regardless of the viewer's own timezone. */
+  private companyDayIso(log: AdmsLog): string | null {
+    const t = log.punchTime ?? log.timestamp ?? log.time;
+    if (!t) return null;
+    const d = this.companyTime.toCompanyTime(t);
+    const y = d.getUTCFullYear();
+    const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
   }
 
   verifyLabel(log: AdmsLog): string {

@@ -18,7 +18,7 @@
 
   <div class="welcome-card auth-card-enter" (click)="$event.stopPropagation()">
 
-    <div class="welcome-icon auth-word" style="animation-delay:.0s">{{ isMorning ? '☀️' : '🌙' }}</div>
+    <div class="welcome-icon auth-word" style="animation-delay:.0s">{{ isMorning() ? '☀️' : '🌙' }}</div>
 
     <h1 class="welcome-title">
       <span class="auth-word" style="animation-delay:.08s">{{ greetingKey() | translate }}</span>

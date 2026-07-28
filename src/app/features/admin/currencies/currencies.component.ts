@@ -8,6 +8,7 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 import {
   Currency, CreateCurrencyRequest, UpdateCurrencyRequest, CurrencyRate,
 } from '../../../core/models/currency.models';
+import { formatCompanyDate } from '../../../core/utils/company-time';
 
 @Component({
   selector: 'app-currencies',
@@ -397,8 +398,7 @@ export class CurrenciesComponent implements OnInit {
   }
 
   formatDate(dateStr?: string): string {
-    if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return formatCompanyDate(dateStr, 0);
   }
 
   apiErr(err: any): string {

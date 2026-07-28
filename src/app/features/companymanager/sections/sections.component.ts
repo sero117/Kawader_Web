@@ -8,6 +8,7 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 import { BranchService } from '../../../core/services/branch.service';
 import { Section, GetSectionsParams } from '../../../core/models/section.models';
 import { Branch } from '../../../core/models/branch.models';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 
 @Component({
   selector: 'app-sections',
@@ -22,6 +23,7 @@ export class SectionsComponent implements OnInit {
   private readonly fb             = inject(FormBuilder);
   private readonly route          = inject(ActivatedRoute);
   private readonly router         = inject(Router);
+  private readonly companyTime    = inject(CompanyTimeService);
 
   private branchId  = 0;
   isStandalone      = false;
@@ -229,8 +231,7 @@ export class SectionsComponent implements OnInit {
   }
 
   formatDate(dateStr?: string): string {
-    if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return this.companyTime.formatDate(dateStr);
   }
 
   private flash(msg: string): void {

@@ -8,6 +8,7 @@ import { VisitTrackingService } from '../../../core/services/visit-tracking.serv
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Branch, GetBranchesParams } from '../../../core/models/branch.models';
 import { requestLocation } from '../../../core/utils/geolocation';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 
 @Component({
   selector: 'app-branches',
@@ -21,6 +22,7 @@ export class BranchesComponent implements OnInit {
   private readonly snackbar       = inject(SnackbarService);
   private readonly fb             = inject(FormBuilder);
   private readonly router         = inject(Router);
+  private readonly companyTime    = inject(CompanyTimeService);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     name:       '',
@@ -246,8 +248,7 @@ export class BranchesComponent implements OnInit {
   }
 
   formatDate(dateStr?: string): string {
-    if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return this.companyTime.formatDate(dateStr);
   }
 
   private flash(msg: string): void {

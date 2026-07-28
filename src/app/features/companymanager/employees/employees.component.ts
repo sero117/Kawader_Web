@@ -26,6 +26,7 @@ import { EmployeeShiftSystem, ShiftSystem, DayOfWeek } from '../../../core/model
 import { formatCurrencyAmount } from '../../../core/utils/currency-format';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
 import { lettersOnlyInput } from '../../../core/utils/letters-only-input';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 
 @Component({
   selector: 'app-employees',
@@ -45,6 +46,7 @@ export class EmployeesComponent implements OnInit {
   private readonly lang                  = inject(LanguageService);
   private readonly route                 = inject(ActivatedRoute);
   private readonly router                = inject(Router);
+  private readonly companyTime           = inject(CompanyTimeService);
 
   branchId    = 0;
   sectionId   = 0;
@@ -364,7 +366,7 @@ export class EmployeesComponent implements OnInit {
       gender:       GenderType.Male,
       contractType: ContractType.FullTime,
       currencyId:   this.myCurrencies()[0]?.id ?? null,
-      hireDate:     new Date().toISOString().substring(0, 10),
+      hireDate:     this.companyTime.todayIso(),
     });
     this.addSections.set([]);
     this.modalError.set(null);
@@ -1029,8 +1031,7 @@ export class EmployeesComponent implements OnInit {
   }
 
   formatDate(dateStr?: string): string {
-    if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return this.companyTime.formatDate(dateStr);
   }
 
   // Ensures time is sent as HH:mm:ss (API requirement)

@@ -22,6 +22,7 @@ import {
   EmployeeLeaveBalance,
 } from '../../../../core/models/leave-balance.models';
 import { formatCurrencyAmount } from '../../../../core/utils/currency-format';
+import { CompanyTimeService } from '../../../../core/services/company-time.service';
 
 type Tab = 'incentives' | 'deductions' | 'leaves' | 'balance';
 
@@ -48,6 +49,7 @@ export class EmployeePayrollPageComponent implements OnInit {
   private readonly lang                = inject(LanguageService);
   private readonly route               = inject(ActivatedRoute);
   private readonly router              = inject(Router);
+  private readonly companyTime         = inject(CompanyTimeService);
 
   private readonly PAGE_SIZE = 10;
 
@@ -781,8 +783,7 @@ export class EmployeePayrollPageComponent implements OnInit {
   }
 
   formatDate(d?: string): string {
-    if (!d) return '—';
-    return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return this.companyTime.formatDate(d);
   }
 
   formatAmount(a: number): string {

@@ -1,5 +1,6 @@
-import { Component, signal, computed, Input, Output, EventEmitter } from '@angular/core';
+import { Component, signal, computed, inject, Input, Output, EventEmitter } from '@angular/core';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 
 export interface WelcomeAction {
   path: string;
@@ -14,6 +15,8 @@ export interface WelcomeAction {
   templateUrl: './welcome-overlay.component.html',
 })
 export class WelcomeOverlayComponent {
+  private readonly companyTime = inject(CompanyTimeService);
+
   @Input() userName = '';
   @Input() userId: number | null = null;
   @Input() lastVisitText: string | null = null;
@@ -23,13 +26,13 @@ export class WelcomeOverlayComponent {
 
   closing = signal(false);
 
-  readonly isMorning = (() => {
-    const h = new Date().getHours();
+  readonly isMorning = computed(() => {
+    const h = this.companyTime.hour(new Date().toISOString());
     return h >= 5 && h < 12;
-  })();
+  });
 
   greetingKey = computed(() =>
-    this.isMorning ? 'manager.welcomeScreen.morning' : 'manager.welcomeScreen.evening'
+    this.isMorning() ? 'manager.welcomeScreen.morning' : 'manager.welcomeScreen.evening'
   );
 
   readonly sparkles = [

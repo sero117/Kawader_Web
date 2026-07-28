@@ -5,6 +5,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { EmployeeService } from '../../../core/services/employee.service';
 import { EmployeeType } from '../../../core/models/auth.models';
 import { EmployeeCompany } from '../../../core/models/employee.models';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
@@ -21,6 +22,7 @@ export class EmployeeLayoutComponent implements OnInit {
   private readonly authService     = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
   private readonly employeeService = inject(EmployeeService);
+  private readonly companyTimeService = inject(CompanyTimeService);
 
   readonly EmployeeType = EmployeeType;
 
@@ -47,6 +49,7 @@ export class EmployeeLayoutComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.companyTimeService.ensureLoaded();
     this.employeeService.getMyCompanies().subscribe({
       next: (res: any) => {
         const raw  = res?.data ?? res;

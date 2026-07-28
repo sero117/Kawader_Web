@@ -1,5 +1,4 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SubscriptionService } from '../../../core/services/subscription.service';
 import { PlanService } from '../../../core/services/plan.service';
@@ -8,11 +7,12 @@ import { Plan } from '../../../core/models/plan.models';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
+import { formatCompanyDate } from '../../../core/utils/company-time';
 
 @Component({
   selector: 'app-subscriptions',
   standalone: true,
-  imports: [TranslatePipe, DatePipe, RouterLink],
+  imports: [TranslatePipe, RouterLink],
   template: `
     <div class="page-content">
 
@@ -86,8 +86,8 @@ import { UrlFilter } from '../../../core/utils/url-filter';
                       {{ statusLabel(sub.status) }}
                     </span>
                   </td>
-                  <td>{{ sub.startDate ? (sub.startDate | date:'mediumDate') : '—' }}</td>
-                  <td>{{ sub.endDate ? (sub.endDate | date:'mediumDate') : '—' }}</td>
+                  <td>{{ formatDate(sub.startDate) }}</td>
+                  <td>{{ formatDate(sub.endDate) }}</td>
                   <td style="font-size:0.75rem;color:var(--text-faint)">
                     {{ sub.maxEmployees }} emp · {{ sub.maxBranches }} br · {{ sub.maxSections }} sec
                   </td>
@@ -181,6 +181,14 @@ export class SubscriptionsComponent implements OnInit {
     if (!this.hasMore()) return;
     this.filter.patch({ pageNumber: this.filter.value().pageNumber + 1 });
     this.load();
+  }
+
+  /** No per-row company timezone is available on this admin-wide list without
+   *  an N+1 lookup per subscription (the exact pattern already removed
+   *  elsewhere in this app for the same reason) — so this just prevents the
+   *  viewer's own browser timezone from re-interpreting the raw UTC date. */
+  formatDate(d?: string): string {
+    return formatCompanyDate(d, 0);
   }
 
   statusLabel(s: SubscriptionStatus): string {

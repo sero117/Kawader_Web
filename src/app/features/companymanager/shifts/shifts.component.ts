@@ -6,6 +6,7 @@ import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { ShiftService } from '../../../core/services/shift.service';
 import { Shift, ShiftType, GetShiftsParams } from '../../../core/models/shift.models';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 
 @Component({
   selector: 'app-shifts',
@@ -17,6 +18,7 @@ export class ShiftsComponent implements OnInit {
   private readonly shiftService = inject(ShiftService);
   private readonly fb           = inject(FormBuilder);
   private readonly lang         = inject(LanguageService);
+  private readonly companyTime  = inject(CompanyTimeService);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     search:     '',
@@ -215,8 +217,7 @@ export class ShiftsComponent implements OnInit {
   }
 
   formatDate(d?: string): string {
-    if (!d) return '—';
-    return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return this.companyTime.formatDate(d);
   }
 
   private toTimeString(t: string): string {

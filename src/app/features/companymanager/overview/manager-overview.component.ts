@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -10,6 +10,7 @@ import { BranchService } from '../../../core/services/branch.service';
 import { DeviceService } from '../../../core/services/device.service';
 import { AdmsService, AdmsLog } from '../../../core/services/adms.service';
 import { PayrollService } from '../../../core/services/payroll.service';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 
 @Component({
   selector: 'app-manager-overview',
@@ -24,12 +25,13 @@ export class ManagerOverviewComponent implements OnInit {
   private readonly devSvc  = inject(DeviceService);
   private readonly admsSvc = inject(AdmsService);
   private readonly payrollSvc = inject(PayrollService);
+  private readonly companyTime = inject(CompanyTimeService);
 
   loading         = signal(true);
   readonly managerName = this.auth.getDisplayName();
-  readonly todayDate   = new Date().toLocaleDateString('ar-SA', {
+  readonly todayDate   = computed(() => this.companyTime.formatDate(new Date().toISOString(), 'ar-SA', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-  });
+  }));
 
   employeeCount   = signal<number | null>(null);
   branchCount     = signal<number | null>(null);
@@ -81,7 +83,7 @@ export class ManagerOverviewComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    const todayIso = new Date().toISOString().split('T')[0];
+    const todayIso = this.companyTime.todayIso();
     const isHr = this.auth.getStoredRole() === Role.Employee &&
                  this.auth.getStoredEmployeeType() === EmployeeType.HumanResourceManager;
 
@@ -135,10 +137,10 @@ export class ManagerOverviewComponent implements OnInit {
         if (key) seenKeys.add(key);
         if (log.employeeId !== undefined) presentIds.add(log.employeeId);
         const raw  = log.punchTime ?? log.timestamp ?? log.time ?? '';
-        const hour = raw ? new Date(raw).getHours() : -1;
+        const hour = raw ? this.companyTime.hour(raw) : -1;
         sumRows.push({
           name:   log.employeeName ?? `#${String(log.deviceEmployeeNumber ?? log.number ?? '?')}`,
-          time:   raw ? new Date(raw).toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' }) : '—',
+          time:   raw ? this.companyTime.formatTime(raw) : '—',
           status: hour >= LATE_HOUR ? 'late' : 'present',
         });
       }
@@ -156,13 +158,15 @@ export class ManagerOverviewComponent implements OnInit {
         rows:        [...sumRows, ...absentRows].slice(0, 12),
       });
 
-      // Build 7-day chart
+      // Build 7-day chart — anchored to the company's own "today", not the
+      // viewer's, so the bars line up with the same dates attendance uses.
       const last7 = Array.from({ length: 7 }, (_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - (6 - i));
+        const d = this.companyTime.toCompanyTime();
+        d.setUTCDate(d.getUTCDate() - (6 - i));
+        const iso = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
         return {
-          iso:   d.toISOString().split('T')[0],
-          label: d.toLocaleDateString('ar-SA', { weekday: 'short' }),
+          iso,
+          label: d.toLocaleDateString('ar-SA', { weekday: 'short', timeZone: 'UTC' }),
           count: 0,
         };
       });
@@ -205,7 +209,7 @@ export class ManagerOverviewComponent implements OnInit {
     const raw = log.punchTime ?? log.timestamp ?? log.time ?? '';
     if (!raw) return '—';
     try {
-      return new Date(raw).toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' });
+      return this.companyTime.formatTime(raw);
     } catch { return raw.substring(11, 16) || '—'; }
   }
 

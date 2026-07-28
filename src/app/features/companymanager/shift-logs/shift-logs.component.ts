@@ -11,6 +11,7 @@ import {
 } from '../../../core/models/shift.models';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { Employee } from '../../../core/models/employee.models';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 
 @Component({
   selector: 'app-shift-logs',
@@ -23,6 +24,7 @@ export class ShiftLogsComponent implements OnInit {
   private readonly systemService   = inject(ShiftSystemService);
   private readonly employeeService = inject(EmployeeService);
   private readonly lang            = inject(LanguageService);
+  private readonly companyTime     = inject(CompanyTimeService);
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     employeeId:    '',
@@ -165,8 +167,7 @@ export class ShiftLogsComponent implements OnInit {
   }
 
   formatDate(d?: string): string {
-    if (!d) return '—';
-    return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return this.companyTime.formatDate(d);
   }
 
   exportCsv(): void {

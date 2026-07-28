@@ -1,16 +1,16 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { SubscriptionService } from '../../../core/services/subscription.service';
 import { PlanService } from '../../../core/services/plan.service';
 import { Subscription, SubscriptionStatus, RedeemCardRequest } from '../../../core/models/subscription.models';
 import { Plan } from '../../../core/models/plan.models';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 
 @Component({
   selector: 'app-subscription',
   standalone: true,
-  imports: [TranslatePipe, DatePipe],
+  imports: [TranslatePipe],
   template: `
     <div class="page-content">
 
@@ -41,8 +41,8 @@ import { LanguageService } from '../../../core/services/language.service';
               <div class="sub-hero-label">{{ 'manager.subscription.currentPlan' | translate }}</div>
               <div class="sub-hero-plan">{{ mySub()!.planName }}</div>
               <div class="sub-hero-meta">
-                <span>{{ 'manager.subscription.from' | translate }}: {{ mySub()!.startDate | date:'mediumDate' }}</span>
-                <span>{{ 'manager.subscription.to' | translate }}: {{ mySub()!.endDate | date:'mediumDate' }}</span>
+                <span>{{ 'manager.subscription.from' | translate }}: {{ formatDate(mySub()!.startDate) }}</span>
+                <span>{{ 'manager.subscription.to' | translate }}: {{ formatDate(mySub()!.endDate) }}</span>
               </div>
             </div>
             <span class="sub-status-badge"
@@ -171,6 +171,7 @@ export class SubscriptionComponent implements OnInit {
   private readonly subService  = inject(SubscriptionService);
   private readonly planService = inject(PlanService);
   private readonly lang        = inject(LanguageService);
+  private readonly companyTime = inject(CompanyTimeService);
 
   readonly SubscriptionStatus = SubscriptionStatus;
 
@@ -259,6 +260,10 @@ export class SubscriptionComponent implements OnInit {
         this.redeemError.set(msg);
       },
     });
+  }
+
+  formatDate(d?: string): string {
+    return this.companyTime.formatDate(d);
   }
 
   subStatusLabel(s: SubscriptionStatus): string {

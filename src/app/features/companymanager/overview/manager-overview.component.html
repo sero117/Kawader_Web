@@ -9,7 +9,7 @@
       {{ 'manager.overview.greeting' | translate }}
       <span class="overview-name-gradient">{{ managerName }}</span>
     </h1>
-    <p class="text-sm" style="color: var(--text-faint);">{{ todayDate }}</p>
+    <p class="text-sm" style="color: var(--text-faint);">{{ todayDate() }}</p>
   </div>
 
   <!-- ── KPI Cards ─────────────────────────────────────────────────────────── -->
@@ -128,7 +128,7 @@
           <h2 class="font-bold text-base" style="color: var(--text-base);">
             {{ 'manager.overview.todayAttendance' | translate }}
           </h2>
-          <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ todayDate }}</p>
+          <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ todayDate() }}</p>
         </div>
         <a routerLink="/dashboard/manager/adms-logs"
           class="text-xs font-semibold flex items-center gap-1 transition-opacity hover:opacity-70"

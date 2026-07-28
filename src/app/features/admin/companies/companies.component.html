@@ -420,7 +420,7 @@
             { labelKey: 'admin.view.address',  value: selectedCompany()!.address },
             { labelKey: 'admin.view.landline', value: selectedCompany()!.landlinePhone },
             { labelKey: 'admin.view.business', value: selectedCompany()!.businessField },
-            { labelKey: 'admin.view.created',  value: formatDate(selectedCompany()!.createdAt) !== '—' ? formatDate(selectedCompany()!.createdAt) : null },
+            { labelKey: 'admin.view.created',  value: formatDate(selectedCompany()!.createdAt, selectedCompany()!.utcOffset ?? 0) !== '—' ? formatDate(selectedCompany()!.createdAt, selectedCompany()!.utcOffset ?? 0) : null },
             { labelKey: 'admin.view.tenantId', value: selectedCompany()!.tenantId }
           ]; track field.labelKey) {
             @if (field.value) {

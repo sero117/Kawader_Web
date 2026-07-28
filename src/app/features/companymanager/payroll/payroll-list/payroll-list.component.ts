@@ -9,6 +9,7 @@ import { CurrencyService } from '../../../../core/services/currency.service';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
 import { PayrollRun, PayrollStatus, UncoveredEmployee } from '../../../../core/models/payroll.models';
 import { Currency } from '../../../../core/models/currency.models';
+import { CompanyTimeService } from '../../../../core/services/company-time.service';
 
 function periodRangeValidator(group: AbstractControl): ValidationErrors | null {
   const start = group.get('periodStart')?.value;
@@ -29,6 +30,7 @@ export class PayrollListComponent implements OnInit {
   private readonly fb              = inject(FormBuilder);
   private readonly router          = inject(Router);
   private readonly lang            = inject(LanguageService);
+  private readonly companyTime     = inject(CompanyTimeService);
 
   myCurrencies = signal<Currency[]>([]);
   currencyLoadError = signal<string | null>(null);
@@ -119,9 +121,13 @@ export class PayrollListComponent implements OnInit {
       periodStart = runs[0].periodStart;
       periodEnd   = runs[0].periodEnd;
     } else {
-      const now = new Date();
-      periodStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().substring(0, 10);
-      periodEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().substring(0, 10);
+      const now = this.companyTime.toCompanyTime();
+      const y = now.getUTCFullYear();
+      const m = now.getUTCMonth();
+      const pad = (n: number) => String(n).padStart(2, '0');
+      periodStart = `${y}-${pad(m + 1)}-01`;
+      const lastDay = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+      periodEnd = `${y}-${pad(m + 1)}-${pad(lastDay)}`;
     }
     this.payrollService.getUncovered({ periodStart, periodEnd }).subscribe({
       next: list => this.uncovered.set(list ?? []),
@@ -223,8 +229,7 @@ export class PayrollListComponent implements OnInit {
   }
 
   formatDate(d?: string): string {
-    if (!d) return '—';
-    return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return this.companyTime.formatDate(d);
   }
 
   apiErr(err: any, fallback: string): string {

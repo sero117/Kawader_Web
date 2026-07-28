@@ -8,6 +8,7 @@ import { ShiftLogService } from '../../../../core/services/shift-log.service';
 import { ShiftService } from '../../../../core/services/shift.service';
 import { ShiftSystemService } from '../../../../core/services/shift-system.service';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { CompanyTimeService } from '../../../../core/services/company-time.service';
 import { Employee } from '../../../../core/models/employee.models';
 import { ShiftLog, Shift, AttendanceStatus, CreateShiftLogRequest } from '../../../../core/models/shift.models';
 
@@ -23,6 +24,7 @@ export class EmployeeShiftLogsComponent implements OnInit {
   private readonly shiftService      = inject(ShiftService);
   private readonly shiftSystemService = inject(ShiftSystemService);
   private readonly snackbar          = inject(SnackbarService);
+  private readonly companyTime       = inject(CompanyTimeService);
   private readonly fb                = inject(FormBuilder);
   private readonly lang              = inject(LanguageService);
   private readonly route             = inject(ActivatedRoute);
@@ -83,7 +85,7 @@ export class EmployeeShiftLogsComponent implements OnInit {
   }
 
   openAdd(): void {
-    this.addForm.reset({ date: new Date().toISOString().substring(0, 10) });
+    this.addForm.reset({ date: this.companyTime.todayIso() });
     this.modalError.set(null);
     this.hasShift.set(null);
     this.view.set('add');
@@ -204,8 +206,7 @@ export class EmployeeShiftLogsComponent implements OnInit {
   statusLabel(s: AttendanceStatus): string { return this.lang.t(`manager.attendanceStatus.${s}`); }
 
   formatDate(d?: string): string {
-    if (!d) return '—';
-    return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return this.companyTime.formatDate(d);
   }
 
   private toTimeString(t: string): string { return t.length === 5 ? `${t}:00` : t; }

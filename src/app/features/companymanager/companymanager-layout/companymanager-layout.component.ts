@@ -6,6 +6,7 @@ import { Role, EmployeeType } from '../../../core/models/auth.models';
 import { NotificationService } from '../../../core/services/notification.service';
 import { CompanyService } from '../../../core/services/company.service';
 import { VisitTrackingService } from '../../../core/services/visit-tracking.service';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 import { AccentService } from '../../../core/services/accent.service';
 import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
@@ -47,6 +48,7 @@ export class CompanyManagerLayoutComponent implements OnInit {
   private readonly notificationService = inject(NotificationService);
   private readonly companyService = inject(CompanyService);
   private readonly visitTracking = inject(VisitTrackingService);
+  private readonly companyTimeService = inject(CompanyTimeService);
   private readonly accentService = inject(AccentService);
 
   collapsed        = signal(window.innerWidth < 640);
@@ -89,12 +91,17 @@ export class CompanyManagerLayoutComponent implements OnInit {
           if (name) this.companyName.set(name);
           const logoUrl = res?.data?.logoUrl ?? res?.logoUrl;
           if (logoUrl) this.companyLogoUrl.set(logoUrl);
+          const utcOffset = res?.data?.utcOffset ?? res?.utcOffset;
+          this.companyTimeService.setOffset(utcOffset);
         },
         error: () => { /* badge just stays hidden */ },
       });
     } else {
       const name = this.authService.getStoredCompanyName();
       if (name) this.companyName.set(name);
+      // HR doesn't hit the branch above, so it never gets a utcOffset from
+      // that response — fetch it here instead.
+      this.companyTimeService.ensureLoaded();
     }
   }
 

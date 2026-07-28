@@ -10,6 +10,7 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Agent, CreateAgentRequest, UpdateAgentRequest } from '../../../core/models/agent.models';
 import { CountryService } from '../../../core/services/country.service';
 import { Country } from '../../../core/models/country.models';
+import { formatCompanyDate } from '../../../core/utils/company-time';
 
 @Component({
   selector: 'app-agents',
@@ -351,8 +352,7 @@ export class AgentsComponent implements OnInit {
   }
 
   formatDate(dateStr?: string): string {
-    if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return formatCompanyDate(dateStr, 0);
   }
 
   apiErr(err: any): string {

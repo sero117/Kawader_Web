@@ -17,6 +17,7 @@ import {
   PayrollRunDetail, Payslip, ProcessingStatus,
 } from '../../../../core/models/payroll.models';
 import { formatCurrencyAmount } from '../../../../core/utils/currency-format';
+import { CompanyTimeService } from '../../../../core/services/company-time.service';
 
 const POLL_INTERVAL_MS = 6000;
 
@@ -43,6 +44,7 @@ export class PayrollDetailComponent implements OnInit {
   private readonly route              = inject(ActivatedRoute);
   private readonly router             = inject(Router);
   private readonly destroyRef         = inject(DestroyRef);
+  private readonly companyTime        = inject(CompanyTimeService);
   private readonly injector           = inject(Injector);
 
   payrollRunId = 0;
@@ -410,8 +412,7 @@ export class PayrollDetailComponent implements OnInit {
 
   // ── Helpers ───────────────────────────────────────────────────────────────────
   formatDate(d?: string): string {
-    if (!d) return '—';
-    return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return this.companyTime.formatDate(d);
   }
 
   formatAmount(a: number): string {

@@ -5,6 +5,7 @@ import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { AgentService } from '../../../core/services/agent.service';
 import { ReferredCompany } from '../../../core/models/agent.models';
+import { formatCompanyDate } from '../../../core/utils/company-time';
 
 @Component({
   selector: 'app-referred-companies',
@@ -54,9 +55,13 @@ export class ReferredCompaniesComponent implements OnInit {
     this.load();
   }
 
+  /** Each referred company keeps its own timezone, and this list doesn't carry
+   *  a per-row utcOffset (fetching it per row would mean an N+1 lookup — the
+   *  exact anti-pattern already removed elsewhere in this app) — so this just
+   *  prevents the viewer's own browser timezone from re-interpreting the raw
+   *  UTC date. */
   formatDate(dateStr?: string): string {
-    if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return formatCompanyDate(dateStr, 0);
   }
 
   apiErr(err: any): string {

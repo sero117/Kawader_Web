@@ -7,6 +7,7 @@ import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { CompanyHolidayService } from '../../../core/services/company-holiday.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
+import { CompanyTimeService } from '../../../core/services/company-time.service';
 import {
   CompanyHoliday, HolidayRecurrence, GetCompanyHolidaysParams,
 } from '../../../core/models/company-holiday.models';
@@ -43,6 +44,7 @@ export class CompanyHolidaysComponent implements OnInit {
   private readonly fb             = inject(FormBuilder);
   private readonly lang           = inject(LanguageService);
   private readonly snackbar       = inject(SnackbarService);
+  private readonly companyTime    = inject(CompanyTimeService);
 
   readonly HolidayRecurrence = HolidayRecurrence;
   readonly recurrenceList = [HolidayRecurrence.None, HolidayRecurrence.Yearly];
@@ -79,11 +81,11 @@ export class CompanyHolidaysComponent implements OnInit {
    *  pickers with today's date when switching into Yearly mode. */
   onRecurrenceChange(v: HolidayRecurrence | null): void {
     if (v === HolidayRecurrence.Yearly) {
-      const today = new Date();
-      this.startDay.set(today.getDate());
-      this.startMonth.set(today.getMonth() + 1);
-      this.endDay.set(today.getDate());
-      this.endMonth.set(today.getMonth() + 1);
+      const today = this.companyTime.toCompanyTime();
+      this.startDay.set(today.getUTCDate());
+      this.startMonth.set(today.getUTCMonth() + 1);
+      this.endDay.set(today.getUTCDate());
+      this.endMonth.set(today.getUTCMonth() + 1);
       this.applyYearlyDates();
     }
   }
@@ -205,11 +207,11 @@ export class CompanyHolidaysComponent implements OnInit {
   // ── Add ──────────────────────────────────────────────────────────────────────
   openAdd(): void {
     this.addForm.reset({ holidayRecurrence: HolidayRecurrence.None, isPaid: true });
-    const today = new Date();
-    this.startDay.set(today.getDate());
-    this.startMonth.set(today.getMonth() + 1);
-    this.endDay.set(today.getDate());
-    this.endMonth.set(today.getMonth() + 1);
+    const today = this.companyTime.toCompanyTime();
+    this.startDay.set(today.getUTCDate());
+    this.startMonth.set(today.getUTCMonth() + 1);
+    this.endDay.set(today.getUTCDate());
+    this.endMonth.set(today.getUTCMonth() + 1);
     this.modalError.set(null);
     this.showAddModal.set(true);
   }
@@ -322,10 +324,9 @@ export class CompanyHolidaysComponent implements OnInit {
   /** Yearly-recurring holidays repeat every year, so the specific year they were
    *  first created in isn't meaningful — only show day + month for those. */
   formatDate(d?: string, recurrence?: HolidayRecurrence): string {
-    if (!d) return '—';
     const opts: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short' };
     if (recurrence !== HolidayRecurrence.Yearly) opts.year = 'numeric';
-    return new Date(d).toLocaleDateString('en-GB', opts);
+    return this.companyTime.formatDate(d, 'en-GB', opts);
   }
 
   private flash(msg: string): void {

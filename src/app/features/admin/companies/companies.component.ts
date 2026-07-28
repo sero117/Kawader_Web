@@ -15,6 +15,7 @@ import { Currency, CompanyCurrency } from '../../../core/models/currency.models'
 import {
   Company, GetCompaniesParams,
 } from '../../../core/models/company.models';
+import { formatCompanyDate } from '../../../core/utils/company-time';
 
 @Component({
   selector: 'app-companies',
@@ -553,9 +554,11 @@ export class CompaniesComponent implements OnInit {
     return { text: 'Unknown', active: false, pending: false, frozen: false };
   }
 
-  formatDate(dateStr?: string): string {
-    if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  /** Each company keeps its own timezone (utcOffset) — unlike the manager/
+   *  employee side, there's no single "viewer's own company" here, so every
+   *  call site must pass that specific company's own offset. */
+  formatDate(dateStr?: string, utcOffsetHours = 0): string {
+    return formatCompanyDate(dateStr, utcOffsetHours);
   }
 
   private flash(msg: string): void {
