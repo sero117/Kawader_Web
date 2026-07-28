@@ -2,8 +2,29 @@ import { Component, signal, computed, inject, OnDestroy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
-import { ConfirmCodeRequest, GenerateCodeRequest } from '../../../core/models/auth.models';
+import { ConfirmCodeRequest, GenerateCodeRequest, AuthTokenResponse } from '../../../core/models/auth.models';
+
+/** Several Identity endpoints return the created/verified resource directly on
+ *  success (e.g. confirm-code returns the auth tokens themselves) with no
+ *  `isSuccess` envelope at all — only an explicit `isSuccess: false` counts
+ *  as a failure. */
+function apiErr(err: any, fallback: string): string {
+  if (err?.status === 0) return 'Cannot connect to server. Check your internet connection.';
+  const body = err?.error;
+  if (!body) return fallback;
+  if (typeof body === 'string' && body.trim()) return body.trim();
+  for (const key of ['title', 'message', 'detail', 'error']) {
+    const v = body[key];
+    if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
+  }
+  switch (err?.status) {
+    case 429: return 'Too many attempts. Please wait a moment.';
+    case 500: return 'Server error. Please try again later.';
+    default:  return fallback;
+  }
+}
 
 @Component({
   selector: 'app-confirm-code',
@@ -14,6 +35,7 @@ import { ConfirmCodeRequest, GenerateCodeRequest } from '../../../core/models/au
 export class ConfirmCodeComponent implements OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -52,19 +74,19 @@ export class ConfirmCodeComponent implements OnDestroy {
     this.errorMessage.set(null);
 
     this.authService.generateCode({ phoneNumber: phoneVal } as GenerateCodeRequest).subscribe({
-      next: response => {
+      next: (response: any) => {
         this.resendLoading.set(false);
-        if (response.isSuccess) {
-          this.successMessage.set('A new verification code has been sent to your phone.');
-          this.startCooldown(60);
-          setTimeout(() => this.successMessage.set(null), 5000);
-        } else {
-          this.errorMessage.set(response.message);
+        if (response?.isSuccess === false) {
+          this.errorMessage.set(response.message || 'Could not resend code. Please try again.');
+          return;
         }
+        this.successMessage.set('A new verification code has been sent to your phone.');
+        this.startCooldown(60);
+        setTimeout(() => this.successMessage.set(null), 5000);
       },
       error: err => {
         this.resendLoading.set(false);
-        this.errorMessage.set(err.error?.message ?? 'Could not resend code. Please try again.');
+        this.errorMessage.set(apiErr(err, 'Could not resend code. Please try again.'));
       },
     });
   }
@@ -84,18 +106,36 @@ export class ConfirmCodeComponent implements OnDestroy {
     };
 
     this.authService.confirmCode(payload).subscribe({
-      next: response => {
+      next: (response: any) => {
         this.loading.set(false);
-        if (response.isSuccess) {
+        if (response?.isSuccess === false) {
+          this.errorMessage.set(response.message || 'Verification failed. Please try again.');
+          return;
+        }
+
+        // The endpoint returns the auth tokens directly on success — the phone
+        // is now verified and the account is effectively signed in, so skip
+        // sending the user back to re-enter the password they just set.
+        const tokenData: AuthTokenResponse = response?.data ?? response;
+        const hasToken = !!(tokenData?.token ?? tokenData?.accessToken);
+
+        if (hasToken) {
+          this.authService.saveTokens(tokenData);
+          this.notificationService.connect();
+          this.authService.setLoginPhone(payload.phoneNumber);
+          this.successMessage.set('Phone number verified!');
+          const next = this.authService.needsCompanySelection()
+            ? '/auth/select-company'
+            : this.authService.getHomeRoute(tokenData?.role);
+          setTimeout(() => this.router.navigate([next]), 1200);
+        } else {
           this.successMessage.set('Phone number verified! Redirecting to sign in…');
           setTimeout(() => this.router.navigate(['/auth/login']), 2000);
-        } else {
-          this.errorMessage.set(response.message);
         }
       },
       error: err => {
         this.loading.set(false);
-        this.errorMessage.set(err.error?.message ?? 'Verification failed. Please try again.');
+        this.errorMessage.set(apiErr(err, 'Verification failed. Please try again.'));
       },
     });
   }

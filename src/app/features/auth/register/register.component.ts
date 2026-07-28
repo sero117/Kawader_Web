@@ -11,6 +11,36 @@ import { AuthService } from '../../../core/services/auth.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { SignUpRequest, GenerateCodeRequest, Role } from '../../../core/models/auth.models';
 
+/** Several Identity endpoints return the created resource directly on success
+ *  (e.g. `{ id, code }`) with no `isSuccess` envelope at all — only an explicit
+ *  `isSuccess: false` should be treated as a failure. */
+function apiErr(err: any, fallback: string): string {
+  if (err?.status === 0) return 'Cannot connect to server. Check your internet connection.';
+  const body = err?.error;
+  if (!body) return fallback;
+  if (typeof body === 'string' && body.trim()) return body.trim();
+  for (const key of ['title', 'message', 'detail', 'error']) {
+    const v = body[key];
+    if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
+  }
+  if (body.errors) {
+    if (Array.isArray(body.errors)) {
+      const m = body.errors.map((e: any) => e?.message ?? e).filter((s: any) => typeof s === 'string').join('. ');
+      if (m) return m;
+    } else if (typeof body.errors === 'object') {
+      const m = (Object.values(body.errors) as unknown[]).flat()
+        .filter((s): s is string => typeof s === 'string').join('. ');
+      if (m) return m;
+    }
+  }
+  switch (err?.status) {
+    case 409: return 'This phone number is already registered.';
+    case 429: return 'Too many attempts. Please wait a moment.';
+    case 500: return 'Server error. Please try again later.';
+    default:  return fallback;
+  }
+}
+
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const pw  = control.get('password')?.value;
   const cpw = control.get('confirmPassword')?.value;
@@ -86,42 +116,40 @@ export class RegisterComponent {
     };
 
     this.authService.signUp(payload).subscribe({
-      next: signUpRes => {
-        if (!signUpRes.isSuccess) {
+      next: (signUpRes: any) => {
+        if (signUpRes?.isSuccess === false) {
           this.loading.set(false);
-          this.errorMessage.set(signUpRes.message);
+          this.errorMessage.set(signUpRes.message || 'Registration failed. Please try again.');
           return;
         }
 
         const codePayload: GenerateCodeRequest = { phoneNumber: payload.phoneNumber };
         this.authService.generateCode(codePayload).subscribe({
-          next: codeRes => {
+          next: (codeRes: any) => {
             this.loading.set(false);
-            if (codeRes.isSuccess) {
-              this.successMessage.set(
-                'Account created! A verification code has been sent to your phone.'
-              );
-              setTimeout(
-                () => this.router.navigate(['/auth/confirm-code'], { queryParams: { phoneNumber: payload.phoneNumber } }),
-                1500
-              );
-            } else {
-              this.errorMessage.set(codeRes.message);
+            if (codeRes?.isSuccess === false) {
+              this.errorMessage.set(codeRes.message || 'Failed to send verification code.');
+              return;
             }
+            this.successMessage.set(
+              'Account created! A verification code has been sent to your phone.'
+            );
+            setTimeout(
+              () => this.router.navigate(['/auth/confirm-code'], { queryParams: { phoneNumber: payload.phoneNumber } }),
+              1500
+            );
           },
           error: err => {
             this.loading.set(false);
             this.errorMessage.set(
-              err.error?.message ?? 'Account created but failed to send verification code. Please try again.'
+              apiErr(err, 'Account created but failed to send verification code. Please try again.')
             );
           },
         });
       },
       error: err => {
         this.loading.set(false);
-        this.errorMessage.set(
-          err.error?.message ?? 'Registration failed. Please try again.'
-        );
+        this.errorMessage.set(apiErr(err, 'Registration failed. Please try again.'));
       },
     });
   }
