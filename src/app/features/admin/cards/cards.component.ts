@@ -164,7 +164,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
             <input class="form-input" type="number" min="1" max="500" [value]="genForm.count" (input)="genForm.count = +$any($event.target).value" [disabled]="submitting()" />
           </div>
           <div class="form-field">
-            <label class="form-label">{{ 'admin.cards.batch' | translate }}</label>
+            <label class="form-label">{{ 'admin.cards.batch' | translate }} *</label>
             <input class="form-input" type="text" [value]="genForm.distinct" (input)="genForm.distinct = $any($event.target).value" placeholder="{{ 'admin.cards.batchHint' | translate }}" [disabled]="submitting()" />
           </div>
         </div>
@@ -338,6 +338,7 @@ export class CardsComponent implements OnInit {
   generate(): void {
     if (!this.genForm.planId) { this.snackbar.show(this.lang.t('admin.cards.selectPlanRequired'), 'error'); return; }
     if (this.genForm.count < 1) { this.snackbar.show(this.lang.t('admin.cards.countRequired'), 'error'); return; }
+    if (!this.genForm.distinct.trim()) { this.snackbar.show(this.lang.t('admin.cards.batchRequired'), 'error'); return; }
     this.submitting.set(true);
     const payload: CreateCardRequest = { planId: this.genForm.planId, count: this.genForm.count, distinct: this.genForm.distinct, idempotencyKey: crypto.randomUUID() };
     this.cardService.create(payload).subscribe({
