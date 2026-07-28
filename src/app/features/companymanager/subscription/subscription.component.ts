@@ -196,7 +196,11 @@ export class SubscriptionComponent implements OnInit {
     this.subLoading.set(true);
     this.subService.getMy().subscribe({
       next: (res: any) => {
-        const raw = res?.data ?? res;
+        const body = res?.data ?? res;
+        // /Subscriptions/me returns an array (subscription history), not a
+        // single object — pick the active one, falling back to the first.
+        const list: any[] = Array.isArray(body) ? body : (body ? [body] : []);
+        const raw = list.find(s => s.status === SubscriptionStatus.Active) ?? list[0] ?? null;
         const sub: Subscription | null = raw ? {
           ...raw,
           startDate: raw.startDate ?? raw.StartDate ?? raw.periodStart ?? raw.PeriodStart,
