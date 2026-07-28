@@ -122,6 +122,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         const message = translateBackendMessage(extractErrorMessage(problem) ?? language.t('errors.unexpected'));
         sessionStorage.setItem(AUTH_ERROR_KEY, message);
         auth.clearTokens();
+        // Also show it directly, right now — this 403 often fires while a
+        // route guard for a *different* pending navigation (e.g. the
+        // companyManagerGuard's own status check right after login) is still
+        // resolving. Navigating to '/auth/login' below can be a no-op in
+        // that case (Router still considers it the current URL until the
+        // other navigation settles), which would silently drop the message
+        // that sessionStorage + the login page's ngOnInit rely on.
+        snackbar.show(message, 'error');
         router.navigate(['/auth/login']);
         return throwError(() => err);
       }

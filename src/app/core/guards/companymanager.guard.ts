@@ -23,6 +23,11 @@ export const companyManagerGuard: CanActivateFn = () => {
       }
       return true;
     }),
-    catchError(() => of(true)),
+    // A failed status check (e.g. a frozen account returning 403) must not
+    // silently wave the user into the dashboard — the interceptor already
+    // redirects to login with the real reason on this same error, and
+    // letting the guard also say "allowed" raced against that redirect and
+    // could leave the user stuck on a half-navigated page.
+    catchError(() => of(false)),
   );
 };
