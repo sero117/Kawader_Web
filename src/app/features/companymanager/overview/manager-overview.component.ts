@@ -144,7 +144,7 @@ export class ManagerOverviewComponent implements OnInit {
       }
       const presentCount = sumRows.length;
       const empList      = Array.isArray(employees) ? employees : [];
-      const empTotal      = empList.length || Math.max(1, presentCount);
+      const empTotal      = Math.max(empList.length, presentCount);
       const absentRows = empList
         .filter(e => !presentIds.has(e.id))
         .map(e => ({ name: e.fullName, time: '—', status: 'absent' as const }));
