@@ -117,13 +117,13 @@ export class AuthService {
       case Role.Admin:          return '/dashboard/admin';
       case Role.CompanyManager: return '/dashboard/manager';
       case Role.Agent:          return '/dashboard/agent';
+      // Only HR gets the full company-manager dashboard (branches, employees,
+      // payroll, ...). Department/Branch managers and plain employees all land
+      // on the simple employee welcome page instead.
       case Role.Employee: {
-        switch (this.getStoredEmployeeType()) {
-          case EmployeeType.HumanResourceManager: return '/dashboard/hr';
-          case EmployeeType.DepartmentManager:    return '/dashboard/dept';
-          case EmployeeType.BranchManager:        return '/dashboard/branch';
-          default:                                return '/dashboard/employee';
-        }
+        return this.getStoredEmployeeType() === EmployeeType.HumanResourceManager
+          ? '/dashboard/hr'
+          : '/dashboard/employee';
       }
       default: return '/dashboard';
     }
