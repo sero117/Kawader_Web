@@ -231,6 +231,15 @@ export class EmployeePayrollPageComponent implements OnInit {
     this.incentivesFilter.update(f => ({ ...f, ...patch }));
   }
 
+  private incentiveDateFilterTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** Debounced so picking a date doesn't fire a request per keystroke/step. */
+  onIncentiveDateFilter(patch: Partial<DateFilter>): void {
+    this.patchIncentiveFilter(patch);
+    if (this.incentiveDateFilterTimer) clearTimeout(this.incentiveDateFilterTimer);
+    this.incentiveDateFilterTimer = setTimeout(() => this.applyIncentiveFilter(), 350);
+  }
+
   onIncentiveTypeFilterChange(value: string): void {
     this.patchIncentiveFilter({ type: value === '' ? null : (Number(value) as IncentiveType) });
   }
@@ -291,6 +300,15 @@ export class EmployeePayrollPageComponent implements OnInit {
 
   patchDeductionFilter(patch: Partial<DateFilter & { type: DeductionType | null; isConsumed: boolean | null }>): void {
     this.deductionsFilter.update(f => ({ ...f, ...patch }));
+  }
+
+  private deductionDateFilterTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** Debounced so picking a date doesn't fire a request per keystroke/step. */
+  onDeductionDateFilter(patch: Partial<DateFilter>): void {
+    this.patchDeductionFilter(patch);
+    if (this.deductionDateFilterTimer) clearTimeout(this.deductionDateFilterTimer);
+    this.deductionDateFilterTimer = setTimeout(() => this.applyDeductionFilter(), 350);
   }
 
   onDeductionTypeFilterChange(value: string): void {
@@ -542,6 +560,16 @@ export class EmployeePayrollPageComponent implements OnInit {
 
   onLeaveIsPaidFilterChange(value: string): void {
     this.patchLeaveFilter({ isPaid: value === '' ? null : value === 'true' });
+    this.applyLeaveFilter();
+  }
+
+  private leaveDateFilterTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** Debounced so picking a date doesn't fire a request per keystroke/step. */
+  onLeaveDateFilter(patch: Partial<DateFilter>): void {
+    this.patchLeaveFilter(patch);
+    if (this.leaveDateFilterTimer) clearTimeout(this.leaveDateFilterTimer);
+    this.leaveDateFilterTimer = setTimeout(() => this.applyLeaveFilter(), 350);
   }
 
   prevLeavePage(): void {
@@ -782,7 +810,13 @@ export class EmployeePayrollPageComponent implements OnInit {
         this.balanceYear.set(v.toYear!);
         this.loadBalance();
       },
-      error: () => { this.submitting.set(false); },
+      // 404 here means "no balance record for the source year" — same
+      // silent-failure gap as the leave add/edit flows (interceptor skips
+      // toasting 404s by design).
+      error: (err: any) => {
+        this.submitting.set(false);
+        if (err?.status === 404) this.snackbar.show(this.apiErr(err, 'Source year has no leave balance.'), 'error');
+      },
     });
   }
 

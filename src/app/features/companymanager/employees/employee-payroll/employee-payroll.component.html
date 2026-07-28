@@ -86,7 +86,7 @@
                 <input type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
                   [value]="incentivesFilter().fromDate"
-                  (input)="patchIncentiveFilter({ fromDate: $any($event.target).value })" />
+                  (input)="onIncentiveDateFilter({ fromDate: $any($event.target).value })" />
               </div>
               <div>
                 <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
@@ -95,7 +95,7 @@
                 <input type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
                   [value]="incentivesFilter().toDate"
-                  (input)="patchIncentiveFilter({ toDate: $any($event.target).value })" />
+                  (input)="onIncentiveDateFilter({ toDate: $any($event.target).value })" />
               </div>
               <div>
                 <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
@@ -126,16 +126,6 @@
             @if (incentivesFilterErr()) {
               <p class="text-xs" style="color: rgba(239,68,68,0.75);">{{ incentivesFilterErr() }}</p>
             }
-            <div class="flex justify-end">
-              <button (click)="applyIncentiveFilter()"
-                class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold"
-                style="background: var(--bg-subtle-md); color: var(--text-muted);">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-                {{ 'manager.incentivesDeductions.searchBtn' | translate }}
-              </button>
-            </div>
           </div>
 
           @if (incentivesLoading()) {
@@ -268,7 +258,7 @@
                 <input type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
                   [value]="deductionsFilter().fromDate"
-                  (input)="patchDeductionFilter({ fromDate: $any($event.target).value })" />
+                  (input)="onDeductionDateFilter({ fromDate: $any($event.target).value })" />
               </div>
               <div>
                 <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
@@ -277,7 +267,7 @@
                 <input type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
                   [value]="deductionsFilter().toDate"
-                  (input)="patchDeductionFilter({ toDate: $any($event.target).value })" />
+                  (input)="onDeductionDateFilter({ toDate: $any($event.target).value })" />
               </div>
               <div>
                 <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
@@ -308,16 +298,6 @@
             @if (deductionsFilterErr()) {
               <p class="text-xs" style="color: rgba(239,68,68,0.75);">{{ deductionsFilterErr() }}</p>
             }
-            <div class="flex justify-end">
-              <button (click)="applyDeductionFilter()"
-                class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold"
-                style="background: var(--bg-subtle-md); color: var(--text-muted);">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-                {{ 'manager.incentivesDeductions.searchBtn' | translate }}
-              </button>
-            </div>
           </div>
 
           @if (deductionsLoading()) {
@@ -450,7 +430,7 @@
                 <input type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
                   [value]="leavesFilter().fromDate"
-                  (input)="patchLeaveFilter({ fromDate: $any($event.target).value })" />
+                  (input)="onLeaveDateFilter({ fromDate: $any($event.target).value })" />
               </div>
               <div>
                 <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
@@ -459,7 +439,7 @@
                 <input type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
                   [value]="leavesFilter().toDate"
-                  (input)="patchLeaveFilter({ toDate: $any($event.target).value })" />
+                  (input)="onLeaveDateFilter({ toDate: $any($event.target).value })" />
               </div>
               <div>
                 <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
@@ -477,16 +457,6 @@
             @if (leavesFilterErr()) {
               <p class="text-xs" style="color: rgba(239,68,68,0.75);">{{ leavesFilterErr() }}</p>
             }
-            <div class="flex justify-end">
-              <button (click)="applyLeaveFilter()"
-                class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold"
-                style="background: var(--bg-subtle-md); color: var(--text-muted);">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-                {{ 'manager.incentivesDeductions.searchBtn' | translate }}
-              </button>
-            </div>
           </div>
 
           @if (leavesLoading()) {
