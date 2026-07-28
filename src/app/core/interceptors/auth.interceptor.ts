@@ -98,23 +98,26 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => err);
       }
 
-      if (err.status === 403 && auth.isAuthenticated()) {
+      // A 403 on a background GET plausibly means the whole session/account is no
+      // longer valid (frozen company, suspended employee, ...) — force logout so
+      // the user isn't left staring at a page that can't load anything. A 403 on a
+      // specific action (POST/PUT/DELETE, e.g. redeeming a subscription card) is a
+      // targeted permission denial for just that operation, not proof the account
+      // itself is dead — fall through to the normal error toast instead of nuking
+      // the session over one blocked action.
+      if (err.status === 403 && auth.isAuthenticated() && req.method === 'GET') {
         const isHr = auth.getStoredRole() === 1 && auth.getStoredEmployeeType() === 1;
-        if (!isHr) {
-          // CompanyManager: account locked / frozen / employee suspended — force logout.
-          const problem = err.error as ServiceProblemDetails | null;
-          const message = translateBackendMessage(extractErrorMessage(problem) ?? language.t('errors.unexpected'));
-          sessionStorage.setItem(AUTH_ERROR_KEY, message);
-          auth.clearTokens();
-          router.navigate(['/auth/login']);
+        if (isHr) {
+          // HR: background data fetch failed silently — component handles the
+          // empty/error state itself; no toast needed (avoids spam on branch/device calls).
           return throwError(() => err);
         }
-        // HR on a GET: background data fetch failed silently — component handles the
-        // empty/error state itself; no toast needed (avoids spam on branch/device calls).
-        // HR on a mutation: fall through to the toast so the user knows the action failed.
-        if (req.method === 'GET') {
-          return throwError(() => err);
-        }
+        const problem = err.error as ServiceProblemDetails | null;
+        const message = translateBackendMessage(extractErrorMessage(problem) ?? language.t('errors.unexpected'));
+        sessionStorage.setItem(AUTH_ERROR_KEY, message);
+        auth.clearTokens();
+        router.navigate(['/auth/login']);
+        return throwError(() => err);
       }
 
       // Auth-flow endpoints (login, signup, company-setup, activation, ...)
