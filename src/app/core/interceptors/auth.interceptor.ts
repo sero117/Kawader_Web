@@ -98,14 +98,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => err);
       }
 
-      // A 403 on a background GET plausibly means the whole session/account is no
-      // longer valid (frozen company, suspended employee, ...) — force logout so
-      // the user isn't left staring at a page that can't load anything. A 403 on a
-      // specific action (POST/PUT/DELETE, e.g. redeeming a subscription card) is a
-      // targeted permission denial for just that operation, not proof the account
-      // itself is dead — fall through to the normal error toast instead of nuking
-      // the session over one blocked action.
-      if (err.status === 403 && auth.isAuthenticated() && req.method === 'GET') {
+      // A 403 specifically on /Companies/status plausibly means the account's
+      // company is frozen — force logout so the user isn't left staring at a
+      // page that can't load anything. Any OTHER GET 403 is a targeted
+      // permission denial for that one call, not proof the account itself is
+      // dead (and was previously mistaken for "frozen" here, forcing a
+      // logout on every account whenever *any* background call 403'd for an
+      // unrelated reason) — fall through to the normal error toast instead.
+      if (err.status === 403 && auth.isAuthenticated() && req.method === 'GET' && req.url.includes('/Companies/status')) {
         const role = auth.getStoredRole();
         const isHr = role === 1 && auth.getStoredEmployeeType() === 1;
         // Only CompanyManager/Employee accounts are tenant-scoped and can
