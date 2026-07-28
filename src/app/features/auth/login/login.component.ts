@@ -11,6 +11,7 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { SignInRequest, AuthTokenResponse } from '../../../core/models/auth.models';
+import { digitsOnlyInput } from '../../../core/utils/phone-input';
 
 /** The raw backend message, if any — used both for display and for detecting known
  *  business-rule identifiers (e.g. an unverified/not-yet-activated account) that
@@ -104,10 +105,7 @@ export class LoginComponent implements OnInit {
   }
 
   onPhoneInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const digits = input.value.replace(/\D/g, '');
-    if (digits !== input.value) input.value = digits;
-    this.phoneNumber.setValue(digits);
+    this.phoneNumber.setValue(digitsOnlyInput(event));
   }
 
   onSubmit(): void {

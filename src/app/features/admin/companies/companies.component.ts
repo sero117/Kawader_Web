@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { UrlFilter } from '../../../core/utils/url-filter';
+import { digitsOnlyInput } from '../../../core/utils/phone-input';
 import { CompanyService } from '../../../core/services/company.service';
 import { AgentService } from '../../../core/services/agent.service';
 import { CountryService } from '../../../core/services/country.service';
@@ -263,6 +264,11 @@ export class CompaniesComponent implements OnInit {
       },
     });
   }
+
+  readonly digitsOnlyInput = digitsOnlyInput;
+
+  onAddPhoneInput(event: Event): void { this.addForm.get('phoneNumber')!.setValue(digitsOnlyInput(event)); }
+  onEditPhoneInput(event: Event): void { this.editForm.get('phoneNumber')!.setValue(digitsOnlyInput(event)); }
 
   // ── Search ─────────────────────────────────────────────────────────────────
   /** Debounced so fast typing doesn't fire a request per keystroke (which was

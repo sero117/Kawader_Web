@@ -31,7 +31,7 @@
           class="w-full ps-9 pe-4 py-2.5 rounded-xl text-sm"
           style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
           [value]="filter.value().phone"
-          (input)="onSearchPhone($any($event.target).value)"
+          (input)="onSearchPhone(digitsOnlyInput($event))"
           onfocus="this.style.borderColor='rgba(128,128,128,0.35)'"
           onblur="this.style.borderColor='var(--border)'" />
       </div>

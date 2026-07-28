@@ -51,7 +51,7 @@
           class="w-full ps-9 pe-4 py-2.5 rounded-xl text-sm"
           style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
           [value]="filter.value().search"
-          (input)="onSearch($any($event.target).value)"
+          (input)="onSearch(digitsOnlyInput($event))"
           onfocus="this.style.borderColor='rgba(128,128,128,0.35)'"
           onblur="this.style.borderColor='var(--border)'" />
       </div>
@@ -309,7 +309,7 @@
         <form [formGroup]="addForm" (ngSubmit)="submitAdd()" class="space-y-4" novalidate>
           <div>
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.wizard.companyPhone' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
-            <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="09XXXXXXXX" class="modal-input"
+            <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onAddPhoneInput($event)" placeholder="09XXXXXXXX" class="modal-input"
               [class.is-invalid]="addForm.get('phoneNumber')!.invalid && addForm.get('phoneNumber')!.touched"
               [attr.disabled]="submitting() || null" />
             @if (addForm.get('phoneNumber')!.invalid && addForm.get('phoneNumber')!.touched) {
@@ -456,7 +456,7 @@
       <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.edit.phoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
-          <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="09XXXXXXXX" class="modal-input"
+          <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onEditPhoneInput($event)" placeholder="09XXXXXXXX" class="modal-input"
             [class.is-invalid]="editForm.get('phoneNumber')!.invalid && editForm.get('phoneNumber')!.touched"
             [attr.disabled]="submitting() || null" />
           @if (editForm.get('phoneNumber')!.invalid && editForm.get('phoneNumber')!.touched) {

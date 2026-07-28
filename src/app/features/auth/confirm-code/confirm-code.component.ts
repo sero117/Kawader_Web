@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { ConfirmCodeRequest, GenerateCodeRequest, AuthTokenResponse } from '../../../core/models/auth.models';
+import { digitsOnlyInput } from '../../../core/utils/phone-input';
 
 /** Several Identity endpoints return the created/verified resource directly on
  *  success (e.g. confirm-code returns the auth tokens themselves) with no
@@ -58,6 +59,8 @@ export class ConfirmCodeComponent implements OnDestroy {
 
   get phoneNumber() { return this.form.get('phoneNumber')!; }
   get code() { return this.form.get('code')!; }
+
+  onPhoneInput(event: Event): void { this.phoneNumber.setValue(digitsOnlyInput(event)); }
 
   ngOnDestroy(): void {
     if (this.cooldownInterval) clearInterval(this.cooldownInterval);

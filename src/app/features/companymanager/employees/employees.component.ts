@@ -24,6 +24,7 @@ import {
 } from '../../../core/models/employee.models';
 import { EmployeeShiftSystem, ShiftSystem, DayOfWeek } from '../../../core/models/shift.models';
 import { formatCurrencyAmount } from '../../../core/utils/currency-format';
+import { digitsOnlyInput } from '../../../core/utils/phone-input';
 
 @Component({
   selector: 'app-employees',
@@ -324,6 +325,11 @@ export class EmployeesComponent implements OnInit {
       },
     });
   }
+
+  readonly digitsOnlyInput = digitsOnlyInput;
+
+  onAddPhoneInput(event: Event): void { this.addForm.get('phoneNumber')!.setValue(digitsOnlyInput(event)); }
+  onEmContactPhoneInput(event: Event): void { this.emContactForm.get('phone')!.setValue(digitsOnlyInput(event)); }
 
   // ── Search ─────────────────────────────────────────────────────────────────
   onSearch(value: string): void {

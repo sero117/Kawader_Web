@@ -63,7 +63,7 @@
             <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
               {{ 'setup.phoneLabel' | translate }}
             </label>
-            <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10"
+            <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onPhoneInput($event)"
               [placeholder]="'setup.phonePlaceholder' | translate"
               class="auth-input" [class.is-invalid]="phone.invalid && phone.touched"
               [attr.disabled]="submitting() || null" />
@@ -280,7 +280,7 @@
                 {{ 'setup.landlineLabel' | translate }}
                 <span class="ml-1 text-[9px] normal-case" style="color: var(--auth-fg-20);">{{ 'common.optional' | translate }}</span>
               </label>
-              <input formControlName="landlinePhone" type="tel" inputmode="numeric" maxlength="10"
+              <input formControlName="landlinePhone" type="tel" inputmode="numeric" maxlength="10" (input)="onLandlineInput($event)"
                 [placeholder]="'setup.landlinePlaceholder' | translate"
                 class="auth-input" [class.is-invalid]="landline.invalid && landline.touched"
                 [attr.disabled]="submitting() || null" />

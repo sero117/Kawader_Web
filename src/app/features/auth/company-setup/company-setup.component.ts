@@ -13,6 +13,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { LanguageService } from '../../../core/services/language.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Role } from '../../../core/models/auth.models';
+import { digitsOnlyInput } from '../../../core/utils/phone-input';
 import { requestLocation } from '../../../core/utils/geolocation';
 import { ServiceProblemDetails, extractErrorMessage } from '../../../core/models/problem-details.model';
 
@@ -265,6 +266,9 @@ export class CompanySetupComponent {
   get bfield()    { return this.step3Form.get('businessField')!; }
   get utcOffset() { return this.step3Form.get('utcOffset')!; }
   get lat()       { return this.step3Form.get('latitude')!; }
+
+  onPhoneInput(event: Event): void { this.phone.setValue(digitsOnlyInput(event)); }
+  onLandlineInput(event: Event): void { this.landline.setValue(digitsOnlyInput(event)); }
   get lng()       { return this.step3Form.get('longitude')!; }
 
   private apiErr(err: any, fallback: string): string {

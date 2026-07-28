@@ -7,6 +7,7 @@ import {
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { digitsOnlyInput } from '../../../core/utils/phone-input';
 
 function passwordComplexity(ctrl: AbstractControl): ValidationErrors | null {
   const v: string = ctrl.value ?? '';
@@ -50,6 +51,8 @@ export class EmployeeActivationComponent {
     password:        ['', [Validators.required, Validators.minLength(8), passwordComplexity]],
     confirmPassword: ['', Validators.required],
   }, { validators: passwordsMatch });
+
+  onPhoneInput(event: Event): void { this.step1Form.get('phoneNumber')!.setValue(digitsOnlyInput(event)); }
 
   submitStep1(): void {
     if (this.step1Form.invalid) { this.step1Form.markAllAsTouched(); return; }

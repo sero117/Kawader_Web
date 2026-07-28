@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
+import { digitsOnlyInput } from '../../../core/utils/phone-input';
 import { AccountService } from '../../../core/services/account.service';
 import { Account, GetAccountsParams } from '../../../core/models/account.models';
 
@@ -91,6 +92,8 @@ export class AccountsComponent implements OnInit {
   }
 
   // ── Search ─────────────────────────────────────────────────────────────────
+  readonly digitsOnlyInput = digitsOnlyInput;
+
   onSearchPhone(v: string): void { this.filter.set({ phone: v, pageNumber: 1 }); this.debouncedLoad(); }
   onSearchFirst(v: string): void { this.filter.patch({ firstName: v, pageNumber: 1 }); this.debouncedLoad(); }
   onSearchLast(v: string): void  { this.filter.patch({ lastName: v, pageNumber: 1 }); this.debouncedLoad(); }

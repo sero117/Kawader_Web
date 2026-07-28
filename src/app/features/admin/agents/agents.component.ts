@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
+import { digitsOnlyInput } from '../../../core/utils/phone-input';
 import { AgentService } from '../../../core/services/agent.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Agent, CreateAgentRequest, UpdateAgentRequest } from '../../../core/models/agent.models';
@@ -151,7 +152,7 @@ import { Country } from '../../../core/models/country.models';
           <div class="form-field">
             <label class="form-label">{{ 'admin.agents.phone' | translate }}</label>
             <input class="form-input" type="tel" inputmode="numeric" maxlength="10"
-              [value]="form.phoneNumber" (input)="form.phoneNumber = $any($event.target).value"
+              [value]="form.phoneNumber" (input)="form.phoneNumber = digitsOnlyInput($event)"
               [disabled]="editingAgent()?.isVerified === true || submitting()" />
             @if (editingAgent()?.isVerified) {
               <p style="font-size:0.7rem;color:var(--text-faint);margin-top:4px">{{ 'admin.agents.phoneLockedHint' | translate }}</p>
@@ -205,6 +206,7 @@ export class AgentsComponent implements OnInit {
   private readonly countryService = inject(CountryService);
   private readonly snackbar      = inject(SnackbarService);
   readonly lang = inject(LanguageService);
+  readonly digitsOnlyInput = digitsOnlyInput;
 
   filter = new UrlFilter(inject(ActivatedRoute), inject(Router), {
     name:       '',
