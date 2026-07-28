@@ -195,7 +195,16 @@ export class SubscriptionComponent implements OnInit {
   loadMySub(): void {
     this.subLoading.set(true);
     this.subService.getMy().subscribe({
-      next: (sub) => { this.mySub.set(sub); this.subLoading.set(false); },
+      next: (res: any) => {
+        const raw = res?.data ?? res;
+        const sub: Subscription | null = raw ? {
+          ...raw,
+          startDate: raw.startDate ?? raw.StartDate ?? raw.periodStart ?? raw.PeriodStart,
+          endDate:   raw.endDate   ?? raw.EndDate   ?? raw.periodEnd   ?? raw.PeriodEnd,
+        } : null;
+        this.mySub.set(sub);
+        this.subLoading.set(false);
+      },
       error: (err: any) => {
         if (err?.status === 404) { this.mySub.set(null); this.subLoading.set(false); }
         else { this.subLoading.set(false); this.subError.set(this.apiErr(err)); }

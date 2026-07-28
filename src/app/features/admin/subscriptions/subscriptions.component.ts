@@ -153,6 +153,8 @@ export class SubscriptionsComponent implements OnInit {
           ...s,
           companyId:   s.companyId ?? undefined,
           companyName: s.companyName ?? s.tenantName ?? s.organizationName ?? s.company ?? s.clientName ?? undefined,
+          startDate:   s.startDate ?? s.StartDate ?? s.periodStart ?? s.PeriodStart,
+          endDate:     s.endDate   ?? s.EndDate   ?? s.periodEnd   ?? s.PeriodEnd,
         }));
         const total = raw?.totalCount ?? items.length;
         this.subs.set(items);
