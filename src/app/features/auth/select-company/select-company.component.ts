@@ -48,15 +48,35 @@ export class SelectCompanyComponent implements OnInit {
     this.authService.setSelectedTenantId(company.tenantId);
     this.authService.saveCompanyName(company.companyName);
 
-    // Probe for HR access: if the Employees list is reachable → this is an HR user.
-    // X-Silent on the probe means a 403 won't trigger the global logout handler.
-    this.employeeService.checkHrAccess().subscribe(isHr => {
-      if (isHr) {
-        this.authService.saveEmployeeType(EmployeeType.HumanResourceManager);
-      }
-      const role = this.authService.getStoredRole();
-      this.router.navigate([this.authService.getHomeRoute(role ?? undefined)]);
+    const phone = this.authService.getLoginPhone();
+    if (!phone) {
+      this.proceedToHome();
+      return;
+    }
+
+    // The Employees list endpoint isn't HR-exclusive (any employee with a
+    // resolved tenant can call it successfully), so a plain "did the call
+    // succeed" probe can't tell HR apart from a regular employee — it always
+    // said yes. Look up this employee's own record instead and read the real
+    // employeeRole the backend assigned them (same phone-lookup pattern the
+    // admin layout already uses to resolve a display name).
+    this.employeeService.getAll({ phoneNumber: phone, pageNumber: 1, pageSize: 10 }).subscribe({
+      next: (res: any) => {
+        const raw = res?.data ?? res;
+        const items = Array.isArray(raw) ? raw : (raw?.items ?? []);
+        const match = items.find((e: any) => e.phoneNumber === phone);
+        if (match?.employeeRole !== undefined && match?.employeeRole !== null) {
+          this.authService.saveEmployeeType(match.employeeRole as EmployeeType);
+        }
+        this.proceedToHome();
+      },
+      error: () => this.proceedToHome(),
     });
+  }
+
+  private proceedToHome(): void {
+    const role = this.authService.getStoredRole();
+    this.router.navigate([this.authService.getHomeRoute(role ?? undefined)]);
   }
 
   signOut(): void {
