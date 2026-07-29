@@ -2,6 +2,8 @@ import { Component, signal, inject, OnInit, WritableSignal } from '@angular/core
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
@@ -315,22 +317,50 @@ export class EmployeesComponent implements OnInit {
           return;
         }
         const raw = res?.data ?? res;
-        let items: Employee[] = Array.isArray(raw)
+        const items: Employee[] = Array.isArray(raw)
           ? raw
           : (raw?.items ?? raw?.data ?? raw?.employees ?? []);
-        let total = raw?.totalCount ?? items.length;
-        if (this.sectionId && items.some(e => e.sectionId !== undefined)) {
-          items = items.filter(e => e.sectionId === this.sectionId);
-          total = items.length;
+        const total = raw?.totalCount ?? items.length;
+
+        if (this.sectionId) {
+          // The list endpoint never returns sectionId at all (only the
+          // per-employee detail endpoint does), so filtering on the field
+          // straight from this response silently matched nothing — every
+          // employee in the branch showed up under every one of its
+          // sections. Fetch each one's real sectionId and filter on that.
+          this.filterBySectionViaDetails(items);
+          return;
         }
+
         this.employees.set(items);
-        this.hasMore.set(!this.sectionId && this.filter.value().pageNumber * this.filter.value().pageSize < total);
+        this.hasMore.set(this.filter.value().pageNumber * this.filter.value().pageSize < total);
         this.loading.set(false);
       },
       error: err => {
         this.loading.set(false);
         this.listError.set(this.apiErr(err, 'Failed to load employees.'));
       },
+    });
+  }
+
+  private filterBySectionViaDetails(items: Employee[]): void {
+    if (!items.length) {
+      this.employees.set([]);
+      this.hasMore.set(false);
+      this.loading.set(false);
+      return;
+    }
+    forkJoin(
+      items.map(e => this.employeeService.getById(e.id).pipe(catchError(() => of(null))))
+    ).subscribe(results => {
+      const matched: Employee[] = [];
+      results.forEach((res: any, i) => {
+        const d = res?.data ?? res;
+        if (d?.sectionId === this.sectionId) matched.push({ ...items[i], ...d });
+      });
+      this.employees.set(matched);
+      this.hasMore.set(false);
+      this.loading.set(false);
     });
   }
 
