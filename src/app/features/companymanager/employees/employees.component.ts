@@ -96,6 +96,8 @@ export class EmployeesComponent implements OnInit {
    *  (in the company's own timezone), or null if unassigned / no shift
    *  configured for today. */
   viewEmployeeTodayShift = signal<{ startTime: string; endTime: string } | null>(null);
+  viewBranchName  = signal<string | null>(null);
+  viewSectionName = signal<string | null>(null);
 
   // ── Emergency Contacts (inside view modal) ────────────────────────────────
   emContacts         = signal<EmergencyContact[]>([]);
@@ -322,13 +324,12 @@ export class EmployeesComponent implements OnInit {
           : (raw?.items ?? raw?.data ?? raw?.employees ?? []);
         const total = raw?.totalCount ?? items.length;
 
-        if (this.sectionId) {
-          // The list endpoint never returns sectionId at all (only the
-          // per-employee detail endpoint does), so filtering on the field
-          // straight from this response silently matched nothing — every
-          // employee in the branch showed up under every one of its
-          // sections. Fetch each one's real sectionId and filter on that.
-          this.filterBySectionViaDetails(items);
+        if (this.branchId) {
+          // HR oversees the whole company, not one branch — a branch-
+          // filtered backend query never returns them (they have no
+          // branchId of their own), so they'd silently vanish from every
+          // branch/section view. Resolve and merge them in separately.
+          this.resolveBranchScopedView(items);
           return;
         }
 
@@ -343,13 +344,36 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
-  private filterBySectionViaDetails(items: Employee[]): void {
-    if (!items.length) {
-      this.employees.set([]);
+  private resolveBranchScopedView(branchItems: Employee[]): void {
+    this.employeeService.getAll({ pageSize: 100, pageNumber: 1 }).pipe(
+      catchError(() => of(null)),
+    ).subscribe((hrRes: any) => {
+      const hrRaw = hrRes?.data ?? hrRes;
+      const hrAll: Employee[] = Array.isArray(hrRaw) ? hrRaw : (hrRaw?.items ?? hrRaw?.data ?? hrRaw?.employees ?? []);
+      const hrEmployees = hrAll.filter(e => e.employeeRole === EmployeeType.HumanResourceManager);
+
+      if (this.sectionId) {
+        this.filterBySectionViaDetails(branchItems, hrEmployees);
+        return;
+      }
+
+      const merged = [...branchItems];
+      for (const hr of hrEmployees) if (!merged.some(e => e.id === hr.id)) merged.push(hr);
+      this.employees.set(merged);
       this.hasMore.set(false);
       this.loading.set(false);
-      return;
-    }
+    });
+  }
+
+  private filterBySectionViaDetails(items: Employee[], hrEmployees: Employee[] = []): void {
+    const finish = (matched: Employee[]) => {
+      const merged = [...matched];
+      for (const hr of hrEmployees) if (!merged.some(e => e.id === hr.id)) merged.push(hr);
+      this.employees.set(merged);
+      this.hasMore.set(false);
+      this.loading.set(false);
+    };
+    if (!items.length) { finish([]); return; }
     forkJoin(
       items.map(e => this.employeeService.getById(e.id).pipe(catchError(() => of(null))))
     ).subscribe(results => {
@@ -364,9 +388,7 @@ export class EmployeesComponent implements OnInit {
         const overseesBranch = d.employeeRole === EmployeeType.BranchManager;
         if (inThisSection || overseesBranch) matched.push({ ...items[i], ...d });
       });
-      this.employees.set(matched);
-      this.hasMore.set(false);
-      this.loading.set(false);
+      finish(matched);
     });
   }
 
@@ -588,13 +610,26 @@ export class EmployeesComponent implements OnInit {
     this.viewLoading.set(true);
     this.showViewModal.set(true);
     this.viewEmployeeTodayShift.set(null);
+    this.viewBranchName.set(null);
+    this.viewSectionName.set(null);
     this.emContacts.set([]);
     this.emContactsView.set('list');
     this.emContactsError.set(null);
     this.employeeService.getById(emp.id).subscribe({
       next: (res: any) => {
         this.viewLoading.set(false);
-        this.viewEmployee.set((res?.data ?? res) as Employee);
+        const d = (res?.data ?? res) as Employee;
+        this.viewEmployee.set(d);
+        if (d.branchId) {
+          const branch = this.formBranches().find(b => b.id === d.branchId);
+          this.viewBranchName.set(branch?.name ?? null);
+        }
+        if (d.sectionId) {
+          this.sectionService.getById(d.sectionId).subscribe({
+            next: (sres: any) => this.viewSectionName.set((sres?.data ?? sres)?.name ?? null),
+            error: () => this.viewSectionName.set(null),
+          });
+        }
       },
       error: () => this.viewLoading.set(false),
     });
