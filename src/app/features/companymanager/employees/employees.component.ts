@@ -89,6 +89,11 @@ export class EmployeesComponent implements OnInit {
   showViewModal      = signal(false);
   viewEmployee       = signal<Employee | null>(null);
   viewLoading        = signal(false);
+  /** GET /Employees/{id} never returns work hours — they only exist per
+   *  weekday on the employee's assigned shift system. Holds today's entry
+   *  (in the company's own timezone), or null if unassigned / no shift
+   *  configured for today. */
+  viewEmployeeTodayShift = signal<{ startTime: string; endTime: string } | null>(null);
 
   // ── Emergency Contacts (inside view modal) ────────────────────────────────
   emContacts         = signal<EmergencyContact[]>([]);
@@ -546,6 +551,7 @@ export class EmployeesComponent implements OnInit {
     this.viewEmployee.set(emp);
     this.viewLoading.set(true);
     this.showViewModal.set(true);
+    this.viewEmployeeTodayShift.set(null);
     this.emContacts.set([]);
     this.emContactsView.set('list');
     this.emContactsError.set(null);
@@ -557,6 +563,19 @@ export class EmployeesComponent implements OnInit {
       error: () => this.viewLoading.set(false),
     });
     this.loadEmContacts(emp.id);
+
+    // Work hours aren't on the employee record itself — they live per-weekday
+    // on whatever shift system the employee is assigned to.
+    const todayDow = this.companyTime.toCompanyTime().getUTCDay();
+    this.shiftSystemService.getEmployeeShiftSystem(emp.id).subscribe({
+      next: (res: any) => {
+        const data = res?.data ?? res;
+        const days: { dayOfWeek: number; startTime: string; endTime: string }[] = data?.days ?? [];
+        const today = days.find(d => d.dayOfWeek === todayDow);
+        this.viewEmployeeTodayShift.set(today ? { startTime: today.startTime, endTime: today.endTime } : null);
+      },
+      error: () => { /* no shift assigned — leave dashes */ },
+    });
   }
 
   // ── Emergency Contacts CRUD ───────────────────────────────────────────────

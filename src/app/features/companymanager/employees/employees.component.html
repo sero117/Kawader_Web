@@ -1017,10 +1017,16 @@
               </p>
             </div>
 
-            <!-- Work Hours -->
+            <!-- Work Hours (today's, per the employee's assigned shift system —
+                 not stored on the employee record itself) -->
             <div>
               <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.workStartTimeLabel' | translate }} / {{ 'manager.addEmployee.workEndTimeLabel' | translate }}</p>
-              <p class="text-sm font-mono" style="color: var(--text-muted);">{{ e.workStartTime?.substring(0,5) ?? '—' }} → {{ e.workEndTime?.substring(0,5) ?? '—' }}</p>
+              <p class="text-sm font-mono" style="color: var(--text-muted);">
+                {{ viewEmployeeTodayShift()?.startTime?.substring(0,5) ?? '—' }} → {{ viewEmployeeTodayShift()?.endTime?.substring(0,5) ?? '—' }}
+              </p>
+              @if (!viewEmployeeTodayShift()) {
+                <p class="text-[10px] mt-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.noShiftTodayHint' | translate }}</p>
+              }
             </div>
 
             <!-- Branch -->

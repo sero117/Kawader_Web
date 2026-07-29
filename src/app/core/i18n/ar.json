@@ -861,6 +861,7 @@
       "selectCurrency": "اختر العملة…",
       "workStartTimeLabel": "بداية الدوام",
       "workEndTimeLabel": "نهاية الدوام",
+      "noShiftTodayHint": "لا توجد وردية مجدولة لهذا الموظف اليوم.",
       "emergencyContactRelationLabel": "صلة الاتصال الطارئ",
       "emergencyContactPhoneLabel": "هاتف الطوارئ",
       "internalNotesLabel": "ملاحظات داخلية"

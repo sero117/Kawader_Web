@@ -861,6 +861,7 @@
       "selectCurrency": "Select a currency…",
       "workStartTimeLabel": "Work Start",
       "workEndTimeLabel": "Work End",
+      "noShiftTodayHint": "No shift is scheduled for this employee today.",
       "emergencyContactRelationLabel": "Emergency Relation",
       "emergencyContactPhoneLabel": "Emergency Phone",
       "internalNotesLabel": "Internal Notes"
