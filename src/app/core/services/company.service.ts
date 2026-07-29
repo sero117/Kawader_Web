@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/auth.models';
 import {
@@ -33,6 +34,28 @@ export class CompanyService {
 
   getById(id: number): Observable<ApiResponse<Company>> {
     return this.api.get<ApiResponse<Company>>(`${this.baseUrl}/${id}`);
+  }
+
+  // The list endpoint doesn't return isFrozen/companyName, so the admin
+  // companies page fetches every row's own detail to fill them in — a
+  // component-level cache for that got wiped on every route revisit (the
+  // component itself is destroyed and recreated), re-issuing the same
+  // requests. Cache the request at the service level instead, where it
+  // survives navigation for the rest of the session; call invalidate() after
+  // a freeze/unfreeze/update so a stale value doesn't linger.
+  private readonly detailCache = new Map<number, Observable<ApiResponse<Company>>>();
+
+  getByIdCached(id: number): Observable<ApiResponse<Company>> {
+    let obs = this.detailCache.get(id);
+    if (!obs) {
+      obs = this.getById(id).pipe(shareReplay(1));
+      this.detailCache.set(id, obs);
+    }
+    return obs;
+  }
+
+  invalidateCache(id: number): void {
+    this.detailCache.delete(id);
   }
 
   update(id: number, payload: UpdateCompanyRequest): Observable<ApiResponse<unknown>> {

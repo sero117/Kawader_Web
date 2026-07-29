@@ -259,7 +259,7 @@ export class CompaniesComponent implements OnInit {
         this.companies.set(normalized);
         this.hasMore.set(items.length >= this.filter.value().pageSize);
         this.loading.set(false);
-        this.enrichFrozenStatus(normalized, seq);
+        this.enrichCompanyDetails(normalized, seq);
       },
       error: err => {
         if (seq !== this.requestSeq) return;
@@ -269,32 +269,31 @@ export class CompaniesComponent implements OnInit {
     });
   }
 
-  // The list endpoint never returns isFrozen, so the freshly-loaded page can
-  // only show a best-effort guess from the localStorage cache. Immediately
-  // follow up with the real per-company status (the detail endpoint reports
-  // it reliably) so the table is correct as soon as the page opens, instead
-  // of only healing itself once each row happens to be opened individually.
-  private enrichFrozenStatus(items: Company[], seq: number): void {
-    if (!items.length) return;
+  // The list endpoint returns neither isFrozen nor companyName (the row
+  // avatar fell back to the phone number's first digit for every company as
+  // a result) — only the detail endpoint has them. Resolve both from there
+  // via the service's cache (survives route revisits, unlike a field on this
+  // component, which gets torn down and rebuilt every time this page is
+  // reopened) — only genuinely new rows already outside the cache get fetched.
+  private enrichCompanyDetails(items: Company[], seq: number): void {
     forkJoin(
-      items.map(c => this.companyService.getById(c.id).pipe(catchError(() => of(null))))
+      items.map(c => this.companyService.getByIdCached(c.id).pipe(catchError(() => of(null))))
     ).subscribe(results => {
       if (seq !== this.requestSeq) return; // a newer load superseded this one
-      const frozenIds = new Set<number>();
-      for (const res of results) {
+      const byId = new Map<number, { companyName?: string; isFrozen: boolean }>();
+      results.forEach((res, i) => {
         const d: any = (res as any)?.data ?? res;
-        if (!d || d.id == null) continue;
-        const backendSaysFrozen = !!d.isFrozen || !!d.IsFrozen
+        if (!d || d.id == null) return;
+        const isFrozen = !!d.isFrozen || !!d.IsFrozen
           || (d.frozenAt != null && d.frozenAt !== '')
           || (d.FrozenAt != null && d.FrozenAt !== '');
-        if (backendSaysFrozen) {
-          this.saveFrozenId(d.id, true);
-          frozenIds.add(d.id);
-        }
-      }
-      if (frozenIds.size) {
-        this.companies.update(list => list.map(c => frozenIds.has(c.id) ? { ...c, isFrozen: true } : c));
-      }
+        if (isFrozen) this.saveFrozenId(d.id, true);
+        byId.set(items[i].id, { companyName: d.companyName, isFrozen });
+      });
+      this.companies.update(list => list.map(c => {
+        const d = byId.get(c.id);
+        return d ? { ...c, companyName: d.companyName ?? c.companyName, isFrozen: d.isFrozen } : c;
+      }));
     });
   }
 
@@ -394,7 +393,7 @@ export class CompaniesComponent implements OnInit {
     this.showViewModal.set(true);
     this.viewLoading.set(true);
 
-    this.companyService.getById(company.id).subscribe({
+    this.companyService.getByIdCached(company.id).subscribe({
       next: res => {
         // Some deployments wrap this in {isSuccess, data}, others return the
         // company object directly — handle both instead of silently keeping
@@ -466,6 +465,7 @@ export class CompaniesComponent implements OnInit {
           this.snackbar.show(res.message || 'Update failed.', 'error');
           return;
         }
+        this.companyService.invalidateCache(id);
         this.showEditModal.set(false);
         this.flash('Company updated.');
         const countryId = this.editForm.value.countryId ?? null;
@@ -508,6 +508,7 @@ export class CompaniesComponent implements OnInit {
     this.companyService.freeze(id).subscribe({
       next: () => {
         this.saveFrozenId(id, true);
+        this.companyService.invalidateCache(id);
         this.submitting.set(false);
         this.showFreezeModal.set(false);
         this.companies.update(list => list.map(c => c.id === id ? { ...c, isFrozen: true } : c));
@@ -518,6 +519,7 @@ export class CompaniesComponent implements OnInit {
         if (err?.status === 400) {
           // 400 = already frozen → sync UI and persist
           this.saveFrozenId(id, true);
+          this.companyService.invalidateCache(id);
           this.companies.update(list => list.map(c => c.id === id ? { ...c, isFrozen: true } : c));
           this.showFreezeModal.set(false);
         }
@@ -534,6 +536,7 @@ export class CompaniesComponent implements OnInit {
     this.companyService.unfreeze(id).subscribe({
       next: () => {
         this.saveFrozenId(id, false);
+        this.companyService.invalidateCache(id);
         this.submitting.set(false);
         this.showUnfreezeModal.set(false);
         this.companies.update(list => list.map(c => c.id === id ? { ...c, isFrozen: false } : c));
