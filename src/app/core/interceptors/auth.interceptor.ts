@@ -106,11 +106,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       if (err.status === 403 && auth.isAuthenticated() && req.method === 'GET' && req.url.includes('/Companies/status')) {
         const role = auth.getStoredRole();
         const isHr = role === 1 && auth.getStoredEmployeeType() === 1;
-        // Only CompanyManager/Employee accounts are tenant-scoped and can
-        // plausibly be frozen/suspended — an Admin or Agent 403 here just means
-        // this one background call hit a permission it shouldn't have, not that
-        // their account is dead, so don't force-logout them over it.
-        const canBeFrozen = role === 2 /* CompanyManager */ || role === 1 /* Employee */;
+        // /Companies/status is only ever authorized for CompanyManager and HR
+        // in the first place — a non-HR employee (regular, department
+        // manager, branch manager) gets a bare 403 here on every login
+        // regardless of frozen status, since they were never allowed to call
+        // it at all. Treating that as "frozen" force-logged out every
+        // non-HR employee account. Only CompanyManager/HR — the roles that
+        // actually succeed here when not frozen — make a 403 here plausible
+        // evidence of an actual freeze.
+        const canBeFrozen = role === 2 /* CompanyManager */ || isHr;
         if (isHr || !canBeFrozen) {
           // Background data fetch failed silently — component handles the
           // empty/error state itself; no toast needed (avoids spam on branch/device calls).
