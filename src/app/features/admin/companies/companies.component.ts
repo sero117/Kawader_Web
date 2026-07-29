@@ -369,16 +369,23 @@ export class CompaniesComponent implements OnInit {
         // the stale list-row data when the envelope isn't there.
         const d: any = (res as any)?.data ?? res;
         if (d && d.id != null) {
+          // The backend's own field is authoritative when present — sync the
+          // localStorage cache to it so a company frozen before the cache
+          // existed (or on another browser) heals itself here instead of
+          // permanently showing "not frozen" in the list from then on.
+          const backendSaysFrozen = !!d.isFrozen || !!d.IsFrozen
+            || (d.frozenAt != null && d.frozenAt !== '')
+            || (d.FrozenAt != null && d.FrozenAt !== '');
+          if (backendSaysFrozen) this.saveFrozenId(d.id, true);
+          const isFrozen = backendSaysFrozen || this.getFrozenIds().has(d.id);
           this.selectedCompany.set({
             ...d,
             isActive:    d.isActive    !== undefined ? d.isActive    : d.IsActive,
             isCompleted: d.isCompleted !== undefined ? d.isCompleted : d.IsCompleted,
-            isFrozen: !!d.isFrozen || !!d.IsFrozen
-              || (d.frozenAt != null && d.frozenAt !== '')
-              || (d.FrozenAt != null && d.FrozenAt !== '')
-              || this.getFrozenIds().has(d.id),
+            isFrozen,
             agentId: d.agentId ?? d.AgentId ?? null,
           });
+          this.companies.update(list => list.map(c => c.id === d.id ? { ...c, isFrozen } : c));
         }
         this.viewLoading.set(false);
       },
