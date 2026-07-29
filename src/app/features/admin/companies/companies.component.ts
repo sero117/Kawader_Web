@@ -589,14 +589,6 @@ export class CompaniesComponent implements OnInit {
     return country ? `${country.arabicName} / ${country.englishName}` : null;
   }
 
-  statusLabel(c: Company): { text: string; active: boolean; pending: boolean; frozen: boolean } {
-    if (c.isFrozen)              return { text: 'Frozen',        active: false, pending: false, frozen: true  };
-    if (c.isCompleted === false) return { text: 'Setup Pending', active: false, pending: true,  frozen: false };
-    if (c.isActive === true)     return { text: 'Active',        active: true,  pending: false, frozen: false };
-    if (c.isActive === false)    return { text: 'Inactive',      active: false, pending: false, frozen: false };
-    return { text: 'Unknown', active: false, pending: false, frozen: false };
-  }
-
   /** Each company keeps its own timezone (utcOffset) — unlike the manager/
    *  employee side, there's no single "viewer's own company" here, so every
    *  call site must pass that specific company's own offset. */

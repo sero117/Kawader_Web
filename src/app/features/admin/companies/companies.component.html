@@ -119,7 +119,6 @@
             <th>{{ 'admin.companies.colEmail' | translate }}</th>
             <th>{{ 'admin.companies.agentLabel' | translate }}</th>
             <th>{{ 'admin.companies.countryLabel' | translate }}</th>
-            <th>{{ 'admin.companies.colStatus' | translate }}</th>
             <th style="text-align: right;">{{ 'admin.companies.colActions' | translate }}</th>
           </tr>
         </thead>
@@ -167,23 +166,6 @@
               <td style="color: var(--text-faint);">{{ c.email ?? '—' }}</td>
               <td style="color: var(--text-faint);">{{ agentName(c.agentId) ?? '—' }}</td>
               <td style="color: var(--text-faint);">{{ countryDisplayName(c) ?? '—' }}</td>
-
-              <!-- Status badge -->
-              <td>
-                @if (c.isFrozen) {
-                  <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
-                    style="color: rgba(99,102,241,0.9); background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.25);">
-                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(99,102,241,0.8);"></span>
-                    {{ 'admin.companies.statusFrozen' | translate }}
-                  </span>
-                } @else {
-                  <span class="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
-                    style="color: rgba(52,211,153,0.9); background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2);">
-                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background: rgba(52,211,153,0.8);"></span>
-                    {{ 'admin.companies.statusNotFrozen' | translate }}
-                  </span>
-                }
-              </td>
 
               <!-- Actions -->
               <td>
