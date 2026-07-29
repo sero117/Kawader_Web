@@ -9,8 +9,6 @@ import { SnackbarService } from '../services/snackbar.service';
 import { ServiceProblemDetails, extractErrorMessage } from '../models/problem-details.model';
 import { translateBackendMessage } from '../utils/backend-error-translations';
 
-const AUTH_ERROR_KEY = 'kawader_auth_error';
-
 const SUCCESS_KEY: Record<string, string> = {
   POST:   'common.success.added',
   PUT:    'common.success.updated',
@@ -120,15 +118,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         }
         const problem = err.error as ServiceProblemDetails | null;
         const message = translateBackendMessage(extractErrorMessage(problem) ?? language.t('errors.unexpected'));
-        sessionStorage.setItem(AUTH_ERROR_KEY, message);
         auth.clearTokens();
-        // Also show it directly, right now — this 403 often fires while a
-        // route guard for a *different* pending navigation (e.g. the
-        // companyManagerGuard's own status check right after login) is still
-        // resolving. Navigating to '/auth/login' below can be a no-op in
-        // that case (Router still considers it the current URL until the
-        // other navigation settles), which would silently drop the message
-        // that sessionStorage + the login page's ngOnInit rely on.
+        // Show it directly via snackbar rather than stashing it in
+        // sessionStorage for the login page to pick up — this 403 often
+        // fires while a route guard for a *different* pending navigation
+        // (e.g. companyManagerGuard's own status check right after login)
+        // is still resolving, so router.navigate(['/auth/login']) below can
+        // be a no-op (Router still considers it the current URL). A
+        // sessionStorage relay would then sit unconsumed and resurface on
+        // whatever unrelated later visit to /auth/login happens to mount
+        // the component next (e.g. a normal sign-out) — the snackbar has no
+        // such lag, it fires now, once, regardless of routing.
         snackbar.show(message, 'error');
         router.navigate(['/auth/login']);
         return throwError(() => err);
