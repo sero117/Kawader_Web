@@ -372,7 +372,8 @@ export class CompaniesComponent implements OnInit {
             isCompleted: d.isCompleted !== undefined ? d.isCompleted : d.IsCompleted,
             isFrozen: !!d.isFrozen || !!d.IsFrozen
               || (d.frozenAt != null && d.frozenAt !== '')
-              || (d.FrozenAt != null && d.FrozenAt !== ''),
+              || (d.FrozenAt != null && d.FrozenAt !== '')
+              || this.getFrozenIds().has(d.id),
             agentId: d.agentId ?? d.AgentId ?? null,
           });
         }
