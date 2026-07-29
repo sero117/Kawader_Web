@@ -9,8 +9,9 @@ import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { CompanyService } from '../../../core/services/company.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
-import { SignInRequest, AuthTokenResponse } from '../../../core/models/auth.models';
+import { SignInRequest, AuthTokenResponse, Role } from '../../../core/models/auth.models';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
 
 /** The raw backend message, if any — used both for display and for detecting known
@@ -75,6 +76,7 @@ export class LoginComponent implements OnInit {
   private readonly notificationService  = inject(NotificationService);
   private readonly snackbar             = inject(SnackbarService);
   private readonly lang                 = inject(LanguageService);
+  private readonly companyService       = inject(CompanyService);
   private readonly router               = inject(Router);
 
   ngOnInit(): void {
@@ -130,19 +132,26 @@ export class LoginComponent implements OnInit {
           this.authService.saveTokens(tokenData);
           this.notificationService.connect();
           this.authService.setLoginPhone(payload.phoneNumber);
-          const name = this.authService.getDisplayName();
-          this.snackbar.show(
-            `${this.lang.t('auth.loginSuccess')}، ${name}`,
-            'success',
-            3500,
-          );
-          const next = this.authService.needsCompanySelection()
-            ? '/auth/select-company'
-            : this.authService.getHomeRoute(tokenData?.role);
-          if (next === '/dashboard/manager' || next === '/dashboard/hr' || next === '/dashboard/admin') {
-            sessionStorage.setItem('kawader_show_welcome', '1');
+
+          const needsSelection = this.authService.needsCompanySelection();
+          // Sign-in succeeds (a valid token is issued) even for a frozen
+          // company/employee account — the backend only rejects it on the
+          // first subsequent request. Confirm the company isn't frozen
+          // *before* greeting or navigating for roles that can be frozen, so
+          // "welcome" never flashes right before the frozen message replaces
+          // it (the interceptor already shows that message on its own if
+          // this check 403s, so the error case here is a no-op).
+          const canBeFrozen = !needsSelection &&
+            (tokenData?.role === Role.CompanyManager || tokenData?.role === Role.Employee);
+
+          if (canBeFrozen) {
+            this.companyService.getStatus().subscribe({
+              next: () => this.proceedAfterSignIn(tokenData, needsSelection),
+              error: () => { /* interceptor already handled the frozen/expired message */ },
+            });
+          } else {
+            this.proceedAfterSignIn(tokenData, needsSelection);
           }
-          this.router.navigate([next]);
         } else if ((response as any).isSuccess === false) {
           const msg = (response as any).message as string | undefined;
           this.errorMessage.set(
@@ -161,5 +170,19 @@ export class LoginComponent implements OnInit {
         );
       },
     });
+  }
+
+  private proceedAfterSignIn(tokenData: AuthTokenResponse, needsSelection: boolean): void {
+    const name = this.authService.getDisplayName();
+    this.snackbar.show(
+      `${this.lang.t('auth.loginSuccess')}، ${name}`,
+      'success',
+      3500,
+    );
+    const next = needsSelection ? '/auth/select-company' : this.authService.getHomeRoute(tokenData?.role);
+    if (next === '/dashboard/manager' || next === '/dashboard/hr' || next === '/dashboard/admin') {
+      sessionStorage.setItem('kawader_show_welcome', '1');
+    }
+    this.router.navigate([next]);
   }
 }
