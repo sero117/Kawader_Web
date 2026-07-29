@@ -364,8 +364,11 @@ export class CompaniesComponent implements OnInit {
 
     this.companyService.getById(company.id).subscribe({
       next: res => {
-        if (res.isSuccess && res.data) {
-          const d: any = res.data;
+        // Some deployments wrap this in {isSuccess, data}, others return the
+        // company object directly — handle both instead of silently keeping
+        // the stale list-row data when the envelope isn't there.
+        const d: any = (res as any)?.data ?? res;
+        if (d && d.id != null) {
           this.selectedCompany.set({
             ...d,
             isActive:    d.isActive    !== undefined ? d.isActive    : d.IsActive,
