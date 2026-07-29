@@ -356,7 +356,13 @@ export class EmployeesComponent implements OnInit {
       const matched: Employee[] = [];
       results.forEach((res: any, i) => {
         const d = res?.data ?? res;
-        if (d?.sectionId === this.sectionId) matched.push({ ...items[i], ...d });
+        if (!d) return;
+        // A branch manager oversees the whole branch, not one section, so
+        // they belong in every section's view under it regardless of
+        // whatever sectionId (if any) their own record happens to carry.
+        const inThisSection = d.sectionId === this.sectionId;
+        const overseesBranch = d.employeeRole === EmployeeType.BranchManager;
+        if (inThisSection || overseesBranch) matched.push({ ...items[i], ...d });
       });
       this.employees.set(matched);
       this.hasMore.set(false);
