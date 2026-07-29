@@ -69,6 +69,7 @@ function extractErrorMessage(err: any): string {
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './login.component.html',
+  styleUrl: './login.component.css',
 })
 export class LoginComponent implements OnInit {
   private readonly fb          = inject(FormBuilder);
