@@ -18,6 +18,55 @@
       }
     </div>
   </div>
+  @if (activeTab() === 'incentives') {
+    <div class="flex items-center gap-2">
+      <button (click)="exportIncentivesCsv()" class="btn-print">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+        </svg>
+        {{ 'common.exportExcel' | translate }}
+      </button>
+      <button (click)="openAddIncentive()" class="btn-primary">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        {{ 'manager.incentivesDeductions.addIncentiveBtn' | translate }}
+      </button>
+    </div>
+  } @else if (activeTab() === 'deductions') {
+    <div class="flex items-center gap-2">
+      <button (click)="exportDeductionsCsv()" class="btn-print">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+        </svg>
+        {{ 'common.exportExcel' | translate }}
+      </button>
+      <button (click)="openAddDeduction()" class="btn-primary">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        {{ 'manager.incentivesDeductions.addDeductionBtn' | translate }}
+      </button>
+    </div>
+  } @else if (activeTab() === 'leaves') {
+    <div class="flex items-center gap-2">
+      <button (click)="exportLeavesCsv()" class="btn-print">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+        </svg>
+        {{ 'common.exportExcel' | translate }}
+      </button>
+      <button (click)="openAddLeave()" class="btn-primary">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        {{ 'manager.leaves.addBtn' | translate }}
+      </button>
+    </div>
+  }
 </div>
 
 <div>
@@ -66,23 +115,8 @@
       <!-- ══ INCENTIVES TAB ══ -->
       @if (activeTab() === 'incentives') {
         <div class="admin-card">
-          <div class="flex items-center justify-between p-5 pb-4">
+          <div class="p-5 pb-4">
             <h3 class="font-bold text-sm" style="color: var(--text-base);">{{ 'manager.incentivesDeductions.incentivesTab' | translate }}</h3>
-            <div class="flex items-center gap-2">
-              <button (click)="exportIncentivesCsv()" class="btn-print">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-                </svg>
-                {{ 'common.exportExcel' | translate }}
-              </button>
-              <button (click)="openAddIncentive()" class="btn-primary">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                {{ 'manager.incentivesDeductions.addIncentiveBtn' | translate }}
-              </button>
-            </div>
           </div>
 
           <!-- Filters -->
@@ -247,23 +281,8 @@
       <!-- ══ DEDUCTIONS TAB ══ -->
       @if (activeTab() === 'deductions') {
         <div class="admin-card">
-          <div class="flex items-center justify-between p-5 pb-4">
+          <div class="p-5 pb-4">
             <h3 class="font-bold text-sm" style="color: var(--text-base);">{{ 'manager.incentivesDeductions.deductionsTab' | translate }}</h3>
-            <div class="flex items-center gap-2">
-              <button (click)="exportDeductionsCsv()" class="btn-print">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-                </svg>
-                {{ 'common.exportExcel' | translate }}
-              </button>
-              <button (click)="openAddDeduction()" class="btn-primary">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                {{ 'manager.incentivesDeductions.addDeductionBtn' | translate }}
-              </button>
-            </div>
           </div>
 
           <!-- Filters -->
@@ -428,23 +447,8 @@
       <!-- ══ LEAVES TAB ══ -->
       @if (activeTab() === 'leaves') {
         <div class="admin-card">
-          <div class="flex items-center justify-between p-5 pb-4">
+          <div class="p-5 pb-4">
             <h3 class="font-bold text-sm" style="color: var(--text-base);">{{ 'manager.leaves.tab' | translate }}</h3>
-            <div class="flex items-center gap-2">
-              <button (click)="exportLeavesCsv()" class="btn-print">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-                </svg>
-                {{ 'common.exportExcel' | translate }}
-              </button>
-              <button (click)="openAddLeave()" class="btn-primary">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                {{ 'manager.leaves.addBtn' | translate }}
-              </button>
-            </div>
           </div>
 
           <!-- Filters -->
