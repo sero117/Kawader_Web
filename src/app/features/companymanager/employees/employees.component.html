@@ -1032,13 +1032,13 @@
             <!-- Branch -->
             <div>
               <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.branchIdLabel' | translate }}</p>
-              <p class="text-sm" style="color: var(--text-muted);">{{ e.branchId ?? '—' }}</p>
+              <p class="text-sm" style="color: var(--text-muted);">{{ viewBranchName() ?? '—' }}</p>
             </div>
 
             <!-- Section -->
             <div>
               <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.sectionIdLabel' | translate }}</p>
-              <p class="text-sm" style="color: var(--text-muted);">{{ e.sectionId ?? '—' }}</p>
+              <p class="text-sm" style="color: var(--text-muted);">{{ viewSectionName() ?? '—' }}</p>
             </div>
 
           </div>
