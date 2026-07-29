@@ -833,6 +833,53 @@ export class EmployeePayrollPageComponent implements OnInit {
     return this.companyTime.formatDate(d);
   }
 
+  private downloadCsv(rows: string[][], filename: string): void {
+    const BOM = '﻿';
+    const csv = BOM + rows
+      .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = Object.assign(document.createElement('a'), {
+      href: url,
+      download: `${filename}-${new Date().toLocaleDateString('en-CA')}.csv`,
+    });
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  private employeeFileTag(): string {
+    const emp = this.employee();
+    return emp ? `${emp.firstName}-${emp.lastName}` : String(this.employeeId);
+  }
+
+  exportIncentivesCsv(): void {
+    const headers = ['الرقم', 'النوع', 'المبلغ', 'التاريخ', 'السبب', 'مصروف'];
+    const rows = this.incentives().map(i => [
+      String(i.id), this.incentiveTypeLabel(i.incentiveType), this.formatAmount(i.amount),
+      this.formatDate(i.date), i.reason ?? '', i.isConsumed ? 'نعم' : 'لا',
+    ]);
+    this.downloadCsv([headers, ...rows], `حوافز-${this.employeeFileTag()}`);
+  }
+
+  exportDeductionsCsv(): void {
+    const headers = ['الرقم', 'النوع', 'المبلغ', 'التاريخ', 'السبب', 'مصروف'];
+    const rows = this.deductions().map(d => [
+      String(d.id), this.deductionTypeLabel(d.deductionType), this.formatAmount(d.amount),
+      this.formatDate(d.date), d.reason ?? '', d.isConsumed ? 'نعم' : 'لا',
+    ]);
+    this.downloadCsv([headers, ...rows], `خصومات-${this.employeeFileTag()}`);
+  }
+
+  exportLeavesCsv(): void {
+    const headers = ['الرقم', 'تاريخ البداية', 'تاريخ النهاية', 'عدد الأيام', 'مدفوعة', 'ملاحظات'];
+    const rows = this.leaves().map(l => [
+      String(l.id), this.formatDate(l.startDate), this.formatDate(l.endDate),
+      String(l.totalDays), l.isPaid ? 'نعم' : 'لا', l.notes ?? '',
+    ]);
+    this.downloadCsv([headers, ...rows], `إجازات-${this.employeeFileTag()}`);
+  }
+
   formatAmount(a: number): string {
     return formatCurrencyAmount(a, this.employee()?.currencySymbol);
   }

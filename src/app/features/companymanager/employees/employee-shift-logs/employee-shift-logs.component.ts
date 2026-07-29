@@ -214,6 +214,33 @@ export class EmployeeShiftLogsComponent implements OnInit {
     return this.companyTime.formatDate(d);
   }
 
+  exportCsv(): void {
+    const headers = ['الرقم', 'الوردية', 'التاريخ', 'وقت الدخول', 'وقت الخروج', 'الحالة', 'ملاحظات'];
+    const rows = this.shiftLogsList().map(l => [
+      String(l.id),
+      l.shiftName,
+      this.formatDate(l.date),
+      l.checkInTime ? l.checkInTime.substring(0, 5) : '—',
+      l.checkOutTime ? l.checkOutTime.substring(0, 5) : '—',
+      this.statusLabel(l.status),
+      l.notes ?? '',
+    ]);
+    const BOM = '﻿';
+    const csv = BOM + [headers, ...rows]
+      .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const emp  = this.employee();
+    const name = emp ? `${emp.firstName}-${emp.lastName}` : this.employeeId;
+    const a    = Object.assign(document.createElement('a'), {
+      href: url,
+      download: `سجل-حضور-${name}-${new Date().toLocaleDateString('en-CA')}.csv`,
+    });
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   private toTimeString(t: string): string { return t.length === 5 ? `${t}:00` : t; }
 
   private flash(msg: string): void {
