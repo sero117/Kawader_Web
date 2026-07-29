@@ -72,12 +72,11 @@ export class CompanyManagerLayoutComponent implements OnInit {
   ngOnInit(): void {
     this.accentService.init();
 
-    // Deferred until the account's own data actually loads (below) — a frozen
-    // account 403s on that first call and the interceptor redirects to login
-    // with an explanatory message instead; greeting the user first would show
-    // a misleading "welcome" right before that happens.
     const shouldShowWelcome = !!sessionStorage.getItem(WELCOME_FLAG_KEY);
-    if (shouldShowWelcome) sessionStorage.removeItem(WELCOME_FLAG_KEY);
+    if (shouldShowWelcome) {
+      sessionStorage.removeItem(WELCOME_FLAG_KEY);
+      this.showWelcome.set(true);
+    }
 
     const previousVisit = this.visitTracking.recordAccountVisit();
     if (previousVisit) this.lastVisitText.set(this.visitTracking.formatTimeAgo(previousVisit));
@@ -95,7 +94,6 @@ export class CompanyManagerLayoutComponent implements OnInit {
           if (logoUrl) this.companyLogoUrl.set(logoUrl);
           const utcOffset = res?.data?.utcOffset ?? res?.utcOffset;
           this.companyTimeService.setOffset(utcOffset);
-          if (shouldShowWelcome) this.showWelcome.set(true);
         },
         error: () => { /* badge just stays hidden; interceptor handles frozen/expired redirect */ },
       });
@@ -103,13 +101,11 @@ export class CompanyManagerLayoutComponent implements OnInit {
       const name = this.authService.getStoredCompanyName();
       if (name) this.companyName.set(name);
       // HR doesn't hit the branch above, so it never gets a utcOffset from
-      // that response — fetch it here directly (not via ensureLoaded(), so
-      // this same response can also gate the welcome screen below).
+      // that response — fetch it here directly.
       this.companyService.getStatus().subscribe({
         next: (res: any) => {
           const utcOffset = res?.data?.utcOffset ?? res?.utcOffset;
           this.companyTimeService.setOffset(utcOffset);
-          if (shouldShowWelcome) this.showWelcome.set(true);
         },
         error: () => { this.companyTimeService.setOffset(0); },
       });
