@@ -1,8 +1,6 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
@@ -259,41 +257,19 @@ export class CompaniesComponent implements OnInit {
         this.companies.set(normalized);
         this.hasMore.set(items.length >= this.filter.value().pageSize);
         this.loading.set(false);
-        this.enrichCompanyDetails(normalized, seq);
+        // No automatic per-row detail fetch here on purpose — that meant
+        // opening this page always fired one request per visible company
+        // just to render it. isFrozen now relies solely on the localStorage
+        // cache (populated by freeze/unfreeze and by opening a company's own
+        // details), and the row no longer needs companyName at all now that
+        // its avatar doesn't depend on it. Real per-company data only gets
+        // fetched on demand — when the admin actually opens that company.
       },
       error: err => {
         if (seq !== this.requestSeq) return;
         this.loading.set(false);
         this.listError.set(this.apiErr(err, 'Failed to load companies.'));
       },
-    });
-  }
-
-  // The list endpoint returns neither isFrozen nor companyName (the row
-  // avatar fell back to the phone number's first digit for every company as
-  // a result) — only the detail endpoint has them. Resolve both from there
-  // via the service's cache (survives route revisits, unlike a field on this
-  // component, which gets torn down and rebuilt every time this page is
-  // reopened) — only genuinely new rows already outside the cache get fetched.
-  private enrichCompanyDetails(items: Company[], seq: number): void {
-    forkJoin(
-      items.map(c => this.companyService.getByIdCached(c.id).pipe(catchError(() => of(null))))
-    ).subscribe(results => {
-      if (seq !== this.requestSeq) return; // a newer load superseded this one
-      const byId = new Map<number, { companyName?: string; isFrozen: boolean }>();
-      results.forEach((res, i) => {
-        const d: any = (res as any)?.data ?? res;
-        if (!d || d.id == null) return;
-        const isFrozen = !!d.isFrozen || !!d.IsFrozen
-          || (d.frozenAt != null && d.frozenAt !== '')
-          || (d.FrozenAt != null && d.FrozenAt !== '');
-        if (isFrozen) this.saveFrozenId(d.id, true);
-        byId.set(items[i].id, { companyName: d.companyName, isFrozen });
-      });
-      this.companies.update(list => list.map(c => {
-        const d = byId.get(c.id);
-        return d ? { ...c, companyName: d.companyName ?? c.companyName, isFrozen: d.isFrozen } : c;
-      }));
     });
   }
 
