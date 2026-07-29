@@ -10,7 +10,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
-import { SignInRequest, AuthTokenResponse, Role } from '../../../core/models/auth.models';
+import { SignInRequest, AuthTokenResponse } from '../../../core/models/auth.models';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
 
 /** The raw backend message, if any — used both for display and for detecting known
@@ -130,22 +130,12 @@ export class LoginComponent implements OnInit {
           this.authService.saveTokens(tokenData);
           this.notificationService.connect();
           this.authService.setLoginPhone(payload.phoneNumber);
-          // Sign-in succeeds (a valid token is issued) even for a frozen
-          // company/employee account — the backend only rejects it on the
-          // first subsequent request, which the interceptor turns into a
-          // forced logout back to this page with the real reason. Showing
-          // "welcome" immediately here would flash right before that
-          // correction, so skip it for the roles that can be frozen and let
-          // the destination page's own successful load speak for itself.
-          const canBeFrozen = tokenData?.role === Role.CompanyManager || tokenData?.role === Role.Employee;
-          if (!canBeFrozen) {
-            const name = this.authService.getDisplayName();
-            this.snackbar.show(
-              `${this.lang.t('auth.loginSuccess')}، ${name}`,
-              'success',
-              3500,
-            );
-          }
+          const name = this.authService.getDisplayName();
+          this.snackbar.show(
+            `${this.lang.t('auth.loginSuccess')}، ${name}`,
+            'success',
+            3500,
+          );
           const next = this.authService.needsCompanySelection()
             ? '/auth/select-company'
             : this.authService.getHomeRoute(tokenData?.role);
