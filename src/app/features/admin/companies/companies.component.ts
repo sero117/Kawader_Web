@@ -1,6 +1,8 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { UrlFilter } from '../../../core/utils/url-filter';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
@@ -257,12 +259,42 @@ export class CompaniesComponent implements OnInit {
         this.companies.set(normalized);
         this.hasMore.set(items.length >= this.filter.value().pageSize);
         this.loading.set(false);
+        this.enrichFrozenStatus(normalized, seq);
       },
       error: err => {
         if (seq !== this.requestSeq) return;
         this.loading.set(false);
         this.listError.set(this.apiErr(err, 'Failed to load companies.'));
       },
+    });
+  }
+
+  // The list endpoint never returns isFrozen, so the freshly-loaded page can
+  // only show a best-effort guess from the localStorage cache. Immediately
+  // follow up with the real per-company status (the detail endpoint reports
+  // it reliably) so the table is correct as soon as the page opens, instead
+  // of only healing itself once each row happens to be opened individually.
+  private enrichFrozenStatus(items: Company[], seq: number): void {
+    if (!items.length) return;
+    forkJoin(
+      items.map(c => this.companyService.getById(c.id).pipe(catchError(() => of(null))))
+    ).subscribe(results => {
+      if (seq !== this.requestSeq) return; // a newer load superseded this one
+      const frozenIds = new Set<number>();
+      for (const res of results) {
+        const d: any = (res as any)?.data ?? res;
+        if (!d || d.id == null) continue;
+        const backendSaysFrozen = !!d.isFrozen || !!d.IsFrozen
+          || (d.frozenAt != null && d.frozenAt !== '')
+          || (d.FrozenAt != null && d.FrozenAt !== '');
+        if (backendSaysFrozen) {
+          this.saveFrozenId(d.id, true);
+          frozenIds.add(d.id);
+        }
+      }
+      if (frozenIds.size) {
+        this.companies.update(list => list.map(c => frozenIds.has(c.id) ? { ...c, isFrozen: true } : c));
+      }
     });
   }
 
