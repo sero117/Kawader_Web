@@ -313,6 +313,13 @@ export class CompanySetupComponent {
       return this.lang.t('setup.nameLettersOnly');
     }
 
+    // "This phone number already has an account" is far clearer than the raw
+    // backend wording, and tells the user what to actually do about it
+    // (sign in instead of trying to set the account up again).
+    if (typeof body.UserAlreadyHasPassword === 'string') {
+      return this.lang.t('setup.userAlreadyHasPassword');
+    }
+
     // Field-level validation messages (e.g. "Name must be English letters or
     // numbers") can land in `errors`, `detail`/`title`, or a custom
     // `extensions` entry depending on the endpoint — this shared helper checks

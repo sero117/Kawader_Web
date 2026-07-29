@@ -556,6 +556,7 @@
   },
   "setup": {
     "nameLettersOnly": "First name and last name must contain only English letters or numbers.",
+    "userAlreadyHasPassword": "This phone number already has an active account. Please sign in instead of setting it up again.",
     "step1Title": "Your Phone Number",
     "step1Subtitle": "Enter your phone number to receive a verification code.",
     "step2Title": "Create Your Account",
