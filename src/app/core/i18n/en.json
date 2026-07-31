@@ -1619,6 +1619,7 @@
   "errors": {
     "unexpected": "An unexpected error occurred",
     "forbidden": "You don't have permission to do this.",
+    "currencyCheckFailed": "Couldn't check your company's currencies right now. Please try again later.",
     "consumedItemLocked": "This item can't be edited — it has already been paid out in a payslip.",
     "noCurrenciesGrantedForCompany": "Contact your system administrator to have currencies granted to your company."
   },

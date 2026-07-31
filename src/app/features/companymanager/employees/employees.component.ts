@@ -241,9 +241,13 @@ export class EmployeesComponent implements OnInit {
         this.myCurrencies.set(list ?? []);
         this.currencyLoadError.set(list?.length ? null : this.lang.t('errors.noCurrenciesGrantedForCompany'));
       },
-      error: () => {
+      // A failed *request* (e.g. 403) is not the same situation as the request
+      // succeeding with an empty list — the "ask your admin to grant a
+      // currency" message is actively wrong here, since a currency may well
+      // already be granted and the call itself just couldn't go through.
+      error: (err: any) => {
         this.myCurrencies.set([]);
-        this.currencyLoadError.set(this.lang.t('errors.noCurrenciesGrantedForCompany'));
+        this.currencyLoadError.set(this.apiErr(err, this.lang.t('errors.currencyCheckFailed')));
       },
     });
     this.branchId  = Number(this.route.snapshot.paramMap.get('branchId'));
