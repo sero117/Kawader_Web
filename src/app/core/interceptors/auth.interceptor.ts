@@ -143,7 +143,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       // generic toast here would just duplicate that same message.
       if (err.status !== 404 && !isAuthUrl) {
         const problem = err.error as ServiceProblemDetails | null;
-        const rawMessage = extractErrorMessage(problem) ?? language.t('errors.unexpected');
+        // A bare 403 (e.g. the HR [EmployeeAccess] role/branch gate) often
+        // carries no response body at all — "unexpected error" would be
+        // actively misleading for what is actually a deliberate permission
+        // denial, so it gets its own fallback instead of the generic one.
+        const fallback = err.status === 403 ? language.t('errors.forbidden') : language.t('errors.unexpected');
+        const rawMessage = extractErrorMessage(problem) ?? fallback;
         snackbar.show(translateBackendMessage(rawMessage), 'error');
       }
       return throwError(() => err);
