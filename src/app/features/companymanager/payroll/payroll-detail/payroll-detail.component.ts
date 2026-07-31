@@ -269,7 +269,10 @@ export class PayrollDetailComponent implements OnInit {
           this.snackbar.show(this.lang.t('manager.payroll.errAlreadyPaidThisPeriod'), 'error');
           return;
         }
-        // Anything else: the global interceptor already shows it as a snackbar.
+        // This request is silent (see addPayslips) so the two specific cases
+        // above don't get doubled up with the generic interceptor toast —
+        // anything else still needs its own message shown here instead.
+        this.snackbar.show(this.apiErr(err, this.lang.t('errors.unexpected')), 'error');
       },
     });
   }

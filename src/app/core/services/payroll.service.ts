@@ -76,8 +76,13 @@ export class PayrollService {
     return this.api.delete<void>(`${this.baseUrl}/${payrollRunId}`);
   }
 
+  // Silent — the component shows its own specific, translated message for the
+  // 409/412 cases this call commonly hits; the generic interceptor toast on
+  // top of that was showing the user two messages for one failure.
+  private static readonly SILENT_HEADERS = new HttpHeaders().set('X-Silent', 'true');
+
   addPayslips(payrollRunId: number, payload: AddPayslipsRequest): Observable<void> {
-    return this.api.post<void>(`${this.baseUrl}/${payrollRunId}/payslips`, payload);
+    return this.api.post<void>(`${this.baseUrl}/${payrollRunId}/payslips`, payload, PayrollService.SILENT_HEADERS);
   }
 
   updatePayslip(payrollRunId: number, payslipId: number, payload: UpdatePayslipRequest): Observable<void> {

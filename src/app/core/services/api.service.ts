@@ -10,8 +10,8 @@ export class ApiService {
     return this.http.get<T>(url, { params, headers });
   }
 
-  post<T>(url: string, body: unknown): Observable<T> {
-    return this.http.post<T>(url, body);
+  post<T>(url: string, body: unknown, headers?: HttpHeaders): Observable<T> {
+    return this.http.post<T>(url, body, { headers });
   }
 
   /** POST with FormData — for requests that include files */
