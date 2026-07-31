@@ -47,7 +47,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   if (!req.headers.has('X-Tenant-Id')) {
-    const tenantId = auth.getSelectedTenantId();
+    // getSelectedTenantId() alone only covers the multi-company employee
+    // picker flow — a normal HR/CompanyManager token carries its own tenantId
+    // claim and was never "selected" anywhere, so that lookup came back empty
+    // and the header silently never got sent. getEffectiveTenantId() checks
+    // the JWT claim first and falls back to the manual selection.
+    const tenantId = auth.getEffectiveTenantId();
     if (tenantId) {
       headers = headers.set('X-Tenant-Id', tenantId);
     }
