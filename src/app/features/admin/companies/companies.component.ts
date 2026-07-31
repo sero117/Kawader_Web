@@ -239,20 +239,37 @@ export class CompaniesComponent implements OnInit {
           ? raw
           : (raw?.items ?? raw?.data ?? raw?.companies ?? []);
 
-        // Normalize PascalCase fields from .NET API + localStorage for frozen/agent
-        // (the list endpoint returns neither isFrozen nor agentId)
+        // Normalize PascalCase fields from .NET API. isFrozen now comes back on
+        // *some* rows (apparently only once a company has been through at least
+        // one freeze/unfreeze — a never-touched row omits the field instead of
+        // sending false) — agentId is still absent from the list entirely.
+        //
+        // When the API DOES give an explicit isFrozen for a row, that's the
+        // truth and wins outright — a stale localStorage "frozen" from an
+        // earlier session must never override a live "not frozen" answer.
+        // localStorage is only consulted as a guess for rows where the API
+        // omitted the field, and gets corrected to match the API wherever it
+        // did answer, so a stale value can't keep re-surfacing on later visits.
         const frozenIds = this.getFrozenIds();
         const agentCache = this.getAgentCache();
-        const normalized = items.map((c: any) => ({
-          ...c,
-          isActive:    c.isActive    !== undefined ? c.isActive    : c.IsActive,
-          isCompleted: c.isCompleted !== undefined ? c.isCompleted : c.IsCompleted,
-          isFrozen: !!c.isFrozen || !!c.IsFrozen
-            || (c.frozenAt != null && c.frozenAt !== '')
-            || (c.FrozenAt != null && c.FrozenAt !== '')
-            || frozenIds.has(c.id),
-          agentId: c.agentId ?? c.AgentId ?? agentCache[c.id] ?? null,
-        }));
+        const normalized = items.map((c: any) => {
+          const apiFrozen = c.isFrozen ?? c.IsFrozen;
+          const apiFrozenAt = c.frozenAt ?? c.FrozenAt;
+          let isFrozen: boolean;
+          if (apiFrozen !== undefined) {
+            isFrozen = !!apiFrozen;
+            this.saveFrozenId(c.id, isFrozen);
+          } else {
+            isFrozen = (apiFrozenAt != null && apiFrozenAt !== '') || frozenIds.has(c.id);
+          }
+          return {
+            ...c,
+            isActive:    c.isActive    !== undefined ? c.isActive    : c.IsActive,
+            isCompleted: c.isCompleted !== undefined ? c.isCompleted : c.IsCompleted,
+            isFrozen,
+            agentId: c.agentId ?? c.AgentId ?? agentCache[c.id] ?? null,
+          };
+        });
 
         this.companies.set(normalized);
         this.hasMore.set(items.length >= this.filter.value().pageSize);
