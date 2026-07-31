@@ -196,13 +196,13 @@ export const routes: Routes = [
       },
       {
         path: 'shifts',
-        title: 'الورديات',
+        title: 'الأوقات العامة للورديات',
         loadComponent: () =>
           import('./features/companymanager/shifts/shifts.component').then(m => m.ShiftsComponent),
       },
       {
         path: 'shift-systems',
-        title: 'أنظمة الدوام',
+        title: 'تصنيف الورديات',
         loadComponent: () =>
           import('./features/companymanager/shift-systems/shift-systems.component').then(m => m.ShiftSystemsComponent),
       },
@@ -334,13 +334,13 @@ export const routes: Routes = [
       },
       {
         path: 'shifts',
-        title: 'الورديات',
+        title: 'الأوقات العامة للورديات',
         loadComponent: () =>
           import('./features/companymanager/shifts/shifts.component').then(m => m.ShiftsComponent),
       },
       {
         path: 'shift-systems',
-        title: 'أنظمة الدوام',
+        title: 'تصنيف الورديات',
         loadComponent: () =>
           import('./features/companymanager/shift-systems/shift-systems.component').then(m => m.ShiftSystemsComponent),
       },

@@ -125,9 +125,11 @@ import { UrlFilter } from '../../../core/utils/url-filter';
                     {{ 'admin.cards.revoke' | translate }}
                   </button>
                 }
-                <button class="gift-card-btn gift-card-btn-delete" (click)="confirmDelete(card)">
-                  {{ 'common.delete' | translate }}
-                </button>
+                @if (card.status !== CardStatus.Used) {
+                  <button class="gift-card-btn gift-card-btn-delete" (click)="confirmDelete(card)">
+                    {{ 'common.delete' | translate }}
+                  </button>
+                }
               </div>
             </div>
           }

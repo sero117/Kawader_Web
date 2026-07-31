@@ -677,9 +677,9 @@
     "nav": {
       "panel": "Manager Panel",
       "branches": "Branches",
-      "shifts": "Shifts",
-      "shiftSystems": "Shift Systems",
-      "shiftLogs": "Attendance",
+      "shifts": "General Shift Times",
+      "shiftSystems": "Shift Categories",
+      "shiftLogs": "Attendance Log",
       "companyHolidays": "Holidays",
       "payroll": "Payroll",
       "devices": "Device Management",
@@ -1035,7 +1035,7 @@
       }
     },
     "shifts": {
-      "title": "Shifts",
+      "title": "General Shift Times",
       "subtitle": "Define reusable work shifts (morning, evening, night…)",
       "addBtn": "Add Shift",
       "searchPlaceholder": "Search by name…",
@@ -1081,7 +1081,7 @@
       "1": "Overtime"
     },
     "shiftSystems": {
-      "title": "Shift Systems",
+      "title": "Shift Categories",
       "subtitle": "Group shifts into weekly schedules (summer, Ramadan…)",
       "addBtn": "Add System",
       "searchPlaceholder": "Search by name…",
@@ -1618,6 +1618,7 @@
   },
   "errors": {
     "unexpected": "An unexpected error occurred",
+    "forbidden": "You don't have permission to do this.",
     "consumedItemLocked": "This item can't be edited — it has already been paid out in a payslip.",
     "noCurrenciesGrantedForCompany": "Contact your system administrator to have currencies granted to your company."
   },

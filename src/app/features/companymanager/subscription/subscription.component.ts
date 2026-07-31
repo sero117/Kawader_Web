@@ -93,7 +93,7 @@ import { CompanyTimeService } from '../../../core/services/company-time.service'
                     <span class="plan-price-amount">{{ plan.price }}</span>
                     <span class="plan-price-currency">USD</span>
                   </div>
-                  <p class="plan-duration">{{ plan.durationDays }} {{ 'manager.subscription.days' | translate }}</p>
+                  <p class="plan-duration">{{ planCategoryLabel(plan) }}</p>
                 </div>
                 <div class="plan-limits">
                   <div class="plan-limit-item">
@@ -272,6 +272,15 @@ export class SubscriptionComponent implements OnInit {
       case SubscriptionStatus.Expired: return this.lang.t('manager.subscription.expired');
       case SubscriptionStatus.Pending: return this.lang.t('manager.subscription.pending');
     }
+  }
+
+  /** Subscription category name + duration, in the currently active
+   *  language — straight off the plan's own response, no extra lookup. */
+  planCategoryLabel(plan: Plan): string {
+    const name = this.lang.getLanguage() === 'ar'
+      ? (plan.subscriptionCategoryArabicName || '—')
+      : (plan.subscriptionCategoryEnglishName || '—');
+    return `${name} (${plan.durationDays} ${this.lang.t('manager.subscription.days')})`;
   }
 
   apiErr(err: any): string {
