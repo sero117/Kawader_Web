@@ -56,6 +56,20 @@
       "two":   { "title": "Add your employees",           "desc": "Add branches, sections, and employees in minutes." },
       "three": { "title": "Start working",                "desc": "Payroll, shifts, and attendance — ready to use right away." }
     },
+    "roles": {
+      "title": "A tailored view for every role",
+      "subtitle": "Everyone on your team sees only what's relevant to them.",
+      "admin":   { "title": "Admin",           "desc": "Manage the whole platform and its companies" },
+      "manager": { "title": "Company Manager", "desc": "Full control over your company and staff" },
+      "hr":      { "title": "HR Manager",      "desc": "Manage employees and payroll" },
+      "employee":{ "title": "Employee",        "desc": "Their attendance, leaves, and pay" },
+      "agent":   { "title": "Agent",           "desc": "Track referred companies" }
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "subtitle": "Create your company account now and start managing your team in minutes.",
+      "button": "Create a company account"
+    },
     "footer": "© Kawader — All rights reserved."
   },
   "common": {

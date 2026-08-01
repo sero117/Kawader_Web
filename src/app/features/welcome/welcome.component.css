@@ -15,6 +15,23 @@
 
 /* ── Hero text stagger (reuses .auth-word's word-reveal keyframe) ──── */
 .wc-hero-title .auth-word { animation-delay: 0.05s; }
+
+/* Higher specificity than plain .auth-word so both animations (entrance +
+   shimmer) apply — two separate rules each setting `animation` would have
+   the later one win outright instead of combining. */
+.wc-hero-gradient.auth-word {
+  background: linear-gradient(100deg, var(--nav-accent) 20%, #a855f7 50%, var(--nav-accent) 80%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: word-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both, wc-shimmer 5s linear infinite;
+  animation-delay: 0.16s, 1.3s;
+}
+
+@keyframes wc-shimmer {
+  to { background-position: -220% center; }
+}
 .wc-hero-subtitle { animation: word-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.28s; }
 .wc-hero-actions  { animation: wc-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.44s; }
 
@@ -133,6 +150,26 @@
 .wc-pillar:nth-child(2) { animation-delay: 0.2s; }
 .wc-pillar:nth-child(3) { animation-delay: 0.3s; }
 .wc-pillar:hover { transform: translateY(-4px); }
+
+/* ── Closing CTA banner ───────────────────────────────────────────── */
+.wc-cta-banner {
+  background: var(--bg-subtle-sm);
+  animation: wc-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.wc-cta-glow {
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--nav-accent) 30%, transparent), transparent 60%),
+              radial-gradient(circle at 75% 70%, color-mix(in srgb, #a855f7 26%, transparent), transparent 55%);
+  animation: wc-cta-pulse 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes wc-cta-pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.75; }
+  50%      { transform: scale(1.15) rotate(8deg); opacity: 1; }
+}
 
 /* ── CTA buttons ──────────────────────────────────────────────────── */
 .wc-btn-primary {
