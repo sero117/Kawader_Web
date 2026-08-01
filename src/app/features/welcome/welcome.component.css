@@ -110,15 +110,9 @@
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.wc-illustration-card {
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.wc-illustration-card-back  { transform: translateZ(-30px) translate(-6px, 6px) rotate(-9deg); }
-.wc-illustration-card-front { transform: translateZ(20px); }
-
 .wc-orbit {
   animation: wc-orbit-spin 14s linear infinite;
-  transform-origin: 190px 150px;
+  transform-origin: 190px 100px;
 }
 @keyframes wc-orbit-spin {
   from { transform: rotate(0deg); }
@@ -128,6 +122,15 @@
 @keyframes wc-orbit-counter {
   from { transform: rotate(0deg); }
   to   { transform: rotate(-360deg); }
+}
+
+.wc-laptop-glow {
+  animation: wc-glow-pulse 3.5s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes wc-glow-pulse {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
 }
 
 /* ── Feature cards ────────────────────────────────────────────────── */
