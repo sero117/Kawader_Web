@@ -71,14 +71,14 @@
       </div>
 
       <!-- 3D Illustration -->
-      <div class="wc-illustration-scene relative mx-auto" style="width: 340px; height: 280px;">
+      <div class="wc-illustration-scene relative mx-auto" style="width: 400px; height: 328px;">
        <div class="wc-illustration-float relative w-full h-full">
         <div #illustrationHost
           class="wc-illustration relative w-full h-full"
           (mousemove)="onIllustrationMove($event)"
           (mouseleave)="resetIllustrationTilt()"
           [style.transform]="'rotateX(' + tiltX() + 'deg) rotateY(' + tiltY() + 'deg)'">
-          <svg viewBox="0 0 380 300" width="340" height="280" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 380 300" width="400" height="328" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <radialGradient id="wcScreenGlow" cx="50%" cy="42%" r="65%">
                 <stop offset="0%" stop-color="var(--nav-accent)" stop-opacity="0.5"/>
@@ -102,8 +102,10 @@
 
             <ellipse class="wc-laptop-glow" cx="190" cy="95" rx="160" ry="95" fill="url(#wcScreenGlow)"/>
 
-            <!-- Lid: hinges open on load, everything on the screen lives inside it -->
-            <g class="wc-lid">
+            <!-- Lid: hinges open on load, click to close/reopen. Everything on the screen lives inside it. -->
+            <g class="wc-lid" (click)="toggleLaptop()"
+              [style.transform]="laptopOpen() ? 'rotateX(0deg) scaleY(1)' : 'rotateX(78deg) scaleY(0.4)'"
+              [style.opacity]="laptopOpen() ? 1 : 0.45">
               <!-- Neon edge glow -->
               <rect class="wc-laptop-neon" x="63" y="16" width="254" height="166" rx="16" fill="none" stroke="url(#wcNeonEdge)" stroke-width="2.5" opacity="0.8"/>
 
@@ -159,13 +161,17 @@
                   <rect x="153" y="40" width="70" height="7" rx="3.5" fill="var(--auth-fg)" opacity="0.7"/>
                   <rect x="132" y="60" width="162" height="1" fill="var(--bg-subtle-md)"/>
 
-                  @for (row of [0,1,2]; track row) {
-                    <g [attr.transform]="'translate(132 ' + (68 + row * 32) + ')'">
-                      <circle cx="8" cy="10" r="8" [attr.fill]="row === 0 ? 'var(--nav-accent)' : row === 1 ? '#a855f7' : '#34d399'" opacity="0.75"/>
-                      <rect x="24" y="4" width="70" height="5" rx="2.5" fill="var(--auth-fg)" opacity="0.5"/>
-                      <rect x="24" y="13" width="44" height="4" rx="2" fill="var(--auth-fg)" opacity="0.25"/>
-                      <circle cx="152" cy="9" r="3" fill="#34d399"/>
-                    </g>
+                  <!-- Team of avatars, popping in one by one -->
+                  @for (p of [
+                    { cx: 159, cy: 92,  color: 'var(--nav-accent)', delay: '0s' },
+                    { cx: 213, cy: 92,  color: '#a855f7',           delay: '0.12s' },
+                    { cx: 267, cy: 92,  color: '#34d399',           delay: '0.24s' },
+                    { cx: 159, cy: 138, color: '#f97316',           delay: '0.36s' },
+                    { cx: 213, cy: 138, color: 'var(--nav-accent)', delay: '0.48s' },
+                    { cx: 267, cy: 138, color: '#a855f7',           delay: '0.6s' },
+                  ]; track p.cx + '-' + p.cy) {
+                    <circle class="wc-avatar-pop" [attr.cx]="p.cx" [attr.cy]="p.cy" r="13" [attr.fill]="p.color" opacity="0.8"
+                      [style.animation-delay]="p.delay"/>
                   }
                 </g>
               </g>

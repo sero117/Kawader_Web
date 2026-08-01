@@ -47,4 +47,15 @@ export class WelcomeComponent {
     this.tiltX.set(0);
     this.tiltY.set(0);
   }
+
+  // ── Laptop lid: opens once on load, then toggles open/closed on click ──────
+  readonly laptopOpen = signal(false);
+
+  constructor() {
+    setTimeout(() => this.laptopOpen.set(true), 500);
+  }
+
+  toggleLaptop(): void {
+    this.laptopOpen.update(v => !v);
+  }
 }
