@@ -64,55 +64,7 @@ export class ManagerOverviewComponent implements OnInit {
     return this.ringCircumference * (1 - rate / 100);
   });
 
-  // ── Month calendar — picking a day re-anchors the 7-day punch chart ────────
   private allLogsCache: AdmsLog[] = [];
-  selectedDate    = signal(this.companyTime.toCompanyTime());
-  calendarCursor  = signal(this.companyTime.toCompanyTime());
-
-  readonly calendarLabel = computed(() =>
-    this.calendarCursor().toLocaleDateString('ar-SA', { month: 'long', year: 'numeric', timeZone: 'UTC' }),
-  );
-
-  readonly calendarDays = computed(() => {
-    const cursor = this.calendarCursor();
-    const year = cursor.getUTCFullYear();
-    const month = cursor.getUTCMonth();
-    const firstOfMonth = new Date(Date.UTC(year, month, 1));
-    const startWeekday = firstOfMonth.getUTCDay(); // 0=Sun
-    const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-    const selectedIso = this.isoOf(this.selectedDate());
-    const todayIso = this.companyTime.todayIso();
-
-    const cells: { day: number | null; iso: string | null; isToday: boolean; isSelected: boolean }[] = [];
-    for (let i = 0; i < startWeekday; i++) cells.push({ day: null, iso: null, isToday: false, isSelected: false });
-    for (let d = 1; d <= daysInMonth; d++) {
-      const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-      cells.push({ day: d, iso, isToday: iso === todayIso, isSelected: iso === selectedIso });
-    }
-    return cells;
-  });
-
-  private isoOf(d: Date): string {
-    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
-  }
-
-  prevMonth(): void {
-    const c = this.calendarCursor();
-    this.calendarCursor.set(new Date(Date.UTC(c.getUTCFullYear(), c.getUTCMonth() - 1, 1)));
-  }
-
-  nextMonth(): void {
-    const c = this.calendarCursor();
-    this.calendarCursor.set(new Date(Date.UTC(c.getUTCFullYear(), c.getUTCMonth() + 1, 1)));
-  }
-
-  selectDay(iso: string | null): void {
-    if (!iso) return;
-    const [y, m, d] = iso.split('-').map(Number);
-    const picked = new Date(Date.UTC(y, m - 1, d));
-    this.selectedDate.set(picked);
-    this.buildChart(picked);
-  }
 
   readonly quickActions = [
     {

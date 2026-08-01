@@ -254,12 +254,6 @@
       "title": "نظرة عامة",
       "subtitle": "مرحباً بعودتك — إليك ما يجري على المنصة.",
       "greeting": "مرحباً،",
-      "filteredTitle": "شركات هذا اليوم",
-      "calendarHint": "اضغط على اليوم نفسه لإلغاء التصفية",
-      "previous": "السابق",
-      "next": "التالي",
-      "calSun": "أحد", "calMon": "إثنين", "calTue": "ثلاثاء", "calWed": "أربعاء",
-      "calThu": "خميس", "calFri": "جمعة", "calSat": "سبت",
       "totalBadge": "الإجمالي",
       "totalLabel": "الشركات",
       "frozenBadge": "مجمّدة",
@@ -826,11 +820,7 @@
       "absent": "غائب",
       "attendanceRate": "نسبة الحضور",
       "recentEmployees": "آخر الموظفين المضافين",
-      "noRecentEmployees": "لا يوجد موظفون مضافون حديثاً",
-      "previous": "السابق",
-      "next": "التالي",
-      "calSun": "أحد", "calMon": "إثنين", "calTue": "ثلاثاء", "calWed": "أربعاء",
-      "calThu": "خميس", "calFri": "جمعة", "calSat": "سبت"
+      "noRecentEmployees": "لا يوجد موظفون مضافون حديثاً"
     },
     "branches": {
       "title": "الفروع",

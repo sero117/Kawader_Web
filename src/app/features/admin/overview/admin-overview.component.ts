@@ -43,81 +43,41 @@ export class AdminOverviewComponent implements OnInit {
   countryCount   = signal<number | null>(null);
   currencyCount  = signal<number | null>(null);
 
-  // ── Month calendar — picking a day filters "recent companies" by that date ─
-  selectedDate   = signal<Date | null>(null);
-  calendarCursor = signal(new Date());
-
-  readonly calendarLabel = computed(() =>
-    this.calendarCursor().toLocaleDateString('ar-SA', { month: 'long', year: 'numeric' }),
+  /** Recent-companies list — the 5 most recent by createdAt. */
+  readonly displayedCompanies = computed(() =>
+    [...this.companies()]
+      .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
+      .slice(0, 5),
   );
 
-  readonly calendarDays = computed(() => {
-    const cursor = this.calendarCursor();
-    const year = cursor.getFullYear();
-    const month = cursor.getMonth();
-    const firstOfMonth = new Date(year, month, 1);
-    const startWeekday = firstOfMonth.getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const selected = this.selectedDate();
-    const selectedIso = selected ? this.isoOf(selected) : null;
-    const todayIso = this.isoOf(new Date());
+  /** The list endpoint doesn't return companyName (see CompanyService), so the
+   *  5 displayed rows fetch their own detail — bounded to exactly 5 requests,
+   *  not a per-row fetch over the whole collection. `undefined` = still
+   *  loading, `null` = loaded but genuinely has no name yet. */
+  private recentNames = signal<Map<number, string | null>>(new Map());
 
-    const cells: { day: number | null; iso: string | null; isToday: boolean; isSelected: boolean }[] = [];
-    for (let i = 0; i < startWeekday; i++) cells.push({ day: null, iso: null, isToday: false, isSelected: false });
-    for (let d = 1; d <= daysInMonth; d++) {
-      const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-      cells.push({ day: d, iso, isToday: iso === todayIso, isSelected: iso === selectedIso });
-    }
-    return cells;
-  });
-
-  private isoOf(d: Date): string {
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  recentName(id: number): string | null | undefined {
+    return this.recentNames().get(id);
   }
 
-  prevMonth(): void {
-    const c = this.calendarCursor();
-    this.calendarCursor.set(new Date(c.getFullYear(), c.getMonth() - 1, 1));
+  private loadRecentNames(rows: Company[]): void {
+    if (!rows.length) return;
+    forkJoin(rows.map(c => this.companyService.getByIdCached(c.id))).subscribe({
+      next: results => {
+        const map = new Map(this.recentNames());
+        results.forEach((res, i) => {
+          const detail = (res as any)?.data ?? res;
+          map.set(rows[i].id, detail?.companyName ?? null);
+        });
+        this.recentNames.set(map);
+      },
+      error: () => {
+        const map = new Map(this.recentNames());
+        rows.forEach(c => map.set(c.id, null));
+        this.recentNames.set(map);
+      },
+    });
   }
-
-  nextMonth(): void {
-    const c = this.calendarCursor();
-    this.calendarCursor.set(new Date(c.getFullYear(), c.getMonth() + 1, 1));
-  }
-
-  selectDay(iso: string | null): void {
-    if (!iso) return;
-    const current = this.selectedDate();
-    // Clicking the already-selected day clears the filter back to "recent".
-    if (current && this.isoOf(current) === iso) { this.selectedDate.set(null); return; }
-    const [y, m, d] = iso.split('-').map(Number);
-    this.selectedDate.set(new Date(y, m - 1, d));
-  }
-
-  /** createdAt from the API is a UTC instant — bucket it by the viewer's own
-   *  local calendar day (matching how "today" is highlighted below), not by
-   *  the raw UTC date string, or a company created late at night would land
-   *  under the wrong day. */
-  private localIsoOf(createdAt: string | null | undefined): string | null {
-    if (!createdAt) return null;
-    const d = new Date(createdAt);
-    return Number.isNaN(d.getTime()) ? null : this.isoOf(d);
-  }
-
-  /** Recent-companies list — filtered to the selected calendar day if one is
-   *  picked, otherwise the 5 most recent by createdAt. No extra requests:
-   *  both views reuse the single already-fetched company list. */
-  readonly displayedCompanies = computed(() => {
-    const all = this.companies();
-    const selected = this.selectedDate();
-    if (!selected) {
-      return [...all]
-        .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
-        .slice(0, 5);
-    }
-    const iso = this.isoOf(selected);
-    return all.filter(c => this.localIsoOf(c.createdAt) === iso);
-  });
 
   ngOnInit(): void {
     this.companyService.getAll({ pageSize: 100, pageNumber: 1 }).subscribe({
@@ -138,6 +98,7 @@ export class AdminOverviewComponent implements OnInit {
         }));
         this.companies.set(normalized);
         this.loading.set(false);
+        this.loadRecentNames(this.displayedCompanies());
       },
       error: () => this.loading.set(false),
     });

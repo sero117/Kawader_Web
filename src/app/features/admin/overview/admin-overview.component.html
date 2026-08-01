@@ -3,7 +3,7 @@
   <div class="welcome-banner-text">
     <p class="text-xs font-bold tracking-widest uppercase mb-2 opacity-70">{{ 'admin.overview.subtitle' | translate }}</p>
     <h1 class="text-2xl font-extrabold mb-2" style="letter-spacing: -0.03em; line-height: 1.3;">
-      {{ 'admin.overview.greeting' | translate }} {{ adminName }} 👋
+      {{ 'admin.overview.greeting' | translate }} {{ adminName }}
     </h1>
     <p class="text-sm opacity-80 max-w-sm">{{ todayDate }}</p>
   </div>
@@ -148,88 +148,51 @@
 
 </div>
 
-<!-- ── Recent companies (left) + Calendar (right) ──────────────────────────── -->
-<div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+<!-- ── Recent companies ─────────────────────────────────────────────────── -->
+<div class="admin-card">
+  <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid var(--border);">
+    <h2 class="font-semibold text-sm" style="color: var(--text-base);">
+      {{ 'admin.overview.recentTitle' | translate }}
+    </h2>
+    <a routerLink="/dashboard/admin/companies" class="text-xs font-semibold transition-colors" style="color: var(--text-faint);"
+       onmouseover="this.style.color='var(--text-base)'" onmouseout="this.style.color='var(--text-faint)'">
+      {{ 'admin.overview.viewAll' | translate }}
+    </a>
+  </div>
 
-  <div class="lg:col-span-3 admin-card">
-    <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid var(--border);">
-      <h2 class="font-semibold text-sm" style="color: var(--text-base);">
-        {{ selectedDate() ? ('admin.overview.filteredTitle' | translate) : ('admin.overview.recentTitle' | translate) }}
-      </h2>
-      <a routerLink="/dashboard/admin/companies" class="text-xs font-semibold transition-colors" style="color: var(--text-faint);"
-         onmouseover="this.style.color='var(--text-base)'" onmouseout="this.style.color='var(--text-faint)'">
-        {{ 'admin.overview.viewAll' | translate }}
-      </a>
+  @if (loading()) {
+    <div class="p-6 space-y-3">
+      @for (_ of [1,2,3]; track $index) {
+        <div class="h-11 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+      }
     </div>
-
-    @if (loading()) {
-      <div class="p-6 space-y-3">
-        @for (_ of [1,2,3]; track $index) {
-          <div class="h-11 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
-        }
-      </div>
-    } @else if (displayedCompanies().length === 0) {
-      <div class="p-10 text-center">
-        <p class="text-sm" style="color: var(--text-very-faint);">{{ 'admin.overview.noCompanies' | translate }}</p>
-      </div>
-    } @else {
-      <div class="flex flex-col divide-y" style="border-color: var(--border);">
-        @for (c of displayedCompanies(); track c.id) {
-          <div class="flex items-center gap-3 px-6 py-3">
-            <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-              style="background: linear-gradient(135deg, var(--nav-accent), #a855f7); color: #fff;">
-              {{ (c.companyName ?? c.email ?? c.phoneNumber).charAt(0).toUpperCase() }}
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-semibold truncate" style="color: var(--text-base);">
-                {{ c.companyName || ('admin.overview.unnamedCompany' | translate) }}
-              </p>
-              <p class="text-xs truncate" style="color: var(--text-faint);">{{ c.phoneNumber }}</p>
-            </div>
-            @if (c.isFrozen) {
-              <span class="text-[10px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full flex-shrink-0"
-                style="color: rgba(99,102,241,0.9); background: rgba(99,102,241,0.08);">{{ 'admin.overview.statusFrozen' | translate }}</span>
-            } @else {
-              <span class="text-[10px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full flex-shrink-0"
-                style="color: rgba(52,211,153,0.9); background: rgba(52,211,153,0.08);">{{ 'admin.overview.statusNotFrozen' | translate }}</span>
-            }
+  } @else if (displayedCompanies().length === 0) {
+    <div class="p-10 text-center">
+      <p class="text-sm" style="color: var(--text-very-faint);">{{ 'admin.overview.noCompanies' | translate }}</p>
+    </div>
+  } @else {
+    <div class="flex flex-col divide-y" style="border-color: var(--border);">
+      @for (c of displayedCompanies(); track c.id) {
+        <div class="flex items-center gap-3 px-6 py-3">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+            style="background: linear-gradient(135deg, var(--nav-accent), #a855f7); color: #fff;">
+            {{ (recentName(c.id) ?? c.email ?? c.phoneNumber).charAt(0).toUpperCase() }}
           </div>
-        }
-      </div>
-    }
-  </div>
-
-  <!-- Calendar -->
-  <div class="lg:col-span-2 admin-card p-5">
-    <div class="flex items-center justify-between mb-3">
-      <button (click)="prevMonth()" class="calendar-nav-btn" [attr.aria-label]="'admin.overview.previous' | translate">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/>
-        </svg>
-      </button>
-      <h2 class="font-bold text-sm" style="color: var(--text-base);">{{ calendarLabel() }}</h2>
-      <button (click)="nextMonth()" class="calendar-nav-btn" [attr.aria-label]="'admin.overview.next' | translate">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5 15.75 12l-7.5 7.5"/>
-        </svg>
-      </button>
-    </div>
-    <div class="calendar-weekdays">
-      @for (wd of ['admin.overview.calSun','admin.overview.calMon','admin.overview.calTue','admin.overview.calWed','admin.overview.calThu','admin.overview.calFri','admin.overview.calSat']; track wd) {
-        <span>{{ wd | translate }}</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold truncate" style="color: var(--text-base);">
+              {{ recentName(c.id) === undefined ? '…' : (recentName(c.id) || ('admin.overview.unnamedCompany' | translate)) }}
+            </p>
+            <p class="text-xs truncate" style="color: var(--text-faint);">{{ c.phoneNumber }}</p>
+          </div>
+          @if (c.isFrozen) {
+            <span class="text-[10px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full flex-shrink-0"
+              style="color: rgba(99,102,241,0.9); background: rgba(99,102,241,0.08);">{{ 'admin.overview.statusFrozen' | translate }}</span>
+          } @else {
+            <span class="text-[10px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full flex-shrink-0"
+              style="color: rgba(52,211,153,0.9); background: rgba(52,211,153,0.08);">{{ 'admin.overview.statusNotFrozen' | translate }}</span>
+          }
+        </div>
       }
     </div>
-    <div class="calendar-grid">
-      @for (cell of calendarDays(); track $index) {
-        <button class="calendar-cell" [class.calendar-cell-today]="cell.isToday" [class.calendar-cell-selected]="cell.isSelected"
-          [disabled]="!cell.day" (click)="selectDay(cell.iso)">
-          {{ cell.day ?? '' }}
-        </button>
-      }
-    </div>
-    @if (selectedDate()) {
-      <p class="text-xs text-center mt-3" style="color: var(--text-faint);">{{ 'admin.overview.calendarHint' | translate }}</p>
-    }
-  </div>
-
+  }
 </div>
