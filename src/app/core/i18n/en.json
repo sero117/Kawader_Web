@@ -253,6 +253,13 @@
     "overview": {
       "title": "Overview",
       "subtitle": "Welcome back — here's what's happening across the platform.",
+      "greeting": "Welcome,",
+      "filteredTitle": "Companies on this day",
+      "calendarHint": "Click the same day again to clear the filter",
+      "previous": "Previous",
+      "next": "Next",
+      "calSun": "Sun", "calMon": "Mon", "calTue": "Tue", "calWed": "Wed",
+      "calThu": "Thu", "calFri": "Fri", "calSat": "Sat",
       "totalBadge": "Total",
       "totalLabel": "Companies",
       "frozenBadge": "Frozen",
@@ -814,7 +821,13 @@
       "present": "Present",
       "late": "Late",
       "absent": "Absent",
-      "attendanceRate": "Attendance Rate"
+      "attendanceRate": "Attendance Rate",
+      "recentEmployees": "Recently Added Employees",
+      "noRecentEmployees": "No employees added recently",
+      "previous": "Previous",
+      "next": "Next",
+      "calSun": "Sun", "calMon": "Mon", "calTue": "Tue", "calWed": "Wed",
+      "calThu": "Thu", "calFri": "Fri", "calSat": "Sat"
     },
     "branches": {
       "title": "Branches",

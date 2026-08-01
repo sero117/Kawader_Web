@@ -1,10 +1,11 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { CompanyService } from '../../../core/services/company.service';
 import { AgentService } from '../../../core/services/agent.service';
 import { CardService } from '../../../core/services/card.service';
 import { SubscriptionService } from '../../../core/services/subscription.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { Company } from '../../../core/models/company.models';
 import { CardStatus } from '../../../core/models/card.models';
@@ -23,12 +24,92 @@ export class AdminOverviewComponent implements OnInit {
   private readonly agentService        = inject(AgentService);
   private readonly cardService         = inject(CardService);
   private readonly subscriptionService = inject(SubscriptionService);
+  private readonly auth                = inject(AuthService);
+
+  readonly adminName = this.auth.getDisplayName();
+  readonly todayDate = new Date().toLocaleDateString('ar-SA', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  });
 
   companies   = signal<Company[]>([]);
   loading     = signal(true);
   agentCount  = signal<number | null>(null);
   cardCounts  = signal<StatusCounts | null>(null);
   subCounts   = signal<StatusCounts | null>(null);
+
+  // ── Active-companies ratio, as a ring ──────────────────────────────────────
+  private readonly ringCircumference = 2 * Math.PI * 34;
+  readonly activeRate = computed(() => {
+    const t = this.total;
+    return t > 0 ? Math.round(((t - this.frozenCount) / t) * 100) : 0;
+  });
+  readonly ringDashOffset = computed(() => this.ringCircumference * (1 - this.activeRate() / 100));
+
+  // ── Month calendar — picking a day filters "recent companies" by that date ─
+  selectedDate   = signal<Date | null>(null);
+  calendarCursor = signal(new Date());
+
+  readonly calendarLabel = computed(() =>
+    this.calendarCursor().toLocaleDateString('ar-SA', { month: 'long', year: 'numeric' }),
+  );
+
+  readonly calendarDays = computed(() => {
+    const cursor = this.calendarCursor();
+    const year = cursor.getFullYear();
+    const month = cursor.getMonth();
+    const firstOfMonth = new Date(year, month, 1);
+    const startWeekday = firstOfMonth.getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const selected = this.selectedDate();
+    const selectedIso = selected ? this.isoOf(selected) : null;
+    const todayIso = this.isoOf(new Date());
+
+    const cells: { day: number | null; iso: string | null; isToday: boolean; isSelected: boolean }[] = [];
+    for (let i = 0; i < startWeekday; i++) cells.push({ day: null, iso: null, isToday: false, isSelected: false });
+    for (let d = 1; d <= daysInMonth; d++) {
+      const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      cells.push({ day: d, iso, isToday: iso === todayIso, isSelected: iso === selectedIso });
+    }
+    return cells;
+  });
+
+  private isoOf(d: Date): string {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  prevMonth(): void {
+    const c = this.calendarCursor();
+    this.calendarCursor.set(new Date(c.getFullYear(), c.getMonth() - 1, 1));
+  }
+
+  nextMonth(): void {
+    const c = this.calendarCursor();
+    this.calendarCursor.set(new Date(c.getFullYear(), c.getMonth() + 1, 1));
+  }
+
+  selectDay(iso: string | null): void {
+    if (!iso) return;
+    const current = this.selectedDate();
+    // Clicking the already-selected day clears the filter back to "recent".
+    if (current && this.isoOf(current) === iso) { this.selectedDate.set(null); return; }
+    const [y, m, d] = iso.split('-').map(Number);
+    this.selectedDate.set(new Date(y, m - 1, d));
+  }
+
+  /** Recent-companies list — filtered to the selected calendar day if one is
+   *  picked, otherwise the 5 most recent by createdAt. No extra requests:
+   *  both views reuse the single already-fetched company list. */
+  readonly displayedCompanies = computed(() => {
+    const all = this.companies();
+    const selected = this.selectedDate();
+    if (!selected) {
+      return [...all]
+        .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
+        .slice(0, 5);
+    }
+    const iso = this.isoOf(selected);
+    return all.filter(c => (c.createdAt ?? '').startsWith(iso));
+  });
 
   ngOnInit(): void {
     this.companyService.getAll({ pageSize: 100, pageNumber: 1 }).subscribe({

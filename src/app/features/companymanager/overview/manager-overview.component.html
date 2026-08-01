@@ -1,23 +1,50 @@
 <div class="page-fade-up">
 
-  <!-- ── Greeting ─────────────────────────────────────────────────────────── -->
-  <div class="mb-8">
-    <p class="text-xs font-bold tracking-widest uppercase mb-2" style="color: var(--nav-accent);">
-      {{ 'manager.overview.subtitle' | translate }}
-    </p>
-    <h1 class="text-2xl font-extrabold mb-1" style="color: var(--text-base); letter-spacing: -0.03em; line-height: 1.2;">
-      {{ 'manager.overview.greeting' | translate }}
-      <span class="overview-name-gradient">{{ managerName }}</span>
-    </h1>
-    <p class="text-sm" style="color: var(--text-faint);">{{ todayDate() }}</p>
+  <!-- ── Welcome banner ───────────────────────────────────────────────────── -->
+  <div class="welcome-banner mb-6">
+    <div class="welcome-banner-text">
+      <p class="text-xs font-bold tracking-widest uppercase mb-2 opacity-80">
+        {{ 'manager.overview.subtitle' | translate }}
+      </p>
+      <h1 class="text-2xl font-extrabold mb-2" style="letter-spacing: -0.03em; line-height: 1.3;">
+        {{ 'manager.overview.greeting' | translate }} {{ managerName }} 👋
+      </h1>
+      <p class="text-sm opacity-90 max-w-sm">{{ todayDate() }}</p>
+    </div>
+
+    <!-- Person-at-laptop illustration -->
+    <svg class="welcome-banner-illustration" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="100" cy="148" rx="70" ry="8" fill="#000" opacity="0.12"/>
+      <!-- desk -->
+      <rect x="30" y="112" width="140" height="6" rx="3" fill="#fff" opacity="0.25"/>
+      <!-- laptop -->
+      <path d="M78 78h44v30H78z" fill="#fff" opacity="0.95"/>
+      <rect x="82" y="82" width="36" height="22" fill="#312e81"/>
+      <rect x="88" y="87" width="20" height="3" rx="1.5" fill="#a5b4fc"/>
+      <rect x="88" y="93" width="14" height="3" rx="1.5" fill="#a5b4fc" opacity="0.6"/>
+      <path d="M72 108h56l4 8H68z" fill="#e0e7ff"/>
+      <!-- chair -->
+      <rect x="88" y="118" width="24" height="6" rx="3" fill="#fff" opacity="0.2"/>
+      <!-- person: body -->
+      <path d="M76 118c0-16 10-26 24-26s24 10 24 26z" fill="#fbbf24"/>
+      <!-- head -->
+      <circle cx="100" cy="66" r="15" fill="#fcd9b6"/>
+      <!-- simple short hair -->
+      <path d="M85 62a15 15 0 0129-6 15 15 0 01-4 20c1-8-2-13-8-15-5 6-12 6-17 1z" fill="#3f2a1d"/>
+      <!-- arms reaching to keyboard -->
+      <path d="M84 100c-4 4-6 8-6 12h14c0-6 1-9 3-12z" fill="#fbbf24"/>
+      <path d="M116 100c4 4 6 8 6 12h-14c0-6-1-9-3-12z" fill="#fbbf24"/>
+      <circle class="welcome-hand welcome-hand-1" cx="88" cy="106" r="3.5" fill="#fcd9b6"/>
+      <circle class="welcome-hand welcome-hand-2" cx="112" cy="106" r="3.5" fill="#fcd9b6"/>
+    </svg>
   </div>
 
   <!-- ── KPI Cards ─────────────────────────────────────────────────────────── -->
   @if (loading()) {
-    <div class="kpi-grid mb-8">
+    <div class="kpi-grid mb-6">
       @for (_ of [1,2,3,4,5]; track $index) {
         <div class="kpi-card" style="min-height: 96px;">
-          <div class="w-11 h-11 rounded-xl flex-shrink-0 animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+          <div class="w-11 h-11 rounded-full flex-shrink-0 animate-pulse" style="background: var(--bg-subtle-sm);"></div>
           <div class="flex-1 space-y-2.5 pt-0.5">
             <div class="h-6 w-12 rounded-lg animate-pulse" style="background: var(--bg-subtle-sm);"></div>
             <div class="h-3 w-28 rounded-lg animate-pulse" style="background: var(--bg-subtle-sm);"></div>
@@ -26,11 +53,11 @@
       }
     </div>
   } @else {
-    <div class="kpi-grid mb-8">
+    <div class="kpi-grid mb-6">
 
       <!-- Employees -->
       <a routerLink="/dashboard/manager/branches" class="kpi-card kpi-card-link">
-        <div class="kpi-icon" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
+        <div class="kpi-icon kpi-icon-ring" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
@@ -47,7 +74,7 @@
 
       <!-- Branches -->
       <a routerLink="/dashboard/manager/branches" class="kpi-card kpi-card-link">
-        <div class="kpi-icon" style="background: linear-gradient(135deg, #0891b2, #06b6d4);">
+        <div class="kpi-icon kpi-icon-ring" style="background: linear-gradient(135deg, #0891b2, #06b6d4);">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
@@ -64,7 +91,7 @@
 
       <!-- Devices -->
       <a routerLink="/dashboard/manager/devices" class="kpi-card kpi-card-link">
-        <div class="kpi-icon" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
+        <div class="kpi-icon kpi-icon-ring" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z"/>
@@ -81,7 +108,7 @@
 
       <!-- Today's Punches -->
       <a routerLink="/dashboard/manager/adms-logs" class="kpi-card kpi-card-link">
-        <div class="kpi-icon" style="background: linear-gradient(135deg, #059669, #10b981);">
+        <div class="kpi-icon kpi-icon-ring" style="background: linear-gradient(135deg, #059669, #10b981);">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -98,7 +125,7 @@
 
       <!-- Payroll -->
       <a routerLink="/dashboard/manager/payroll" class="kpi-card kpi-card-link">
-        <div class="kpi-icon" style="background: linear-gradient(135deg, #be123c, #f43f5e);">
+        <div class="kpi-icon kpi-icon-ring" style="background: linear-gradient(135deg, #be123c, #f43f5e);">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3M3.75 18h16.5a1.5 1.5 0 0 0 1.5-1.5V7.5a1.5 1.5 0 0 0-1.5-1.5H3.75a1.5 1.5 0 0 0-1.5 1.5v9a1.5 1.5 0 0 0 1.5 1.5Z"/>
@@ -116,109 +143,178 @@
     </div>
   }
 
-  <!-- ── Main grid: Attendance (left) + Chart & Actions (right) ───────────── -->
+  <!-- ── Main grid: Attendance (left) + Calendar & Actions (right) ────────── -->
   <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
 
     <!-- ── Attendance Today (3 cols) ───────────────────────────────────────── -->
-    <div class="lg:col-span-3 admin-card flex flex-col">
+    <div class="lg:col-span-3 flex flex-col gap-5">
+      <div class="admin-card flex flex-col">
 
-      <!-- Header -->
-      <div class="flex items-center justify-between px-5 pt-5 pb-4">
-        <div>
-          <h2 class="font-bold text-base" style="color: var(--text-base);">
-            {{ 'manager.overview.todayAttendance' | translate }}
-          </h2>
-          <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ todayDate() }}</p>
+        <!-- Header -->
+        <div class="flex items-center justify-between px-5 pt-5 pb-4">
+          <div>
+            <h2 class="font-bold text-base" style="color: var(--text-base);">
+              {{ 'manager.overview.todayAttendance' | translate }}
+            </h2>
+            <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ todayDate() }}</p>
+          </div>
+          <a routerLink="/dashboard/manager/adms-logs"
+            class="text-xs font-semibold flex items-center gap-1 transition-opacity hover:opacity-70"
+            style="color: var(--nav-accent);">
+            {{ 'manager.overview.viewAll' | translate }}
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
+            </svg>
+          </a>
         </div>
-        <a routerLink="/dashboard/manager/adms-logs"
-          class="text-xs font-semibold flex items-center gap-1 transition-opacity hover:opacity-70"
-          style="color: var(--nav-accent);">
-          {{ 'manager.overview.viewAll' | translate }}
-          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
-          </svg>
-        </a>
+
+        <!-- Ring + stats strip -->
+        @if (!loading() && attendanceSummary()) {
+          <div class="attendance-ring-row px-5 pb-4" style="border-bottom: 1px solid var(--border);">
+            <div class="attendance-ring-wrap">
+              <svg viewBox="0 0 80 80" width="80" height="80">
+                <circle cx="40" cy="40" r="34" fill="none" stroke="var(--bg-subtle-md)" stroke-width="7"/>
+                <circle class="attendance-ring-fill" cx="40" cy="40" r="34" fill="none" stroke="var(--nav-accent)" stroke-width="7"
+                  stroke-linecap="round" [attr.stroke-dasharray]="2 * 3.14159 * 34" [attr.stroke-dashoffset]="ringDashOffset()"/>
+              </svg>
+              <span class="attendance-ring-label">{{ attendanceSummary()!.rate }}%</span>
+            </div>
+            <div class="flex-1 grid grid-cols-3 gap-2">
+              <div class="attendance-stat">
+                <span class="attendance-stat-num present">{{ attendanceSummary()!.presentCount }}</span>
+                <span class="attendance-stat-label">{{ 'manager.overview.present' | translate }}</span>
+              </div>
+              <div class="attendance-stat">
+                <span class="attendance-stat-num late">{{ attendanceSummary()!.lateCount }}</span>
+                <span class="attendance-stat-label">{{ 'manager.overview.late' | translate }}</span>
+              </div>
+              <div class="attendance-stat">
+                <span class="attendance-stat-num absent">{{ attendanceSummary()!.absentCount }}</span>
+                <span class="attendance-stat-label">{{ 'manager.overview.absent' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Rows -->
+        @if (loading()) {
+          <div class="px-5 py-4 space-y-3">
+            @for (_ of [1,2,3,4,5]; track $index) {
+              <div class="h-11 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+            }
+          </div>
+        } @else if (attendanceSummary()?.rows?.length === 0) {
+          <div class="empty-state py-8">
+            <div class="empty-state-icon">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <p class="empty-state-title">{{ 'manager.overview.noLogsToday' | translate }}</p>
+          </div>
+        } @else {
+          <div class="divide-y flex-1" style="border-color: var(--border);">
+            @for (row of (attendanceSummary()?.rows ?? []); track row.name) {
+              <div class="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-[var(--bg-surface-2)]">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                  [style.background]="row.status === 'absent' ? 'linear-gradient(135deg, #9ca3af, #6b7280)' : 'linear-gradient(135deg, var(--nav-accent), #7c3aed)'"
+                  style="color: #fff;">
+                  {{ row.name.charAt(0).toUpperCase() }}
+                </div>
+                <span class="flex-1 text-sm font-semibold truncate" style="color: var(--text-base);">
+                  {{ row.name }}
+                </span>
+                @if (row.status === 'late') {
+                  <span class="text-[0.65rem] font-bold px-1.5 py-0.5 rounded-md flex-shrink-0"
+                    style="background: rgba(251,191,36,0.12); color: #d97706;">
+                    {{ 'manager.overview.late' | translate }}
+                  </span>
+                }
+                @if (row.status === 'absent') {
+                  <span class="text-xs font-mono px-2.5 py-1 rounded-lg font-semibold flex-shrink-0"
+                    style="background: rgba(239,68,68,0.1); color: #dc2626;">
+                    {{ 'manager.overview.absent' | translate }}
+                  </span>
+                } @else {
+                  <span class="text-xs font-mono px-2.5 py-1 rounded-lg font-semibold flex-shrink-0"
+                    [style.background]="row.status === 'late' ? 'rgba(251,191,36,0.1)' : 'rgba(16,185,129,0.1)'"
+                    [style.color]="row.status === 'late' ? '#d97706' : '#059669'">
+                    {{ row.time }}
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        }
       </div>
 
-      <!-- Stats strip -->
-      @if (!loading() && attendanceSummary()) {
-        <div class="attendance-stats-row px-5 pb-4" style="border-bottom: 1px solid var(--border);">
-          <div class="attendance-stat">
-            <span class="attendance-stat-num present">{{ attendanceSummary()!.presentCount }}</span>
-            <span class="attendance-stat-label">{{ 'manager.overview.present' | translate }}</span>
-          </div>
-          <div class="attendance-stat">
-            <span class="attendance-stat-num late">{{ attendanceSummary()!.lateCount }}</span>
-            <span class="attendance-stat-label">{{ 'manager.overview.late' | translate }}</span>
-          </div>
-          <div class="attendance-stat">
-            <span class="attendance-stat-num absent">{{ attendanceSummary()!.absentCount }}</span>
-            <span class="attendance-stat-label">{{ 'manager.overview.absent' | translate }}</span>
-          </div>
-          <div class="attendance-bar-col">
-            <div class="attendance-bar-rate-label">{{ attendanceSummary()!.rate }}%</div>
-            <div class="attendance-bar-bg">
-              <div class="attendance-bar-fill" [style.width.%]="attendanceSummary()!.rate"></div>
-            </div>
-          </div>
+      <!-- Recently added employees -->
+      <div class="admin-card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-bold text-sm" style="color: var(--text-base);">
+            {{ 'manager.overview.recentEmployees' | translate }}
+          </h2>
+          <a routerLink="/dashboard/manager/branches"
+            class="text-xs font-semibold flex items-center gap-1 transition-opacity hover:opacity-70"
+            style="color: var(--nav-accent);">
+            {{ 'manager.overview.viewAll' | translate }}
+          </a>
         </div>
-      }
-
-      <!-- Rows -->
-      @if (loading()) {
-        <div class="px-5 py-4 space-y-3">
-          @for (_ of [1,2,3,4,5]; track $index) {
-            <div class="h-11 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
-          }
-        </div>
-      } @else if (attendanceSummary()?.rows?.length === 0) {
-        <div class="empty-state py-8">
-          <div class="empty-state-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
-          </div>
-          <p class="empty-state-title">{{ 'manager.overview.noLogsToday' | translate }}</p>
-        </div>
-      } @else {
-        <div class="divide-y flex-1" style="border-color: var(--border);">
-          @for (row of (attendanceSummary()?.rows ?? []); track row.name) {
-            <div class="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-[var(--bg-surface-2)]">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                [style.background]="row.status === 'absent' ? 'linear-gradient(135deg, #9ca3af, #6b7280)' : 'linear-gradient(135deg, var(--nav-accent), #7c3aed)'"
-                style="color: #fff;">
-                {{ row.name.charAt(0).toUpperCase() }}
+        @if (recentEmployees().length === 0) {
+          <p class="text-xs" style="color: var(--text-faint);">{{ 'manager.overview.noRecentEmployees' | translate }}</p>
+        } @else {
+          <div class="flex flex-col gap-1">
+            @for (e of recentEmployees(); track e.id) {
+              <div class="flex items-center gap-3 py-2">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                  style="background: linear-gradient(135deg, var(--nav-accent), #a855f7); color: #fff;">
+                  {{ employeeName(e).charAt(0).toUpperCase() }}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-semibold truncate" style="color: var(--text-base);">{{ employeeName(e) }}</p>
+                  <p class="text-xs truncate" style="color: var(--text-faint);">{{ e.jobTitle || '—' }}</p>
+                </div>
+                <span class="text-xs flex-shrink-0" style="color: var(--text-very-faint);">{{ employeeAddedDate(e) }}</span>
               </div>
-              <span class="flex-1 text-sm font-semibold truncate" style="color: var(--text-base);">
-                {{ row.name }}
-              </span>
-              @if (row.status === 'late') {
-                <span class="text-[0.65rem] font-bold px-1.5 py-0.5 rounded-md flex-shrink-0"
-                  style="background: rgba(251,191,36,0.12); color: #d97706;">
-                  {{ 'manager.overview.late' | translate }}
-                </span>
-              }
-              @if (row.status === 'absent') {
-                <span class="text-xs font-mono px-2.5 py-1 rounded-lg font-semibold flex-shrink-0"
-                  style="background: rgba(239,68,68,0.1); color: #dc2626;">
-                  {{ 'manager.overview.absent' | translate }}
-                </span>
-              } @else {
-                <span class="text-xs font-mono px-2.5 py-1 rounded-lg font-semibold flex-shrink-0"
-                  [style.background]="row.status === 'late' ? 'rgba(251,191,36,0.1)' : 'rgba(16,185,129,0.1)'"
-                  [style.color]="row.status === 'late' ? '#d97706' : '#059669'">
-                  {{ row.time }}
-                </span>
-              }
-            </div>
-          }
-        </div>
-      }
+            }
+          </div>
+        }
+      </div>
     </div>
 
-    <!-- ── Right column: Chart + Quick Actions (2 cols) ────────────────────── -->
+    <!-- ── Right column: Calendar + Chart + Quick Actions (2 cols) ──────────── -->
     <div class="lg:col-span-2 flex flex-col gap-5">
+
+      <!-- Calendar -->
+      <div class="admin-card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <button (click)="prevMonth()" class="calendar-nav-btn" [attr.aria-label]="'manager.overview.previous' | translate">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/>
+            </svg>
+          </button>
+          <h2 class="font-bold text-sm" style="color: var(--text-base);">{{ calendarLabel() }}</h2>
+          <button (click)="nextMonth()" class="calendar-nav-btn" [attr.aria-label]="'manager.overview.next' | translate">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5 15.75 12l-7.5 7.5"/>
+            </svg>
+          </button>
+        </div>
+        <div class="calendar-weekdays">
+          @for (wd of ['manager.overview.calSun','manager.overview.calMon','manager.overview.calTue','manager.overview.calWed','manager.overview.calThu','manager.overview.calFri','manager.overview.calSat']; track wd) {
+            <span>{{ wd | translate }}</span>
+          }
+        </div>
+        <div class="calendar-grid">
+          @for (cell of calendarDays(); track $index) {
+            <button class="calendar-cell" [class.calendar-cell-today]="cell.isToday" [class.calendar-cell-selected]="cell.isSelected"
+              [disabled]="!cell.day" (click)="selectDay(cell.iso)">
+              {{ cell.day ?? '' }}
+            </button>
+          }
+        </div>
+      </div>
 
       <!-- 7-day chart -->
       @if (chartDays().length) {

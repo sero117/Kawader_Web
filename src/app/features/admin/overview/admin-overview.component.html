@@ -1,18 +1,42 @@
-<!-- Page heading -->
-<div class="mb-7">
-  <h1 class="font-bold text-2xl mb-1" style="color: var(--text-base);">{{ 'admin.overview.title' | translate }}</h1>
-  <p class="text-sm" style="color: var(--text-faint);">{{ 'admin.overview.subtitle' | translate }}</p>
+<!-- ── Welcome banner ───────────────────────────────────────────────────── -->
+<div class="welcome-banner mb-6">
+  <div class="welcome-banner-text">
+    <p class="text-xs font-bold tracking-widest uppercase mb-2 opacity-80">{{ 'admin.overview.subtitle' | translate }}</p>
+    <h1 class="text-2xl font-extrabold mb-2" style="letter-spacing: -0.03em; line-height: 1.3;">
+      {{ 'admin.overview.greeting' | translate }} {{ adminName }} 👋
+    </h1>
+    <p class="text-sm opacity-90 max-w-sm">{{ todayDate }}</p>
+  </div>
+
+  <!-- Person-at-laptop illustration -->
+  <svg class="welcome-banner-illustration" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="100" cy="148" rx="70" ry="8" fill="#000" opacity="0.12"/>
+    <rect x="30" y="112" width="140" height="6" rx="3" fill="#fff" opacity="0.25"/>
+    <path d="M78 78h44v30H78z" fill="#fff" opacity="0.95"/>
+    <rect x="82" y="82" width="36" height="22" fill="#312e81"/>
+    <rect x="88" y="87" width="20" height="3" rx="1.5" fill="#a5b4fc"/>
+    <rect x="88" y="93" width="14" height="3" rx="1.5" fill="#a5b4fc" opacity="0.6"/>
+    <path d="M72 108h56l4 8H68z" fill="#e0e7ff"/>
+    <rect x="88" y="118" width="24" height="6" rx="3" fill="#fff" opacity="0.2"/>
+    <path d="M76 118c0-16 10-26 24-26s24 10 24 26z" fill="#fbbf24"/>
+    <circle cx="100" cy="66" r="15" fill="#fcd9b6"/>
+    <path d="M85 62a15 15 0 0129-6 15 15 0 01-4 20c1-8-2-13-8-15-5 6-12 6-17 1z" fill="#3f2a1d"/>
+    <path d="M84 100c-4 4-6 8-6 12h14c0-6 1-9 3-12z" fill="#fbbf24"/>
+    <path d="M116 100c4 4 6 8 6 12h-14c0-6-1-9-3-12z" fill="#fbbf24"/>
+    <circle class="welcome-hand welcome-hand-1" cx="88" cy="106" r="3.5" fill="#fcd9b6"/>
+    <circle class="welcome-hand welcome-hand-2" cx="112" cy="106" r="3.5" fill="#fcd9b6"/>
+  </svg>
 </div>
 
 <!-- Stats row -->
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
 
   <!-- Total Companies -->
   <div class="stat-card p-6">
     <div class="flex items-center justify-between mb-5">
-      <div class="w-11 h-11 rounded-2xl flex items-center justify-center"
-           style="background: rgba(79,70,229,0.1);">
-        <svg class="w-5 h-5" style="color: var(--nav-accent);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+      <div class="w-11 h-11 rounded-full flex items-center justify-center kpi-icon-ring"
+           style="background: rgba(79,70,229,0.1); color: var(--nav-accent);">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
         </svg>
       </div>
@@ -29,34 +53,30 @@
     <p class="text-sm" style="color: var(--text-faint);">{{ 'admin.overview.totalLabel' | translate }}</p>
   </div>
 
-  <!-- Frozen Companies -->
+  <!-- Active-companies ring -->
   <div class="stat-card p-6">
-    <div class="flex items-center justify-between mb-5">
-      <div class="w-11 h-11 rounded-2xl flex items-center justify-center"
-           style="background: rgba(99,102,241,0.1);">
-        <svg class="w-5 h-5" style="color: rgba(99,102,241,0.85);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18M3 12h18M5.636 5.636l12.728 12.728M18.364 5.636 5.636 18.364"/>
+    <div class="flex items-center gap-4">
+      <div class="attendance-ring-wrap" style="width: 64px; height: 64px; flex-shrink: 0;">
+        <svg viewBox="0 0 80 80" width="64" height="64">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="var(--bg-subtle-md)" stroke-width="7"/>
+          <circle class="attendance-ring-fill" cx="40" cy="40" r="34" fill="none" stroke="#34d399" stroke-width="7"
+            stroke-linecap="round" [attr.stroke-dasharray]="2 * 3.14159 * 34" [attr.stroke-dashoffset]="ringDashOffset()"/>
         </svg>
+        <span class="attendance-ring-label" style="font-size: 0.75rem;">{{ activeRate() }}%</span>
       </div>
-      <span class="text-[10px] font-semibold uppercase tracking-[0.12em] px-2.5 py-1 rounded-lg"
-            style="color: rgba(99,102,241,0.9); background: rgba(99,102,241,0.08);">
-        {{ 'admin.overview.frozenBadge' | translate }}
-      </span>
+      <div>
+        <p class="text-3xl font-black mb-1" style="color: var(--text-base);">{{ frozenCount }}</p>
+        <p class="text-sm" style="color: var(--text-faint);">{{ 'admin.overview.frozenLabel' | translate }}</p>
+      </div>
     </div>
-    @if (loading()) {
-      <div class="h-8 w-14 rounded-lg animate-pulse mb-1.5" style="background: var(--bg-subtle-sm);"></div>
-    } @else {
-      <p class="text-3xl font-black mb-1" style="color: var(--text-base);">{{ frozenCount }}</p>
-    }
-    <p class="text-sm" style="color: var(--text-faint);">{{ 'admin.overview.frozenLabel' | translate }}</p>
   </div>
 
   <!-- Agents -->
   <div class="stat-card p-6">
     <div class="flex items-center justify-between mb-5">
-      <div class="w-11 h-11 rounded-2xl flex items-center justify-center"
-           style="background: rgba(52,211,153,0.1);">
-        <svg class="w-5 h-5" style="color: rgba(52,211,153,0.85);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+      <div class="w-11 h-11 rounded-full flex items-center justify-center kpi-icon-ring"
+           style="background: rgba(52,211,153,0.1); color: rgba(52,211,153,0.85);">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
           <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       </div>
@@ -76,9 +96,9 @@
   <!-- Cards -->
   <div class="stat-card p-6">
     <div class="flex items-center justify-between mb-5">
-      <div class="w-11 h-11 rounded-2xl flex items-center justify-center"
-           style="background: rgba(245,158,11,0.1);">
-        <svg class="w-5 h-5" style="color: rgba(245,158,11,0.85);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+      <div class="w-11 h-11 rounded-full flex items-center justify-center kpi-icon-ring"
+           style="background: rgba(245,158,11,0.1); color: rgba(245,158,11,0.85);">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
           <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
         </svg>
       </div>
@@ -104,9 +124,9 @@
   <!-- Subscriptions -->
   <div class="stat-card p-6">
     <div class="flex items-center justify-between mb-5">
-      <div class="w-11 h-11 rounded-2xl flex items-center justify-center"
-           style="background: rgba(79,70,229,0.1);">
-        <svg class="w-5 h-5" style="color: var(--nav-accent);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+      <div class="w-11 h-11 rounded-full flex items-center justify-center kpi-icon-ring"
+           style="background: rgba(79,70,229,0.1); color: var(--nav-accent);">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
         </svg>
       </div>
@@ -131,56 +151,86 @@
 
 </div>
 
-<!-- Recent companies -->
-<div class="admin-card">
-  <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid var(--border);">
-    <h2 class="font-semibold text-sm" style="color: var(--text-base);">{{ 'admin.overview.recentTitle' | translate }}</h2>
-    <a routerLink="/dashboard/admin/companies" class="text-xs font-semibold transition-colors" style="color: var(--text-faint);"
-       onmouseover="this.style.color='var(--text-base)'" onmouseout="this.style.color='var(--text-faint)'">
-      {{ 'admin.overview.viewAll' | translate }}
-    </a>
+<!-- ── Recent companies (left) + Calendar (right) ──────────────────────────── -->
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+
+  <div class="lg:col-span-3 admin-card">
+    <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid var(--border);">
+      <h2 class="font-semibold text-sm" style="color: var(--text-base);">
+        {{ selectedDate() ? ('admin.overview.filteredTitle' | translate) : ('admin.overview.recentTitle' | translate) }}
+      </h2>
+      <a routerLink="/dashboard/admin/companies" class="text-xs font-semibold transition-colors" style="color: var(--text-faint);"
+         onmouseover="this.style.color='var(--text-base)'" onmouseout="this.style.color='var(--text-faint)'">
+        {{ 'admin.overview.viewAll' | translate }}
+      </a>
+    </div>
+
+    @if (loading()) {
+      <div class="p-6 space-y-3">
+        @for (_ of [1,2,3]; track $index) {
+          <div class="h-11 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+        }
+      </div>
+    } @else if (displayedCompanies().length === 0) {
+      <div class="p-10 text-center">
+        <p class="text-sm" style="color: var(--text-very-faint);">{{ 'admin.overview.noCompanies' | translate }}</p>
+      </div>
+    } @else {
+      <div class="flex flex-col divide-y" style="border-color: var(--border);">
+        @for (c of displayedCompanies(); track c.id) {
+          <div class="flex items-center gap-3 px-6 py-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+              style="background: linear-gradient(135deg, var(--nav-accent), #a855f7); color: #fff;">
+              {{ (c.email ?? c.phoneNumber).charAt(0).toUpperCase() }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold truncate" style="color: var(--text-base);">{{ c.email ?? c.phoneNumber }}</p>
+              <p class="text-xs truncate" style="color: var(--text-faint);">{{ c.phoneNumber }}</p>
+            </div>
+            @if (c.isFrozen) {
+              <span class="text-[10px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full flex-shrink-0"
+                style="color: rgba(99,102,241,0.9); background: rgba(99,102,241,0.08);">{{ 'admin.overview.statusFrozen' | translate }}</span>
+            } @else {
+              <span class="text-[10px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full flex-shrink-0"
+                style="color: rgba(52,211,153,0.9); background: rgba(52,211,153,0.08);">{{ 'admin.overview.statusNotFrozen' | translate }}</span>
+            }
+          </div>
+        }
+      </div>
+    }
   </div>
 
-  @if (loading()) {
-    <div class="p-6 space-y-3">
-      @for (_ of [1,2,3]; track $index) {
-        <div class="h-10 rounded-lg animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+  <!-- Calendar -->
+  <div class="lg:col-span-2 admin-card p-5">
+    <div class="flex items-center justify-between mb-3">
+      <button (click)="prevMonth()" class="calendar-nav-btn" [attr.aria-label]="'admin.overview.previous' | translate">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/>
+        </svg>
+      </button>
+      <h2 class="font-bold text-sm" style="color: var(--text-base);">{{ calendarLabel() }}</h2>
+      <button (click)="nextMonth()" class="calendar-nav-btn" [attr.aria-label]="'admin.overview.next' | translate">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5 15.75 12l-7.5 7.5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="calendar-weekdays">
+      @for (wd of ['admin.overview.calSun','admin.overview.calMon','admin.overview.calTue','admin.overview.calWed','admin.overview.calThu','admin.overview.calFri','admin.overview.calSat']; track wd) {
+        <span>{{ wd | translate }}</span>
       }
     </div>
-  } @else if (companies().length === 0) {
-    <div class="p-10 text-center">
-      <p class="text-sm" style="color: var(--text-very-faint);">{{ 'admin.overview.noCompanies' | translate }}</p>
+    <div class="calendar-grid">
+      @for (cell of calendarDays(); track $index) {
+        <button class="calendar-cell" [class.calendar-cell-today]="cell.isToday" [class.calendar-cell-selected]="cell.isSelected"
+          [disabled]="!cell.day" (click)="selectDay(cell.iso)">
+          {{ cell.day ?? '' }}
+        </button>
+      }
     </div>
-  } @else {
-    <div class="overflow-x-auto">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>{{ 'admin.overview.colId' | translate }}</th>
-          <th>{{ 'admin.overview.colPhone' | translate }}</th>
-          <th>{{ 'admin.overview.colEmail' | translate }}</th>
-          <th>{{ 'admin.overview.colStatus' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (c of companies().slice(0, 5); track c.id) {
-          <tr>
-            <td class="font-mono text-xs" style="color: var(--text-faint);">{{ c.id }}</td>
-            <td style="color: var(--text-muted);">{{ c.phoneNumber }}</td>
-            <td style="color: var(--text-faint);">{{ c.email ?? '—' }}</td>
-            <td>
-              @if (c.isFrozen) {
-                <span class="text-[10px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full"
-                  style="color: rgba(99,102,241,0.9); background: rgba(99,102,241,0.08);">{{ 'admin.overview.statusFrozen' | translate }}</span>
-              } @else {
-                <span class="text-[10px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full"
-                  style="color: rgba(52,211,153,0.9); background: rgba(52,211,153,0.08);">{{ 'admin.overview.statusNotFrozen' | translate }}</span>
-              }
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-    </div>
-  }
+    @if (selectedDate()) {
+      <p class="text-xs text-center mt-3" style="color: var(--text-faint);">{{ 'admin.overview.calendarHint' | translate }}</p>
+    }
+  </div>
+
 </div>

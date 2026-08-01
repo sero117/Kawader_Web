@@ -6,6 +6,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { AuthService } from '../../../core/services/auth.service';
 import { Role, EmployeeType } from '../../../core/models/auth.models';
 import { EmployeeService } from '../../../core/services/employee.service';
+import { Employee } from '../../../core/models/employee.models';
 import { BranchService } from '../../../core/services/branch.service';
 import { DeviceService } from '../../../core/services/device.service';
 import { AdmsService, AdmsLog } from '../../../core/services/adms.service';
@@ -54,6 +55,64 @@ export class ManagerOverviewComponent implements OnInit {
   } | null>(null);
   recentLogs      = signal<AdmsLog[]>([]);
   chartDays       = signal<{ label: string; count: number; heightPx: number }[]>([]);
+  recentEmployees = signal<Employee[]>([]);
+
+  // ── Attendance rate as a ring (circumference-based dash offset) ────────────
+  private readonly ringCircumference = 2 * Math.PI * 34;
+  readonly ringDashOffset = computed(() => {
+    const rate = this.attendanceSummary()?.rate ?? 0;
+    return this.ringCircumference * (1 - rate / 100);
+  });
+
+  // ── Month calendar — picking a day re-anchors the 7-day punch chart ────────
+  private allLogsCache: AdmsLog[] = [];
+  selectedDate    = signal(this.companyTime.toCompanyTime());
+  calendarCursor  = signal(this.companyTime.toCompanyTime());
+
+  readonly calendarLabel = computed(() =>
+    this.calendarCursor().toLocaleDateString('ar-SA', { month: 'long', year: 'numeric', timeZone: 'UTC' }),
+  );
+
+  readonly calendarDays = computed(() => {
+    const cursor = this.calendarCursor();
+    const year = cursor.getUTCFullYear();
+    const month = cursor.getUTCMonth();
+    const firstOfMonth = new Date(Date.UTC(year, month, 1));
+    const startWeekday = firstOfMonth.getUTCDay(); // 0=Sun
+    const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    const selectedIso = this.isoOf(this.selectedDate());
+    const todayIso = this.companyTime.todayIso();
+
+    const cells: { day: number | null; iso: string | null; isToday: boolean; isSelected: boolean }[] = [];
+    for (let i = 0; i < startWeekday; i++) cells.push({ day: null, iso: null, isToday: false, isSelected: false });
+    for (let d = 1; d <= daysInMonth; d++) {
+      const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      cells.push({ day: d, iso, isToday: iso === todayIso, isSelected: iso === selectedIso });
+    }
+    return cells;
+  });
+
+  private isoOf(d: Date): string {
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+  }
+
+  prevMonth(): void {
+    const c = this.calendarCursor();
+    this.calendarCursor.set(new Date(Date.UTC(c.getUTCFullYear(), c.getUTCMonth() - 1, 1)));
+  }
+
+  nextMonth(): void {
+    const c = this.calendarCursor();
+    this.calendarCursor.set(new Date(Date.UTC(c.getUTCFullYear(), c.getUTCMonth() + 1, 1)));
+  }
+
+  selectDay(iso: string | null): void {
+    if (!iso) return;
+    const [y, m, d] = iso.split('-').map(Number);
+    const picked = new Date(Date.UTC(y, m - 1, d));
+    this.selectedDate.set(picked);
+    this.buildChart(picked);
+  }
 
   readonly quickActions = [
     {
@@ -93,7 +152,8 @@ export class ManagerOverviewComponent implements OnInit {
       devices:   isHr ? of(null) : this.devSvc.getAll(1, 1).pipe(catchError(() => of(null))),
       logs:      isHr ? of(null) : this.admsSvc.getLogs().pipe(catchError(() => of(null))),
       payrolls:  this.payrollSvc.getAll({ pageNumber: 1, pageSize: 1 }).pipe(catchError(() => of(null))),
-    }).subscribe(({ employees, branches, devices, logs, payrolls }) => {
+      employeeList: this.empSvc.getAll({ pageNumber: 1, pageSize: 50 }).pipe(catchError(() => of(null))),
+    }).subscribe(({ employees, branches, devices, logs, payrolls, employeeList }) => {
       const latestRun = payrolls?.items?.[0];
       if (latestRun) {
         this.payrollSvc.getById(latestRun.id, undefined, true).subscribe({
@@ -115,9 +175,22 @@ export class ManagerOverviewComponent implements OnInit {
       const devRes = (devices as any)?.data ?? devices;
       this.deviceCount.set(devRes?.totalCount ?? devRes?.items?.length ?? null);
 
+      // Recently added employees — sorted client-side by createdAt, newest first.
+      const empListRaw = (employeeList as any)?.data ?? employeeList;
+      const fullEmployees: Employee[] = Array.isArray(empListRaw)
+        ? empListRaw
+        : (empListRaw?.items ?? empListRaw?.data ?? []);
+      this.recentEmployees.set(
+        [...fullEmployees]
+          .filter(e => !!e.createdAt)
+          .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
+          .slice(0, 5),
+      );
+
       const allLogs: AdmsLog[] = Array.isArray(logs)
         ? logs
         : ((logs as any)?.data?.items ?? (logs as any)?.data ?? (logs as any)?.items ?? []);
+      this.allLogsCache = allLogs;
       const todayLogs = allLogs.filter(l =>
         (l.punchTime ?? l.timestamp ?? l.time ?? '').startsWith(todayIso),
       );
@@ -158,29 +231,7 @@ export class ManagerOverviewComponent implements OnInit {
         rows:        [...sumRows, ...absentRows].slice(0, 12),
       });
 
-      // Build 7-day chart — anchored to the company's own "today", not the
-      // viewer's, so the bars line up with the same dates attendance uses.
-      const last7 = Array.from({ length: 7 }, (_, i) => {
-        const d = this.companyTime.toCompanyTime();
-        d.setUTCDate(d.getUTCDate() - (6 - i));
-        const iso = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
-        return {
-          iso,
-          label: d.toLocaleDateString('ar-SA', { weekday: 'short', timeZone: 'UTC' }),
-          count: 0,
-        };
-      });
-      for (const log of allLogs) {
-        const t = log.punchTime ?? log.timestamp ?? log.time ?? '';
-        const slot = last7.find(d => t.startsWith(d.iso));
-        if (slot) slot.count++;
-      }
-      const maxCount = Math.max(1, ...last7.map(d => d.count));
-      this.chartDays.set(last7.map(d => ({
-        label:    d.label,
-        count:    d.count,
-        heightPx: d.count === 0 ? 3 : Math.max(8, Math.round((d.count / maxCount) * 100)),
-      })));
+      this.buildChart(this.companyTime.toCompanyTime());
 
       this.loading.set(false);
       if (this.employeeCount()   !== null) this.countUp(v => this.displayEmployee.set(v), this.employeeCount()!);
@@ -188,6 +239,32 @@ export class ManagerOverviewComponent implements OnInit {
       if (this.deviceCount()     !== null) this.countUp(v => this.displayDevice.set(v),   this.deviceCount()!);
       if (this.todayPunchCount() !== null) this.countUp(v => this.displayPunch.set(v),    this.todayPunchCount()!);
     });
+  }
+
+  /** 7-day punch chart ending on `anchor` — re-run whenever the calendar
+   *  selection changes, reusing the already-fetched logs (no new request). */
+  private buildChart(anchor: Date): void {
+    const last7 = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(anchor);
+      d.setUTCDate(d.getUTCDate() - (6 - i));
+      const iso = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+      return {
+        iso,
+        label: d.toLocaleDateString('ar-SA', { weekday: 'short', timeZone: 'UTC' }),
+        count: 0,
+      };
+    });
+    for (const log of this.allLogsCache) {
+      const t = log.punchTime ?? log.timestamp ?? log.time ?? '';
+      const slot = last7.find(d => t.startsWith(d.iso));
+      if (slot) slot.count++;
+    }
+    const maxCount = Math.max(1, ...last7.map(d => d.count));
+    this.chartDays.set(last7.map(d => ({
+      label:    d.label,
+      count:    d.count,
+      heightPx: d.count === 0 ? 3 : Math.max(8, Math.round((d.count / maxCount) * 100)),
+    })));
   }
 
   private countUp(setter: (v: number) => void, target: number, duration = 900): void {
@@ -215,5 +292,15 @@ export class ManagerOverviewComponent implements OnInit {
 
   logName(log: AdmsLog): string {
     return log.employeeName ?? log.deviceEmployeeNumber ?? log.number ?? '—';
+  }
+
+  employeeName(e: Employee): string {
+    return `${e.firstName} ${e.lastName}`.trim();
+  }
+
+  employeeAddedDate(e: Employee): string {
+    if (!e.createdAt) return '—';
+    try { return this.companyTime.formatDate(e.createdAt, 'ar-SA', { month: 'short', day: 'numeric' }); }
+    catch { return e.createdAt.substring(0, 10); }
   }
 }
