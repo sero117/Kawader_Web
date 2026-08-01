@@ -5,6 +5,8 @@ import { CompanyService } from '../../../core/services/company.service';
 import { AgentService } from '../../../core/services/agent.service';
 import { CardService } from '../../../core/services/card.service';
 import { SubscriptionService } from '../../../core/services/subscription.service';
+import { CountryService } from '../../../core/services/country.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { Company } from '../../../core/models/company.models';
@@ -24,6 +26,8 @@ export class AdminOverviewComponent implements OnInit {
   private readonly agentService        = inject(AgentService);
   private readonly cardService         = inject(CardService);
   private readonly subscriptionService = inject(SubscriptionService);
+  private readonly countryService      = inject(CountryService);
+  private readonly currencyService     = inject(CurrencyService);
   private readonly auth                = inject(AuthService);
 
   readonly adminName = this.auth.getDisplayName();
@@ -31,19 +35,13 @@ export class AdminOverviewComponent implements OnInit {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
-  companies   = signal<Company[]>([]);
-  loading     = signal(true);
-  agentCount  = signal<number | null>(null);
-  cardCounts  = signal<StatusCounts | null>(null);
-  subCounts   = signal<StatusCounts | null>(null);
-
-  // ── Active-companies ratio, as a ring ──────────────────────────────────────
-  private readonly ringCircumference = 2 * Math.PI * 34;
-  readonly activeRate = computed(() => {
-    const t = this.total;
-    return t > 0 ? Math.round(((t - this.frozenCount) / t) * 100) : 0;
-  });
-  readonly ringDashOffset = computed(() => this.ringCircumference * (1 - this.activeRate() / 100));
+  companies      = signal<Company[]>([]);
+  loading        = signal(true);
+  agentCount     = signal<number | null>(null);
+  cardCounts     = signal<StatusCounts | null>(null);
+  subCounts      = signal<StatusCounts | null>(null);
+  countryCount   = signal<number | null>(null);
+  currencyCount  = signal<number | null>(null);
 
   // ── Month calendar — picking a day filters "recent companies" by that date ─
   selectedDate   = signal<Date | null>(null);
@@ -96,6 +94,16 @@ export class AdminOverviewComponent implements OnInit {
     this.selectedDate.set(new Date(y, m - 1, d));
   }
 
+  /** createdAt from the API is a UTC instant — bucket it by the viewer's own
+   *  local calendar day (matching how "today" is highlighted below), not by
+   *  the raw UTC date string, or a company created late at night would land
+   *  under the wrong day. */
+  private localIsoOf(createdAt: string | null | undefined): string | null {
+    if (!createdAt) return null;
+    const d = new Date(createdAt);
+    return Number.isNaN(d.getTime()) ? null : this.isoOf(d);
+  }
+
   /** Recent-companies list — filtered to the selected calendar day if one is
    *  picked, otherwise the 5 most recent by createdAt. No extra requests:
    *  both views reuse the single already-fetched company list. */
@@ -108,7 +116,7 @@ export class AdminOverviewComponent implements OnInit {
         .slice(0, 5);
     }
     const iso = this.isoOf(selected);
-    return all.filter(c => (c.createdAt ?? '').startsWith(iso));
+    return all.filter(c => this.localIsoOf(c.createdAt) === iso);
   });
 
   ngOnInit(): void {
@@ -137,6 +145,16 @@ export class AdminOverviewComponent implements OnInit {
     this.agentService.getAll({ pageNumber: 1, pageSize: 1 }, true).subscribe({
       next: res => this.agentCount.set(res?.totalCount ?? 0),
       error: () => this.agentCount.set(null),
+    });
+
+    this.countryService.getAll({ pageNumber: 1, pageSize: 1 }).subscribe({
+      next: res => this.countryCount.set(res?.totalCount ?? 0),
+      error: () => this.countryCount.set(null),
+    });
+
+    this.currencyService.getAll({ pageNumber: 1, pageSize: 1 }).subscribe({
+      next: res => this.currencyCount.set(res?.totalCount ?? 0),
+      error: () => this.currencyCount.set(null),
     });
 
     forkJoin([

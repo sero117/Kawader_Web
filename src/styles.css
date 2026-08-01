@@ -1367,38 +1367,34 @@ select option {
   overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 1.5rem;
-  padding: 1.75rem 2rem;
+  padding: 1.5rem 2rem;
   border-radius: 1.25rem;
-  background: linear-gradient(120deg, #4f46e5 0%, #7c3aed 100%);
-  color: #fff;
-  box-shadow: 0 12px 32px -14px rgba(79, 70, 229, 0.55);
+  background: color-mix(in srgb, var(--nav-accent) 10%, var(--bg-surface));
+  border: 1px solid color-mix(in srgb, var(--nav-accent) 18%, var(--border));
+  color: var(--text-base);
 }
 
 .welcome-banner-text { position: relative; z-index: 1; flex: 1; min-width: 0; }
 
-.welcome-banner-illustration {
-  width: 160px;
-  height: 128px;
-  flex-shrink: 0;
-  display: none;
+/* ── Overview: inline (non-card) quick-stat chips ────────────────── */
+
+.quick-stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  background: var(--bg-subtle-sm);
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-base);
 }
 
-@media (min-width: 640px) {
-  .welcome-banner-illustration { display: block; }
-}
+.quick-stat-chip svg { width: 16px; height: 16px; color: var(--nav-accent); flex-shrink: 0; }
 
-.welcome-hand {
-  animation: welcome-type-bounce 0.7s ease-in-out infinite;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-.welcome-hand-2 { animation-delay: 0.35s; }
-@keyframes welcome-type-bounce {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-2px); }
-}
+.quick-stat-chip b { font-weight: 800; }
 
 /* ── Overview: circular KPI icon ring ────────────────────────────── */
 
