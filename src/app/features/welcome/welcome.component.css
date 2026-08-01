@@ -133,6 +133,22 @@
   50%      { opacity: 1; }
 }
 
+.wc-laptop-neon {
+  animation: wc-neon-pulse 2.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--nav-accent) 70%, transparent));
+}
+@keyframes wc-neon-pulse {
+  0%, 100% { opacity: 0.65; }
+  50%      { opacity: 1; }
+}
+
+/* ── Quick facts bar ──────────────────────────────────────────────── */
+.wc-facts-bar {
+  background: linear-gradient(120deg, color-mix(in srgb, var(--nav-accent) 8%, var(--bg-subtle-sm)), color-mix(in srgb, #a855f7 8%, var(--bg-subtle-sm)));
+  animation: wc-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.5s;
+}
+
 /* ── Feature cards ────────────────────────────────────────────────── */
 .wc-card {
   animation: wc-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;

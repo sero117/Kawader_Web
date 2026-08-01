@@ -88,6 +88,11 @@
                 <stop offset="0%" stop-color="var(--bg-subtle-md)"/>
                 <stop offset="100%" stop-color="var(--bg-subtle-sm)"/>
               </linearGradient>
+              <linearGradient id="wcNeonEdge" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#34d399"/>
+                <stop offset="55%" stop-color="var(--nav-accent)"/>
+                <stop offset="100%" stop-color="#a855f7"/>
+              </linearGradient>
             </defs>
 
             <g class="wc-orbit" opacity="0.55">
@@ -95,7 +100,10 @@
               <circle cx="190" cy="212" r="3.5" fill="#a855f7"/>
             </g>
 
-            <ellipse class="wc-laptop-glow" cx="190" cy="95" rx="150" ry="90" fill="url(#wcScreenGlow)"/>
+            <ellipse class="wc-laptop-glow" cx="190" cy="95" rx="160" ry="95" fill="url(#wcScreenGlow)"/>
+
+            <!-- Neon edge glow -->
+            <rect class="wc-laptop-neon" x="63" y="16" width="254" height="166" rx="16" fill="none" stroke="url(#wcNeonEdge)" stroke-width="2.5" opacity="0.8"/>
 
             <!-- Screen bezel -->
             <rect x="65" y="18" width="250" height="162" rx="14" fill="#111827"/>
@@ -143,6 +151,45 @@
           </svg>
         </div>
        </div>
+      </div>
+    </section>
+
+    <!-- Quick facts bar -->
+    <section class="px-5 sm:px-10 pb-16 max-w-4xl mx-auto">
+      <div class="wc-facts-bar grid grid-cols-1 sm:grid-cols-3 gap-6 rounded-3xl px-8 py-8" style="border: 1px solid var(--bg-subtle-md);">
+        <div class="flex items-center gap-3 justify-center">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: rgba(52,211,153,0.14); color: #34d399;">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-sm" style="color: var(--auth-fg);">{{ 'welcome.facts.uptime.title' | translate }}</p>
+            <p class="text-[11px]" style="color: var(--auth-fg-35, rgba(255,255,255,0.5));">{{ 'welcome.facts.uptime.desc' | translate }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 justify-center">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: rgba(99,102,241,0.14); color: var(--nav-accent);">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-sm" style="color: var(--auth-fg);">{{ 'welcome.facts.employees.title' | translate }}</p>
+            <p class="text-[11px]" style="color: var(--auth-fg-35, rgba(255,255,255,0.5));">{{ 'welcome.facts.employees.desc' | translate }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 justify-center">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: rgba(168,85,247,0.14); color: #a855f7;">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-sm" style="color: var(--auth-fg);">{{ 'welcome.facts.timeSaved.title' | translate }}</p>
+            <p class="text-[11px]" style="color: var(--auth-fg-35, rgba(255,255,255,0.5));">{{ 'welcome.facts.timeSaved.desc' | translate }}</p>
+          </div>
+        </div>
       </div>
     </section>
 
