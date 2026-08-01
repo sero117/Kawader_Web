@@ -11,38 +11,38 @@
       [style.animation-duration]="s.duration" [style.animation-delay]="s.delay">✦</span>
   }
 
+  <!-- Floating header -->
+  <header class="wc-header fixed top-4 inset-x-4 sm:inset-x-10 z-30 flex items-center justify-between px-5 sm:px-7 py-3 rounded-2xl"
+    style="background: color-mix(in srgb, var(--auth-bg) 68%, transparent); backdrop-filter: blur(14px); border: 1px solid var(--bg-subtle-md);">
+    <a routerLink="/" class="flex items-center gap-2.5">
+      <svg width="30" height="30" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="96" height="96" rx="28" fill="var(--nav-accent)"/>
+        <g fill="#FFFFFF">
+          <g opacity="0.72"><circle cx="31" cy="45" r="7"/><rect x="24" y="53" width="14" height="25" rx="7"/></g>
+          <g opacity="0.72"><circle cx="69" cy="45" r="7"/><rect x="62" y="53" width="14" height="25" rx="7"/></g>
+          <circle cx="50" cy="37" r="9.5"/><rect x="38.5" y="48" width="23" height="32" rx="11.5"/>
+        </g>
+      </svg>
+      <span class="font-bold text-lg" style="color: var(--auth-fg);">{{ 'brand.name' | translate }}</span>
+    </a>
+
+    <nav class="flex items-center gap-2 sm:gap-3">
+      <a routerLink="/" class="hidden sm:inline text-sm font-semibold px-2" style="color: var(--auth-fg);">
+        {{ 'welcome.nav.main' | translate }}
+      </a>
+      <app-language-switcher />
+      <app-theme-switcher />
+      <a routerLink="/auth/login" class="wc-btn-primary text-sm font-bold px-4 py-2 rounded-xl"
+        style="background: var(--nav-accent); color: #fff;">
+        {{ 'welcome.nav.login' | translate }}
+      </a>
+    </nav>
+  </header>
+
   <div class="relative z-10">
 
-    <!-- Header -->
-    <header class="wc-header sticky top-0 z-20 flex items-center justify-between px-5 sm:px-10 py-4"
-      style="background: color-mix(in srgb, var(--auth-bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--bg-subtle-sm);">
-      <a routerLink="/" class="flex items-center gap-2.5">
-        <svg width="34" height="34" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="2" width="96" height="96" rx="28" fill="var(--nav-accent)"/>
-          <g fill="#FFFFFF">
-            <g opacity="0.72"><circle cx="31" cy="45" r="7"/><rect x="24" y="53" width="14" height="25" rx="7"/></g>
-            <g opacity="0.72"><circle cx="69" cy="45" r="7"/><rect x="62" y="53" width="14" height="25" rx="7"/></g>
-            <circle cx="50" cy="37" r="9.5"/><rect x="38.5" y="48" width="23" height="32" rx="11.5"/>
-          </g>
-        </svg>
-        <span class="font-bold text-xl" style="color: var(--auth-fg);">{{ 'brand.name' | translate }}</span>
-      </a>
-
-      <nav class="flex items-center gap-2 sm:gap-4">
-        <a routerLink="/" class="text-sm font-semibold px-2" style="color: var(--auth-fg);">
-          {{ 'welcome.nav.main' | translate }}
-        </a>
-        <app-language-switcher />
-        <app-theme-switcher />
-        <a routerLink="/auth/login" class="wc-btn-primary text-sm font-bold px-4 py-2 rounded-xl"
-          style="background: var(--nav-accent); color: #fff;">
-          {{ 'welcome.nav.login' | translate }}
-        </a>
-      </nav>
-    </header>
-
     <!-- Hero -->
-    <section class="px-5 sm:px-10 pt-14 sm:pt-20 pb-16 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+    <section class="px-5 sm:px-10 pt-28 sm:pt-32 pb-16 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
       <div class="text-center lg:text-start">
         <h1 class="wc-hero-title font-bold text-3xl sm:text-5xl leading-tight tracking-tight" style="color: var(--auth-fg);">
           <span class="auth-word" style="animation-delay:0.05s">{{ 'welcome.hero.titleLine1' | translate }}</span>
@@ -66,39 +66,47 @@
         </div>
       </div>
 
-      <!-- Illustration -->
-      <div class="wc-illustration relative mx-auto" style="width: 340px; height: 280px;">
-        <svg viewBox="0 0 380 300" width="340" height="280" xmlns="http://www.w3.org/2000/svg">
-          <g class="wc-orbit" opacity="0.55">
-            <circle cx="190" cy="30" r="5" fill="var(--nav-accent)"/>
-            <circle cx="190" cy="270" r="4" fill="#a855f7"/>
-          </g>
-          <circle cx="190" cy="150" r="118" fill="none" stroke="var(--bg-subtle-md)" stroke-width="1.5" stroke-dasharray="3 7"/>
+      <!-- 3D Illustration -->
+      <div class="wc-illustration-scene relative mx-auto" style="width: 340px; height: 280px;">
+       <div class="wc-illustration-float relative w-full h-full">
+        <div #illustrationHost
+          class="wc-illustration relative w-full h-full"
+          (mousemove)="onIllustrationMove($event)"
+          (mouseleave)="resetIllustrationTilt()"
+          [style.transform]="'rotateX(' + tiltX() + 'deg) rotateY(' + tiltY() + 'deg)'">
+          <svg viewBox="0 0 380 300" width="340" height="280" xmlns="http://www.w3.org/2000/svg">
+            <g class="wc-orbit" opacity="0.55">
+              <circle cx="190" cy="30" r="5" fill="var(--nav-accent)"/>
+              <circle cx="190" cy="270" r="4" fill="#a855f7"/>
+            </g>
+            <circle cx="190" cy="150" r="118" fill="none" stroke="var(--bg-subtle-md)" stroke-width="1.5" stroke-dasharray="3 7"/>
 
-          <!-- back card -->
-          <g class="wc-illustration-card wc-illustration-card-back" transform="rotate(-7 150 150)">
-            <rect x="60" y="70" width="180" height="150" rx="20" fill="var(--nav-accent)" opacity="0.16"/>
-          </g>
+            <!-- back card -->
+            <g class="wc-illustration-card wc-illustration-card-back">
+              <rect x="60" y="70" width="180" height="150" rx="20" fill="var(--nav-accent)" opacity="0.16"/>
+            </g>
 
-          <!-- front card -->
-          <g class="wc-illustration-card wc-illustration-card-front" transform="rotate(3 210 150)">
-            <rect x="90" y="55" width="200" height="190" rx="20" fill="var(--auth-card)" stroke="var(--bg-subtle-md)" stroke-width="1.5"/>
-            <circle cx="128" cy="95" r="16" fill="var(--nav-accent)" opacity="0.85"/>
-            <rect x="153" y="86" width="70" height="8" rx="4" fill="var(--auth-fg)" opacity="0.7"/>
-            <rect x="153" y="100" width="46" height="6" rx="3" fill="var(--auth-fg)" opacity="0.3"/>
+            <!-- front card -->
+            <g class="wc-illustration-card wc-illustration-card-front">
+              <rect x="90" y="55" width="200" height="190" rx="20" fill="var(--auth-card)" stroke="var(--bg-subtle-md)" stroke-width="1.5"/>
+              <circle cx="128" cy="95" r="16" fill="var(--nav-accent)" opacity="0.85"/>
+              <rect x="153" y="86" width="70" height="8" rx="4" fill="var(--auth-fg)" opacity="0.7"/>
+              <rect x="153" y="100" width="46" height="6" rx="3" fill="var(--auth-fg)" opacity="0.3"/>
 
-            <rect x="112" y="135" width="156" height="1.5" fill="var(--bg-subtle-md)"/>
+              <rect x="112" y="135" width="156" height="1.5" fill="var(--bg-subtle-md)"/>
 
-            <rect x="112" y="155" width="20" height="46" rx="4" fill="#a855f7" opacity="0.55"/>
-            <rect x="140" y="170" width="20" height="31" rx="4" fill="var(--nav-accent)" opacity="0.55"/>
-            <rect x="168" y="148" width="20" height="53" rx="4" fill="#34d399" opacity="0.6"/>
-            <rect x="196" y="178" width="20" height="23" rx="4" fill="#f97316" opacity="0.55"/>
+              <rect x="112" y="155" width="20" height="46" rx="4" fill="#a855f7" opacity="0.55"/>
+              <rect x="140" y="170" width="20" height="31" rx="4" fill="var(--nav-accent)" opacity="0.55"/>
+              <rect x="168" y="148" width="20" height="53" rx="4" fill="#34d399" opacity="0.6"/>
+              <rect x="196" y="178" width="20" height="23" rx="4" fill="#f97316" opacity="0.55"/>
 
-            <circle cx="252" cy="172" r="22" fill="none" stroke="var(--nav-accent)" stroke-width="4" opacity="0.85"
-              stroke-dasharray="94" stroke-dashoffset="24" stroke-linecap="round" transform="rotate(-90 252 172)"/>
-            <path d="M243 172l6 6 12 -13" fill="none" stroke="var(--nav-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </g>
-        </svg>
+              <circle cx="252" cy="172" r="22" fill="none" stroke="var(--nav-accent)" stroke-width="4" opacity="0.85"
+                stroke-dasharray="94" stroke-dashoffset="24" stroke-linecap="round" transform="rotate(-90 252 172)"/>
+              <path d="M243 172l6 6 12 -13" fill="none" stroke="var(--nav-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+          </svg>
+        </div>
+       </div>
       </div>
     </section>
 
@@ -149,6 +157,202 @@
       </div>
     </section>
 
+    <!-- Product previews -->
+    <section class="px-5 sm:px-10 pb-20 max-w-6xl mx-auto">
+      <h2 class="text-center font-bold text-2xl mb-2" style="color: var(--auth-fg);">{{ 'welcome.previews.title' | translate }}</h2>
+      <p class="text-center text-sm mb-10" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.previews.subtitle' | translate }}</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <!-- Employees -->
+        <div class="wc-preview rounded-2xl overflow-hidden" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="p-4" style="background: var(--auth-card);">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="w-2 h-2 rounded-full" style="background:#f97316"></span>
+              <span class="w-2 h-2 rounded-full" style="background:#eab308"></span>
+              <span class="w-2 h-2 rounded-full" style="background:#34d399"></span>
+            </div>
+            @for (row of [1,2,3]; track row) {
+              <div class="flex items-center gap-2.5 py-1.5">
+                <div class="w-7 h-7 rounded-full flex-shrink-0" [style.background]="row === 1 ? 'var(--nav-accent)' : row === 2 ? '#a855f7' : '#34d399'" style="opacity:0.8"></div>
+                <div class="flex-1">
+                  <div class="h-2 rounded-full mb-1" style="width: 70%; background: var(--auth-fg); opacity:0.55;"></div>
+                  <div class="h-1.5 rounded-full" style="width: 40%; background: var(--auth-fg); opacity:0.22;"></div>
+                </div>
+                <span class="w-1.5 h-1.5 rounded-full" style="background:#34d399"></span>
+              </div>
+            }
+          </div>
+          <div class="px-4 py-3 flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(99,102,241,0.14); color: var(--nav-accent);">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-xs" style="color: var(--auth-fg);">{{ 'welcome.previews.employees.title' | translate }}</h4>
+              <p class="text-[11px]" style="color: var(--auth-fg-35, rgba(255,255,255,0.5));">{{ 'welcome.previews.employees.desc' | translate }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendance -->
+        <div class="wc-preview rounded-2xl overflow-hidden" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="p-4" style="background: var(--auth-card);">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="w-2 h-2 rounded-full" style="background:#f97316"></span>
+              <span class="w-2 h-2 rounded-full" style="background:#eab308"></span>
+              <span class="w-2 h-2 rounded-full" style="background:#34d399"></span>
+            </div>
+            @for (row of [0,1,2]; track row) {
+              <div class="flex items-center justify-between py-1.5">
+                <div class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full" [style.background]="row === 1 ? '#ef4444' : '#34d399'"></span>
+                  <div class="h-2 rounded-full" style="width: 60px; background: var(--auth-fg); opacity:0.45;"></div>
+                </div>
+                <div class="h-2 rounded-full" style="width: 34px; background: var(--nav-accent); opacity:0.5;"></div>
+              </div>
+            }
+          </div>
+          <div class="px-4 py-3 flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(52,211,153,0.14); color: #34d399;">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-xs" style="color: var(--auth-fg);">{{ 'welcome.previews.attendance.title' | translate }}</h4>
+              <p class="text-[11px]" style="color: var(--auth-fg-35, rgba(255,255,255,0.5));">{{ 'welcome.previews.attendance.desc' | translate }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaves -->
+        <div class="wc-preview rounded-2xl overflow-hidden" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="p-4 flex flex-col gap-2" style="background: var(--auth-card);">
+            <div class="flex items-center gap-1 mb-1">
+              <span class="w-2 h-2 rounded-full" style="background:#f97316"></span>
+              <span class="w-2 h-2 rounded-full" style="background:#eab308"></span>
+              <span class="w-2 h-2 rounded-full" style="background:#34d399"></span>
+            </div>
+            <div class="rounded-xl p-2.5" style="background: var(--bg-subtle-sm);">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="h-2 rounded-full" style="width: 70px; background: var(--auth-fg); opacity:0.5;"></div>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md" style="background: rgba(52,211,153,0.18); color:#34d399;">معتمدة</span>
+              </div>
+              <div class="h-1.5 rounded-full" style="width: 45%; background: var(--auth-fg); opacity:0.22;"></div>
+            </div>
+            <div class="rounded-xl p-2.5" style="background: var(--bg-subtle-sm);">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="h-2 rounded-full" style="width: 55px; background: var(--auth-fg); opacity:0.5;"></div>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md" style="background: rgba(234,179,8,0.18); color:#eab308;">قيد الانتظار</span>
+              </div>
+              <div class="h-1.5 rounded-full" style="width: 30%; background: var(--auth-fg); opacity:0.22;"></div>
+            </div>
+          </div>
+          <div class="px-4 py-3 flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(168,85,247,0.14); color: #a855f7;">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-13.5 3h.008v.008H9v-.008zm3 0h.008v.008H12v-.008zm3 0h.008v.008H15v-.008z"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-xs" style="color: var(--auth-fg);">{{ 'welcome.previews.leaves.title' | translate }}</h4>
+              <p class="text-[11px]" style="color: var(--auth-fg-35, rgba(255,255,255,0.5));">{{ 'welcome.previews.leaves.desc' | translate }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payroll -->
+        <div class="wc-preview rounded-2xl overflow-hidden" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="p-4" style="background: var(--auth-card);">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="w-2 h-2 rounded-full" style="background:#f97316"></span>
+              <span class="w-2 h-2 rounded-full" style="background:#eab308"></span>
+              <span class="w-2 h-2 rounded-full" style="background:#34d399"></span>
+            </div>
+            <div class="h-2 rounded-full mb-1.5" style="width: 40%; background: var(--auth-fg); opacity:0.35;"></div>
+            <div class="font-bold text-lg mb-3" style="color: var(--nav-accent);">24,500 <span class="text-[10px] font-semibold" style="color: var(--auth-fg); opacity:0.4;">SAR</span></div>
+            <div class="flex items-end gap-1.5" style="height: 34px;">
+              <div class="wc-bar rounded-t" style="width:14px; height:60%; background:#34d399; opacity:0.6;"></div>
+              <div class="wc-bar rounded-t" style="width:14px; height:100%; background: var(--nav-accent); opacity:0.6;"></div>
+              <div class="wc-bar rounded-t" style="width:14px; height:40%; background:#f97316; opacity:0.6;"></div>
+              <div class="wc-bar rounded-t" style="width:14px; height:75%; background:#a855f7; opacity:0.6;"></div>
+            </div>
+          </div>
+          <div class="px-4 py-3 flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(52,211,153,0.14); color: #34d399;">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-xs" style="color: var(--auth-fg);">{{ 'welcome.previews.payroll.title' | translate }}</h4>
+              <p class="text-[11px]" style="color: var(--auth-fg-35, rgba(255,255,255,0.5));">{{ 'welcome.previews.payroll.desc' | translate }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Incentives -->
+        <div class="wc-preview rounded-2xl overflow-hidden" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="p-4" style="background: var(--auth-card);">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="w-2 h-2 rounded-full" style="background:#f97316"></span>
+              <span class="w-2 h-2 rounded-full" style="background:#eab308"></span>
+              <span class="w-2 h-2 rounded-full" style="background:#34d399"></span>
+            </div>
+            @for (row of [1,2]; track row) {
+              <div class="flex items-center justify-between py-1.5">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background: rgba(234,179,8,0.16);">
+                    <svg class="w-3 h-3" fill="#eab308" viewBox="0 0 20 20"><path d="M10 1l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L1.3 7.4l6.1-.8z"/></svg>
+                  </div>
+                  <div class="h-2 rounded-full" style="width: 55px; background: var(--auth-fg); opacity:0.45;"></div>
+                </div>
+                <span class="text-[10px] font-bold" style="color:#34d399;">+500</span>
+              </div>
+            }
+          </div>
+          <div class="px-4 py-3 flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(234,179,8,0.16); color: #eab308;">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-xs" style="color: var(--auth-fg);">{{ 'welcome.previews.incentives.title' | translate }}</h4>
+              <p class="text-[11px]" style="color: var(--auth-fg-35, rgba(255,255,255,0.5));">{{ 'welcome.previews.incentives.desc' | translate }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Devices / Fingerprints -->
+        <div class="wc-preview rounded-2xl overflow-hidden" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="p-4 flex flex-col items-center justify-center" style="background: var(--auth-card); min-height: 108px;">
+            <div class="relative">
+              <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="var(--nav-accent)" stroke-width="1.5" style="opacity:0.85">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4.052" />
+              </svg>
+              <span class="absolute -top-0.5 -end-1 w-2.5 h-2.5 rounded-full" style="background:#34d399; box-shadow: 0 0 0 3px var(--auth-card);"></span>
+            </div>
+            <span class="text-[10px] font-semibold mt-2" style="color:#34d399;">متصل الآن</span>
+          </div>
+          <div class="px-4 py-3 flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(99,102,241,0.14); color: var(--nav-accent);">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-xs" style="color: var(--auth-fg);">{{ 'welcome.previews.devices.title' | translate }}</h4>
+              <p class="text-[11px]" style="color: var(--auth-fg-35, rgba(255,255,255,0.5));">{{ 'welcome.previews.devices.desc' | translate }}</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- How it works -->
     <section class="px-5 sm:px-10 pb-20 max-w-4xl mx-auto">
       <h2 class="text-center font-bold text-2xl mb-10" style="color: var(--auth-fg);">{{ 'welcome.steps.title' | translate }}</h2>
@@ -170,6 +374,40 @@
             style="background: var(--nav-accent); color: #fff;">3</div>
           <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.steps.three.title' | translate }}</h3>
           <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.steps.three.desc' | translate }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Kawader -->
+    <section class="px-5 sm:px-10 pb-24 max-w-4xl mx-auto">
+      <h2 class="text-center font-bold text-2xl mb-10" style="color: var(--auth-fg);">{{ 'welcome.why.title' | translate }}</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div class="wc-pillar rounded-2xl p-6 text-center" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="w-11 h-11 mx-auto rounded-xl flex items-center justify-center mb-3" style="background: rgba(99,102,241,0.14); color: var(--nav-accent);">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+            </svg>
+          </div>
+          <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.why.security.title' | translate }}</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.why.security.desc' | translate }}</p>
+        </div>
+        <div class="wc-pillar rounded-2xl p-6 text-center" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="w-11 h-11 mx-auto rounded-xl flex items-center justify-center mb-3" style="background: rgba(249,115,22,0.14); color: #f97316;">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
+            </svg>
+          </div>
+          <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.why.speed.title' | translate }}</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.why.speed.desc' | translate }}</p>
+        </div>
+        <div class="wc-pillar rounded-2xl p-6 text-center" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="w-11 h-11 mx-auto rounded-xl flex items-center justify-center mb-3" style="background: rgba(52,211,153,0.14); color: #34d399;">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/>
+            </svg>
+          </div>
+          <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.why.support.title' | translate }}</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.why.support.desc' | translate }}</p>
         </div>
       </div>
     </section>

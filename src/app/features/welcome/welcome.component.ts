@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../../core/components/language-switcher/language-switcher.component';
@@ -27,4 +27,24 @@ export class WelcomeComponent {
     { top: '70%',  left: '-6%',  width: '260px', height: '260px', rot: '0deg',   delay: '0.6s', duration: '9s'  },
     { top: '58%',  left: '62%',  width: '380px', height: '145px', rot: '24deg',  delay: '2.1s', duration: '12s' },
   ];
+
+  // ── 3D pointer-tracking tilt for the hero illustration ─────────────────────
+  private readonly illustrationHost = viewChild<ElementRef<HTMLElement>>('illustrationHost');
+  readonly tiltX = signal(0);
+  readonly tiltY = signal(0);
+
+  onIllustrationMove(event: MouseEvent): void {
+    const el = this.illustrationHost()?.nativeElement;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width;   // 0..1
+    const py = (event.clientY - rect.top) / rect.height;   // 0..1
+    this.tiltY.set((px - 0.5) * 22);   // rotateY range
+    this.tiltX.set((0.5 - py) * 16);   // rotateX range
+  }
+
+  resetIllustrationTilt(): void {
+    this.tiltX.set(0);
+    this.tiltY.set(0);
+  }
 }

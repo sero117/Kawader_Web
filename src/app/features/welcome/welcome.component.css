@@ -2,13 +2,14 @@
   display: block;
 }
 
-/* ── Header entrance ─────────────────────────────────────────────── */
+/* ── Floating header ─────────────────────────────────────────────── */
 .wc-header {
   animation: wc-fade-down 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  box-shadow: 0 10px 34px -14px rgba(0, 0, 0, 0.32);
 }
 
 @keyframes wc-fade-down {
-  from { opacity: 0; transform: translateY(-10px); }
+  from { opacity: 0; transform: translateY(-14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -22,22 +23,37 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Hero illustration ───────────────────────────────────────────── */
-.wc-illustration {
-  animation: wc-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both, wc-float 6s ease-in-out infinite;
-  animation-delay: 0.35s, 1s;
+/* ── Hero illustration — real 3D, pointer-driven ─────────────────── */
+.wc-illustration-scene {
+  perspective: 1100px;
+  animation: wc-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.35s;
+}
+
+/* Float (CSS keyframes) and tilt (JS-driven inline transform) both animate
+   `transform` — on the same element the animation would win every frame and
+   the tilt would never visibly apply. Float lives on this outer wrapper,
+   tilt on the inner .wc-illustration, so neither overwrites the other. */
+.wc-illustration-float {
+  animation: wc-float 6s ease-in-out infinite;
+  animation-delay: 1s;
 }
 
 @keyframes wc-float {
   0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-10px); }
+  50%      { transform: translateY(-8px); }
+}
+
+.wc-illustration {
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .wc-illustration-card {
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.wc-illustration:hover .wc-illustration-card-back  { transform: translate(-6px, 6px) rotate(-9deg); }
-.wc-illustration:hover .wc-illustration-card-front { transform: translate(4px, -4px) rotate(4deg); }
+.wc-illustration-card-back  { transform: translateZ(-30px) translate(-6px, 6px) rotate(-9deg); }
+.wc-illustration-card-front { transform: translateZ(20px); }
 
 .wc-orbit {
   animation: wc-orbit-spin 14s linear infinite;
@@ -76,6 +92,30 @@
   transform: scale(1.12) rotate(-6deg);
 }
 
+/* ── Product preview mockups ─────────────────────────────────────── */
+.wc-preview {
+  animation: wc-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s, border-color 0.3s;
+}
+.wc-preview:nth-child(1) { animation-delay: 0.1s; }
+.wc-preview:nth-child(2) { animation-delay: 0.16s; }
+.wc-preview:nth-child(3) { animation-delay: 0.22s; }
+.wc-preview:nth-child(4) { animation-delay: 0.28s; }
+.wc-preview:nth-child(5) { animation-delay: 0.34s; }
+.wc-preview:nth-child(6) { animation-delay: 0.4s; }
+
+.wc-preview:hover {
+  transform: translateY(-6px) scale(1.015);
+  border-color: color-mix(in srgb, var(--nav-accent) 40%, transparent);
+  box-shadow: 0 20px 40px -16px color-mix(in srgb, var(--nav-accent) 32%, transparent);
+}
+
+.wc-bar {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: bottom;
+}
+.wc-preview:hover .wc-bar { transform: scaleY(1.08); }
+
 /* ── Steps ────────────────────────────────────────────────────────── */
 .wc-step {
   animation: wc-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -83,6 +123,16 @@
 .wc-step:nth-child(1) { animation-delay: 0.1s; }
 .wc-step:nth-child(2) { animation-delay: 0.2s; }
 .wc-step:nth-child(3) { animation-delay: 0.3s; }
+
+/* ── Why-us pillars ───────────────────────────────────────────────── */
+.wc-pillar {
+  animation: wc-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.wc-pillar:nth-child(1) { animation-delay: 0.1s; }
+.wc-pillar:nth-child(2) { animation-delay: 0.2s; }
+.wc-pillar:nth-child(3) { animation-delay: 0.3s; }
+.wc-pillar:hover { transform: translateY(-4px); }
 
 /* ── CTA buttons ──────────────────────────────────────────────────── */
 .wc-btn-primary {
@@ -102,8 +152,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wc-header, .wc-hero-subtitle, .wc-hero-actions, .wc-illustration,
-  .wc-card, .wc-step, .auth-word {
+  .wc-header, .wc-hero-subtitle, .wc-hero-actions, .wc-illustration-scene, .wc-illustration,
+  .wc-card, .wc-preview, .wc-step, .wc-pillar, .auth-word {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

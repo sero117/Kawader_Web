@@ -11,10 +11,26 @@
     },
     "hero": {
       "titleLine1": "HR Management,",
-      "titleLine2": "smart and simple",
+      "titleLine2": "made effortless",
       "subtitle": "Employees, payroll, shifts, and attendance — all in one place, for companies of any size.",
       "cta": "Login",
       "ctaSecondary": "Create a company account"
+    },
+    "previews": {
+      "title": "See Kawader in action",
+      "subtitle": "A quick look at the sections you'll use every day.",
+      "employees": { "title": "Employees", "desc": "All employee records in one place" },
+      "attendance": { "title": "Attendance", "desc": "Real-time check-in and check-out" },
+      "leaves": { "title": "Leaves", "desc": "Leave requests and approvals" },
+      "payroll": { "title": "Payroll", "desc": "Automatic payroll calculation" },
+      "incentives": { "title": "Incentives", "desc": "Employee bonuses and allowances" },
+      "devices": { "title": "Devices & Fingerprints", "desc": "Connect biometric devices easily" }
+    },
+    "why": {
+      "title": "Why Kawader?",
+      "security": { "title": "Fully secure", "desc": "Your data is protected and fully encrypted." },
+      "speed":    { "title": "Fast performance", "desc": "A smooth, fast interface without the clutter." },
+      "support":  { "title": "Always-on support", "desc": "Our team is with you every step of the way." }
     },
     "features": {
       "employees": {
