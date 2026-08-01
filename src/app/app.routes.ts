@@ -433,7 +433,15 @@ export const routes: Routes = [
       import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
   },
 
+  // ── Landing page ─────────────────────────────────────────────────────────
+  {
+    path: '',
+    pathMatch: 'full',
+    title: 'كوادر — إدارة الموارد البشرية',
+    loadComponent: () =>
+      import('./features/welcome/welcome.component').then(m => m.WelcomeComponent),
+  },
+
   // ── Redirects ──────────────────────────────────────────────────────────────
-  { path: '',   redirectTo: 'auth/login', pathMatch: 'full' },
   { path: '**', redirectTo: 'auth/login' },
 ];

@@ -4,6 +4,37 @@
     "tagline": "HR Management System",
     "hrms": "HRMS"
   },
+  "welcome": {
+    "nav": {
+      "main": "Main",
+      "login": "Login"
+    },
+    "hero": {
+      "title": "The Kawader HR Platform",
+      "subtitle": "Employees, payroll, shifts, and attendance — all in one place, for companies of any size.",
+      "cta": "Login",
+      "ctaSecondary": "Create a company account"
+    },
+    "features": {
+      "employees": {
+        "title": "Employee Management",
+        "desc": "Employee profiles, contracts, leaves, and attachments in one place."
+      },
+      "payroll": {
+        "title": "Payroll",
+        "desc": "Automatically calculate payroll runs, incentives, and deductions."
+      },
+      "shifts": {
+        "title": "Shifts & Attendance",
+        "desc": "Organize shifts and track check-in/check-out with precision."
+      },
+      "branches": {
+        "title": "Branches & Sections",
+        "desc": "Manage your company's branches and sections from one dashboard."
+      }
+    },
+    "footer": "© Kawader — All rights reserved."
+  },
   "common": {
     "noData": "No data available",
     "cancel": "Cancel",
