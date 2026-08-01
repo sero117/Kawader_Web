@@ -2,6 +2,47 @@
   display: block;
 }
 
+/* ── 3D logo ──────────────────────────────────────────────────────── */
+.wc-logo-3d-scene {
+  display: inline-block;
+  perspective: 300px;
+}
+.wc-logo-3d {
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--nav-accent) 45%, transparent));
+}
+.wc-logo-3d-scene:hover .wc-logo-3d {
+  transform: rotateY(24deg) rotateX(8deg) scale(1.08);
+}
+
+/* ── Merged language + theme switcher ────────────────────────────── */
+/* Each switcher is its own encapsulated component with its own pill
+   border/background — ::ng-deep strips those two inner pills down to
+   plain button rows so the outer .wc-switchers box reads as one control
+   instead of two separate boxes glued together. */
+.wc-switchers {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px;
+  border-radius: 9px;
+  background: var(--bg-subtle-md);
+  border: 1px solid var(--bg-subtle-md);
+}
+.wc-switchers-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--auth-fg-35, rgba(255,255,255,0.15));
+  opacity: 0.4;
+}
+.wc-switchers ::ng-deep .lang-track,
+.wc-switchers ::ng-deep .theme-track {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
 /* ── Floating header ─────────────────────────────────────────────── */
 .wc-header {
   animation: wc-fade-down 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -52,14 +93,17 @@
    the tilt would never visibly apply. Float lives on this outer wrapper,
    tilt on the inner .wc-illustration, so neither overwrites the other. */
 .wc-illustration-float {
-  animation: wc-float 6s ease-in-out infinite;
+  animation: wc-float 7s ease-in-out infinite;
   animation-delay: 1s;
 }
 
 @keyframes wc-float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-8px); }
+  0%,   100% { transform: translateY(0)    rotate(0deg); }
+  25%        { transform: translateY(-6px) rotate(0.8deg); }
+  50%        { transform: translateY(-10px) rotate(0deg); }
+  75%        { transform: translateY(-4px) rotate(-0.8deg); }
 }
+
 
 .wc-illustration {
   transform-style: preserve-3d;
@@ -151,25 +195,12 @@
 .wc-pillar:nth-child(3) { animation-delay: 0.3s; }
 .wc-pillar:hover { transform: translateY(-4px); }
 
-/* ── Closing CTA banner ───────────────────────────────────────────── */
-.wc-cta-banner {
-  background: var(--bg-subtle-sm);
-  animation: wc-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.wc-cta-glow {
-  position: absolute;
-  inset: -40%;
-  background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--nav-accent) 30%, transparent), transparent 60%),
-              radial-gradient(circle at 75% 70%, color-mix(in srgb, #a855f7 26%, transparent), transparent 55%);
-  animation: wc-cta-pulse 7s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes wc-cta-pulse {
-  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.75; }
-  50%      { transform: scale(1.15) rotate(8deg); opacity: 1; }
-}
+/* ── FAQ accordion ────────────────────────────────────────────────── */
+.wc-faq summary { list-style: none; }
+.wc-faq summary::-webkit-details-marker { display: none; }
+.wc-faq-chevron { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.wc-faq[open] .wc-faq-chevron { transform: rotate(180deg); }
+.wc-faq[open] summary { margin-bottom: 2px; }
 
 /* ── CTA buttons ──────────────────────────────────────────────────── */
 .wc-btn-primary {

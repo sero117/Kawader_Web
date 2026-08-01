@@ -24,7 +24,9 @@ export class ThemeService {
 
   private loadTheme(): Theme {
     const stored = localStorage.getItem(this.STORAGE_KEY);
-    return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'light';
+    // 'system' is no longer offered as a choice in the UI — an old stored
+    // value from before that removal now just resolves to 'light'.
+    return stored === 'light' || stored === 'dark' ? stored : 'light';
   }
 
   private apply(theme: Theme): void {

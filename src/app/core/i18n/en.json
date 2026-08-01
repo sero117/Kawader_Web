@@ -12,12 +12,12 @@
     "hero": {
       "titleLine1": "HR Management,",
       "titleLine2": "made effortless",
-      "subtitle": "Employees, payroll, shifts, and attendance — all in one place, for companies of any size.",
+      "subtitle": "Employees, payroll, shifts, and attendance — all in one place, whether your company is small or large.",
       "cta": "Login",
       "ctaSecondary": "Create a company account"
     },
     "previews": {
-      "title": "See Kawader in action",
+      "title": "A look inside the platform",
       "subtitle": "A quick look at the sections you'll use every day.",
       "employees": { "title": "Employees", "desc": "All employee records in one place" },
       "attendance": { "title": "Attendance", "desc": "Real-time check-in and check-out" },
@@ -65,10 +65,17 @@
       "employee":{ "title": "Employee",        "desc": "Their attendance, leaves, and pay" },
       "agent":   { "title": "Agent",           "desc": "Track referred companies" }
     },
-    "cta": {
-      "title": "Ready to get started?",
-      "subtitle": "Create your company account now and start managing your team in minutes.",
-      "button": "Create a company account"
+    "faq": {
+      "title": "Frequently asked questions",
+      "dataSafety": { "q": "Is my company's data safe?", "a": "Yes, your data is encrypted and stored securely — no one but you can access it." },
+      "howToStart": { "q": "How do I get started with Kawader?", "a": "Create your company account in a few simple steps, then start adding your branches and employees right away." },
+      "mobile": { "q": "Does Kawader work on mobile?", "a": "Yes, the platform is fully responsive and works from any device — desktop, mobile, or tablet." },
+      "pricing": { "q": "How does the subscription work?", "a": "There are different subscription plans depending on your company's size — contact us for details." }
+    },
+    "footerCols": {
+      "product": "Product",
+      "company": "Company",
+      "contact": "Contact"
     },
     "footer": "© Kawader — All rights reserved."
   },
