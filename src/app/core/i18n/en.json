@@ -10,7 +10,8 @@
       "login": "Login"
     },
     "hero": {
-      "title": "The Kawader HR Platform",
+      "titleLine1": "HR Management,",
+      "titleLine2": "smart and simple",
       "subtitle": "Employees, payroll, shifts, and attendance — all in one place, for companies of any size.",
       "cta": "Login",
       "ctaSecondary": "Create a company account"
@@ -32,6 +33,12 @@
         "title": "Branches & Sections",
         "desc": "Manage your company's branches and sections from one dashboard."
       }
+    },
+    "steps": {
+      "title": "How to get started",
+      "one":   { "title": "Create your company account", "desc": "A few quick steps to activate your company on the platform." },
+      "two":   { "title": "Add your employees",           "desc": "Add branches, sections, and employees in minutes." },
+      "three": { "title": "Start working",                "desc": "Payroll, shifts, and attendance — ready to use right away." }
     },
     "footer": "© Kawader — All rights reserved."
   },

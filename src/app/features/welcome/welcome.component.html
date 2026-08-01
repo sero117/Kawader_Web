@@ -1,105 +1,183 @@
-<div class="min-h-screen" style="background: var(--auth-bg); color: var(--auth-fg);">
+<div class="relative overflow-hidden min-h-screen" style="background: var(--auth-bg); color: var(--auth-fg);">
 
-  <!-- Header -->
-  <header class="sticky top-0 z-20 flex items-center justify-between px-5 sm:px-10 py-4"
-    style="background: color-mix(in srgb, var(--auth-bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--bg-subtle-sm);">
-    <div class="flex items-center gap-2.5">
-      <svg width="34" height="34" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="2" width="96" height="96" rx="28" fill="var(--nav-accent)"/>
-        <g fill="#FFFFFF">
-          <g opacity="0.72"><circle cx="31" cy="45" r="7"/><rect x="24" y="53" width="14" height="25" rx="7"/></g>
-          <g opacity="0.72"><circle cx="69" cy="45" r="7"/><rect x="62" y="53" width="14" height="25" rx="7"/></g>
-          <circle cx="50" cy="37" r="9.5"/><rect x="38.5" y="48" width="23" height="32" rx="11.5"/>
-        </g>
-      </svg>
-      <span class="font-bold text-xl" style="color: var(--auth-fg);">{{ 'brand.name' | translate }}</span>
-    </div>
+  <!-- Decorative background -->
+  @for (b of blobs; track $index) {
+    <div class="auth-blob" [style.top]="b.top" [style.left]="b.left" [style.width]="b.width" [style.height]="b.height"
+      [style.--rot]="b.rot" [style.transform]="'rotate(' + b.rot + ')'"
+      [style.animation-delay]="b.delay" [style.animation-duration]="b.duration"></div>
+  }
+  @for (s of sparkles; track $index) {
+    <span class="auth-sparkle" [style.top]="s.top" [style.left]="s.left" [style.font-size]="s.size"
+      [style.animation-duration]="s.duration" [style.animation-delay]="s.delay">✦</span>
+  }
 
-    <nav class="flex items-center gap-2 sm:gap-4">
-      <a routerLink="/" class="text-sm font-semibold px-2" style="color: var(--auth-fg);">
-        {{ 'welcome.nav.main' | translate }}
+  <div class="relative z-10">
+
+    <!-- Header -->
+    <header class="wc-header sticky top-0 z-20 flex items-center justify-between px-5 sm:px-10 py-4"
+      style="background: color-mix(in srgb, var(--auth-bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--bg-subtle-sm);">
+      <a routerLink="/" class="flex items-center gap-2.5">
+        <svg width="34" height="34" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="96" height="96" rx="28" fill="var(--nav-accent)"/>
+          <g fill="#FFFFFF">
+            <g opacity="0.72"><circle cx="31" cy="45" r="7"/><rect x="24" y="53" width="14" height="25" rx="7"/></g>
+            <g opacity="0.72"><circle cx="69" cy="45" r="7"/><rect x="62" y="53" width="14" height="25" rx="7"/></g>
+            <circle cx="50" cy="37" r="9.5"/><rect x="38.5" y="48" width="23" height="32" rx="11.5"/>
+          </g>
+        </svg>
+        <span class="font-bold text-xl" style="color: var(--auth-fg);">{{ 'brand.name' | translate }}</span>
       </a>
-      <app-language-switcher />
-      <app-theme-switcher />
-      <a routerLink="/auth/login" class="text-sm font-bold px-4 py-2 rounded-xl transition-transform hover:scale-[1.03]"
-        style="background: var(--nav-accent); color: #fff;">
-        {{ 'welcome.nav.login' | translate }}
-      </a>
-    </nav>
-  </header>
 
-  <!-- Hero -->
-  <section class="px-5 sm:px-10 pt-16 pb-20 text-center max-w-2xl mx-auto">
-    <h1 class="font-bold text-3xl sm:text-5xl leading-tight tracking-tight" style="color: var(--auth-fg);">
-      {{ 'welcome.hero.title' | translate }}
-    </h1>
-    <p class="mt-5 text-base sm:text-lg" style="color: var(--auth-fg-35, rgba(255,255,255,0.6));">
-      {{ 'welcome.hero.subtitle' | translate }}
-    </p>
-    <div class="mt-8 flex items-center justify-center gap-3">
-      <a routerLink="/auth/login"
-        class="text-sm font-bold px-6 py-3 rounded-xl transition-transform hover:scale-[1.03]"
-        style="background: var(--nav-accent); color: #fff;">
-        {{ 'welcome.hero.cta' | translate }}
-      </a>
-      <a routerLink="/auth/company-setup"
-        class="text-sm font-bold px-6 py-3 rounded-xl transition-colors"
-        style="background: var(--bg-subtle-sm); color: var(--auth-fg);">
-        {{ 'welcome.hero.ctaSecondary' | translate }}
-      </a>
-    </div>
-  </section>
+      <nav class="flex items-center gap-2 sm:gap-4">
+        <a routerLink="/" class="text-sm font-semibold px-2" style="color: var(--auth-fg);">
+          {{ 'welcome.nav.main' | translate }}
+        </a>
+        <app-language-switcher />
+        <app-theme-switcher />
+        <a routerLink="/auth/login" class="wc-btn-primary text-sm font-bold px-4 py-2 rounded-xl"
+          style="background: var(--nav-accent); color: #fff;">
+          {{ 'welcome.nav.login' | translate }}
+        </a>
+      </nav>
+    </header>
 
-  <!-- Features -->
-  <section class="px-5 sm:px-10 pb-20 max-w-5xl mx-auto">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-      <div class="rounded-2xl p-5" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: rgba(99,102,241,0.14); color: var(--nav-accent);">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
-          </svg>
+    <!-- Hero -->
+    <section class="px-5 sm:px-10 pt-14 sm:pt-20 pb-16 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      <div class="text-center lg:text-start">
+        <h1 class="wc-hero-title font-bold text-3xl sm:text-5xl leading-tight tracking-tight" style="color: var(--auth-fg);">
+          <span class="auth-word" style="animation-delay:0.05s">{{ 'welcome.hero.titleLine1' | translate }}</span>
+          <br/>
+          <span class="auth-word" style="animation-delay:0.16s; background: linear-gradient(90deg, var(--nav-accent), #a855f7); -webkit-background-clip: text; background-clip: text; color: transparent;">
+            {{ 'welcome.hero.titleLine2' | translate }}
+          </span>
+        </h1>
+        <p class="wc-hero-subtitle mt-5 text-base sm:text-lg max-w-md mx-auto lg:mx-0" style="color: var(--auth-fg-35, rgba(255,255,255,0.6));">
+          {{ 'welcome.hero.subtitle' | translate }}
+        </p>
+        <div class="wc-hero-actions mt-8 flex items-center justify-center lg:justify-start gap-3">
+          <a routerLink="/auth/login" class="wc-btn-primary text-sm font-bold px-6 py-3 rounded-xl"
+            style="background: var(--nav-accent); color: #fff;">
+            {{ 'welcome.hero.cta' | translate }}
+          </a>
+          <a routerLink="/auth/company-setup" class="wc-btn-secondary text-sm font-bold px-6 py-3 rounded-xl"
+            style="background: var(--bg-subtle-sm); color: var(--auth-fg);">
+            {{ 'welcome.hero.ctaSecondary' | translate }}
+          </a>
         </div>
-        <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.features.employees.title' | translate }}</h3>
-        <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.features.employees.desc' | translate }}</p>
       </div>
 
-      <div class="rounded-2xl p-5" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: rgba(52,211,153,0.14); color: #34d399;">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/>
-          </svg>
-        </div>
-        <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.features.payroll.title' | translate }}</h3>
-        <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.features.payroll.desc' | translate }}</p>
+      <!-- Illustration -->
+      <div class="wc-illustration relative mx-auto" style="width: 340px; height: 280px;">
+        <svg viewBox="0 0 380 300" width="340" height="280" xmlns="http://www.w3.org/2000/svg">
+          <g class="wc-orbit" opacity="0.55">
+            <circle cx="190" cy="30" r="5" fill="var(--nav-accent)"/>
+            <circle cx="190" cy="270" r="4" fill="#a855f7"/>
+          </g>
+          <circle cx="190" cy="150" r="118" fill="none" stroke="var(--bg-subtle-md)" stroke-width="1.5" stroke-dasharray="3 7"/>
+
+          <!-- back card -->
+          <g class="wc-illustration-card wc-illustration-card-back" transform="rotate(-7 150 150)">
+            <rect x="60" y="70" width="180" height="150" rx="20" fill="var(--nav-accent)" opacity="0.16"/>
+          </g>
+
+          <!-- front card -->
+          <g class="wc-illustration-card wc-illustration-card-front" transform="rotate(3 210 150)">
+            <rect x="90" y="55" width="200" height="190" rx="20" fill="var(--auth-card)" stroke="var(--bg-subtle-md)" stroke-width="1.5"/>
+            <circle cx="128" cy="95" r="16" fill="var(--nav-accent)" opacity="0.85"/>
+            <rect x="153" y="86" width="70" height="8" rx="4" fill="var(--auth-fg)" opacity="0.7"/>
+            <rect x="153" y="100" width="46" height="6" rx="3" fill="var(--auth-fg)" opacity="0.3"/>
+
+            <rect x="112" y="135" width="156" height="1.5" fill="var(--bg-subtle-md)"/>
+
+            <rect x="112" y="155" width="20" height="46" rx="4" fill="#a855f7" opacity="0.55"/>
+            <rect x="140" y="170" width="20" height="31" rx="4" fill="var(--nav-accent)" opacity="0.55"/>
+            <rect x="168" y="148" width="20" height="53" rx="4" fill="#34d399" opacity="0.6"/>
+            <rect x="196" y="178" width="20" height="23" rx="4" fill="#f97316" opacity="0.55"/>
+
+            <circle cx="252" cy="172" r="22" fill="none" stroke="var(--nav-accent)" stroke-width="4" opacity="0.85"
+              stroke-dasharray="94" stroke-dashoffset="24" stroke-linecap="round" transform="rotate(-90 252 172)"/>
+            <path d="M243 172l6 6 12 -13" fill="none" stroke="var(--nav-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </svg>
       </div>
+    </section>
 
-      <div class="rounded-2xl p-5" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: rgba(249,115,22,0.14); color: #f97316;">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-          </svg>
+    <!-- Features -->
+    <section class="px-5 sm:px-10 pb-16 max-w-5xl mx-auto">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <div class="wc-card rounded-2xl p-5" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="wc-card-icon w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: rgba(99,102,241,0.14); color: var(--nav-accent);">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
+            </svg>
+          </div>
+          <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.features.employees.title' | translate }}</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.features.employees.desc' | translate }}</p>
         </div>
-        <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.features.shifts.title' | translate }}</h3>
-        <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.features.shifts.desc' | translate }}</p>
-      </div>
 
-      <div class="rounded-2xl p-5" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: rgba(168,85,247,0.14); color: #a855f7;">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
-          </svg>
+        <div class="wc-card rounded-2xl p-5" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="wc-card-icon w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: rgba(52,211,153,0.14); color: #34d399;">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/>
+            </svg>
+          </div>
+          <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.features.payroll.title' | translate }}</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.features.payroll.desc' | translate }}</p>
         </div>
-        <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.features.branches.title' | translate }}</h3>
-        <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.features.branches.desc' | translate }}</p>
+
+        <div class="wc-card rounded-2xl p-5" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="wc-card-icon w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: rgba(249,115,22,0.14); color: #f97316;">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+          </div>
+          <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.features.shifts.title' | translate }}</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.features.shifts.desc' | translate }}</p>
+        </div>
+
+        <div class="wc-card rounded-2xl p-5" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
+          <div class="wc-card-icon w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: rgba(168,85,247,0.14); color: #a855f7;">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
+            </svg>
+          </div>
+          <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.features.branches.title' | translate }}</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.features.branches.desc' | translate }}</p>
+        </div>
+
       </div>
+    </section>
 
-    </div>
-  </section>
+    <!-- How it works -->
+    <section class="px-5 sm:px-10 pb-20 max-w-4xl mx-auto">
+      <h2 class="text-center font-bold text-2xl mb-10" style="color: var(--auth-fg);">{{ 'welcome.steps.title' | translate }}</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+        <div class="wc-step text-center">
+          <div class="w-11 h-11 mx-auto rounded-full flex items-center justify-center font-bold mb-3"
+            style="background: var(--nav-accent); color: #fff;">1</div>
+          <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.steps.one.title' | translate }}</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.steps.one.desc' | translate }}</p>
+        </div>
+        <div class="wc-step text-center">
+          <div class="w-11 h-11 mx-auto rounded-full flex items-center justify-center font-bold mb-3"
+            style="background: var(--nav-accent); color: #fff;">2</div>
+          <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.steps.two.title' | translate }}</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.steps.two.desc' | translate }}</p>
+        </div>
+        <div class="wc-step text-center">
+          <div class="w-11 h-11 mx-auto rounded-full flex items-center justify-center font-bold mb-3"
+            style="background: var(--nav-accent); color: #fff;">3</div>
+          <h3 class="font-bold text-sm mb-1.5" style="color: var(--auth-fg);">{{ 'welcome.steps.three.title' | translate }}</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.steps.three.desc' | translate }}</p>
+        </div>
+      </div>
+    </section>
 
-  <!-- Footer -->
-  <footer class="px-5 sm:px-10 py-8 text-center text-xs" style="border-top: 1px solid var(--bg-subtle-sm); color: var(--auth-fg-35, rgba(255,255,255,0.4));">
-    {{ 'welcome.footer' | translate }}
-  </footer>
+    <!-- Footer -->
+    <footer class="px-5 sm:px-10 py-8 text-center text-xs" style="border-top: 1px solid var(--bg-subtle-sm); color: var(--auth-fg-35, rgba(255,255,255,0.4));">
+      {{ 'welcome.footer' | translate }}
+    </footer>
 
+  </div>
 </div>

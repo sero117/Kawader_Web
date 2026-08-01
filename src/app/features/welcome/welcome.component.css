@@ -1,0 +1,111 @@
+:host {
+  display: block;
+}
+
+/* ── Header entrance ─────────────────────────────────────────────── */
+.wc-header {
+  animation: wc-fade-down 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes wc-fade-down {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Hero text stagger (reuses .auth-word's word-reveal keyframe) ──── */
+.wc-hero-title .auth-word { animation-delay: 0.05s; }
+.wc-hero-subtitle { animation: word-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.28s; }
+.wc-hero-actions  { animation: wc-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.44s; }
+
+@keyframes wc-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Hero illustration ───────────────────────────────────────────── */
+.wc-illustration {
+  animation: wc-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both, wc-float 6s ease-in-out infinite;
+  animation-delay: 0.35s, 1s;
+}
+
+@keyframes wc-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+.wc-illustration-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.wc-illustration:hover .wc-illustration-card-back  { transform: translate(-6px, 6px) rotate(-9deg); }
+.wc-illustration:hover .wc-illustration-card-front { transform: translate(4px, -4px) rotate(4deg); }
+
+.wc-orbit {
+  animation: wc-orbit-spin 14s linear infinite;
+  transform-origin: 190px 150px;
+}
+@keyframes wc-orbit-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.wc-orbit circle { animation: wc-orbit-counter 14s linear infinite; transform-origin: center; }
+@keyframes wc-orbit-counter {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+/* ── Feature cards ────────────────────────────────────────────────── */
+.wc-card {
+  animation: wc-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s, border-color 0.25s;
+}
+.wc-card:nth-child(1) { animation-delay: 0.5s; }
+.wc-card:nth-child(2) { animation-delay: 0.58s; }
+.wc-card:nth-child(3) { animation-delay: 0.66s; }
+.wc-card:nth-child(4) { animation-delay: 0.74s; }
+
+.wc-card:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--nav-accent) 45%, transparent);
+  box-shadow: 0 16px 32px -12px color-mix(in srgb, var(--nav-accent) 30%, transparent);
+}
+
+.wc-card-icon {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.wc-card:hover .wc-card-icon {
+  transform: scale(1.12) rotate(-6deg);
+}
+
+/* ── Steps ────────────────────────────────────────────────────────── */
+.wc-step {
+  animation: wc-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.wc-step:nth-child(1) { animation-delay: 0.1s; }
+.wc-step:nth-child(2) { animation-delay: 0.2s; }
+.wc-step:nth-child(3) { animation-delay: 0.3s; }
+
+/* ── CTA buttons ──────────────────────────────────────────────────── */
+.wc-btn-primary {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
+  box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--nav-accent) 55%, transparent);
+}
+.wc-btn-primary:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 28px -10px color-mix(in srgb, var(--nav-accent) 65%, transparent);
+}
+.wc-btn-secondary {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s;
+}
+.wc-btn-secondary:hover {
+  transform: translateY(-2px);
+  background: color-mix(in srgb, var(--nav-accent) 12%, var(--bg-subtle-sm)) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wc-header, .wc-hero-subtitle, .wc-hero-actions, .wc-illustration,
+  .wc-card, .wc-step, .auth-word {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
