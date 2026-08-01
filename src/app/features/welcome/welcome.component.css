@@ -183,11 +183,39 @@
   66%, 100% { transform: scale(1);    opacity: 1; }
 }
 
+/* Success toasts — one at a time, sliding in over whichever screen view is
+   showing underneath. 5 messages staggered across a 10s loop (2s each). */
+.wc-toast {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: wc-toast-cycle 10s ease-in-out infinite;
+}
+@keyframes wc-toast-cycle {
+  0%       { opacity: 0; transform: translateY(6px); }
+  4%, 16%  { opacity: 1; transform: translateY(0); }
+  20%, 100%{ opacity: 0; transform: translateY(-6px); }
+}
+
+/* Person beside the laptop, hands alternating in a typing bounce. */
+.wc-hand {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wc-type-bounce 0.7s ease-in-out infinite;
+}
+.wc-hand-2 { animation-delay: 0.35s; }
+@keyframes wc-type-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .wc-lid { transition: none !important; }
   .wc-screen-view { animation: none !important; opacity: 1 !important; }
   .wc-screen-view-2 { display: none; }
   .wc-avatar-pop { animation: none !important; transform: scale(1) !important; opacity: 0.8 !important; }
+  .wc-toast { display: none; }
+  .wc-hand { animation: none !important; }
 }
 
 /* ── Quick facts bar ──────────────────────────────────────────────── */
@@ -273,10 +301,22 @@
 .wc-btn-primary {
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
   box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--nav-accent) 55%, transparent);
+  /* Ambient glow breathes via `filter`, kept off `box-shadow` on purpose —
+     the hover state already transitions box-shadow, and stacking a second
+     mechanism on the same property would have one silently override the
+     other instead of both applying. */
+  animation: wc-cta-glow-pulse 2.6s ease-in-out infinite;
 }
 .wc-btn-primary:hover {
   transform: translateY(-2px) scale(1.03);
   box-shadow: 0 14px 28px -10px color-mix(in srgb, var(--nav-accent) 65%, transparent);
+}
+@keyframes wc-cta-glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+  50%      { filter: drop-shadow(0 0 9px color-mix(in srgb, var(--nav-accent) 50%, transparent)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wc-btn-primary { animation: none !important; }
 }
 .wc-btn-secondary {
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s;

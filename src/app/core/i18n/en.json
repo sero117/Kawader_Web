@@ -32,6 +32,13 @@
       "speed":    { "title": "Fast performance", "desc": "A smooth, fast interface without the clutter." },
       "support":  { "title": "Always-on support", "desc": "Our team is with you every step of the way." }
     },
+    "laptopToasts": {
+      "employee":  "Employee registered successfully",
+      "shift":     "Shift added successfully",
+      "payroll":   "Payroll calculated successfully",
+      "incentive": "Incentive added successfully",
+      "leave":     "Leave request approved"
+    },
     "facts": {
       "uptime":     { "title": "Available 24/7", "desc": "Access your system anytime, anywhere" },
       "employees":  { "title": "No employee limit", "desc": "From a small team to thousands of employees" },
