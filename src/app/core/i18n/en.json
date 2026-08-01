@@ -12,7 +12,7 @@
     "hero": {
       "titleLine1": "HR Management,",
       "titleLine2": "made effortless",
-      "subtitle": "Employees, payroll, shifts, and attendance — all in one place, whether your company is small or large.",
+      "subtitle": "Employees, payroll, shifts, and attendance — all on one easy-to-use platform.",
       "cta": "Login",
       "ctaSecondary": "Create a company account"
     },
@@ -35,7 +35,7 @@
     "facts": {
       "uptime":     { "title": "Available 24/7", "desc": "Access your system anytime, anywhere" },
       "employees":  { "title": "No employee limit", "desc": "From a small team to thousands of employees" },
-      "timeSaved":  { "title": "Save your time", "desc": "Automated payroll and attendance instead of manual spreadsheets" }
+      "timeSaved":  { "title": "Save time", "desc": "Automated payroll and attendance instead of manual spreadsheets" }
     },
     "features": {
       "employees": {
