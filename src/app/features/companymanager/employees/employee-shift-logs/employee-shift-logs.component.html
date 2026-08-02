@@ -187,6 +187,7 @@
             <th>{{ 'manager.shiftLogs.colCheckIn' | translate }}</th>
             <th>{{ 'manager.shiftLogs.colCheckOut' | translate }}</th>
             <th>{{ 'manager.shiftLogs.colStatus' | translate }}</th>
+            <th>{{ 'manager.shiftLogs.colNotes' | translate }}</th>
             <th style="text-align: end;"></th>
           </tr>
         </thead>
@@ -213,6 +214,7 @@
                   }
                 }
               </td>
+              <td class="text-xs truncate" style="color: var(--text-faint); max-width: 160px;">{{ log.notes || '—' }}</td>
               <td>
                 <div class="flex items-center justify-end gap-1.5">
                   <button (click)="openEdit(log)" class="w-8 h-8 rounded-lg flex items-center justify-center" style="color: var(--text-faint); background: var(--bg-subtle-sm);" [title]="'manager.shiftLogs.editTitle' | translate">
