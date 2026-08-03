@@ -101,6 +101,11 @@ export class EmployeeActivationComponent {
           return;
         }
         this.authService.saveTokens(tokenData);
+        // select-company (for multi-company employees) looks up the real
+        // employeeRole by phone number — without this, that lookup finds
+        // nothing and silently defaults to a plain Employee, same bug
+        // login.component.ts already avoids by calling this here too.
+        this.authService.setLoginPhone(this._phone);
         this.notificationService.connect();
         const next = this.authService.needsCompanySelection()
           ? '/auth/select-company'
