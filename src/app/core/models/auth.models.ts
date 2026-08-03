@@ -80,6 +80,10 @@ export interface AuthTokenResponse {
   tokenType?: string;
   userId?: number | string;
   role?: Role;
+  /** Only meaningful when role is Employee — distinguishes HR/department/branch
+   *  managers from a plain employee. The JWT itself carries no such claim, so
+   *  this has to come from the response body (see AuthService.saveTokens). */
+  employeeType?: EmployeeType;
 }
 
 export interface ApiResponse<T = null> {

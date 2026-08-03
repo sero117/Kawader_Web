@@ -183,6 +183,16 @@ export class AuthService {
     if (tokens.role !== undefined) {
       localStorage.setItem(this.ROLE_KEY, String(tokens.role));
     }
+    // Same story for employeeType (HR vs plain employee): the JWT carries no
+    // claim for it at all (confirmed by decoding a real activation token —
+    // it has nameidentifier/name/role and nothing else), so this is the only
+    // place it can come from. Check every casing the backend might use.
+    const anyTokens = tokens as unknown as Record<string, unknown>;
+    const employeeType = anyTokens['employeeType'] ?? anyTokens['EmployeeType']
+      ?? anyTokens['employeeRole'] ?? anyTokens['EmployeeRole'];
+    if (employeeType !== undefined && employeeType !== null) {
+      this.saveEmployeeType(Number(employeeType) as EmployeeType);
+    }
   }
 
   getAccessToken(): string | null {
