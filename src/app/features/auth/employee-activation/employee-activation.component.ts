@@ -83,7 +83,7 @@ export class EmployeeActivationComponent {
     this.errorMsg.set(null);
 
     const { code, password } = this.step2Form.value;
-    this.authService.resetPassword({
+    this.authService.verify({
       phoneNumber: this._phone,
       code:        code!,
       password:    password!,

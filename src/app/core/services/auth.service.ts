@@ -73,6 +73,17 @@ export class AuthService {
     );
   }
 
+  /** Completes a new employee's account (phone + SMS code + chosen password)
+   *  and logs them in — distinct from resetPassword, which is for an
+   *  already-active account resetting a forgotten password. Same request
+   *  shape, so ResetPasswordRequest is reused as-is. */
+  verify(payload: ResetPasswordRequest): Observable<ApiResponse<AuthTokenResponse>> {
+    return this.http.post<ApiResponse<AuthTokenResponse>>(
+      `${this.baseUrl}/verify`,
+      payload
+    );
+  }
+
   completeAgentInfo(payload: CompleteAgentInfoRequest): Observable<ApiResponse<AuthTokenResponse>> {
     return this.http.post<ApiResponse<AuthTokenResponse>>(
       `${this.baseUrl}/complete-agent-info`,

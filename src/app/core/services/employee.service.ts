@@ -28,9 +28,15 @@ export class EmployeeService {
   }
 
   /** Active (Active + Probation) employees for the current tenant — used to pick employees onto a payroll run. */
-  getActive(filter?: string): Observable<ActiveEmployee[]> {
+  /** `currencyId` restricts the list to employees paid in that currency —
+   *  only pass it where that's actually the intent (e.g. picking employees
+   *  to add to a payroll run already fixed to one currency). Passing it
+   *  everywhere `getActive` is used would wrongly hide employees paid in
+   *  other currencies from unrelated employee pickers/counts. */
+  getActive(filter?: string, currencyId?: number): Observable<ActiveEmployee[]> {
     let p = new HttpParams();
     if (filter) p = p.set('Filter', filter);
+    if (currencyId) p = p.set('CurrencyId', currencyId);
     return this.api.get<ActiveEmployee[]>(`${this.baseUrl}/active`, p);
   }
 

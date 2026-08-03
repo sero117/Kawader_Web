@@ -102,14 +102,12 @@ export class PayrollDetailComponent implements OnInit {
   selectedEmployeeIds    = signal<Set<number>>(new Set());
 
   alreadyOnRunIds = computed(() => new Set((this.run()?.payslips ?? []).map(p => p.employeeId)));
-  // Only employees paid in the run's own currency can be added — the picker never
-  // even shows a mismatched employee, so the user can't build an invalid selection.
-  pickableEmployees = computed(() => {
-    const runCurrencyId = this.run()?.currencyId;
-    return this.activeEmployees().filter(e =>
-      !this.alreadyOnRunIds().has(e.id) &&
-      (runCurrencyId == null || e.currencyId == null || e.currencyId === runCurrencyId));
-  });
+  // The backend's `active` endpoint now filters by CurrencyId itself (see
+  // loadActiveEmployees), so activeEmployees() only ever contains employees
+  // paid in the run's own currency already — this just excludes ones
+  // already on the run.
+  pickableEmployees = computed(() =>
+    this.activeEmployees().filter(e => !this.alreadyOnRunIds().has(e.id)));
 
   // ── Adjust payslip modal ──────────────────────────────────────────────────────
   showAdjustModal = signal(false);
@@ -218,7 +216,7 @@ export class PayrollDetailComponent implements OnInit {
   loadActiveEmployees(): void {
     this.activeEmployeesLoading.set(true);
     this.activeEmployeesError.set(null);
-    this.employeeService.getActive(this.employeeFilter() || undefined).subscribe({
+    this.employeeService.getActive(this.employeeFilter() || undefined, this.run()?.currencyId).subscribe({
       next: list => {
         this.activeEmployees.set(list);
         this.activeEmployeesLoading.set(false);

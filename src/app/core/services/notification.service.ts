@@ -27,10 +27,17 @@ export class NotificationService {
     const token = this.auth.getAccessToken();
     if (!token) return;
 
+    // Same header the HTTP interceptor attaches to every API call — the hub
+    // needs it too, or a HumanResourceManager/CompanyManager connection (whose
+    // tenant comes from the JWT claim, not a manually-selected one) resolves
+    // to no tenant at all on the hub side.
+    const tenantId = this.auth.getEffectiveTenantId();
+
     this.connection = new HubConnectionBuilder()
       .withUrl(environment.signalRHubUrl, {
         accessTokenFactory: () => this.auth.getAccessToken() ?? '',
         withCredentials: false,
+        ...(tenantId ? { headers: { 'X-Tenant-Id': tenantId } } : {}),
       })
       .withAutomaticReconnect()
       .configureLogging(LogLevel.Warning)
