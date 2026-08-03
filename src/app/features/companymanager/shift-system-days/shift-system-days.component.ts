@@ -1,14 +1,13 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Observable, forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { ShiftSystemService } from '../../../core/services/shift-system.service';
 import { ShiftService } from '../../../core/services/shift.service';
-import {
-  Shift, ShiftSystemDay, DayOfWeek,
-  CreateShiftSystemDayRequest, UpdateShiftSystemDayRequest,
-} from '../../../core/models/shift.models';
+import { Shift, ShiftSystemDay, DayOfWeek } from '../../../core/models/shift.models';
 
 const ALL_DAYS: DayOfWeek[] = [
   DayOfWeek.Sunday,
@@ -20,16 +19,22 @@ const ALL_DAYS: DayOfWeek[] = [
   DayOfWeek.Saturday,
 ];
 
+interface DayRow {
+  dow: DayOfWeek;
+  recordId: number | null;
+  checked: boolean;
+  shiftId: number | null;
+}
+
 @Component({
   selector: 'app-shift-system-days',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, RouterLink],
+  imports: [FormsModule, TranslatePipe, RouterLink],
   templateUrl: './shift-system-days.component.html',
 })
 export class ShiftSystemDaysComponent implements OnInit {
   private readonly systemService = inject(ShiftSystemService);
   private readonly shiftService  = inject(ShiftService);
-  private readonly fb            = inject(FormBuilder);
   private readonly lang          = inject(LanguageService);
   private readonly route         = inject(ActivatedRoute);
 
@@ -37,35 +42,19 @@ export class ShiftSystemDaysComponent implements OnInit {
   systemName      = signal<string>('');
 
   // ── Data ─────────────────────────────────────────────────────────────────────
-  days       = signal<ShiftSystemDay[]>([]);
+  rows       = signal<DayRow[]>([]);
+  private baseline: DayRow[] = [];
   allShifts  = signal<Shift[]>([]);
   loading    = signal(true);
   daysError  = signal<string | null>(null);
 
-  // ── Flash / error ────────────────────────────────────────────────────────────
+  // ── Save state ───────────────────────────────────────────────────────────────
+  saving     = signal(false);
+  saveError  = signal<string | null>(null);
   successMsg = signal<string | null>(null);
-  modalError = signal<string | null>(null);
-  submitting = signal(false);
-
-  // ── Modals ────────────────────────────────────────────────────────────────────
-  showAddModal    = signal(false);
-  showEditModal   = signal(false);
-  showDeleteModal = signal(false);
-  selectedDay     = signal<ShiftSystemDay | null>(null);
-  deleteTargetId  = signal<number | null>(null);
 
   readonly ALL_DAYS  = ALL_DAYS;
   readonly DayOfWeek = DayOfWeek;
-
-  addForm = this.fb.group({
-    dayOfWeek: [DayOfWeek.Sunday, Validators.required],
-    shiftId:   [null as number | null, [Validators.required, Validators.min(1)]],
-  });
-
-  editForm = this.fb.group({
-    dayOfWeek: [DayOfWeek.Sunday, Validators.required],
-    shiftId:   [null as number | null, [Validators.required, Validators.min(1)]],
-  });
 
   ngOnInit(): void {
     this.shiftSystemId = Number(this.route.snapshot.paramMap.get('shiftSystemId'));
@@ -80,8 +69,14 @@ export class ShiftSystemDaysComponent implements OnInit {
     this.systemService.getDays(this.shiftSystemId).subscribe({
       next: (res: any) => {
         const items: ShiftSystemDay[] = Array.isArray(res) ? res : (res?.data ?? res?.items ?? []);
-        this.days.set(items);
+        const rows: DayRow[] = ALL_DAYS.map(dow => {
+          const rec = items.find(d => d.dayOfWeek === dow);
+          return { dow, recordId: rec?.id ?? null, checked: !!rec, shiftId: rec?.shiftId ?? null };
+        });
+        this.rows.set(rows);
+        this.baseline = rows.map(r => ({ ...r }));
         this.daysError.set(null);
+        this.saveError.set(null);
         this.loading.set(false);
       },
       error: err => {
@@ -102,99 +97,90 @@ export class ShiftSystemDaysComponent implements OnInit {
     });
   }
 
-  // ── Day lookup ────────────────────────────────────────────────────────────────
-  getDayRecord(dow: DayOfWeek): ShiftSystemDay | undefined {
-    return this.days().find(d => d.dayOfWeek === dow);
-  }
-
   dayLabel(dow: DayOfWeek): string {
     return this.lang.t(`manager.dayOfWeek.${dow}`);
   }
 
-  // ── Add ──────────────────────────────────────────────────────────────────────
-  openAdd(): void {
-    this.addForm.reset({ dayOfWeek: DayOfWeek.Sunday, shiftId: null });
-    this.modalError.set(null);
-    this.showAddModal.set(true);
+  shiftById(id: number | null): Shift | undefined {
+    return id ? this.allShifts().find(s => s.id === id) : undefined;
   }
 
-  submitAdd(): void {
-    if (this.addForm.invalid) { this.addForm.markAllAsTouched(); return; }
-    this.submitting.set(true);
-    this.modalError.set(null);
-    const v = this.addForm.value;
-    const payload: CreateShiftSystemDayRequest = {
-      dayOfWeek:      v.dayOfWeek!,
-      shiftId:        v.shiftId!,
-      idempotencyKey: crypto.randomUUID(),
-    };
-    this.systemService.createDay(this.shiftSystemId, payload).subscribe({
-      next: () => {
-        this.submitting.set(false);
-        this.showAddModal.set(false);
-        this.flash('Day added successfully.');
-        this.loadDays();
-      },
-      error: () => { this.submitting.set(false); },
-    });
+  workDaysCount(): number {
+    return this.rows().filter(r => r.checked).length;
   }
 
-  // ── Edit ─────────────────────────────────────────────────────────────────────
-  openEdit(day: ShiftSystemDay, event: Event): void {
-    event.stopPropagation();
-    this.selectedDay.set(day);
-    this.editForm.patchValue({ dayOfWeek: day.dayOfWeek, shiftId: day.shiftId });
-    this.modalError.set(null);
-    this.showEditModal.set(true);
-  }
-
-  submitEdit(): void {
-    if (this.editForm.invalid) { this.editForm.markAllAsTouched(); return; }
-    const id = this.selectedDay()?.id;
-    if (!id) return;
-    this.submitting.set(true);
-    this.modalError.set(null);
-    const v = this.editForm.value;
-    const payload: UpdateShiftSystemDayRequest = {
-      dayOfWeek: v.dayOfWeek!,
-      shiftId:   v.shiftId!,
-    };
-    this.systemService.updateDay(this.shiftSystemId, id, payload).subscribe({
-      next: () => {
-        this.submitting.set(false);
-        this.showEditModal.set(false);
-        this.flash('Day updated.');
-        this.loadDays();
-      },
-      error: () => { this.submitting.set(false); },
-    });
-  }
-
-  // ── Delete ───────────────────────────────────────────────────────────────────
-  confirmDelete(id: number, event: Event): void {
-    event.stopPropagation();
-    this.deleteTargetId.set(id);
-    this.showDeleteModal.set(true);
-  }
-
-  executeDelete(): void {
-    const id = this.deleteTargetId();
-    if (id === null) return;
-    this.submitting.set(true);
-    this.systemService.deleteDay(this.shiftSystemId, id).subscribe({
-      next: () => {
-        this.submitting.set(false);
-        this.showDeleteModal.set(false);
-        this.days.update(list => list.filter(d => d.id !== id));
-        this.flash('Day removed.');
-      },
-      error: () => { this.submitting.set(false); this.showDeleteModal.set(false); },
-    });
-  }
-
-  // ── Helpers ───────────────────────────────────────────────────────────────────
   formatTime(t?: string): string {
     return t ? t.substring(0, 5) : '—';
+  }
+
+  // ── Row editing ──────────────────────────────────────────────────────────────
+  toggleDay(dow: DayOfWeek): void {
+    this.rows.update(rs => rs.map(r => {
+      if (r.dow !== dow) return r;
+      const checked = !r.checked;
+      // Default to the first available shift so a freshly-checked day isn't
+      // immediately invalid — the user can still change it before saving.
+      const shiftId = checked ? (r.shiftId ?? this.allShifts()[0]?.id ?? null) : r.shiftId;
+      return { ...r, checked, shiftId };
+    }));
+  }
+
+  setShift(dow: DayOfWeek, shiftId: number | null): void {
+    this.rows.update(rs => rs.map(r => r.dow === dow ? { ...r, shiftId } : r));
+  }
+
+  isDirty(): boolean {
+    return this.rows().some((r, i) => {
+      const b = this.baseline[i];
+      return r.checked !== b.checked || (r.checked && r.shiftId !== b.shiftId);
+    });
+  }
+
+  canSave(): boolean {
+    return this.isDirty() && this.rows().every(r => !r.checked || !!r.shiftId) && !this.saving();
+  }
+
+  discard(): void {
+    this.rows.set(this.baseline.map(r => ({ ...r })));
+    this.saveError.set(null);
+  }
+
+  saveAll(): void {
+    if (!this.canSave()) return;
+    this.saving.set(true);
+    this.saveError.set(null);
+
+    const ops: Observable<{ ok: boolean }>[] = [];
+    this.rows().forEach((r, i) => {
+      const b = this.baseline[i];
+      let op: Observable<unknown> | null = null;
+      if (r.checked && !b.checked) {
+        op = this.systemService.createDay(this.shiftSystemId, {
+          dayOfWeek: r.dow, shiftId: r.shiftId!, idempotencyKey: crypto.randomUUID(),
+        });
+      } else if (!r.checked && b.checked) {
+        op = this.systemService.deleteDay(this.shiftSystemId, b.recordId!);
+      } else if (r.checked && b.checked && r.shiftId !== b.shiftId) {
+        op = this.systemService.updateDay(this.shiftSystemId, b.recordId!, {
+          dayOfWeek: r.dow, shiftId: r.shiftId!,
+        });
+      }
+      if (op) ops.push(op.pipe(map(() => ({ ok: true })), catchError(() => of({ ok: false }))));
+    });
+
+    if (!ops.length) { this.saving.set(false); return; }
+
+    forkJoin(ops).subscribe(results => {
+      this.saving.set(false);
+      const failed = results.filter(r => !r.ok).length;
+      if (failed) {
+        this.saveError.set(`Failed to save ${failed} of ${results.length} changes.`);
+      } else {
+        this.flash('Days updated successfully.');
+      }
+      // Reload regardless — reflects whatever the server actually ended up with.
+      this.loadDays();
+    });
   }
 
   private flash(msg: string): void {
