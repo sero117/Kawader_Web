@@ -169,24 +169,50 @@ export const routes: Routes = [
           import('./features/companymanager/employees/employees.component').then(m => m.EmployeesComponent),
       },
       {
-        path: 'employees/:employeeId/shift-logs',
-        title: 'سجل الحضور',
+        path: 'employees/:employeeId',
+        title: 'الموظف',
         loadComponent: () =>
-          import('./features/companymanager/employees/employee-shift-logs/employee-shift-logs.component').then(m => m.EmployeeShiftLogsComponent),
-      },
-      {
-        path: 'employees/:employeeId/incentives-deductions',
-        title: 'الحوافز والخصومات',
-        data: { leavesOnly: false },
-        loadComponent: () =>
-          import('./features/companymanager/employees/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollPageComponent),
-      },
-      {
-        path: 'employees/:employeeId/leaves',
-        title: 'الإجازات',
-        data: { leavesOnly: true },
-        loadComponent: () =>
-          import('./features/companymanager/employees/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollPageComponent),
+          import('./features/companymanager/employees/employee-detail/employee-detail.component').then(m => m.EmployeeDetailComponent),
+        children: [
+          { path: '', redirectTo: 'overview', pathMatch: 'full' },
+          {
+            path: 'overview',
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-overview/employee-overview.component').then(m => m.EmployeeOverviewComponent),
+          },
+          {
+            path: 'shift-assignment',
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-shift-assignment/employee-shift-assignment.component').then(m => m.EmployeeShiftAssignmentComponent),
+          },
+          {
+            path: 'shift-logs',
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-shift-logs/employee-shift-logs.component').then(m => m.EmployeeShiftLogsComponent),
+          },
+          {
+            path: 'leaves',
+            data: { leavesOnly: true },
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollPageComponent),
+          },
+          {
+            path: 'incentives-deductions',
+            data: { leavesOnly: false },
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollPageComponent),
+          },
+          {
+            path: 'attachments',
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-attachments/employee-attachments.component').then(m => m.EmployeeAttachmentsComponent),
+          },
+          {
+            path: 'status-history',
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-status-history/employee-status-history.component').then(m => m.EmployeeStatusHistoryComponent),
+          },
+        ],
       },
       {
         path: 'branches/:branchId/sections/:sectionId/employees',
@@ -307,24 +333,50 @@ export const routes: Routes = [
           import('./features/companymanager/employees/employees.component').then(m => m.EmployeesComponent),
       },
       {
-        path: 'employees/:employeeId/shift-logs',
-        title: 'سجل الحضور',
+        path: 'employees/:employeeId',
+        title: 'الموظف',
         loadComponent: () =>
-          import('./features/companymanager/employees/employee-shift-logs/employee-shift-logs.component').then(m => m.EmployeeShiftLogsComponent),
-      },
-      {
-        path: 'employees/:employeeId/incentives-deductions',
-        title: 'الحوافز والخصومات',
-        data: { leavesOnly: false },
-        loadComponent: () =>
-          import('./features/companymanager/employees/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollPageComponent),
-      },
-      {
-        path: 'employees/:employeeId/leaves',
-        title: 'الإجازات',
-        data: { leavesOnly: true },
-        loadComponent: () =>
-          import('./features/companymanager/employees/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollPageComponent),
+          import('./features/companymanager/employees/employee-detail/employee-detail.component').then(m => m.EmployeeDetailComponent),
+        children: [
+          { path: '', redirectTo: 'overview', pathMatch: 'full' },
+          {
+            path: 'overview',
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-overview/employee-overview.component').then(m => m.EmployeeOverviewComponent),
+          },
+          {
+            path: 'shift-assignment',
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-shift-assignment/employee-shift-assignment.component').then(m => m.EmployeeShiftAssignmentComponent),
+          },
+          {
+            path: 'shift-logs',
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-shift-logs/employee-shift-logs.component').then(m => m.EmployeeShiftLogsComponent),
+          },
+          {
+            path: 'leaves',
+            data: { leavesOnly: true },
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollPageComponent),
+          },
+          {
+            path: 'incentives-deductions',
+            data: { leavesOnly: false },
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollPageComponent),
+          },
+          {
+            path: 'attachments',
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-attachments/employee-attachments.component').then(m => m.EmployeeAttachmentsComponent),
+          },
+          {
+            path: 'status-history',
+            loadComponent: () =>
+              import('./features/companymanager/employees/employee-status-history/employee-status-history.component').then(m => m.EmployeeStatusHistoryComponent),
+          },
+        ],
       },
       {
         path: 'branches/:branchId/sections/:sectionId/employees',

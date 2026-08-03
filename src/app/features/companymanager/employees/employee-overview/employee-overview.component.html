@@ -1,0 +1,261 @@
+@if (loading()) {
+  <div class="admin-card p-6 space-y-3">
+    @for (_ of [1,2,3,4,5,6,7,8]; track $index) {
+      <div class="h-10 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+    }
+  </div>
+} @else if (employee()) {
+  @let e = employee()!;
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+    <!-- ── Personal Info ────────────────────────────────────────────────── -->
+    <div class="admin-card p-5">
+      <h2 class="text-[10px] font-bold uppercase tracking-[0.15em] mb-4" style="color: var(--text-very-faint);">
+        {{ 'manager.employeeDetail.sectionPersonal' | translate }}
+      </h2>
+      <div class="space-y-3.5">
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.phoneLabel' | translate }}</p>
+          <p class="text-sm font-medium" style="color: var(--text-base);">{{ e.phoneNumber }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.emailLabel' | translate }}</p>
+          <p class="text-sm" style="color: var(--text-muted);">{{ e.email || '—' }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.birthDateLabel' | translate }}</p>
+          <p class="text-sm" style="color: var(--text-muted);">{{ formatDate(e.birthDate) }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.genderLabel' | translate }}</p>
+          <p class="text-sm" style="color: var(--text-muted);">{{ e.gender === 0 ? ('manager.genderTypes.0' | translate) : ('manager.genderTypes.1' | translate) }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.nationalityLabel' | translate }}</p>
+          <p class="text-sm" style="color: var(--text-muted);">{{ e.nationality || '—' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Employment Info ──────────────────────────────────────────────── -->
+    <div class="admin-card p-5">
+      <h2 class="text-[10px] font-bold uppercase tracking-[0.15em] mb-4" style="color: var(--text-very-faint);">
+        {{ 'manager.employeeDetail.sectionEmployment' | translate }}
+      </h2>
+      <div class="space-y-3.5">
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.employeeNumberLabel' | translate }}</p>
+          <p class="text-sm font-mono" style="color: var(--text-muted);">{{ e.employeeNumber || '—' }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.contractTypeLabel' | translate }}</p>
+          <p class="text-sm" style="color: var(--text-muted);">{{ contractTypeLabel(e.contractType!) }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.hireDateLabel' | translate }}</p>
+          <p class="text-sm" style="color: var(--text-muted);">{{ formatDate(e.hireDate) }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.branchIdLabel' | translate }}</p>
+          <p class="text-sm" style="color: var(--text-muted);">{{ branchName() ?? '—' }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.sectionIdLabel' | translate }}</p>
+          <p class="text-sm" style="color: var(--text-muted);">{{ sectionName() ?? '—' }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.workStartTimeLabel' | translate }} / {{ 'manager.addEmployee.workEndTimeLabel' | translate }}</p>
+          <p class="text-sm font-mono" style="color: var(--text-muted);">
+            {{ employeeTodayShift()?.startTime?.substring(0,5) ?? '—' }} → {{ employeeTodayShift()?.endTime?.substring(0,5) ?? '—' }}
+          </p>
+          @if (!employeeTodayShift()) {
+            <p class="text-[10px] mt-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.noShiftTodayHint' | translate }}</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Salary + Notes ───────────────────────────────────────────────── -->
+    <div class="admin-card p-5">
+      <h2 class="text-[10px] font-bold uppercase tracking-[0.15em] mb-4" style="color: var(--text-very-faint);">
+        {{ 'manager.employeeDetail.sectionSalary' | translate }}
+      </h2>
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.baseSalaryLabel' | translate }}</p>
+        <p class="text-sm font-semibold" style="color: var(--text-base);">
+          {{ formatSalary(e) }}
+          @if (e.lastSalaryModifiedAt) {
+            <span class="text-[10px] font-normal ms-1" style="color: var(--text-very-faint);">({{ formatDate(e.lastSalaryModifiedAt) }})</span>
+          }
+        </p>
+      </div>
+
+      @if (e.internalNotes) {
+        <div class="mt-5 pt-4" style="border-top: 1px solid var(--border);">
+          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-1.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.internalNotesLabel' | translate }}</p>
+          <p class="text-sm leading-relaxed px-3 py-2.5 rounded-xl" style="color: var(--text-faint); background: var(--bg-subtle-sm); border: 1px solid var(--border);">{{ e.internalNotes }}</p>
+        </div>
+      }
+    </div>
+
+  </div>
+
+  <!-- ── Emergency Contacts ─────────────────────────────────────────────── -->
+  <div class="admin-card p-5 mt-5">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-[10px] font-bold uppercase tracking-[0.15em]" style="color: var(--text-very-faint);">{{ 'manager.emergencyContacts.title' | translate }}</h2>
+      @if (emContactsView() === 'list') {
+        <button (click)="openEmContactAdd()"
+          class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold"
+          style="background: var(--text-base); color: var(--bg-surface);">
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          {{ 'manager.emergencyContacts.addBtn' | translate }}
+        </button>
+      }
+    </div>
+
+    @if (emContactsError()) {
+      <p class="text-xs mb-3" style="color: rgba(239,68,68,0.7);">{{ emContactsError() }}</p>
+    }
+
+    @if (emContactsView() === 'list') {
+      @if (emContactsLoading()) {
+        <div class="space-y-2">
+          @for (_ of [1,2]; track $index) {
+            <div class="h-12 rounded-xl animate-pulse" style="background: var(--bg-subtle-sm);"></div>
+          }
+        </div>
+      } @else if (emContacts().length === 0) {
+        <p class="text-xs py-4 text-center" style="color: var(--text-very-faint);">{{ 'manager.emergencyContacts.empty' | translate }}</p>
+      } @else {
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          @for (c of emContacts(); track c.id) {
+            <div class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl"
+              style="background: var(--bg-subtle-sm); border: 1px solid var(--border);">
+              <div class="min-w-0">
+                <p class="text-sm font-medium truncate" style="color: var(--text-base);">{{ c.name }}</p>
+                <p class="text-[11px]" style="color: var(--text-faint);">
+                  {{ c.phone }} · {{ 'manager.relationTypes.' + c.relation | translate }}
+                </p>
+              </div>
+              <div class="flex items-center gap-1 flex-shrink-0">
+                <button (click)="openEmContactEdit(c)"
+                  class="w-7 h-7 rounded-lg flex items-center justify-center"
+                  style="color: var(--text-faint); background: var(--bg-subtle-md);">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                  </svg>
+                </button>
+                <button (click)="openEmContactDelete(c.id)"
+                  class="w-7 h-7 rounded-lg flex items-center justify-center"
+                  style="color: rgba(239,68,68,0.6); background: rgba(239,68,68,0.07);">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Delete confirm -->
+      @if (showEmDeleteModal()) {
+        <div class="mt-3 p-3 rounded-xl text-center" style="background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15);">
+          <p class="text-sm mb-3" style="color: var(--text-base);">{{ 'manager.emergencyContacts.deleteConfirm' | translate }}</p>
+          <div class="flex gap-2 max-w-xs mx-auto">
+            <button (click)="showEmDeleteModal.set(false)" class="flex-1 py-1.5 rounded-lg text-xs font-semibold"
+              style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+            <button (click)="executeEmContactDelete()" [disabled]="emContactsSubmitting()" class="flex-1 py-1.5 rounded-lg text-xs font-bold"
+              style="background: rgba(239,68,68,0.8); color: #fff;" [style.opacity]="emContactsSubmitting() ? '0.5' : '1'">
+              {{ 'common.delete' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+    }
+
+    @if (emContactsView() === 'add' || emContactsView() === 'edit') {
+      <div class="max-w-md">
+        <div class="flex items-center gap-2 mb-4">
+          <button (click)="emContactsView.set('list')" class="w-7 h-7 rounded-lg flex items-center justify-center"
+            style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+          <p class="text-sm font-semibold" style="color: var(--text-base);">
+            {{ (emContactsView() === 'add' ? 'manager.emergencyContacts.addTitle' : 'manager.emergencyContacts.editTitle') | translate }}
+          </p>
+        </div>
+
+        <form [formGroup]="emContactForm"
+          (ngSubmit)="emContactsView() === 'add' ? submitEmContactAdd() : submitEmContactEdit()"
+          class="space-y-3" novalidate>
+
+          <!-- Name -->
+          <div>
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              {{ 'manager.emergencyContacts.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+            </label>
+            <input formControlName="name" type="text" maxlength="100" (input)="onEmContactNameInput($event)" class="modal-input"
+              [class.is-invalid]="emContactForm.get('name')!.invalid && emContactForm.get('name')!.touched"
+              [attr.disabled]="emContactsSubmitting() || null" />
+          </div>
+
+          <!-- Phone + Priority -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.emergencyContacts.phoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="phone" type="tel" inputmode="numeric" maxlength="10" (input)="onEmContactPhoneInput($event)" class="modal-input"
+                [class.is-invalid]="emContactForm.get('phone')!.invalid && emContactForm.get('phone')!.touched"
+                [attr.disabled]="emContactsSubmitting() || null" />
+              @if (emContactForm.get('phone')!.invalid && emContactForm.get('phone')!.touched) {
+                <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.phone10only' | translate }}</p>
+              }
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                {{ 'manager.emergencyContacts.priorityLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+              </label>
+              <input formControlName="priority" type="number" min="1" step="1" class="modal-input" [attr.disabled]="emContactsSubmitting() || null" />
+            </div>
+          </div>
+
+          <!-- Relation -->
+          <div>
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              {{ 'manager.emergencyContacts.relationLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
+            </label>
+            <select formControlName="relation" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="emContactsSubmitting() || null">
+              <option [ngValue]="RelationType.Father">{{ 'manager.relationTypes.0' | translate }}</option>
+              <option [ngValue]="RelationType.Mother">{{ 'manager.relationTypes.1' | translate }}</option>
+              <option [ngValue]="RelationType.Brother">{{ 'manager.relationTypes.2' | translate }}</option>
+              <option [ngValue]="RelationType.Sister">{{ 'manager.relationTypes.3' | translate }}</option>
+              <option [ngValue]="RelationType.Husband">{{ 'manager.relationTypes.4' | translate }}</option>
+              <option [ngValue]="RelationType.Wife">{{ 'manager.relationTypes.5' | translate }}</option>
+              <option [ngValue]="RelationType.Son">{{ 'manager.relationTypes.6' | translate }}</option>
+              <option [ngValue]="RelationType.Daughter">{{ 'manager.relationTypes.7' | translate }}</option>
+              <option [ngValue]="RelationType.CloseRelative">{{ 'manager.relationTypes.8' | translate }}</option>
+              <option [ngValue]="RelationType.Other">{{ 'manager.relationTypes.9' | translate }}</option>
+            </select>
+          </div>
+
+          <div class="flex gap-2 pt-1">
+            <button type="button" (click)="emContactsView.set('list')" class="flex-1 py-2 rounded-xl text-xs font-semibold"
+              style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
+            <button type="submit" [disabled]="emContactsSubmitting()" class="flex-1 py-2 rounded-xl text-xs font-bold"
+              style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="emContactsSubmitting() ? '0.5' : '1'">
+              {{ emContactsSubmitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+  </div>
+}

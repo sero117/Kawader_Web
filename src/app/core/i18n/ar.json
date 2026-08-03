@@ -1474,6 +1474,18 @@
       "unassigning": "جارٍ الإلغاء…",
       "assigning": "جارٍ الإسناد…"
     },
+    "employeeDetail": {
+      "tabOverview": "نظرة عامة",
+      "tabShiftAssignment": "الوردية",
+      "tabShiftLogs": "الحضور",
+      "tabLeaves": "الإجازات",
+      "tabIncentivesDeductions": "الحوافز والخصومات",
+      "tabAttachments": "المرفقات",
+      "tabStatusHistory": "سجل الحالات",
+      "sectionPersonal": "معلومات شخصية",
+      "sectionEmployment": "معلومات التوظيف",
+      "sectionSalary": "الراتب"
+    },
     "payroll": {
       "title": "الرواتب",
       "subtitle": "إنشاء كشوف الرواتب واحتساب رواتب الموظفين.",

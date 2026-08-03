@@ -1474,6 +1474,18 @@
       "unassigning": "Removing…",
       "assigning": "Assigning…"
     },
+    "employeeDetail": {
+      "tabOverview": "Overview",
+      "tabShiftAssignment": "Shift",
+      "tabShiftLogs": "Attendance",
+      "tabLeaves": "Leaves",
+      "tabIncentivesDeductions": "Incentives & Deductions",
+      "tabAttachments": "Attachments",
+      "tabStatusHistory": "Status History",
+      "sectionPersonal": "Personal Information",
+      "sectionEmployment": "Employment Information",
+      "sectionSalary": "Salary"
+    },
     "payroll": {
       "title": "Payroll",
       "subtitle": "Create payroll runs and process employee salaries.",

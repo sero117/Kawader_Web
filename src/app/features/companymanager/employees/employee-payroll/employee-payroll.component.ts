@@ -1,5 +1,5 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { TranslatePipe } from '../../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../../core/services/language.service';
@@ -37,7 +37,7 @@ interface DateFilter {
 @Component({
   selector: 'app-employee-payroll',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, RouterLink],
+  imports: [ReactiveFormsModule, TranslatePipe],
   templateUrl: './employee-payroll.component.html',
 })
 export class EmployeePayrollPageComponent implements OnInit {
@@ -49,7 +49,6 @@ export class EmployeePayrollPageComponent implements OnInit {
   private readonly fb                  = inject(FormBuilder);
   private readonly lang                = inject(LanguageService);
   private readonly route               = inject(ActivatedRoute);
-  private readonly router              = inject(Router);
   private readonly companyTime         = inject(CompanyTimeService);
   private readonly snackbar            = inject(SnackbarService);
 
@@ -65,7 +64,6 @@ export class EmployeePayrollPageComponent implements OnInit {
    *  driven by route data so the same component serves two distinct pages. */
   leavesOnly = false;
   employee = signal<Employee | null>(null);
-  backUrl   = signal('/dashboard/manager/employees');
 
   activeTab = signal<Tab>('incentives');
 
@@ -172,9 +170,8 @@ export class EmployeePayrollPageComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.employeeId = Number(this.route.snapshot.paramMap.get('employeeId'));
+    this.employeeId = Number(this.route.parent!.snapshot.paramMap.get('employeeId'));
     this.leavesOnly = this.route.snapshot.data['leavesOnly'] === true;
-    this.backUrl.set(this.router.url.startsWith('/dashboard/hr') ? '/dashboard/hr/employees' : '/dashboard/manager/employees');
     this.employeeService.getById(this.employeeId).subscribe({
       next: (res: any) => this.employee.set(res?.data ?? res),
       error: () => {},
