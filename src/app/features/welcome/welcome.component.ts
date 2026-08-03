@@ -1,61 +1,61 @@
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
+import { LanguageService } from '../../core/services/language.service';
 import { LanguageSwitcherComponent } from '../../core/components/language-switcher/language-switcher.component';
 import { ThemeSwitcherComponent } from '../../core/components/theme-switcher/theme-switcher.component';
+
+type ShiftKind = 'morning' | 'evening' | 'off';
+type StatusKind = 'present' | 'late' | 'leave';
+
+interface RosterRow {
+  name: string;
+  role: string;
+  shift: ShiftKind;
+  status: StatusKind;
+  salary: number;
+  stamped?: boolean;
+}
 
 @Component({
   selector: 'app-welcome',
   standalone: true,
-  imports: [RouterLink, TranslatePipe, LanguageSwitcherComponent, ThemeSwitcherComponent],
+  imports: [RouterLink, TranslatePipe, DecimalPipe, LanguageSwitcherComponent, ThemeSwitcherComponent],
   templateUrl: './welcome.component.html',
   styleUrl: './welcome.component.css',
 })
 export class WelcomeComponent {
-  readonly sparkles: { top: string; left: string; size: string; duration: string; delay: string }[] = [
-    { top: '8%',  left: '90%', size: '18px', duration: '3.3s', delay: '0s'   },
-    { top: '14%', left: '5%',  size: '13px', duration: '2.8s', delay: '0.7s' },
-    { top: '46%', left: '95%', size: '11px', duration: '2.5s', delay: '0.3s' },
-    { top: '68%', left: '4%',  size: '12px', duration: '3.6s', delay: '0.9s' },
-    { top: '82%', left: '90%', size: '15px', duration: '3.8s', delay: '1.9s' },
-    { top: '30%', left: '50%', size: '7px',  duration: '4.2s', delay: '1.2s' },
+  private readonly lang = inject(LanguageService);
+
+  // The hero's left/right arrangement is a fixed compositional choice (board
+  // always on the physical right, text always on the physical left) — not
+  // something that should mirror with reading direction. The grid itself is
+  // forced to `direction: ltr` for placement, so each side re-declares its
+  // own `dir` here to keep its own text rendering correct per language.
+  readonly isRtl = computed(() => this.lang.current() === 'ar');
+
+  // Illustrative sample data for the hero roster board — not real records.
+  readonly rosterRows: RosterRow[] = [
+    { name: 'سارة عودة',  role: 'مندوبة مبيعات',       shift: 'morning', status: 'present', salary: 4500 },
+    { name: 'خالد يوسف',  role: 'محاسب',               shift: 'evening', status: 'late',    salary: 3800 },
+    { name: 'ريم ملحم',   role: 'مسؤولة موارد بشرية',   shift: 'off',     status: 'leave',   salary: 4200 },
+    { name: 'أحمد درويش', role: 'فني صيانة',            shift: 'morning', status: 'present', salary: 3200, stamped: true },
   ];
 
-  readonly blobs: { top: string; left: string; width: string; height: string; rot: string; delay: string; duration: string }[] = [
-    { top: '-6%',  left: '35%',  width: '560px', height: '210px', rot: '38deg',  delay: '0s',   duration: '10s' },
-    { top: '22%',  left: '-12%', width: '420px', height: '160px', rot: '-16deg', delay: '1.4s', duration: '11s' },
-    { top: '70%',  left: '-6%',  width: '260px', height: '260px', rot: '0deg',   delay: '0.6s', duration: '9s'  },
-    { top: '58%',  left: '62%',  width: '380px', height: '145px', rot: '24deg',  delay: '2.1s', duration: '12s' },
+  readonly ledgerRows: { key: string; color: string }[] = [
+    { key: 'employees',  color: 'var(--nav-accent)' },
+    { key: 'payroll',    color: '#34d399' },
+    { key: 'shifts',     color: '#f97316' },
+    { key: 'branches',   color: '#a855f7' },
+    { key: 'leaves',     color: 'var(--wc-ink)' },
+    { key: 'incentives', color: '#eab308' },
+    { key: 'devices',    color: 'var(--wc-brass)' },
   ];
 
-  // ── 3D pointer-tracking tilt for the hero illustration ─────────────────────
-  private readonly illustrationHost = viewChild<ElementRef<HTMLElement>>('illustrationHost');
-  readonly tiltX = signal(0);
-  readonly tiltY = signal(0);
-
-  onIllustrationMove(event: MouseEvent): void {
-    const el = this.illustrationHost()?.nativeElement;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const px = (event.clientX - rect.left) / rect.width;   // 0..1
-    const py = (event.clientY - rect.top) / rect.height;   // 0..1
-    this.tiltY.set((px - 0.5) * 22);   // rotateY range
-    this.tiltX.set((0.5 - py) * 16);   // rotateX range
-  }
-
-  resetIllustrationTilt(): void {
-    this.tiltX.set(0);
-    this.tiltY.set(0);
-  }
-
-  // ── Laptop lid: opens once on load, then toggles open/closed on click ──────
-  readonly laptopOpen = signal(false);
-
-  constructor() {
-    setTimeout(() => this.laptopOpen.set(true), 500);
-  }
-
-  toggleLaptop(): void {
-    this.laptopOpen.update(v => !v);
-  }
+  readonly roleCards: { key: string; letter: string; color: string }[] = [
+    { key: 'manager', letter: 'م', color: '#a855f7' },
+    { key: 'hr',       letter: 'ه', color: 'var(--nav-accent)' },
+    { key: 'agent',    letter: 'و', color: 'var(--wc-brass)' },
+  ];
 }

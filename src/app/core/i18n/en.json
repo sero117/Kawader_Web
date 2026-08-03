@@ -10,71 +10,48 @@
       "login": "Login"
     },
     "hero": {
-      "titleLine1": "HR Management,",
-      "titleLine2": "made effortless",
-      "subtitle": "Employees, payroll, shifts, and attendance — all on one easy-to-use platform.",
-      "cta": "Login"
+      "titleLine1": "Attendance, payroll, and leave",
+      "titleLine2": "in one record, always verified",
+      "subtitle": "From the first morning clock-in to the last signed payslip — Kawader keeps pace with your team, every step.",
+      "cta": "Login",
+      "stampNote": "Every action in Kawader documents itself the moment it happens."
     },
-    "previews": {
-      "title": "A look inside the platform",
-      "subtitle": "A quick look at the sections you'll use every day.",
-      "employees": { "title": "Employees", "desc": "All employee records in one place" },
-      "attendance": { "title": "Attendance", "desc": "Real-time check-in and check-out" },
-      "leaves": { "title": "Leaves", "desc": "Leave requests and approvals" },
-      "payroll": { "title": "Payroll", "desc": "Automatic payroll calculation" },
-      "incentives": { "title": "Incentives", "desc": "Employee bonuses and allowances" },
-      "devices": { "title": "Devices & Fingerprints", "desc": "Connect biometric devices easily" }
+    "roster": {
+      "colName": "Name",
+      "colStatus": "Status",
+      "colShift": "Shift",
+      "colSalary": "Salary",
+      "statusPresent": "Present",
+      "statusLate": "Late",
+      "statusLeave": "On leave",
+      "shiftMorning": "Morning",
+      "shiftEvening": "Evening",
+      "shiftOff": "—",
+      "stampedTag": "Verified",
+      "live": "Live"
     },
-    "why": {
-      "title": "Why Kawader?",
-      "security": { "title": "Fully secure", "desc": "Your data is protected and fully encrypted." },
-      "speed":    { "title": "Fast performance", "desc": "A smooth, fast interface without the clutter." },
-      "support":  { "title": "Always-on support", "desc": "Our team is with you every step of the way." }
+    "trust": {
+      "security": { "title": "Fully secure", "desc": "Your data is encrypted and stored safely — no one else can reach it." },
+      "speed":    { "title": "Genuinely fast", "desc": "A light, quick interface, with no extra steps in your way." },
+      "support":  { "title": "Always-on support", "desc": "Our team is with you around the clock, whenever you need us." }
     },
-    "laptopToasts": {
-      "employee":  "Employee registered successfully",
-      "shift":     "Shift added successfully",
-      "payroll":   "Payroll calculated successfully",
-      "incentive": "Incentive added successfully",
-      "leave":     "Leave request approved"
-    },
-    "facts": {
-      "uptime":     { "title": "Available 24/7", "desc": "Access your system anytime, anywhere" },
-      "employees":  { "title": "No employee limit", "desc": "From a small team to thousands of employees" },
-      "timeSaved":  { "title": "Save time", "desc": "Automated payroll and attendance instead of manual spreadsheets" }
-    },
-    "features": {
-      "employees": {
-        "title": "Employee Management",
-        "desc": "Employee profiles, contracts, leaves, and attachments in one place."
-      },
-      "payroll": {
-        "title": "Payroll",
-        "desc": "Automatically calculate payroll runs, incentives, and deductions."
-      },
-      "shifts": {
-        "title": "Shifts & Attendance",
-        "desc": "Organize shifts and track check-in/check-out with precision."
-      },
-      "branches": {
-        "title": "Branches & Sections",
-        "desc": "Manage your company's branches and sections from one dashboard."
-      }
-    },
-    "steps": {
-      "title": "How to get started",
-      "one":   { "title": "Create your company account", "desc": "A few quick steps to activate your company on the platform." },
-      "two":   { "title": "Add your employees",           "desc": "Add branches, sections, and employees in minutes." },
-      "three": { "title": "Start working",                "desc": "Payroll, shifts, and attendance — ready to use right away." }
+    "ledger": {
+      "title": "Kawader's Records",
+      "subtitle": "From the first employee you add to the last cent of their pay — everything documented in one place.",
+      "employees":  { "title": "Employees", "desc": "Full profiles: contracts, leave, attachments, and status history." },
+      "payroll":    { "title": "Payroll", "desc": "Payroll runs, allowances, and deductions calculated automatically every month." },
+      "shifts":     { "title": "Shifts & Attendance", "desc": "Shift scheduling, with check-in and check-out tracked in real time." },
+      "branches":   { "title": "Branches & Sections", "desc": "Manage every branch and section of your company from one dashboard." },
+      "leaves":     { "title": "Leave", "desc": "Leave recorded and tracked directly by management." },
+      "incentives": { "title": "Incentives & Deductions", "desc": "Bonuses and deductions, accounted for precisely on every payslip." },
+      "devices":    { "title": "Devices & Fingerprints", "desc": "Connect biometric devices easily, for attendance that logs itself." }
     },
     "roles": {
-      "title": "A tailored view for every role",
-      "subtitle": "Everyone on your team sees only what's relevant to them.",
-      "admin":   { "title": "Admin",           "desc": "Manage the whole platform and its companies" },
-      "manager": { "title": "Company Manager", "desc": "Full control over your company and staff" },
-      "hr":      { "title": "HR Manager",      "desc": "Manage employees and payroll" },
-      "employee":{ "title": "Employee",        "desc": "Their attendance, leaves, and pay" },
-      "agent":   { "title": "Agent",           "desc": "Track referred companies" }
+      "title": "A badge for every role",
+      "subtitle": "Everyone on your team sees only what's theirs.",
+      "manager": { "title": "Company Manager", "desc": "Full control over your company, its branches, and its staff." },
+      "hr":      { "title": "HR Manager", "desc": "Manages employees, payroll, and leave day to day." },
+      "agent":   { "title": "Agent", "desc": "Tracks referred companies and their activation status." }
     },
     "faq": {
       "title": "Frequently asked questions",
@@ -1207,30 +1184,19 @@
     },
     "shiftSystemDays": {
       "title": "Configure Days",
-      "addBtn": "Add Day",
       "loadError": "Failed to load days",
       "colDay": "Day",
       "colShift": "Shift",
       "colTime": "Working Hours",
-      "colActions": "Actions",
       "holiday": "Holiday",
       "workDays": "Working Days",
-      "holidays": "Holidays"
+      "holidays": "Holidays",
+      "saveBtn": "Save Changes",
+      "discardBtn": "Discard",
+      "unsavedBadge": "Unsaved changes"
     },
     "addShiftSystemDay": {
-      "title": "Add Working Day",
-      "dayLabel": "Day of Week",
-      "shiftLabel": "Shift",
       "shiftPlaceholder": "Select a shift…"
-    },
-    "editShiftSystemDay": {
-      "title": "Edit Working Day",
-      "dayLabel": "Day of Week",
-      "shiftLabel": "Shift"
-    },
-    "deleteShiftDayModal": {
-      "title": "Remove Day?",
-      "message": "This day will be marked as a holiday in this shift system."
     },
     "dayOfWeek": {
       "0": "Sunday",
