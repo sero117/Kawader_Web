@@ -51,14 +51,16 @@
         </div>
       }
 
-      <!-- Branches — all roles -->
-      <a [routerLink]="basePath + '/branches'" routerLinkActive="sidebar-active" class="sidebar-link">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
-        </svg>
-        <span class="sidebar-link-label">{{ 'manager.nav.branches' | translate }}</span>
-      </a>
+      <!-- Branches — CompanyManager only, backend has no HR permission on BranchesController -->
+      @if (isManager) {
+        <a [routerLink]="basePath + '/branches'" routerLinkActive="sidebar-active" class="sidebar-link">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
+          </svg>
+          <span class="sidebar-link-label">{{ 'manager.nav.branches' | translate }}</span>
+        </a>
+      }
 
       <!-- Employees -->
       <a [routerLink]="basePath + '/employees'" routerLinkActive="sidebar-active" class="sidebar-link">
@@ -81,19 +83,22 @@
         </button>
         <div class="sidebar-accordion-body" [class.open]="shiftsOpen()">
           <div class="sidebar-sub">
-            <a [routerLink]="basePath + '/shifts'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-              </svg>
-              <span class="sidebar-link-label">{{ 'manager.nav.shifts' | translate }}</span>
-            </a>
-            <a [routerLink]="basePath + '/shift-systems'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
-              </svg>
-              <span class="sidebar-link-label">{{ 'manager.nav.shiftSystems' | translate }}</span>
-            </a>
+            <!-- Shifts / Shift Systems config — CompanyManager only, no HR permission on these controllers -->
+            @if (isManager) {
+              <a [routerLink]="basePath + '/shifts'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                </svg>
+                <span class="sidebar-link-label">{{ 'manager.nav.shifts' | translate }}</span>
+              </a>
+              <a [routerLink]="basePath + '/shift-systems'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+                </svg>
+                <span class="sidebar-link-label">{{ 'manager.nav.shiftSystems' | translate }}</span>
+              </a>
+            }
             <a [routerLink]="basePath + '/shift-logs'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -105,17 +110,19 @@
         </div>
       } @else {
         <!-- Shifts group — collapsed (icon only) -->
-        <a [routerLink]="basePath + '/shifts'" routerLinkActive="sidebar-active" class="sidebar-link">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-          </svg>
-        </a>
-        <a [routerLink]="basePath + '/shift-systems'" routerLinkActive="sidebar-active" class="sidebar-link">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
-          </svg>
-        </a>
+        @if (isManager) {
+          <a [routerLink]="basePath + '/shifts'" routerLinkActive="sidebar-active" class="sidebar-link">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+          </a>
+          <a [routerLink]="basePath + '/shift-systems'" routerLinkActive="sidebar-active" class="sidebar-link">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+            </svg>
+          </a>
+        }
         <a [routerLink]="basePath + '/shift-logs'" routerLinkActive="sidebar-active" class="sidebar-link">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -124,19 +131,21 @@
         </a>
       }
 
-      <!-- Holidays section -->
-      @if (!collapsed()) {
-        <div class="sidebar-section">
-          <span class="sidebar-section-label">{{ 'manager.nav.holidaysSection' | translate }}</span>
-        </div>
+      <!-- Holidays section — CompanyManager only, no HR permission on CompanyHolidaysController -->
+      @if (isManager) {
+        @if (!collapsed()) {
+          <div class="sidebar-section">
+            <span class="sidebar-section-label">{{ 'manager.nav.holidaysSection' | translate }}</span>
+          </div>
+        }
+        <a [routerLink]="basePath + '/company-holidays'" routerLinkActive="sidebar-active" class="sidebar-link">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-6.364-.386 1.591-1.591M3 12h2.25m.386-6.364 1.591 1.591M12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5Z"/>
+          </svg>
+          <span class="sidebar-link-label">{{ 'manager.nav.companyHolidays' | translate }}</span>
+        </a>
       }
-      <a [routerLink]="basePath + '/company-holidays'" routerLinkActive="sidebar-active" class="sidebar-link">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-6.364-.386 1.591-1.591M3 12h2.25m.386-6.364 1.591 1.591M12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5Z"/>
-        </svg>
-        <span class="sidebar-link-label">{{ 'manager.nav.companyHolidays' | translate }}</span>
-      </a>
 
       <!-- Payroll section -->
       @if (!collapsed()) {
