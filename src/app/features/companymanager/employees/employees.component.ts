@@ -218,18 +218,39 @@ export class EmployeesComponent implements OnInit {
     ).subscribe((hrRes: any) => {
       const hrRaw = hrRes?.data ?? hrRes;
       const hrAll: Employee[] = Array.isArray(hrRaw) ? hrRaw : (hrRaw?.items ?? hrRaw?.data ?? hrRaw?.employees ?? []);
-      const hrEmployees = hrAll.filter(e => e.employeeRole === EmployeeType.HumanResourceManager);
+      // A branch-scoped HR manager is already correctly included/excluded by
+      // the branch-filtered query above — only employees NOT already in that
+      // result are candidates for being company-wide HR.
+      const hrCandidates = hrAll.filter(e =>
+        e.employeeRole === EmployeeType.HumanResourceManager && !branchItems.some(b => b.id === e.id));
 
-      if (this.sectionId) {
-        this.filterBySectionViaDetails(branchItems, hrEmployees);
+      if (!hrCandidates.length) {
+        if (this.sectionId) { this.filterBySectionViaDetails(branchItems, []); return; }
+        this.employees.set(branchItems);
+        this.hasMore.set(false);
+        this.loading.set(false);
         return;
       }
 
-      const merged = [...branchItems];
-      for (const hr of hrEmployees) if (!merged.some(e => e.id === hr.id)) merged.push(hr);
-      this.employees.set(merged);
-      this.hasMore.set(false);
-      this.loading.set(false);
+      // The list endpoint doesn't return branchId — fetch each candidate's
+      // own record to tell company-wide HR (branchId null, must be merged in
+      // everywhere) apart from HR scoped to a different branch (must not).
+      forkJoin(hrCandidates.map(hr => this.employeeService.getById(hr.id).pipe(catchError(() => of(null))))).subscribe(details => {
+        const companyWideHr = hrCandidates.filter((_, i) => {
+          const d: any = details[i];
+          const branchId = d?.data?.branchId ?? d?.branchId;
+          return !branchId;
+        });
+
+        if (this.sectionId) {
+          this.filterBySectionViaDetails(branchItems, companyWideHr);
+          return;
+        }
+
+        this.employees.set([...branchItems, ...companyWideHr]);
+        this.hasMore.set(false);
+        this.loading.set(false);
+      });
     });
   }
 
