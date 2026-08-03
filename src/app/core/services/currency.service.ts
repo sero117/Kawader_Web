@@ -49,10 +49,11 @@ export class CurrencyService {
     return this.api.get<PagedResult<CurrencyRate>>(`${this.baseUrl}/${id}/rates`, p);
   }
 
-  /** CompanyManager only — the caller's own company's allowed currencies, ordered by
-   *  priority ascending. Returns a plain array (not paged); empty when nothing is
-   *  granted yet — do not treat that as an error. */
+  /** The caller's own company's allowed currencies, ordered by priority
+   *  ascending. Returns a plain array (not paged); empty when nothing is
+   *  granted yet — do not treat that as an error. Backend renamed this from
+   *  /me to /company (also fixing the HR 403 — it's no longer CompanyManager-only). */
   getMe(silent = false): Observable<Currency[]> {
-    return this.api.get<Currency[]>(`${this.baseUrl}/me`, undefined, silent ? SILENT_HEADERS : undefined);
+    return this.api.get<Currency[]>(`${this.baseUrl}/company`, undefined, silent ? SILENT_HEADERS : undefined);
   }
 }
