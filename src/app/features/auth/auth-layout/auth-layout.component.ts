@@ -4,6 +4,7 @@ import { filter } from 'rxjs/operators';
 import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher.component';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { AccentService } from '../../../core/services/accent.service';
 import {
   trigger,
   transition,
@@ -49,6 +50,10 @@ export class AuthLayoutComponent implements OnInit {
   private readonly router = inject(Router);
 
   routeAnim = signal('');
+
+  constructor() {
+    inject(AccentService).resetToBrandDefault();
+  }
 
   ngOnInit(): void {
     this.syncAnim();

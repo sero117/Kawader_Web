@@ -1,6 +1,7 @@
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
+import { AccentService } from '../../core/services/accent.service';
 import { LanguageSwitcherComponent } from '../../core/components/language-switcher/language-switcher.component';
 import { ThemeSwitcherComponent } from '../../core/components/theme-switcher/theme-switcher.component';
 
@@ -36,6 +37,7 @@ export class WelcomeComponent {
   readonly laptopOpen = signal(false);
 
   constructor() {
+    inject(AccentService).resetToBrandDefault();
     setTimeout(() => this.laptopOpen.set(true), 500);
   }
 

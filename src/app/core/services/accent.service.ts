@@ -39,4 +39,17 @@ export class AccentService {
     root.style.setProperty('--accent-light', color.light);
     root.style.setProperty('--accent-dark', color.dark);
   }
+
+  /** Clears any inline accent override so the element falls back to the
+   *  brand-default color from styles.css. `set()`/`init()` write inline
+   *  styles onto <html> (a global, unscoped element), which otherwise
+   *  survive client-side navigation into public pages that never call
+   *  `init()` — a signed-in user's personal dashboard accent would keep
+   *  showing on the public landing/plans/auth pages instead of the fixed
+   *  brand color. Call this from those pages' constructors. */
+  resetToBrandDefault(): void {
+    const root = document.documentElement;
+    root.style.removeProperty('--accent-light');
+    root.style.removeProperty('--accent-dark');
+  }
 }

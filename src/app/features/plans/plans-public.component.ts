@@ -3,6 +3,7 @@ import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
 import { LanguageService } from '../../core/services/language.service';
+import { AccentService } from '../../core/services/accent.service';
 import { LanguageSwitcherComponent } from '../../core/components/language-switcher/language-switcher.component';
 import { ThemeSwitcherComponent } from '../../core/components/theme-switcher/theme-switcher.component';
 import { Plan } from '../../core/models/plan.models';
@@ -83,6 +84,10 @@ export class PlansPublicComponent {
   private readonly lang = inject(LanguageService);
 
   readonly plans = PLACEHOLDER_PLANS;
+
+  constructor() {
+    inject(AccentService).resetToBrandDefault();
+  }
 
   categoryLabel(plan: Plan): string {
     return this.lang.current() === 'ar' ? plan.subscriptionCategoryArabicName : plan.subscriptionCategoryEnglishName;
