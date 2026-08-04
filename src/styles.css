@@ -30,8 +30,8 @@ input[type="checkbox"] {
   --text-ultra-faint: rgba(13, 12, 30, 0.12);
   --nav-active-bg:    color-mix(in srgb, var(--accent-light) 12%, #ffffff);
   --nav-active-text:  var(--accent-light);
-  --accent-light:     #4F46E5;
-  --accent-dark:      #6366F1;
+  --accent-light:     #A0673A;
+  --accent-dark:      #C99361;
   --nav-accent:       var(--accent-light);
   --table-row-bg:     color-mix(in srgb, var(--accent-light) 3%, #ffffff);
   --table-row-bg-alt: color-mix(in srgb, var(--accent-light) 6%, #f8f7f4);

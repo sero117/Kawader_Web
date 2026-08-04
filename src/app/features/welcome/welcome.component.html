@@ -1,16 +1,5 @@
 <div class="relative overflow-hidden min-h-screen" style="background: var(--auth-bg); color: var(--auth-fg);">
 
-  <!-- Decorative background -->
-  @for (b of blobs; track $index) {
-    <div class="auth-blob" [style.top]="b.top" [style.left]="b.left" [style.width]="b.width" [style.height]="b.height"
-      [style.--rot]="b.rot" [style.transform]="'rotate(' + b.rot + ')'"
-      [style.animation-delay]="b.delay" [style.animation-duration]="b.duration"></div>
-  }
-  @for (s of sparkles; track $index) {
-    <span class="auth-sparkle" [style.top]="s.top" [style.left]="s.left" [style.font-size]="s.size"
-      [style.animation-duration]="s.duration" [style.animation-delay]="s.delay">✦</span>
-  }
-
   <!-- Floating header -->
   <header class="wc-header fixed top-4 inset-x-4 sm:inset-x-10 z-30 flex items-center justify-between px-5 sm:px-7 py-3 rounded-2xl"
     style="background: color-mix(in srgb, var(--auth-bg) 68%, transparent); backdrop-filter: blur(14px); border: 1px solid var(--bg-subtle-md);">
@@ -87,13 +76,13 @@
               <linearGradient id="wcNeonEdge" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0%" stop-color="#34d399"/>
                 <stop offset="55%" stop-color="var(--nav-accent)"/>
-                <stop offset="100%" stop-color="#a855f7"/>
+                <stop offset="100%" stop-color="#B87333"/>
               </linearGradient>
             </defs>
 
             <g class="wc-orbit" opacity="0.55">
               <circle cx="190" cy="8" r="4" fill="var(--nav-accent)"/>
-              <circle cx="190" cy="212" r="3.5" fill="#a855f7"/>
+              <circle cx="190" cy="212" r="3.5" fill="#B87333"/>
             </g>
 
             <ellipse class="wc-laptop-glow" cx="190" cy="95" rx="160" ry="95" fill="url(#wcScreenGlow)"/>
@@ -122,7 +111,7 @@
                   <rect x="86" y="80" width="28" height="4" rx="2" fill="var(--nav-accent)" opacity="0.3"/>
                   <rect x="86" y="90" width="20" height="4" rx="2" fill="var(--nav-accent)" opacity="0.3"/>
 
-                  <circle cx="140" cy="45" r="9" fill="#a855f7" opacity="0.85"/>
+                  <circle cx="140" cy="45" r="9" fill="#B87333" opacity="0.85"/>
                   <rect x="153" y="40" width="60" height="6" rx="3" fill="var(--auth-fg)" opacity="0.7"/>
                   <rect x="153" y="50" width="40" height="4" rx="2" fill="var(--auth-fg)" opacity="0.3"/>
                   <rect x="272" y="41" width="24" height="12" rx="6" fill="#34d399" opacity="0.35"/>
@@ -138,7 +127,7 @@
                   <rect x="220" y="92" width="20" height="8" rx="2" fill="#34d399" opacity="0.7"/>
 
                   <g transform="translate(132 116)">
-                    <rect x="0"  y="18" width="11" height="16" rx="2" fill="#a855f7" opacity="0.55"/>
+                    <rect x="0"  y="18" width="11" height="16" rx="2" fill="#B87333" opacity="0.55"/>
                     <rect x="16" y="10" width="11" height="24" rx="2" fill="var(--nav-accent)" opacity="0.55"/>
                     <rect x="32" y="20" width="11" height="14" rx="2" fill="#34d399" opacity="0.6"/>
                     <rect x="48" y="4"  width="11" height="30" rx="2" fill="#f97316" opacity="0.55"/>
@@ -160,11 +149,11 @@
                   <!-- Team of avatars, popping in one by one -->
                   @for (p of [
                     { cx: 159, cy: 92,  color: 'var(--nav-accent)', delay: '0s' },
-                    { cx: 213, cy: 92,  color: '#a855f7',           delay: '0.12s' },
+                    { cx: 213, cy: 92,  color: '#B87333',           delay: '0.12s' },
                     { cx: 267, cy: 92,  color: '#34d399',           delay: '0.24s' },
                     { cx: 159, cy: 138, color: '#f97316',           delay: '0.36s' },
                     { cx: 213, cy: 138, color: 'var(--nav-accent)', delay: '0.48s' },
-                    { cx: 267, cy: 138, color: '#a855f7',           delay: '0.6s' },
+                    { cx: 267, cy: 138, color: '#B87333',           delay: '0.6s' },
                   ]; track p.cx + '-' + p.cy) {
                     <circle class="wc-avatar-pop" [attr.cx]="p.cx" [attr.cy]="p.cy" r="13" [attr.fill]="p.color" opacity="0.8"
                       [style.animation-delay]="p.delay"/>
@@ -193,8 +182,8 @@
               <path d="M333 200 Q333 162 355 162 Q377 162 377 200 Z" fill="var(--nav-accent)" opacity="0.85"/>
               <circle cx="355" cy="146" r="13" fill="var(--nav-accent)" opacity="0.9"/>
               <path d="M346 140 Q346 130 355 130 Q364 130 364 140" fill="none" stroke="var(--auth-bg)" stroke-width="2.5" opacity="0.5" stroke-linecap="round"/>
-              <circle class="wc-hand wc-hand-1" cx="336" cy="193" r="5.5" fill="#a855f7"/>
-              <circle class="wc-hand wc-hand-2" cx="350" cy="197" r="5.5" fill="#a855f7"/>
+              <circle class="wc-hand wc-hand-1" cx="336" cy="193" r="5.5" fill="#B87333"/>
+              <circle class="wc-hand wc-hand-2" cx="350" cy="197" r="5.5" fill="#B87333"/>
             </g>
           </svg>
         </div>
@@ -228,7 +217,7 @@
           </div>
         </div>
         <div class="flex items-center gap-3 justify-center">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: rgba(168,85,247,0.14); color: #a855f7;">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: rgba(184,115,51,0.14); color: #B87333;">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
             </svg>
@@ -276,7 +265,7 @@
         </div>
 
         <div class="wc-card rounded-2xl p-5" style="background: var(--bg-subtle-sm); border: 1px solid var(--bg-subtle-md);">
-          <div class="wc-card-icon w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: rgba(168,85,247,0.14); color: #a855f7;">
+          <div class="wc-card-icon w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: rgba(184,115,51,0.14); color: #B87333;">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
             </svg>
@@ -305,7 +294,7 @@
             </div>
             @for (row of [1,2,3]; track row) {
               <div class="flex items-center gap-2.5 py-1.5">
-                <div class="w-7 h-7 rounded-full flex-shrink-0" [style.background]="row === 1 ? 'var(--nav-accent)' : row === 2 ? '#a855f7' : '#34d399'" style="opacity:0.8"></div>
+                <div class="w-7 h-7 rounded-full flex-shrink-0" [style.background]="row === 1 ? 'var(--nav-accent)' : row === 2 ? '#B87333' : '#34d399'" style="opacity:0.8"></div>
                 <div class="flex-1">
                   <div class="h-2 rounded-full mb-1" style="width: 70%; background: var(--auth-fg); opacity:0.55;"></div>
                   <div class="h-1.5 rounded-full" style="width: 40%; background: var(--auth-fg); opacity:0.22;"></div>
@@ -382,7 +371,7 @@
             </div>
           </div>
           <div class="px-4 py-3 flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(168,85,247,0.14); color: #a855f7;">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(184,115,51,0.14); color: #B87333;">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-13.5 3h.008v.008H9v-.008zm3 0h.008v.008H12v-.008zm3 0h.008v.008H15v-.008z"/>
               </svg>
@@ -408,7 +397,7 @@
               <div class="wc-bar rounded-t" style="width:14px; height:60%; background:#34d399; opacity:0.6;"></div>
               <div class="wc-bar rounded-t" style="width:14px; height:100%; background: var(--nav-accent); opacity:0.6;"></div>
               <div class="wc-bar rounded-t" style="width:14px; height:40%; background:#f97316; opacity:0.6;"></div>
-              <div class="wc-bar rounded-t" style="width:14px; height:75%; background:#a855f7; opacity:0.6;"></div>
+              <div class="wc-bar rounded-t" style="width:14px; height:75%; background:#B87333; opacity:0.6;"></div>
             </div>
           </div>
           <div class="px-4 py-3 flex items-center gap-2.5">
@@ -549,7 +538,7 @@
       <p class="text-center text-sm mb-10" style="color: var(--auth-fg-35, rgba(255,255,255,0.55));">{{ 'welcome.roles.subtitle' | translate }}</p>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
         @for (r of [
-          { key: 'manager',  color: '#a855f7', path: 'M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21' },
+          { key: 'manager',  color: '#B87333', path: 'M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21' },
           { key: 'hr',       color: 'var(--nav-accent)', path: 'M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z' },
           { key: 'agent',    color: '#eab308', path: 'M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0z' },
         ]; track r.key) {
