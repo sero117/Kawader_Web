@@ -97,20 +97,6 @@
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.wc-orbit {
-  animation: wc-orbit-spin 14s linear infinite;
-  transform-origin: 190px 100px;
-}
-@keyframes wc-orbit-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-.wc-orbit circle { animation: wc-orbit-counter 14s linear infinite; transform-origin: center; }
-@keyframes wc-orbit-counter {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(-360deg); }
-}
-
 .wc-laptop-glow {
   animation: wc-glow-pulse 3.5s ease-in-out infinite;
   transform-origin: center;
@@ -207,7 +193,8 @@
 
 /* ── Quick facts bar ──────────────────────────────────────────────── */
 .wc-facts-bar {
-  background: linear-gradient(120deg, color-mix(in srgb, var(--nav-accent) 8%, var(--bg-subtle-sm)), color-mix(in srgb, #a855f7 8%, var(--bg-subtle-sm)));
+  background: var(--auth-card);
+  box-shadow: 0 20px 40px -24px rgba(0, 0, 0, 0.35);
   animation: wc-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   animation-delay: 0.5s;
 }
