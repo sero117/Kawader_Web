@@ -1,0 +1,94 @@
+:host {
+  display: block;
+}
+
+/* ── Header (mirrors welcome.component.css — Angular scopes styles per
+   component, so this can't just inherit from there) ─────────────────── */
+.wc-header {
+  animation: pp-fade-down 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  box-shadow: 0 10px 34px -14px rgba(0, 0, 0, 0.32);
+}
+@keyframes pp-fade-down {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.wc-switchers {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px;
+  border-radius: 9px;
+  background: var(--bg-subtle-md);
+  border: 1px solid var(--bg-subtle-md);
+}
+.wc-switchers-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--auth-fg-35, rgba(255,255,255,0.15));
+  opacity: 0.4;
+}
+.wc-switchers ::ng-deep .lang-track,
+.wc-switchers ::ng-deep .theme-track {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.wc-btn-primary {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
+  box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--nav-accent) 55%, transparent);
+}
+.wc-btn-primary:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 28px -10px color-mix(in srgb, var(--nav-accent) 65%, transparent);
+}
+
+/* ── Pricing cards ─────────────────────────────────────────────────── */
+.pp-card {
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s;
+  animation: pp-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.pp-card:nth-child(1) { animation-delay: 0.05s; }
+.pp-card:nth-child(2) { animation-delay: 0.12s; }
+.pp-card:nth-child(3) { animation-delay: 0.19s; }
+@keyframes pp-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pp-card-featured {
+  transform: scale(1.03);
+  box-shadow: 0 24px 48px -20px color-mix(in srgb, var(--nav-accent) 35%, transparent);
+}
+.pp-card-featured:hover { transform: scale(1.03) translateY(-3px); }
+.pp-card:not(.pp-card-featured):hover { transform: translateY(-3px); }
+
+.pp-badge {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--nav-accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.pp-price {
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wc-header, .pp-card {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .pp-card-featured { transform: scale(1.03) !important; }
+}

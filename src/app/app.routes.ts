@@ -485,6 +485,14 @@ export const routes: Routes = [
       import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
   },
 
+  // ── Plans (public) ────────────────────────────────────────────────────────
+  {
+    path: 'plans',
+    title: 'الخطط والأسعار',
+    loadComponent: () =>
+      import('./features/plans/plans-public.component').then(m => m.PlansPublicComponent),
+  },
+
   // ── Landing page ─────────────────────────────────────────────────────────
   {
     path: '',

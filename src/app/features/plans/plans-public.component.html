@@ -1,0 +1,102 @@
+<div class="relative overflow-hidden min-h-screen" style="background: var(--auth-bg); color: var(--auth-fg);">
+
+  <!-- Floating header — same shell as the landing page, "Plans" marked active -->
+  <header class="wc-header fixed top-4 inset-x-4 sm:inset-x-10 z-30 flex items-center justify-between px-5 sm:px-7 py-3 rounded-2xl"
+    style="background: color-mix(in srgb, var(--auth-bg) 68%, transparent); backdrop-filter: blur(14px); border: 1px solid var(--bg-subtle-md);">
+    <a routerLink="/" class="flex items-center gap-2.5">
+      <svg width="30" height="30" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="96" height="96" rx="28" fill="var(--nav-accent)"/>
+        <g fill="#FFFFFF">
+          <g opacity="0.72"><circle cx="31" cy="45" r="7"/><rect x="24" y="53" width="14" height="25" rx="7"/></g>
+          <g opacity="0.72"><circle cx="69" cy="45" r="7"/><rect x="62" y="53" width="14" height="25" rx="7"/></g>
+          <circle cx="50" cy="37" r="9.5"/><rect x="38.5" y="48" width="23" height="32" rx="11.5"/>
+        </g>
+      </svg>
+      <span class="font-bold text-lg" style="color: var(--auth-fg);">{{ 'brand.name' | translate }}</span>
+    </a>
+
+    <nav class="flex items-center gap-2 sm:gap-3">
+      <a routerLink="/" class="hidden sm:inline text-sm font-semibold px-2" style="color: var(--auth-fg);">
+        {{ 'welcome.nav.main' | translate }}
+      </a>
+      <a routerLink="/plans" class="hidden sm:inline text-sm font-semibold px-2" style="color: var(--nav-accent);">
+        {{ 'welcome.nav.plans' | translate }}
+      </a>
+      <div class="wc-switchers">
+        <app-language-switcher />
+        <span class="wc-switchers-divider"></span>
+        <app-theme-switcher />
+      </div>
+      <a routerLink="/auth/login" class="wc-btn-primary text-sm font-bold px-4 py-2 rounded-xl"
+        style="background: var(--nav-accent); color: #fff;">
+        {{ 'welcome.nav.login' | translate }}
+      </a>
+    </nav>
+  </header>
+
+  <div class="relative z-10">
+
+    <!-- Hero -->
+    <section class="px-5 sm:px-10 pt-32 sm:pt-40 pb-14 max-w-3xl mx-auto text-center">
+      <h1 class="font-bold text-3xl sm:text-4xl tracking-tight mb-4" style="color: var(--auth-fg);">
+        {{ 'plansPage.title' | translate }}
+      </h1>
+      <p class="text-base sm:text-lg" style="color: var(--auth-fg-35, rgba(255,255,255,0.6)); line-height: 1.85;">
+        {{ 'plansPage.subtitle' | translate }}
+      </p>
+    </section>
+
+    <!-- Pricing cards -->
+    <section class="px-5 sm:px-10 pb-16 max-w-5xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+        @for (plan of plans; track plan.id) {
+          <div class="pp-card rounded-3xl p-7 flex flex-col" [class.pp-card-featured]="plan.isRecommended"
+            [style.background]="plan.isRecommended ? 'var(--auth-card)' : 'var(--bg-subtle-sm)'"
+            [style.border]="plan.isRecommended ? '2px solid var(--nav-accent)' : '1px solid var(--bg-subtle-md)'">
+
+            @if (plan.isRecommended) {
+              <span class="pp-badge">{{ 'plansPage.recommended' | translate }}</span>
+            }
+
+            <h3 class="font-bold text-lg mb-1" style="color: var(--auth-fg);">{{ plan.name }}</h3>
+            <p class="text-xs mb-5" style="color: var(--auth-fg-35, rgba(255,255,255,0.5));">
+              @if (plan.maxEmployees > 0) {
+                {{ 'plansPage.upTo' | translate }} {{ plan.maxEmployees | number }} {{ 'plansPage.employees' | translate }}
+              } @else {
+                {{ 'plansPage.unlimited' | translate }} {{ 'plansPage.employees' | translate }}
+              }
+            </p>
+
+            <div class="flex items-baseline gap-1.5 mb-6">
+              <span class="pp-price font-bold" style="color: var(--auth-fg);">{{ plan.price | number }}</span>
+              <span class="text-sm font-semibold" style="color: var(--auth-fg-45, rgba(255,255,255,0.45));">{{ plan.currency }}</span>
+              <span class="text-xs" style="color: var(--auth-fg-35, rgba(255,255,255,0.4));">/ {{ categoryLabel(plan) }}</span>
+            </div>
+
+            <ul class="flex flex-col gap-2.5 mb-7 flex-1">
+              @for (d of plan.details; track d) {
+                <li class="flex items-start gap-2 text-sm" style="color: var(--auth-fg-80, rgba(255,255,255,0.8));">
+                  <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: var(--nav-accent);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  {{ d }}
+                </li>
+              }
+            </ul>
+
+            <a routerLink="/auth/register" class="text-center text-sm font-bold py-3 rounded-xl transition-colors"
+              [style.background]="plan.isRecommended ? 'var(--nav-accent)' : 'var(--bg-subtle-md)'"
+              [style.color]="plan.isRecommended ? '#fff' : 'var(--auth-fg)'">
+              {{ 'plansPage.cta' | translate }}
+            </a>
+          </div>
+        }
+      </div>
+
+      <p class="text-center text-xs mt-8" style="color: var(--auth-fg-35, rgba(255,255,255,0.4));">
+        {{ 'plansPage.note' | translate }}
+      </p>
+    </section>
+
+  </div>
+</div>

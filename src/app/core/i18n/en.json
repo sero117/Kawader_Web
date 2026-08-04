@@ -7,6 +7,7 @@
   "welcome": {
     "nav": {
       "main": "Main",
+      "plans": "Plans",
       "login": "Login"
     },
     "hero": {
@@ -89,6 +90,16 @@
       "contact": "Contact"
     },
     "footer": "© Kawader — All rights reserved."
+  },
+  "plansPage": {
+    "title": "Simple plans that fit your company's size",
+    "subtitle": "Pick the right plan and start managing your team in minutes — no hidden fees.",
+    "recommended": "Most popular",
+    "upTo": "Up to",
+    "employees": "employees",
+    "unlimited": "Unlimited",
+    "cta": "Get started",
+    "note": "Prices shown are a demo preview and subject to change."
   },
   "common": {
     "noData": "No data available",

@@ -21,6 +21,9 @@
       <a routerLink="/" class="hidden sm:inline text-sm font-semibold px-2" style="color: var(--auth-fg);">
         {{ 'welcome.nav.main' | translate }}
       </a>
+      <a routerLink="/plans" class="hidden sm:inline text-sm font-semibold px-2" style="color: var(--auth-fg);">
+        {{ 'welcome.nav.plans' | translate }}
+      </a>
       <div class="wc-switchers">
         <app-language-switcher />
         <span class="wc-switchers-divider"></span>
@@ -595,6 +598,7 @@
         <div>
           <h4 class="text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--auth-fg-35, rgba(255,255,255,0.45));">{{ 'welcome.footerCols.product' | translate }}</h4>
           <div class="flex flex-col gap-2">
+            <a routerLink="/plans" class="text-xs" style="color: var(--auth-fg-35, rgba(255,255,255,0.6));">{{ 'welcome.nav.plans' | translate }}</a>
             <a routerLink="/auth/login" class="text-xs" style="color: var(--auth-fg-35, rgba(255,255,255,0.6));">{{ 'welcome.nav.login' | translate }}</a>
             <a routerLink="/auth/employee-activation" class="text-xs" style="color: var(--auth-fg-35, rgba(255,255,255,0.6));">{{ 'auth.roleOptionEmployee' | translate }}</a>
           </div>
