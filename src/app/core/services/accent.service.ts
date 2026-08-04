@@ -13,8 +13,8 @@ const STORAGE_KEY = 'kawader_accent';
 export const ACCENT_COLORS: AccentColor[] = [
   { id: 'indigo',   label: 'الليلي',   light: '#4F46E5', dark: '#818CF8', swatch: '#4F46E5' },
   { id: 'navy',     label: 'البحري',   light: '#1D4ED8', dark: '#60A5FA', swatch: '#1D4ED8' },
-  { id: 'burgundy', label: 'الخمري',   light: '#9F1239', dark: '#FB7185', swatch: '#9F1239' },
-  { id: 'brown',    label: 'البني',    light: '#92400E', dark: '#F59E0B', swatch: '#92400E' },
+  { id: 'burgundy', label: 'الخمري',   light: '#9F1239', dark: '#C1394E', swatch: '#9F1239' },
+  { id: 'brown',    label: 'البني',    light: '#92400E', dark: '#C6873F', swatch: '#92400E' },
   { id: 'slate',    label: 'الرصاصي',  light: '#374151', dark: '#9CA3AF', swatch: '#374151' },
 ];
 
