@@ -16,6 +16,44 @@
       "subtitle": "الموظفون، الرواتب، الورديات، والحضور — كل ذلك في منصة واحدة سهلة الاستخدام.",
       "cta": "تسجيل الدخول"
     },
+    "heroCards": {
+      "employee": {
+        "label": "موظف",
+        "attendanceLabel": "الحضور اليوم",
+        "attendanceValue": "✓ حاضر",
+        "leavesLabel": "الإجازات",
+        "leavesValue": "إجازة نشطة",
+        "shiftLabel": "الوردية الحالية",
+        "shiftValue": "صباحية"
+      },
+      "shift": {
+        "name": "وردية صباحية",
+        "hours": "٠٨:٠٠–١٦:٠٠",
+        "day0": "ح", "day1": "ن", "day2": "ث", "day3": "ر", "day4": "خ", "day5": "ج", "day6": "س",
+        "daysLabel": "عدد أيام الدوام",
+        "daysValue": "٥ أيام"
+      },
+      "payroll": {
+        "title": "كشف الراتب — هذا الشهر",
+        "bonusLabel": "الحوافز",
+        "bonusValue": "+500",
+        "statusLabel": "الحالة",
+        "statusValue": "مدفوع"
+      },
+      "subscription": {
+        "title": "الاشتراك الحالي",
+        "active": "نشط",
+        "planName": "الخطة الاحترافية",
+        "renewLabel": "التجديد",
+        "renewValue": "١٢ يومًا",
+        "employeesLabel": "الموظفون",
+        "employeesValue": "٥٠ حدًا أقصى"
+      },
+      "device": {
+        "status": "جهاز متصل الآن",
+        "serialLabel": "الرقم التسلسلي"
+      }
+    },
     "previews": {
       "title": "لمحة من داخل المنصة",
       "subtitle": "لمحة سريعة عن أهم الأقسام التي ستستخدمها يومياً.",
@@ -24,7 +62,12 @@
       "leaves": { "title": "الإجازات", "desc": "طلبات الإجازة والموافقة عليها" },
       "payroll": { "title": "الرواتب", "desc": "احتساب الرواتب تلقائياً" },
       "incentives": { "title": "الحوافز", "desc": "بدلات ومكافآت الموظفين" },
-      "devices": { "title": "البصمات والأجهزة", "desc": "ربط أجهزة البصمة بسهولة" }
+      "devices": { "title": "البصمات والأجهزة", "desc": "ربط أجهزة البصمة بسهولة" },
+      "status": {
+        "approved": "معتمدة",
+        "pending": "قيد الانتظار",
+        "connected": "متصل الآن"
+      }
     },
     "laptopToasts": {
       "employee":  "تم تسجيل موظف بنجاح",
@@ -67,8 +110,6 @@
     },
     "footer": "© كوادر — كل الحقوق محفوظة.",
     "dossier": {
-      "fileNo": "رقم الملف",
-      "issued": "تاريخ الإصدار",
       "status": "الحالة",
       "active": "نشط",
       "kickers": {

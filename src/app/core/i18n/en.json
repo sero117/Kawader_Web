@@ -16,6 +16,44 @@
       "subtitle": "Employees, payroll, shifts, and attendance — all on one easy-to-use platform.",
       "cta": "Login"
     },
+    "heroCards": {
+      "employee": {
+        "label": "Employee",
+        "attendanceLabel": "Today's attendance",
+        "attendanceValue": "✓ Present",
+        "leavesLabel": "Leaves",
+        "leavesValue": "1 active leave",
+        "shiftLabel": "Current shift",
+        "shiftValue": "Morning"
+      },
+      "shift": {
+        "name": "Morning shift",
+        "hours": "08:00–16:00",
+        "day0": "S", "day1": "M", "day2": "T", "day3": "W", "day4": "T", "day5": "F", "day6": "S",
+        "daysLabel": "Working days",
+        "daysValue": "5 days"
+      },
+      "payroll": {
+        "title": "Payslip — this month",
+        "bonusLabel": "Incentives",
+        "bonusValue": "+500",
+        "statusLabel": "Status",
+        "statusValue": "Paid"
+      },
+      "subscription": {
+        "title": "Current subscription",
+        "active": "Active",
+        "planName": "Professional plan",
+        "renewLabel": "Renews in",
+        "renewValue": "12 days",
+        "employeesLabel": "Employees",
+        "employeesValue": "50 max"
+      },
+      "device": {
+        "status": "Device connected",
+        "serialLabel": "Serial number"
+      }
+    },
     "previews": {
       "title": "A look inside the platform",
       "subtitle": "A quick look at the sections you'll use every day.",
@@ -24,7 +62,12 @@
       "leaves": { "title": "Leaves", "desc": "Leave requests and approvals" },
       "payroll": { "title": "Payroll", "desc": "Automatic payroll calculation" },
       "incentives": { "title": "Incentives", "desc": "Employee bonuses and allowances" },
-      "devices": { "title": "Devices & Fingerprints", "desc": "Connect biometric devices easily" }
+      "devices": { "title": "Devices & Fingerprints", "desc": "Connect biometric devices easily" },
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "connected": "Connected now"
+      }
     },
     "laptopToasts": {
       "employee":  "Employee registered successfully",
@@ -67,8 +110,6 @@
     },
     "footer": "© Kawader — All rights reserved.",
     "dossier": {
-      "fileNo": "File No.",
-      "issued": "Issued",
       "status": "Status",
       "active": "Active",
       "kickers": {

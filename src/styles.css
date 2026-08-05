@@ -41,33 +41,35 @@ input[type="checkbox"] {
   --sidebar-shadow:   color-mix(in srgb, var(--accent-light) 22%, transparent);
   --bg-page:          color-mix(in srgb, var(--accent-light) 5%, #EDEAE5);
 
-  /* Auth page tokens */
-  --auth-bg:                var(--bg-page);
-  --auth-card:              #ffffff;
-  --auth-card-bdr:          rgba(0, 0, 0, 0.08);
-  --auth-fg:                rgba(13, 12, 30, 0.92);
-  --auth-fg-80:             rgba(13, 12, 30, 0.75);
-  --auth-fg-60:             rgba(13, 12, 30, 0.58);
-  --auth-fg-55:             rgba(13, 12, 30, 0.52);
-  --auth-fg-45:             rgba(13, 12, 30, 0.42);
-  --auth-fg-35:             rgba(13, 12, 30, 0.38);
-  --auth-fg-30:             rgba(13, 12, 30, 0.32);
-  --auth-fg-25:             rgba(13, 12, 30, 0.26);
-  --auth-fg-20:             rgba(13, 12, 30, 0.20);
-  --auth-step-active:       rgba(13, 12, 30, 0.88);
+  /* Auth page tokens — match the landing/plans pages' warm kraft-paper
+     editorial-dossier palette, so the sign-in flow feels continuous with
+     the public site instead of jumping back to the old dashboard tones. */
+  --auth-bg:                #E9DFC9;
+  --auth-card:              #F4EEDC;
+  --auth-card-bdr:          rgba(42, 29, 20, 0.14);
+  --auth-fg:                rgba(42, 29, 20, 0.92);
+  --auth-fg-80:             rgba(42, 29, 20, 0.75);
+  --auth-fg-60:             rgba(42, 29, 20, 0.58);
+  --auth-fg-55:             rgba(42, 29, 20, 0.52);
+  --auth-fg-45:             rgba(42, 29, 20, 0.42);
+  --auth-fg-35:             rgba(42, 29, 20, 0.38);
+  --auth-fg-30:             rgba(42, 29, 20, 0.32);
+  --auth-fg-25:             rgba(42, 29, 20, 0.26);
+  --auth-fg-20:             rgba(42, 29, 20, 0.20);
+  --auth-step-active:       rgba(42, 29, 20, 0.88);
   --auth-step-active-text:  #ffffff;
-  --auth-step-done:         rgba(13, 12, 30, 0.15);
-  --auth-step-idle:         rgba(13, 12, 30, 0.07);
-  --auth-step-line:         rgba(13, 12, 30, 0.12);
-  --auth-input-bg:          rgba(0, 0, 0, 0.04);
-  --auth-input-hover:       rgba(0, 0, 0, 0.07);
-  --auth-input-focus:       rgba(0, 0, 0, 0.06);
-  --auth-input-focus-bdr:   rgba(0, 0, 0, 0.22);
-  --auth-input-focus-shadow:rgba(0, 0, 0, 0.04);
-  --auth-input-placeholder: rgba(13, 12, 30, 0.22);
-  --auth-blob-bg:           rgba(100, 80, 200, 0.05);
-  --auth-blob-bdr:          rgba(100, 80, 200, 0.09);
-  --auth-sparkle:           rgba(13, 12, 30, 0.22);
+  --auth-step-done:         rgba(42, 29, 20, 0.15);
+  --auth-step-idle:         rgba(42, 29, 20, 0.07);
+  --auth-step-line:         rgba(42, 29, 20, 0.12);
+  --auth-input-bg:          rgba(42, 29, 20, 0.045);
+  --auth-input-hover:       rgba(42, 29, 20, 0.075);
+  --auth-input-focus:       rgba(42, 29, 20, 0.06);
+  --auth-input-focus-bdr:   rgba(42, 29, 20, 0.24);
+  --auth-input-focus-shadow:rgba(42, 29, 20, 0.045);
+  --auth-input-placeholder: rgba(42, 29, 20, 0.24);
+  --auth-blob-bg:           rgba(168, 95, 48, 0.06);
+  --auth-blob-bdr:          rgba(168, 95, 48, 0.10);
+  --auth-sparkle:           rgba(42, 29, 20, 0.22);
 }
 
 .dark {
@@ -95,33 +97,34 @@ input[type="checkbox"] {
   --sidebar-bg:       linear-gradient(175deg, color-mix(in srgb, var(--accent-dark) 10%, #13122a) 0%, color-mix(in srgb, var(--accent-dark) 7%, #0c0b1e) 100%);
   --sidebar-shadow:   color-mix(in srgb, var(--accent-dark) 32%, transparent);
 
-  /* Auth page tokens */
-  --auth-bg:                #0d0c1e;
-  --auth-card:              #13122a;
-  --auth-card-bdr:          rgba(255, 255, 255, 0.055);
-  --auth-fg:                rgba(255, 255, 255, 0.95);
-  --auth-fg-80:             rgba(255, 255, 255, 0.80);
-  --auth-fg-60:             rgba(255, 255, 255, 0.60);
-  --auth-fg-55:             rgba(255, 255, 255, 0.55);
-  --auth-fg-45:             rgba(255, 255, 255, 0.45);
-  --auth-fg-35:             rgba(255, 255, 255, 0.35);
-  --auth-fg-30:             rgba(255, 255, 255, 0.30);
-  --auth-fg-25:             rgba(255, 255, 255, 0.25);
-  --auth-fg-20:             rgba(255, 255, 255, 0.20);
-  --auth-step-active:       rgba(255, 255, 255, 0.90);
-  --auth-step-active-text:  #0d0c1e;
-  --auth-step-done:         rgba(255, 255, 255, 0.20);
-  --auth-step-idle:         rgba(255, 255, 255, 0.07);
-  --auth-step-line:         rgba(255, 255, 255, 0.10);
-  --auth-input-bg:          rgba(255, 255, 255, 0.055);
-  --auth-input-hover:       rgba(255, 255, 255, 0.07);
-  --auth-input-focus:       rgba(255, 255, 255, 0.08);
-  --auth-input-focus-bdr:   rgba(255, 255, 255, 0.18);
-  --auth-input-focus-shadow:rgba(255, 255, 255, 0.05);
-  --auth-input-placeholder: rgba(255, 255, 255, 0.17);
-  --auth-blob-bg:           rgba(255, 255, 255, 0.026);
-  --auth-blob-bdr:          rgba(255, 255, 255, 0.04);
-  --auth-sparkle:           rgba(255, 255, 255, 0.85);
+  /* Auth page tokens — same warm espresso/parchment dossier palette as the
+     landing/plans pages, dark-mode side. */
+  --auth-bg:                #17110B;
+  --auth-card:              #221A10;
+  --auth-card-bdr:          rgba(242, 232, 213, 0.08);
+  --auth-fg:                rgba(242, 232, 213, 0.95);
+  --auth-fg-80:             rgba(242, 232, 213, 0.80);
+  --auth-fg-60:             rgba(242, 232, 213, 0.60);
+  --auth-fg-55:             rgba(242, 232, 213, 0.55);
+  --auth-fg-45:             rgba(242, 232, 213, 0.45);
+  --auth-fg-35:             rgba(242, 232, 213, 0.35);
+  --auth-fg-30:             rgba(242, 232, 213, 0.30);
+  --auth-fg-25:             rgba(242, 232, 213, 0.25);
+  --auth-fg-20:             rgba(242, 232, 213, 0.20);
+  --auth-step-active:       rgba(242, 232, 213, 0.90);
+  --auth-step-active-text:  #17110B;
+  --auth-step-done:         rgba(242, 232, 213, 0.20);
+  --auth-step-idle:         rgba(242, 232, 213, 0.07);
+  --auth-step-line:         rgba(242, 232, 213, 0.10);
+  --auth-input-bg:          rgba(242, 232, 213, 0.055);
+  --auth-input-hover:       rgba(242, 232, 213, 0.07);
+  --auth-input-focus:       rgba(242, 232, 213, 0.08);
+  --auth-input-focus-bdr:   rgba(242, 232, 213, 0.18);
+  --auth-input-focus-shadow:rgba(242, 232, 213, 0.05);
+  --auth-input-placeholder: rgba(242, 232, 213, 0.17);
+  --auth-blob-bg:           rgba(224, 149, 79, 0.05);
+  --auth-blob-bdr:          rgba(224, 149, 79, 0.08);
+  --auth-sparkle:           rgba(242, 232, 213, 0.7);
 }
 
 @layer base {

@@ -127,7 +127,6 @@
    Hero — case-file cover
    ══════════════════════════════════════════════════════════════════════ */
 .ed-hero-title .ed-word { display: inline-block; animation: ed-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.ed-hero-meta   { animation: ed-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.08s; }
 .ed-hero-sub    { animation: ed-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.3s; }
 .ed-hero-cta    { animation: ed-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.42s; }
 
@@ -143,50 +142,47 @@
 }
 :host-context(.dark) .ed-stamp { color: var(--ed-moss-bright); border-color: var(--ed-moss-bright); }
 
-/* ── Fanned index-card stack ─────────────────────────────────────────── */
+/* ── Personnel-card stack — five cards physically cycle through the deck ── */
 .ed-card-fan {
   animation: ed-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
   animation-delay: 0.2s;
 }
 .ed-index-card {
-  position: absolute;
-  inset: 0;
   background: var(--ed-card);
   border: 1px solid var(--ed-line);
   border-radius: 10px;
   box-shadow: 0 14px 30px -14px rgba(0,0,0,0.35);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  animation: ed-card-settle 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-@keyframes ed-card-settle {
-  from { opacity: 0; transform: translateY(30px) rotate(0deg) scale(0.94); }
-}
-.ed-index-card-back:nth-of-type(1) { animation-delay: 0.5s; }
-.ed-index-card-back:nth-of-type(2) { animation-delay: 0.62s; }
-.ed-index-card-front { animation-delay: 0.74s; overflow: hidden; perspective: 800px; }
-.ed-card-fan:hover .ed-index-card-back:nth-of-type(1) { transform: rotate(-11deg) translate(-26px, 10px) !important; }
-.ed-card-fan:hover .ed-index-card-back:nth-of-type(2) { transform: rotate(5deg)  translate(18px, 0px) !important; }
-.ed-card-fan:hover .ed-index-card-front { transform: rotate(-2deg) translate(-2px, -6px) scale(1.02); }
 
-.ed-card-line { background: var(--ed-line); }
-
-/* ── Front card — cycles through five feature pages ──────────────────── */
-.ed-page {
+/* All five cards share one keyframe timeline, phase-shifted by delay, so
+   at any moment one is queued behind, two are stacked mid-depth, one is
+   fully readable up front, and one is finishing its exit — the queued
+   card then becomes the next one to reach the front, cycling the whole
+   deck rather than swapping content inside a static card. */
+.ed-cycle-card {
   position: absolute;
   inset: 0;
-  opacity: 0;
-  backface-visibility: hidden;
-  animation: ed-page-flip 17s ease-in-out infinite;
+  animation: ed-card-cycle 17s ease-in-out infinite;
 }
-@keyframes ed-page-flip {
-  0%          { opacity: 0; transform: rotateX(-90deg); }
-  2%, 18%     { opacity: 1; transform: rotateX(0deg); }
-  20%, 100%   { opacity: 0; transform: rotateX(90deg); }
+.ed-card-fan:hover .ed-cycle-card { animation-play-state: paused; }
+
+@keyframes ed-card-cycle {
+  0%        { opacity: 0;    transform: scale(0.85) rotate(8deg)   translate(26px, -22px); z-index: 1; }
+  8%        { opacity: 0.5;  transform: scale(0.92) rotate(5deg)   translate(12px, -4px);   z-index: 2; }
+  18%       { opacity: 0.5;  transform: scale(0.92) rotate(5deg)   translate(12px, -4px);   z-index: 2; }
+  26%       { opacity: 0.78; transform: scale(0.96) rotate(-6deg)  translate(-12px, 5px);   z-index: 3; }
+  34%       { opacity: 0.78; transform: scale(0.96) rotate(-6deg)  translate(-12px, 5px);   z-index: 3; }
+  42%       { opacity: 1;    transform: scale(1)    rotate(0deg)   translate(0, 0);         z-index: 5; }
+  64%       { opacity: 1;    transform: scale(1)    rotate(0deg)   translate(0, 0);         z-index: 5; }
+  72%       { opacity: 0;    transform: scale(1.05) rotate(-9deg)  translate(-28px, -24px); z-index: 4; }
+  100%      { opacity: 0;    transform: scale(0.85) rotate(8deg)   translate(26px, -22px);  z-index: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ed-page { animation: none !important; opacity: 0 !important; transform: none !important; }
-  .ed-page:first-child { opacity: 1 !important; }
+  .ed-cycle-card { animation: none !important; opacity: 0 !important; transform: none !important; }
+  .ed-cycle-card:first-child { opacity: 1 !important; }
 }
+
+.ed-card-line { background: var(--ed-line); }
 
 .ed-day-chip {
   display: inline-flex;
@@ -272,15 +268,6 @@
   transform: translateY(-2px) scale(1.03);
   box-shadow: 0 14px 28px -10px color-mix(in srgb, var(--ed-accent) 65%, transparent);
 }
-.ed-btn-ghost {
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s, border-color 0.25s;
-}
-.ed-btn-ghost:hover {
-  transform: translateY(-2px);
-  border-color: var(--ed-accent) !important;
-  color: var(--ed-accent) !important;
-}
-
 /* ── Switchers pill (language / theme) ───────────────────────────────── */
 .ed-switchers {
   display: flex;
