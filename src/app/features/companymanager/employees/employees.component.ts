@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, WritableSignal } from '@angular/core';
+import { Component, signal, inject, OnInit, WritableSignal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { forkJoin, of } from 'rxjs';
@@ -59,6 +59,17 @@ export class EmployeesComponent implements OnInit {
   employees = signal<Employee[]>([]);
   loading   = signal(true);
   hasMore   = signal(false);
+
+  // The backend only matches a complete 10-digit phone number, so
+  // loadEmployees() only queries it once that's true — this live-filters
+  // the already-loaded page as the admin types, so results narrow
+  // immediately instead of waiting for a full number (matches Accounts/
+  // Companies/Cards).
+  employeesWithStatus = computed(() =>
+    this.filter.filterItems(this.employees(), 'search', (e, term) =>
+      (e.phoneNumber ?? '').toLowerCase().includes(term)
+    )
+  );
 
   // ── Flash / error ──────────────────────────────────────────────────────────
   successMsg = signal<string | null>(null);
@@ -288,9 +299,16 @@ export class EmployeesComponent implements OnInit {
   onAddLastNameInput(event: Event): void { this.addForm.get('lastName')!.setValue(lettersOnlyInput(event)); }
 
   // ── Search ─────────────────────────────────────────────────────────────────
+  /** Only reloads from the backend when the search is empty (unfiltered
+   *  page) or a complete phone number (the only value the backend accepts)
+   *  — partial digits just update the filter signal so employeesWithStatus
+   *  can live-filter the already-loaded page without a wasted request. */
   onSearch(value: string): void {
     this.filter.set({ search: value });
-    this.loadEmployees();
+    const phone = value.trim();
+    if (!phone || this.phonePattern.test(phone)) {
+      this.loadEmployees();
+    }
   }
 
   // ── Pagination ─────────────────────────────────────────────────────────────

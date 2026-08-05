@@ -18,6 +18,7 @@ import {
 } from '../../../../core/models/payroll.models';
 import { formatCurrencyAmount } from '../../../../core/utils/currency-format';
 import { CompanyTimeService } from '../../../../core/services/company-time.service';
+import { ServiceProblemDetails, extractErrorMessage } from '../../../../core/models/problem-details.model';
 
 const POLL_INTERVAL_MS = 6000;
 
@@ -466,16 +467,14 @@ export class PayrollDetailComponent implements OnInit {
   apiErr(err: any, fallback: string): string {
     if (err?.status === 0) return 'Cannot connect to server.';
     const body = err?.error;
-    const serverMsg = (() => {
-      if (typeof body === 'string' && body.trim()) return body.trim();
-      if (body) {
-        for (const key of ['message', 'title', 'detail', 'error']) {
-          const v = body[key];
-          if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-        }
-      }
-      return null;
-    })();
+    // Some endpoints (e.g. add-employees-to-run) attach the actionable message
+    // under a dynamic field-name key instead of message/title/detail/error
+    // (e.g. {"Emp1-7": "..."}) — extractErrorMessage already handles that
+    // shape (it's what the global interceptor uses), so delegate to it
+    // instead of re-checking only the fixed key list here.
+    const serverMsg = typeof body === 'string' && body.trim()
+      ? body.trim()
+      : extractErrorMessage(body as ServiceProblemDetails | null);
     if (serverMsg) return serverMsg;
 
     switch (err?.status) {

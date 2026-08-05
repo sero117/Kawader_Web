@@ -1,5 +1,7 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../../core/services/language.service';
@@ -32,6 +34,7 @@ export class EmployeeOverviewComponent implements OnInit {
   private readonly fb                 = inject(FormBuilder);
   private readonly lang               = inject(LanguageService);
   private readonly route              = inject(ActivatedRoute);
+  private readonly destroyRef         = inject(DestroyRef);
 
   employeeId = 0;
 
@@ -65,6 +68,15 @@ export class EmployeeOverviewComponent implements OnInit {
     this.employeeId = Number(this.route.parent!.snapshot.paramMap.get('employeeId'));
     this.loadEmployee();
     this.loadEmContacts();
+
+    // The edit modal lives in the employee-detail shell, one level up — its
+    // own reload after a successful save only refreshes its own copy of the
+    // employee (used for the header), not this tab's independently-loaded
+    // one, so without this the overview kept showing pre-edit data until a
+    // full page reload.
+    this.employeeService.updated$
+      .pipe(filter(id => id === this.employeeId), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadEmployee());
   }
 
   loadEmployee(): void {

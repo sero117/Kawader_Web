@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiService } from './api.service';
 import { ApiResponse } from '../models/auth.models';
@@ -22,6 +22,12 @@ export class EmployeeService {
   private readonly api     = inject(ApiService);
   private readonly http    = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/Employees`;
+
+  /** Fires the employee id whenever `update()` succeeds — the edit modal
+   *  lives in the employee-detail shell, but the Overview tab is a separate
+   *  routed child with its own independently-loaded copy of the same
+   *  employee, which otherwise never finds out the record changed. */
+  readonly updated$ = new Subject<number>();
 
   getById(id: number): Observable<any> {
     return this.api.get<any>(`${this.baseUrl}/${id}`);

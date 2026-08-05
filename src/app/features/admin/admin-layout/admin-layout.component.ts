@@ -9,6 +9,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { WelcomeOverlayComponent, WelcomeAction } from '../../companymanager/welcome-overlay/welcome-overlay.component';
 import { OfflineBannerComponent } from '../../../core/components/offline-banner/offline-banner.component';
 import { AccentPickerComponent } from '../../../core/components/accent-picker/accent-picker.component';
+import { AccentService } from '../../../core/services/accent.service';
 
 const WELCOME_FLAG_KEY = 'kawader_show_welcome';
 
@@ -36,6 +37,7 @@ export class AdminLayoutComponent implements OnInit {
   private readonly authService   = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
   private readonly accountService = inject(AccountService);
+  private readonly accentService  = inject(AccentService);
 
   collapsed      = signal(window.innerWidth < 640);
   adminName      = signal(this.authService.getDisplayName());
@@ -49,6 +51,11 @@ export class AdminLayoutComponent implements OnInit {
       this.showWelcome.set(true);
     }
     this.resolveRealName();
+    // Without this, AccentService.current stays at its hardcoded default
+    // (indigo) regardless of the admin's saved accent — the picker's own
+    // swatch dot never reflected the real color because nothing here ever
+    // synced it from localStorage. companymanager-layout already does this.
+    this.accentService.init();
   }
 
   /**

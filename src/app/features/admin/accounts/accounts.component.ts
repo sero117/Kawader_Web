@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
@@ -29,6 +29,16 @@ export class AccountsComponent implements OnInit {
   accounts  = signal<Account[]>([]);
   loading   = signal(true);
   hasMore   = signal(false);
+
+  // The backend rejects a partial phone number outright, so loadAccounts()
+  // only queries it once it's a full 10-digit number — this live-filters the
+  // already-loaded page as the admin types, so results narrow immediately
+  // instead of waiting for a complete number (matches the Companies page).
+  accountsWithStatus = computed(() =>
+    this.filter.filterItems(this.accounts(), 'phone', (a, term) =>
+      (a.phoneNumber ?? '').toLowerCase().includes(term)
+    )
+  );
 
   // ── Flash / error ──────────────────────────────────────────────────────────
   successMsg = signal<string | null>(null);

@@ -73,7 +73,7 @@
         {{ 'common.retry' | translate }}
       </button>
     </div>
-  } @else if (accounts().length === 0) {
+  } @else if (accountsWithStatus().length === 0) {
     <div class="p-16 text-center">
       <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: var(--bg-subtle-sm);">
         <svg class="w-7 h-7" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -103,7 +103,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (acc of accounts(); track acc.id) {
+          @for (acc of accountsWithStatus(); track acc.id) {
             <tr>
               <!-- Name + avatar -->
               <td>
@@ -183,8 +183,8 @@
     <div class="flex items-center justify-between px-5 py-4" style="border-top: 1px solid var(--border);">
       <p class="text-xs" style="color: var(--text-faint);">
         {{ 'admin.accounts.page' | translate }} {{ filter.value().pageNumber }}
-        @if (accounts().length > 0) {
-          · {{ accounts().length }} {{ accounts().length !== 1 ? ('admin.accounts.results' | translate) : ('admin.accounts.result' | translate) }}
+        @if (accountsWithStatus().length > 0) {
+          · {{ accountsWithStatus().length }} {{ accountsWithStatus().length !== 1 ? ('admin.accounts.results' | translate) : ('admin.accounts.result' | translate) }}
         }
       </p>
       <div class="flex items-center gap-2">

@@ -192,7 +192,7 @@
             @for (row of (attendanceSummary()?.rows ?? []); track row.name) {
               <div class="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-[var(--bg-surface-2)]">
                 <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                  [style.background]="row.status === 'absent' ? 'linear-gradient(135deg, #9ca3af, #6b7280)' : 'linear-gradient(135deg, var(--nav-accent), #7c3aed)'"
+                  [style.background]="row.status === 'absent' ? 'linear-gradient(135deg, #9ca3af, #6b7280)' : 'linear-gradient(135deg, var(--nav-accent) 0%, color-mix(in srgb, var(--nav-accent) 55%, #000) 100%)'"
                   style="color: #fff;">
                   {{ row.name.charAt(0).toUpperCase() }}
                 </div>
@@ -242,7 +242,7 @@
             @for (e of recentEmployees(); track e.id) {
               <div class="flex items-center gap-3 py-2">
                 <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                  style="background: linear-gradient(135deg, var(--nav-accent), #a855f7); color: #fff;">
+                  style="background: linear-gradient(135deg, var(--nav-accent) 0%, color-mix(in srgb, var(--nav-accent) 55%, #000) 100%); color: #fff;">
                   {{ employeeName(e).charAt(0).toUpperCase() }}
                 </div>
                 <div class="flex-1 min-w-0">

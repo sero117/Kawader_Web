@@ -243,12 +243,31 @@ export class CompanyHolidaysComponent implements OnInit {
       next: (res: any) => {
         this.submitting.set(false);
         this.showAddModal.set(false);
-        const count = res?.ids?.length ?? 1;
+        const ids: number[] = res?.ids ?? [];
+        const count = ids.length || 1;
         this.flash(count > 1
           ? this.lang.t('manager.companyHolidays.addedMany').replace('{count}', String(count))
           : this.lang.t('manager.companyHolidays.added'));
+
+        // Insert the new day-rows directly instead of reloading — the list
+        // is sorted by date and paginated (page size 10), so with enough
+        // existing holidays a plain reload can put a just-added one on a
+        // later page depending on where its date ranks against everything
+        // else, making it look like it silently got deleted when it saved
+        // fine — this guarantees it's visible immediately regardless.
+        const pad = (n: number) => String(n).padStart(2, '0');
+        const cursor = new Date(start);
+        const newRows: CompanyHoliday[] = ids.map(id => {
+          const dateStr = `${cursor.getFullYear()}-${pad(cursor.getMonth() + 1)}-${pad(cursor.getDate())}`;
+          cursor.setDate(cursor.getDate() + 1);
+          return {
+            id, name: v.name!, date: dateStr,
+            holidayRecurrence: v.holidayRecurrence!, isPaid: v.isPaid!,
+            createdAt: new Date().toISOString(),
+          };
+        });
+        this.holidays.update(list => [...newRows, ...list]);
         this.filter.patch({ pageNumber: 1 });
-        this.loadHolidays();
       },
       error: () => { this.submitting.set(false); },
     });

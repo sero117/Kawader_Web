@@ -91,9 +91,11 @@ import { formatCompanyDate } from '../../../core/utils/company-time';
                     <td style="color: var(--text-faint);">{{ formatDate(c.createdAt) }}</td>
                     <td>
                       <div class="flex items-center justify-end gap-1.5">
-                        <button (click)="openEdit(c)" class="w-8 h-8 rounded-lg flex items-center justify-center"
-                          style="color: var(--text-faint); background: var(--bg-subtle-sm);"
-                          [title]="'common.edit' | translate">
+                        <button (click)="!c.locked && openEdit(c)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+                          [style.color]="c.locked ? 'var(--text-very-faint)' : 'var(--text-faint)'"
+                          style="background: var(--bg-subtle-sm);"
+                          [style.cursor]="c.locked ? 'not-allowed' : 'pointer'"
+                          [title]="(c.locked ? 'admin.subscriptionCategories.lockedEditHint' : 'common.edit') | translate">
                           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
                           </svg>
@@ -129,10 +131,6 @@ import { formatCompanyDate } from '../../../core/utils/company-time';
       <div class="modal-backdrop" (click)="closeModal()"></div>
       <div class="modal-box" style="max-width:480px">
         <h2 class="modal-title">{{ editingCategory() ? ('admin.subscriptionCategories.editCategory' | translate) : ('admin.subscriptionCategories.addCategory' | translate) }}</h2>
-
-        @if (modalError()) {
-          <div class="modal-error">{{ modalError() }}</div>
-        }
 
         @if (editingCategory()?.locked) {
           <p style="font-size:0.78rem;color:var(--text-faint);margin-bottom:12px">{{ 'admin.subscriptionCategories.lockedEditHint' | translate }}</p>
@@ -179,7 +177,6 @@ import { formatCompanyDate } from '../../../core/utils/company-time';
         <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:20px">
           {{ 'admin.subscriptionCategories.confirmDeleteMsg' | translate }} <strong>{{ deleteTarget()?.arabicName }}</strong>؟
         </p>
-        @if (modalError()) { <div class="modal-error">{{ modalError() }}</div> }
         <div class="modal-actions">
           <button class="btn-ghost" (click)="deleteTarget.set(null)" [disabled]="submitting()">{{ 'common.cancel' | translate }}</button>
           <button class="btn-danger" (click)="deleteCategory()" [disabled]="submitting()">
@@ -210,7 +207,6 @@ export class SubscriptionCategoriesComponent implements OnInit {
   editingCategory = signal<SubscriptionCategory | null>(null);
   deleteTarget    = signal<SubscriptionCategory | null>(null);
   submitting      = signal(false);
-  modalError      = signal<string | null>(null);
 
   form: { arabicName: string; englishName: string; durationDays: number; showCategory: boolean } =
     { arabicName: '', englishName: '', durationDays: 30, showCategory: true };
@@ -254,7 +250,6 @@ export class SubscriptionCategoriesComponent implements OnInit {
   openCreate(): void {
     this.editingCategory.set(null);
     this.form = { arabicName: '', englishName: '', durationDays: 30, showCategory: true };
-    this.modalError.set(null);
     this.showModal.set(true);
   }
 
@@ -264,7 +259,6 @@ export class SubscriptionCategoriesComponent implements OnInit {
       arabicName: category.arabicName, englishName: category.englishName,
       durationDays: category.durationDays, showCategory: category.showCategory,
     };
-    this.modalError.set(null);
     this.showModal.set(true);
   }
 
@@ -280,7 +274,6 @@ export class SubscriptionCategoriesComponent implements OnInit {
       return;
     }
     this.submitting.set(true);
-    this.modalError.set(null);
     const editing = this.editingCategory();
 
     if (editing) {
@@ -293,7 +286,7 @@ export class SubscriptionCategoriesComponent implements OnInit {
         error: (err: any) => {
           this.submitting.set(false);
           if (err?.status === 412) {
-            this.modalError.set(this.lang.t('admin.subscriptionCategories.lockedEditError'));
+            this.snackbar.show(this.lang.t('admin.subscriptionCategories.lockedEditError'), 'error');
             return;
           }
           // Anything else (e.g. 409 duplicate English name): the global
@@ -313,7 +306,7 @@ export class SubscriptionCategoriesComponent implements OnInit {
     }
   }
 
-  confirmDelete(category: SubscriptionCategory): void { this.deleteTarget.set(category); this.modalError.set(null); }
+  confirmDelete(category: SubscriptionCategory): void { this.deleteTarget.set(category); }
 
   deleteCategory(): void {
     const t = this.deleteTarget();

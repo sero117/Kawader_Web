@@ -207,6 +207,7 @@ export class EmployeeDetailComponent implements OnInit {
         this.showEditModal.set(false);
         this.flash('Employee updated.');
         this.loadEmployee();
+        this.employeeService.updated$.next(id);
       },
       // No local error banner — the global interceptor already shows this
       // failure as a snackbar.

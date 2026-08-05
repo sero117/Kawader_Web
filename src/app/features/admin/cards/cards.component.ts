@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CardService } from '../../../core/services/card.service';
 import { PlanService } from '../../../core/services/plan.service';
@@ -43,7 +43,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
       <!-- Filters -->
       <div class="filter-bar">
         <input class="filter-input" type="text" [value]="filter.value().serial" (input)="onTextFilter({serial: $any($event.target).value})" placeholder="{{ 'admin.cards.searchSerial' | translate }}" />
-        <input class="filter-input" type="text" [value]="filter.value().distinct" (input)="onTextFilter({distinct: $any($event.target).value})" placeholder="{{ 'admin.cards.searchBatch' | translate }}" />
+        <input class="filter-input" type="text" [value]="filter.value().distinct" (input)="onBatchFilter($any($event.target).value)" placeholder="{{ 'admin.cards.searchBatch' | translate }}" />
         <select class="filter-select" [value]="filter.value().status" (change)="onStatusFilter($any($event.target).value)">
           <option value="">{{ 'admin.cards.allStatuses' | translate }}</option>
           <option value="1">{{ 'admin.cards.available' | translate }}</option>
@@ -64,7 +64,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
       <!-- Cards Grid -->
       @if (loading()) {
         <div class="loading-state"><div class="spinner"></div></div>
-      } @else if (cards().length === 0) {
+      } @else if (cardsWithStatus().length === 0) {
         <div class="empty-state">
           <div class="empty-state-icon">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="width:32px;height:32px">
@@ -75,7 +75,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
         </div>
       } @else {
         <div class="cards-grid">
-          @for (card of cards(); track card.id) {
+          @for (card of cardsWithStatus(); track card.id) {
             <div class="gift-card" [class.gift-card-used]="card.status === CardStatus.Used" [class.gift-card-revoked]="card.status === CardStatus.Revoked">
               <!-- Card shine effect -->
               <div class="gift-card-shine"></div>
@@ -218,6 +218,16 @@ import { UrlFilter } from '../../../core/utils/url-filter';
           <input class="form-input" type="text" [value]="selectedExportBatch()"
             (input)="selectedExportBatch.set($any($event.target).value)"
             placeholder="{{ 'admin.cards.batchHint' | translate }}" [disabled]="exportDownloading()" />
+          @if (exportSuggestions().length > 0) {
+            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px">
+              @for (name of exportSuggestions(); track name) {
+                <button type="button" (click)="selectedExportBatch.set(name)"
+                  style="font-size:0.75rem;padding:4px 10px;border-radius:999px;background:var(--bg-subtle-sm);color:var(--text-muted);border:1px solid var(--border);cursor:pointer">
+                  {{ name }}
+                </button>
+              }
+            </div>
+          }
         </div>
 
         <div class="modal-actions">
@@ -259,6 +269,27 @@ export class CardsComponent implements OnInit {
     pageSize:   12,
   });
 
+  // The backend only matches `distinct` exactly, so a partial batch name
+  // returns nothing until it's typed out in full — this live-filters the
+  // already-loaded page by substring instead, same fix as elsewhere in the
+  // app for backend fields that don't support partial search.
+  cardsWithStatus = computed(() =>
+    this.filter.filterItems(this.cards(), 'distinct', (c, term) =>
+      (c.distinct ?? '').toLowerCase().includes(term)
+    )
+  );
+
+  // Every distinct batch name seen so far (from a wide, one-time load), used
+  // to suggest exact names in the export modal — exporting also needs an
+  // exact match, so a typo there silently exports nothing. Shown right away
+  // (not gated behind typing) so there's always something to pick from.
+  knownBatches = signal<string[]>([]);
+  exportSuggestions = computed(() => {
+    const term = this.selectedExportBatch().trim().toLowerCase();
+    const list = term ? this.knownBatches().filter(b => b.toLowerCase().includes(term)) : this.knownBatches();
+    return list.slice(0, 8);
+  });
+
   showGenerate = signal(false);
   revokeTarget = signal<Card | null>(null);
   deleteTarget = signal<Card | null>(null);
@@ -280,14 +311,28 @@ export class CardsComponent implements OnInit {
       },
       error: () => {},
     });
+    this.loadKnownBatches();
+  }
+
+  private loadKnownBatches(): void {
+    // The backend caps PageSize at 100 — the 500 originally used here was
+    // rejected outright, so knownBatches silently stayed empty forever.
+    this.cardService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+      next: (res: any) => {
+        const raw = res?.data ?? res;
+        const items: Card[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
+        const names = new Set(items.map(c => c.distinct).filter((d): d is string => !!d?.trim()));
+        this.knownBatches.set([...names]);
+      },
+      error: () => {},
+    });
   }
 
   load(): void {
     this.loading.set(true);
-    const { serial, distinct, status, planId, pageNumber, pageSize } = this.filter.value();
+    const { serial, status, planId, pageNumber, pageSize } = this.filter.value();
     const params: GetCardsParams = { pageNumber, pageSize };
     if (serial)   params.serialNumber = serial;
-    if (distinct) params.distinct     = distinct;
     if (status)   params.status       = +status as CardStatus;
     if (planId)   params.planId       = +planId;
 
@@ -308,11 +353,15 @@ export class CardsComponent implements OnInit {
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
 
   /** Debounced so fast typing doesn't fire a request per keystroke. */
-  onTextFilter(patch: Partial<{ serial: string; distinct: string }>): void {
+  onTextFilter(patch: Partial<{ serial: string }>): void {
     this.filter.set(patch);
     if (this.searchTimer) clearTimeout(this.searchTimer);
     this.searchTimer = setTimeout(() => this.load(), 350);
   }
+
+  /** Batch name is filtered entirely client-side (cardsWithStatus) — no
+   *  backend call needed, so this updates the signal only. */
+  onBatchFilter(v: string): void { this.filter.set({ distinct: v }); }
 
   // Select filters apply immediately on change — unlike free-text inputs, a
   // selection is always a complete value, so there's no need to debounce it.
@@ -390,13 +439,22 @@ export class CardsComponent implements OnInit {
     fetch(url, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => {
         if (!res.ok) throw new Error(String(res.status));
-        return res.blob();
+        const contentType = res.headers.get('content-type') ?? '';
+        // `download = batch` alone had no file extension, so the saved file
+        // had no readable name/type — derive one from the actual response
+        // instead of guessing, so it opens correctly regardless of the
+        // export format the backend happens to return.
+        const ext = contentType.includes('spreadsheetml') || contentType.includes('excel') ? 'xlsx'
+          : contentType.includes('csv') ? 'csv'
+          : contentType.includes('pdf') ? 'pdf'
+          : 'xlsx';
+        return res.blob().then(blob => ({ blob, ext }));
       })
-      .then(blob => {
+      .then(({ blob, ext }) => {
         const objUrl = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = objUrl;
-        a.download = batch;
+        a.download = `${batch}.${ext}`;
         a.click();
         URL.revokeObjectURL(objUrl);
         this.exportDownloading.set(false);

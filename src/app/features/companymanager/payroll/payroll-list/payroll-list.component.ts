@@ -10,6 +10,7 @@ import { SnackbarService } from '../../../../core/services/snackbar.service';
 import { PayrollRun, PayrollStatus, UncoveredEmployee } from '../../../../core/models/payroll.models';
 import { Currency } from '../../../../core/models/currency.models';
 import { CompanyTimeService } from '../../../../core/services/company-time.service';
+import { ServiceProblemDetails, extractErrorMessage } from '../../../../core/models/problem-details.model';
 
 function periodRangeValidator(group: AbstractControl): ValidationErrors | null {
   const start = group.get('periodStart')?.value;
@@ -240,11 +241,14 @@ export class PayrollListComponent implements OnInit {
     if (err?.status === 0) return 'Cannot connect to server.';
     const body = err?.error;
     if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
+    // Some endpoints attach the actionable message under a dynamic
+    // field-name key instead of message/title/detail/error (e.g. a
+    // per-employee shift-hours validation keyed "Emp1-7") — extractErrorMessage
+    // already handles that shape (it's what the global interceptor uses).
+    const serverMsg = typeof body === 'string' && body.trim()
+      ? body.trim()
+      : extractErrorMessage(body as ServiceProblemDetails | null);
+    if (serverMsg) return serverMsg;
     switch (err?.status) {
       case 401: return 'Session expired.';
       case 403: return 'You do not have permission.';
