@@ -36,13 +36,14 @@ export class CompanyService {
     return this.api.get<ApiResponse<Company>>(`${this.baseUrl}/${id}`);
   }
 
-  // The list endpoint doesn't return isFrozen/companyName, so the admin
-  // companies page fetches every row's own detail to fill them in — a
-  // component-level cache for that got wiped on every route revisit (the
-  // component itself is destroyed and recreated), re-issuing the same
-  // requests. Cache the request at the service level instead, where it
-  // survives navigation for the rest of the session; call invalidate() after
-  // a freeze/unfreeze/update so a stale value doesn't linger.
+  // The list endpoint doesn't return companyName, so the admin companies
+  // page fetches a row's own detail on demand (e.g. opening it) to fill
+  // that in — a component-level cache for that got wiped on every route
+  // revisit (the component itself is destroyed and recreated), re-issuing
+  // the same requests. Cache the request at the service level instead,
+  // where it survives navigation for the rest of the session; call
+  // invalidate() after a freeze/unfreeze/update so a stale value doesn't
+  // linger.
   private readonly detailCache = new Map<number, Observable<ApiResponse<Company>>>();
 
   getByIdCached(id: number): Observable<ApiResponse<Company>> {

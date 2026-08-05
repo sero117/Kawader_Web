@@ -86,15 +86,11 @@ export class AdminOverviewComponent implements OnInit {
         const items: any[] = Array.isArray(raw)
           ? raw
           : (raw?.items ?? raw?.data ?? []);
-        const frozenIds = this.getFrozenIds();
         const normalized: Company[] = items.map(c => ({
           ...c,
           isActive:    c.isActive    !== undefined ? c.isActive    : c.IsActive,
           isCompleted: c.isCompleted !== undefined ? c.isCompleted : c.IsCompleted,
-          isFrozen: !!c.isFrozen || !!c.IsFrozen
-            || (c.frozenAt != null && c.frozenAt !== '')
-            || (c.FrozenAt != null && c.FrozenAt !== '')
-            || frozenIds.has(c.id),
+          isFrozen:    !!(c.isFrozen ?? c.IsFrozen),
         }));
         this.companies.set(normalized);
         this.loading.set(false);
@@ -143,18 +139,8 @@ export class AdminOverviewComponent implements OnInit {
     });
   }
 
-  private getFrozenIds(): Set<number> {
-    try { return new Set(JSON.parse(localStorage.getItem(this.FROZEN_KEY) ?? '[]')); }
-    catch { return new Set(); }
-  }
-
-  get total()    { return this.companies().length; }
-  get active()   { return this.companies().filter(c => c.isActive).length; }
-  get completed(){ return this.companies().filter(c => c.isCompleted).length; }
-
-  private readonly FROZEN_KEY = 'kawader_frozen_companies';
-  get frozenCount(): number {
-    try { return (JSON.parse(localStorage.getItem(this.FROZEN_KEY) ?? '[]') as number[]).length; }
-    catch { return 0; }
-  }
+  get total()      { return this.companies().length; }
+  get active()     { return this.companies().filter(c => c.isActive).length; }
+  get completed()  { return this.companies().filter(c => c.isCompleted).length; }
+  get frozenCount(){ return this.companies().filter(c => c.isFrozen).length; }
 }

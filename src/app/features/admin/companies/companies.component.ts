@@ -44,18 +44,6 @@ export class CompaniesComponent implements OnInit {
   grantCurrencyId      = signal<number | null>(null);
   grantPriority        = signal<number>(1);
 
-  // ── Frozen IDs persisted in localStorage (API list doesn't return isFrozen) ─
-  private readonly FROZEN_KEY = 'kawader_frozen_companies';
-  private getFrozenIds(): Set<number> {
-    try { return new Set(JSON.parse(localStorage.getItem(this.FROZEN_KEY) ?? '[]')); }
-    catch { return new Set(); }
-  }
-  private saveFrozenId(id: number, frozen: boolean): void {
-    const ids = this.getFrozenIds();
-    frozen ? ids.add(id) : ids.delete(id);
-    localStorage.setItem(this.FROZEN_KEY, JSON.stringify([...ids]));
-  }
-
   // ── Agent IDs persisted in localStorage (list endpoint doesn't return it) ──
   private readonly AGENT_KEY = 'kawader_company_agents';
   private getAgentCache(): Record<number, number> {
@@ -239,48 +227,25 @@ export class CompaniesComponent implements OnInit {
           ? raw
           : (raw?.items ?? raw?.data ?? raw?.companies ?? []);
 
-        // Normalize PascalCase fields from .NET API. isFrozen now comes back on
-        // *some* rows (apparently only once a company has been through at least
-        // one freeze/unfreeze — a never-touched row omits the field instead of
-        // sending false) — agentId is still absent from the list entirely.
-        //
-        // When the API DOES give an explicit isFrozen for a row, that's the
-        // truth and wins outright — a stale localStorage "frozen" from an
-        // earlier session must never override a live "not frozen" answer.
-        // localStorage is only consulted as a guess for rows where the API
-        // omitted the field, and gets corrected to match the API wherever it
-        // did answer, so a stale value can't keep re-surfacing on later visits.
-        const frozenIds = this.getFrozenIds();
+        // Normalize PascalCase fields from .NET API. isFrozen now comes back
+        // reliably on every row — agentId is still absent from the list
+        // entirely, so that still falls back to the localStorage cache.
         const agentCache = this.getAgentCache();
-        const normalized = items.map((c: any) => {
-          const apiFrozen = c.isFrozen ?? c.IsFrozen;
-          const apiFrozenAt = c.frozenAt ?? c.FrozenAt;
-          let isFrozen: boolean;
-          if (apiFrozen !== undefined) {
-            isFrozen = !!apiFrozen;
-            this.saveFrozenId(c.id, isFrozen);
-          } else {
-            isFrozen = (apiFrozenAt != null && apiFrozenAt !== '') || frozenIds.has(c.id);
-          }
-          return {
-            ...c,
-            isActive:    c.isActive    !== undefined ? c.isActive    : c.IsActive,
-            isCompleted: c.isCompleted !== undefined ? c.isCompleted : c.IsCompleted,
-            isFrozen,
-            agentId: c.agentId ?? c.AgentId ?? agentCache[c.id] ?? null,
-          };
-        });
+        const normalized = items.map((c: any) => ({
+          ...c,
+          isActive:    c.isActive    !== undefined ? c.isActive    : c.IsActive,
+          isCompleted: c.isCompleted !== undefined ? c.isCompleted : c.IsCompleted,
+          isFrozen:    !!(c.isFrozen ?? c.IsFrozen),
+          agentId: c.agentId ?? c.AgentId ?? agentCache[c.id] ?? null,
+        }));
 
         this.companies.set(normalized);
         this.hasMore.set(items.length >= this.filter.value().pageSize);
         this.loading.set(false);
         // No automatic per-row detail fetch here on purpose — that meant
         // opening this page always fired one request per visible company
-        // just to render it. isFrozen now relies solely on the localStorage
-        // cache (populated by freeze/unfreeze and by opening a company's own
-        // details), and the row no longer needs companyName at all now that
-        // its avatar doesn't depend on it. Real per-company data only gets
-        // fetched on demand — when the admin actually opens that company.
+        // just to render it. Real per-company data only gets fetched on
+        // demand — when the admin actually opens that company.
       },
       error: err => {
         if (seq !== this.requestSeq) return;
@@ -393,15 +358,7 @@ export class CompaniesComponent implements OnInit {
         // the stale list-row data when the envelope isn't there.
         const d: any = (res as any)?.data ?? res;
         if (d && d.id != null) {
-          // The backend's own field is authoritative when present — sync the
-          // localStorage cache to it so a company frozen before the cache
-          // existed (or on another browser) heals itself here instead of
-          // permanently showing "not frozen" in the list from then on.
-          const backendSaysFrozen = !!d.isFrozen || !!d.IsFrozen
-            || (d.frozenAt != null && d.frozenAt !== '')
-            || (d.FrozenAt != null && d.FrozenAt !== '');
-          if (backendSaysFrozen) this.saveFrozenId(d.id, true);
-          const isFrozen = backendSaysFrozen || this.getFrozenIds().has(d.id);
+          const isFrozen = !!(d.isFrozen ?? d.IsFrozen);
           this.selectedCompany.set({
             ...d,
             isActive:    d.isActive    !== undefined ? d.isActive    : d.IsActive,
@@ -500,7 +457,6 @@ export class CompaniesComponent implements OnInit {
     this.submitting.set(true);
     this.companyService.freeze(id).subscribe({
       next: () => {
-        this.saveFrozenId(id, true);
         this.companyService.invalidateCache(id);
         this.submitting.set(false);
         this.showFreezeModal.set(false);
@@ -510,8 +466,7 @@ export class CompaniesComponent implements OnInit {
       error: err => {
         this.submitting.set(false);
         if (err?.status === 400) {
-          // 400 = already frozen → sync UI and persist
-          this.saveFrozenId(id, true);
+          // 400 = already frozen → sync UI
           this.companyService.invalidateCache(id);
           this.companies.update(list => list.map(c => c.id === id ? { ...c, isFrozen: true } : c));
           this.showFreezeModal.set(false);
@@ -528,7 +483,6 @@ export class CompaniesComponent implements OnInit {
     this.submitting.set(true);
     this.companyService.unfreeze(id).subscribe({
       next: () => {
-        this.saveFrozenId(id, false);
         this.companyService.invalidateCache(id);
         this.submitting.set(false);
         this.showUnfreezeModal.set(false);
