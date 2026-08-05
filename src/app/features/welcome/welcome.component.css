@@ -1,298 +1,270 @@
+/* ══════════════════════════════════════════════════════════════════════
+   EDITORIAL DOSSIER — design tokens
+   Kawader digitizes the personnel file every HR office already keeps.
+   This page borrows that vernacular: tabbed folders, ruled ledgers,
+   index cards, stamped reference numbers — restyled as a real interface,
+   not decoration on top of a generic SaaS template.
+   ══════════════════════════════════════════════════════════════════════ */
 :host {
   display: block;
+  --ed-paper:        #E9DFC9;
+  --ed-paper-dark:   #17110B;
+  --ed-ink:          #2A1D14;
+  --ed-cream:        #F2E8D5;
+  --ed-copper:       #A85F30;
+  --ed-copper-bright:#E0954F;
+  --ed-moss:         #5F6E48;
+  --ed-moss-bright:  #8DA36A;
+  --ed-rust:         #A64B3C;
+
+  --ed-bg:      var(--ed-paper);
+  --ed-fg:      var(--ed-ink);
+  --ed-fg-muted: color-mix(in srgb, var(--ed-ink) 58%, transparent);
+  --ed-fg-faint: color-mix(in srgb, var(--ed-ink) 38%, transparent);
+  --ed-card:    #F4EEDC;
+  --ed-line:    color-mix(in srgb, var(--ed-ink) 20%, transparent);
+  --ed-accent:  var(--ed-copper);
+  --ed-alt-bg:  #DFD2B4;
+
+  font-family: 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif;
+}
+:host-context(.dark) {
+  --ed-bg:      var(--ed-paper-dark);
+  --ed-fg:      var(--ed-cream);
+  --ed-fg-muted: color-mix(in srgb, var(--ed-cream) 58%, transparent);
+  --ed-fg-faint: color-mix(in srgb, var(--ed-cream) 36%, transparent);
+  --ed-card:    #221A10;
+  --ed-line:    color-mix(in srgb, var(--ed-cream) 18%, transparent);
+  --ed-accent:  var(--ed-copper-bright);
+  --ed-alt-bg:  #0F0B07;
 }
 
-/* ── 3D logo ──────────────────────────────────────────────────────── */
-.wc-logo-3d-scene {
-  display: inline-block;
-  perspective: 300px;
+.ed-display { font-family: 'Markazi Text', 'Georgia', serif; }
+.ed-mono    { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+
+/* ── Motion primitives ───────────────────────────────────────────────── */
+@keyframes ed-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.wc-logo-3d {
-  display: block;
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--nav-accent) 45%, transparent));
+@keyframes ed-drop {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.wc-logo-3d-scene:hover .wc-logo-3d {
-  transform: rotateY(24deg) rotateX(8deg) scale(1.08);
+@keyframes ed-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+:host-context([dir="rtl"]) .ed-wipe-init { clip-path: inset(0 0 0 100%); }
+.ed-wipe { animation: ed-wipe 0.7s cubic-bezier(0.65, 0, 0.15, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-rise, .ed-drop, .ed-wipe, .ed-tab, .ed-card-fan, .ed-index-card { animation: none !important; opacity: 1 !important; transform: none !important; clip-path: none !important; }
 }
 
-/* ── Merged language + theme switcher ────────────────────────────── */
-/* Each switcher is its own encapsulated component with its own pill
-   border/background — ::ng-deep strips those two inner pills down to
-   plain button rows so the outer .wc-switchers box reads as one control
-   instead of two separate boxes glued together. */
-.wc-switchers {
+/* ══════════════════════════════════════════════════════════════════════
+   SIGNATURE — folder-tab navigation rail
+   ══════════════════════════════════════════════════════════════════════ */
+.ed-rail {
+  animation: ed-drop 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.ed-rail-base {
+  background: var(--ed-card);
+  border-bottom: 1px solid var(--ed-line);
+  box-shadow: 0 8px 24px -16px rgba(0,0,0,0.4);
+}
+.ed-tab {
+  position: relative;
+  padding: 9px 20px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ed-fg-muted);
+  background: color-mix(in srgb, var(--ed-ink) 6%, var(--ed-bg));
+  clip-path: polygon(12% 0, 88% 0, 100% 100%, 0% 100%);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s, color 0.25s;
+  transform: translateY(3px);
+}
+:host-context(.dark) .ed-tab {
+  background: color-mix(in srgb, var(--ed-cream) 5%, var(--ed-bg));
+}
+.ed-tab:hover {
+  transform: translateY(0);
+  color: var(--ed-fg);
+}
+.ed-tab-active {
+  background: var(--ed-accent);
+  color: #fff;
+  transform: translateY(0);
+  box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--ed-accent) 70%, transparent);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Section kickers — small tab-shaped eyebrow labels
+   ══════════════════════════════════════════════════════════════════════ */
+.ed-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 4px 12px;
+  border-radius: 3px 3px 0 0;
+  background: var(--ed-card);
+  border: 1px solid var(--ed-line);
+  border-bottom: none;
+  color: var(--ed-accent);
+}
+.ed-kicker::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--ed-accent);
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Hero — case-file cover
+   ══════════════════════════════════════════════════════════════════════ */
+.ed-hero-title .ed-word { display: inline-block; animation: ed-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.ed-hero-meta   { animation: ed-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.08s; }
+.ed-hero-sub    { animation: ed-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.3s; }
+.ed-hero-cta    { animation: ed-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.42s; }
+
+.ed-hero-cover {
+  background: var(--ed-card);
+  border: 1px solid var(--ed-line);
+  box-shadow: 0 30px 60px -30px rgba(0,0,0,0.4);
+}
+
+.ed-stamp {
+  border: 2px solid var(--ed-moss);
+  color: var(--ed-moss);
+}
+:host-context(.dark) .ed-stamp { color: var(--ed-moss-bright); border-color: var(--ed-moss-bright); }
+
+/* ── Fanned index-card stack ─────────────────────────────────────────── */
+.ed-card-fan {
+  animation: ed-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.2s;
+}
+.ed-index-card {
+  position: absolute;
+  inset: 0;
+  background: var(--ed-card);
+  border: 1px solid var(--ed-line);
+  border-radius: 10px;
+  box-shadow: 0 14px 30px -14px rgba(0,0,0,0.35);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: ed-card-settle 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes ed-card-settle {
+  from { opacity: 0; transform: translateY(30px) rotate(0deg) scale(0.94); }
+}
+.ed-index-card:nth-child(1) { transform: rotate(-7deg) translate(-14px, 6px); z-index: 1; animation-delay: 0.5s; }
+.ed-index-card:nth-child(2) { transform: rotate(3deg)  translate(10px, -2px); z-index: 2; animation-delay: 0.62s; }
+.ed-index-card:nth-child(3) { transform: rotate(-2deg) translate(-2px, -14px); z-index: 3; animation-delay: 0.74s; }
+.ed-card-fan:hover .ed-index-card:nth-child(1) { transform: rotate(-11deg) translate(-26px, 10px); }
+.ed-card-fan:hover .ed-index-card:nth-child(2) { transform: rotate(5deg)  translate(18px, 0px); }
+.ed-card-fan:hover .ed-index-card:nth-child(3) { transform: rotate(-2deg) translate(-2px, -20px) scale(1.02); }
+
+.ed-card-line { background: var(--ed-line); }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Ledger rows — dotted-leader label/value (facts bar, plan specs)
+   ══════════════════════════════════════════════════════════════════════ */
+.ed-ledger-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.ed-ledger-dots {
+  flex: 1;
+  border-bottom: 2px dotted var(--ed-line);
+  margin-bottom: 4px;
+  min-width: 12px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Reveal-on-scroll (applied generically to section content blocks)
+   ══════════════════════════════════════════════════════════════════════ */
+.ed-reveal {
+  animation: ed-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.ed-reveal:nth-child(1) { animation-delay: 0.05s; }
+.ed-reveal:nth-child(2) { animation-delay: 0.12s; }
+.ed-reveal:nth-child(3) { animation-delay: 0.19s; }
+.ed-reveal:nth-child(4) { animation-delay: 0.26s; }
+.ed-reveal:nth-child(5) { animation-delay: 0.33s; }
+.ed-reveal:nth-child(6) { animation-delay: 0.4s; }
+
+.ed-tile {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s, border-color 0.25s;
+  background: var(--ed-card);
+  border: 1px solid var(--ed-line);
+}
+.ed-tile:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--ed-accent) 45%, transparent);
+  box-shadow: 0 16px 32px -14px color-mix(in srgb, var(--ed-accent) 30%, transparent);
+}
+
+.ed-preview-tile {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s, border-color 0.3s;
+  background: var(--ed-card);
+  border: 1px solid var(--ed-line);
+}
+.ed-preview-tile:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--ed-accent) 40%, transparent);
+  box-shadow: 0 18px 36px -16px color-mix(in srgb, var(--ed-accent) 28%, transparent);
+}
+
+.ed-bar { transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: bottom; }
+.ed-preview-tile:hover .ed-bar { transform: scaleY(1.08); }
+
+/* ── FAQ accordion — paperclip fold ──────────────────────────────────── */
+.ed-faq summary { list-style: none; }
+.ed-faq summary::-webkit-details-marker { display: none; }
+.ed-faq-fold { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.ed-faq[open] .ed-faq-fold { transform: rotate(45deg); }
+
+/* ── CTA buttons ──────────────────────────────────────────────────────── */
+.ed-btn-primary {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
+  box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--ed-accent) 55%, transparent);
+}
+.ed-btn-primary:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 28px -10px color-mix(in srgb, var(--ed-accent) 65%, transparent);
+}
+.ed-btn-ghost {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s, border-color 0.25s;
+}
+.ed-btn-ghost:hover {
+  transform: translateY(-2px);
+  border-color: var(--ed-accent) !important;
+  color: var(--ed-accent) !important;
+}
+
+/* ── Switchers pill (language / theme) ───────────────────────────────── */
+.ed-switchers {
   display: flex;
   align-items: center;
   gap: 3px;
   padding: 2px;
-  border-radius: 9px;
-  background: var(--bg-subtle-md);
-  border: 1px solid var(--bg-subtle-md);
+  border-radius: 8px;
+  background: var(--ed-bg);
+  border: 1px solid var(--ed-line);
 }
-.wc-switchers-divider {
+.ed-switchers-divider {
   width: 1px;
   align-self: stretch;
-  background: var(--auth-fg-35, rgba(255,255,255,0.15));
-  opacity: 0.4;
+  background: var(--ed-line);
 }
-.wc-switchers ::ng-deep .lang-track,
-.wc-switchers ::ng-deep .theme-track {
+.ed-switchers ::ng-deep .lang-track,
+.ed-switchers ::ng-deep .theme-track {
   border: none;
   background: transparent;
   padding: 0;
-}
-
-/* ── Floating header ─────────────────────────────────────────────── */
-.wc-header {
-  animation: wc-fade-down 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-  box-shadow: 0 10px 34px -14px rgba(0, 0, 0, 0.32);
-}
-
-@keyframes wc-fade-down {
-  from { opacity: 0; transform: translateY(-14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Hero text stagger (reuses .auth-word's word-reveal keyframe) ──── */
-.wc-hero-title .auth-word { animation-delay: 0.05s; }
-
-.wc-hero-gradient.auth-word {
-  color: var(--nav-accent);
-}
-.wc-hero-subtitle { animation: word-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.28s; }
-.wc-hero-actions  { animation: wc-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.44s; }
-
-@keyframes wc-fade-up {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Hero illustration — real 3D, pointer-driven ─────────────────── */
-.wc-illustration-scene {
-  perspective: 1100px;
-  animation: wc-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: 0.35s;
-}
-
-/* Float (CSS keyframes) and tilt (JS-driven inline transform) both animate
-   `transform` — on the same element the animation would win every frame and
-   the tilt would never visibly apply. Float lives on this outer wrapper,
-   tilt on the inner .wc-illustration, so neither overwrites the other. */
-.wc-illustration-float {
-  animation: wc-float 7s ease-in-out infinite;
-  animation-delay: 1s;
-}
-
-@keyframes wc-float {
-  0%,   100% { transform: translateY(0)    rotate(0deg); }
-  25%        { transform: translateY(-6px) rotate(0.8deg); }
-  50%        { transform: translateY(-10px) rotate(0deg); }
-  75%        { transform: translateY(-4px) rotate(-0.8deg); }
-}
-
-
-.wc-illustration {
-  transform-style: preserve-3d;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.wc-laptop-glow {
-  animation: wc-glow-pulse 3.5s ease-in-out infinite;
-  transform-origin: center;
-}
-@keyframes wc-glow-pulse {
-  0%, 100% { opacity: 0.7; }
-  50%      { opacity: 1; }
-}
-
-.wc-laptop-neon {
-  animation: wc-neon-pulse 2.8s ease-in-out infinite;
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--nav-accent) 70%, transparent));
-}
-@keyframes wc-neon-pulse {
-  0%, 100% { opacity: 0.65; }
-  50%      { opacity: 1; }
-}
-
-/* Laptop lid — opens once on load (auto-flips laptopOpen true after a short
-   delay in the component), then click toggles it closed/open. A CSS
-   transition (not a keyframe animation) drives both cases from the same
-   bound transform/opacity, so open-on-load and click-to-toggle share one
-   mechanism instead of fighting over the `transform` property. */
-.wc-lid {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.85s ease;
-  cursor: pointer;
-}
-.wc-lid:hover {
-  filter: brightness(1.04);
-}
-
-/* Screen content — cycles between two "pages" of the app. */
-.wc-screen-view {
-  animation: wc-view-cycle 8s ease-in-out infinite;
-  animation-delay: 2s;
-}
-.wc-screen-view-2 { animation-delay: -2s; }
-@keyframes wc-view-cycle {
-  0%, 40%  { opacity: 1; }
-  50%, 90% { opacity: 0; }
-  100%     { opacity: 1; }
-}
-
-/* Avatars in the employees view pop in one by one each time that view
-   becomes visible — the parent's own opacity cycle masks them the rest of
-   the time, so the pop only needs to line up with the visible window. */
-.wc-avatar-pop {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: wc-avatar-pop 8s ease-in-out infinite;
-}
-@keyframes wc-avatar-pop {
-  0%, 48%   { transform: scale(0);    opacity: 0; }
-  58%       { transform: scale(1.15); opacity: 1; }
-  66%, 100% { transform: scale(1);    opacity: 1; }
-}
-
-/* Success toasts — one at a time, sliding in over whichever screen view is
-   showing underneath. 5 messages staggered across a 10s loop (2s each). */
-.wc-toast {
-  transform-box: fill-box;
-  transform-origin: center;
-  opacity: 0;
-  animation: wc-toast-cycle 10s ease-in-out infinite;
-}
-@keyframes wc-toast-cycle {
-  0%       { opacity: 0; transform: translateY(6px); }
-  4%, 16%  { opacity: 1; transform: translateY(0); }
-  20%, 100%{ opacity: 0; transform: translateY(-6px); }
-}
-
-/* Person beside the laptop, hands alternating in a typing bounce. */
-.wc-hand {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: wc-type-bounce 0.7s ease-in-out infinite;
-}
-.wc-hand-2 { animation-delay: 0.35s; }
-@keyframes wc-type-bounce {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-3px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .wc-lid { transition: none !important; }
-  .wc-screen-view { animation: none !important; opacity: 1 !important; }
-  .wc-screen-view-2 { display: none; }
-  .wc-avatar-pop { animation: none !important; transform: scale(1) !important; opacity: 0.8 !important; }
-  .wc-toast { display: none; }
-  .wc-hand { animation: none !important; }
-}
-
-/* ── Quick facts bar ──────────────────────────────────────────────── */
-.wc-facts-bar {
-  background: var(--auth-card);
-  box-shadow: 0 20px 40px -24px rgba(0, 0, 0, 0.35);
-  animation: wc-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: 0.5s;
-}
-
-/* ── Feature cards ────────────────────────────────────────────────── */
-.wc-card {
-  animation: wc-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s, border-color 0.25s;
-}
-.wc-card:nth-child(1) { animation-delay: 0.5s; }
-.wc-card:nth-child(2) { animation-delay: 0.58s; }
-.wc-card:nth-child(3) { animation-delay: 0.66s; }
-.wc-card:nth-child(4) { animation-delay: 0.74s; }
-
-.wc-card:hover {
-  transform: translateY(-5px);
-  border-color: color-mix(in srgb, var(--nav-accent) 45%, transparent);
-  box-shadow: 0 16px 32px -12px color-mix(in srgb, var(--nav-accent) 30%, transparent);
-}
-
-.wc-card-icon {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.wc-card:hover .wc-card-icon {
-  transform: scale(1.12) rotate(-6deg);
-}
-
-/* ── Product preview mockups ─────────────────────────────────────── */
-.wc-preview {
-  animation: wc-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s, border-color 0.3s;
-}
-.wc-preview:nth-child(1) { animation-delay: 0.1s; }
-.wc-preview:nth-child(2) { animation-delay: 0.16s; }
-.wc-preview:nth-child(3) { animation-delay: 0.22s; }
-.wc-preview:nth-child(4) { animation-delay: 0.28s; }
-.wc-preview:nth-child(5) { animation-delay: 0.34s; }
-.wc-preview:nth-child(6) { animation-delay: 0.4s; }
-
-.wc-preview:hover {
-  transform: translateY(-6px) scale(1.015);
-  border-color: color-mix(in srgb, var(--nav-accent) 40%, transparent);
-  box-shadow: 0 20px 40px -16px color-mix(in srgb, var(--nav-accent) 32%, transparent);
-}
-
-.wc-bar {
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  transform-origin: bottom;
-}
-.wc-preview:hover .wc-bar { transform: scaleY(1.08); }
-
-/* ── Steps ────────────────────────────────────────────────────────── */
-.wc-step {
-  animation: wc-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-.wc-step:nth-child(1) { animation-delay: 0.1s; }
-.wc-step:nth-child(2) { animation-delay: 0.2s; }
-.wc-step:nth-child(3) { animation-delay: 0.3s; }
-
-/* ── Why-us pillars ───────────────────────────────────────────────── */
-.wc-pillar {
-  animation: wc-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.wc-pillar:nth-child(1) { animation-delay: 0.1s; }
-.wc-pillar:nth-child(2) { animation-delay: 0.2s; }
-.wc-pillar:nth-child(3) { animation-delay: 0.3s; }
-.wc-pillar:hover { transform: translateY(-4px); }
-
-/* ── FAQ accordion ────────────────────────────────────────────────── */
-.wc-faq summary { list-style: none; }
-.wc-faq summary::-webkit-details-marker { display: none; }
-.wc-faq-chevron { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-.wc-faq[open] .wc-faq-chevron { transform: rotate(180deg); }
-.wc-faq[open] summary { margin-bottom: 2px; }
-
-/* ── CTA buttons ──────────────────────────────────────────────────── */
-.wc-btn-primary {
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
-  box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--nav-accent) 55%, transparent);
-}
-.wc-btn-primary:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 14px 28px -10px color-mix(in srgb, var(--nav-accent) 65%, transparent);
-}
-.wc-btn-secondary {
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s;
-}
-.wc-btn-secondary:hover {
-  transform: translateY(-2px);
-  background: color-mix(in srgb, var(--nav-accent) 12%, var(--bg-subtle-sm)) !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .wc-header, .wc-hero-subtitle, .wc-hero-actions, .wc-illustration-scene, .wc-illustration,
-  .wc-card, .wc-preview, .wc-step, .wc-pillar, .auth-word {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-  }
 }

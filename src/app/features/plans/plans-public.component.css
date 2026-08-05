@@ -1,94 +1,170 @@
+/* ── Editorial-dossier tokens (mirrors welcome.component.css — Angular
+   scopes styles per component, so this can't just inherit from there) ── */
 :host {
   display: block;
+  --ed-paper:        #E9DFC9;
+  --ed-paper-dark:   #17110B;
+  --ed-ink:          #2A1D14;
+  --ed-cream:        #F2E8D5;
+  --ed-copper:       #A85F30;
+  --ed-copper-bright:#E0954F;
+  --ed-moss:         #5F6E48;
+  --ed-moss-bright:  #8DA36A;
+  --ed-rust:         #A64B3C;
+
+  --ed-bg:      var(--ed-paper);
+  --ed-fg:      var(--ed-ink);
+  --ed-fg-muted: color-mix(in srgb, var(--ed-ink) 58%, transparent);
+  --ed-fg-faint: color-mix(in srgb, var(--ed-ink) 38%, transparent);
+  --ed-card:    #F4EEDC;
+  --ed-line:    color-mix(in srgb, var(--ed-ink) 20%, transparent);
+  --ed-accent:  var(--ed-copper);
+
+  font-family: 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif;
+}
+:host-context(.dark) {
+  --ed-bg:      var(--ed-paper-dark);
+  --ed-fg:      var(--ed-cream);
+  --ed-fg-muted: color-mix(in srgb, var(--ed-cream) 58%, transparent);
+  --ed-fg-faint: color-mix(in srgb, var(--ed-cream) 36%, transparent);
+  --ed-card:    #221A10;
+  --ed-line:    color-mix(in srgb, var(--ed-cream) 18%, transparent);
+  --ed-accent:  var(--ed-copper-bright);
 }
 
-/* ── Header (mirrors welcome.component.css — Angular scopes styles per
-   component, so this can't just inherit from there) ─────────────────── */
-.wc-header {
-  animation: pp-fade-down 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-  box-shadow: 0 10px 34px -14px rgba(0, 0, 0, 0.32);
-}
-@keyframes pp-fade-down {
-  from { opacity: 0; transform: translateY(-14px); }
+.ed-display { font-family: 'Markazi Text', 'Georgia', serif; }
+.ed-mono    { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+
+@keyframes ed-rise {
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes ed-drop {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ed-rise { animation: ed-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-.wc-switchers {
+@media (prefers-reduced-motion: reduce) {
+  .ed-rise, .ed-drop, .ed-rail, .ed-folder { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
+
+/* ── Folder-tab navigation rail (mirrors welcome page) ───────────────── */
+.ed-rail { animation: ed-drop 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.ed-rail-base {
+  background: var(--ed-card);
+  border-bottom: 1px solid var(--ed-line);
+  box-shadow: 0 8px 24px -16px rgba(0,0,0,0.4);
+}
+.ed-tab {
+  position: relative;
+  padding: 9px 20px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ed-fg-muted);
+  background: color-mix(in srgb, var(--ed-ink) 6%, var(--ed-bg));
+  clip-path: polygon(12% 0, 88% 0, 100% 100%, 0% 100%);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s, color 0.25s;
+  transform: translateY(3px);
+}
+:host-context(.dark) .ed-tab {
+  background: color-mix(in srgb, var(--ed-cream) 5%, var(--ed-bg));
+}
+.ed-tab:hover { transform: translateY(0); color: var(--ed-fg); }
+.ed-tab-active {
+  background: var(--ed-accent);
+  color: #fff;
+  transform: translateY(0);
+  box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--ed-accent) 70%, transparent);
+}
+
+.ed-switchers {
   display: flex;
   align-items: center;
   gap: 3px;
   padding: 2px;
-  border-radius: 9px;
-  background: var(--bg-subtle-md);
-  border: 1px solid var(--bg-subtle-md);
+  border-radius: 8px;
+  background: var(--ed-bg);
+  border: 1px solid var(--ed-line);
 }
-.wc-switchers-divider {
-  width: 1px;
-  align-self: stretch;
-  background: var(--auth-fg-35, rgba(255,255,255,0.15));
-  opacity: 0.4;
-}
-.wc-switchers ::ng-deep .lang-track,
-.wc-switchers ::ng-deep .theme-track {
-  border: none;
-  background: transparent;
-  padding: 0;
-}
+.ed-switchers-divider { width: 1px; align-self: stretch; background: var(--ed-line); }
+.ed-switchers ::ng-deep .lang-track,
+.ed-switchers ::ng-deep .theme-track { border: none; background: transparent; padding: 0; }
 
-.wc-btn-primary {
+.ed-btn-primary {
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
-  box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--nav-accent) 55%, transparent);
+  box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--ed-accent) 55%, transparent);
 }
-.wc-btn-primary:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 14px 28px -10px color-mix(in srgb, var(--nav-accent) 65%, transparent);
-}
+.ed-btn-primary:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 14px 28px -10px color-mix(in srgb, var(--ed-accent) 65%, transparent); }
 
-/* ── Pricing cards ─────────────────────────────────────────────────── */
-.pp-card {
-  position: relative;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s;
-  animation: pp-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-.pp-card:nth-child(1) { animation-delay: 0.05s; }
-.pp-card:nth-child(2) { animation-delay: 0.12s; }
-.pp-card:nth-child(3) { animation-delay: 0.19s; }
-@keyframes pp-fade-up {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.pp-card-featured {
-  transform: scale(1.03);
-  box-shadow: 0 24px 48px -20px color-mix(in srgb, var(--nav-accent) 35%, transparent);
-}
-.pp-card-featured:hover { transform: scale(1.03) translateY(-3px); }
-.pp-card:not(.pp-card-featured):hover { transform: translateY(-3px); }
-
-.pp-badge {
-  position: absolute;
-  top: -13px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--nav-accent);
-  color: #fff;
+.ed-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 4px 12px;
+  border-radius: 3px 3px 0 0;
+  background: var(--ed-card);
+  border: 1px solid var(--ed-line);
+  border-bottom: none;
+  color: var(--ed-accent);
+}
+.ed-kicker::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--ed-accent); flex-shrink: 0; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   SIGNATURE — pricing tiers as filed folders in a drawer
+   ══════════════════════════════════════════════════════════════════════ */
+.ed-folder {
+  position: relative;
+  animation: ed-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s;
+}
+.ed-folder:nth-child(1) { animation-delay: 0.08s; }
+.ed-folder:nth-child(2) { animation-delay: 0.18s; }
+.ed-folder:nth-child(3) { animation-delay: 0.28s; }
+
+.ed-folder-tab {
+  display: inline-block;
+  padding: 5px 18px;
+  border-radius: 8px 8px 0 0;
+  font-size: 12px;
   font-weight: 700;
-  padding: 4px 14px;
-  border-radius: 999px;
-  white-space: nowrap;
+  background: var(--ed-card);
+  border: 1px solid var(--ed-line);
+  border-bottom: none;
+  color: var(--ed-fg-muted);
+  transform: translateY(1px);
+}
+.ed-folder-featured .ed-folder-tab {
+  background: var(--ed-accent);
+  border-color: var(--ed-accent);
+  color: #fff;
 }
 
-.pp-price {
-  font-size: 2.25rem;
-  line-height: 1;
+.ed-folder-body {
+  background: var(--ed-card);
+  border: 1px solid var(--ed-line);
+  border-radius: 0 14px 14px 14px;
 }
+.ed-folder-featured .ed-folder-body {
+  border-color: var(--ed-accent);
+  box-shadow: 0 24px 48px -20px color-mix(in srgb, var(--ed-accent) 35%, transparent);
+}
+.ed-folder:not(.ed-folder-featured):hover { transform: translateY(-4px); }
+.ed-folder-featured:hover { transform: translateY(-6px); }
 
-@media (prefers-reduced-motion: reduce) {
-  .wc-header, .pp-card {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .pp-card-featured { transform: scale(1.03) !important; }
+.ed-price { font-size: 2.4rem; line-height: 1; }
+
+.ed-ledger-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.ed-ledger-dots {
+  flex: 1;
+  border-bottom: 2px dotted var(--ed-line);
+  margin-bottom: 4px;
+  min-width: 10px;
 }

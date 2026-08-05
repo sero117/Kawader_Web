@@ -89,7 +89,22 @@
       "company": "Company",
       "contact": "Contact"
     },
-    "footer": "© Kawader — All rights reserved."
+    "footer": "© Kawader — All rights reserved.",
+    "dossier": {
+      "fileNo": "File No.",
+      "issued": "Issued",
+      "status": "Status",
+      "active": "Active",
+      "kickers": {
+        "facts": "At a glance",
+        "features": "Capabilities",
+        "previews": "Inside the file",
+        "steps": "Getting started",
+        "why": "Why Kawader",
+        "roles": "Roles",
+        "faq": "FAQ"
+      }
+    }
   },
   "plansPage": {
     "title": "Simple plans that fit your company's size",
@@ -99,7 +114,12 @@
     "employees": "employees",
     "unlimited": "Unlimited",
     "cta": "Get started",
-    "note": "Prices shown are a demo preview and subject to change."
+    "note": "Prices shown are a demo preview and subject to change.",
+    "fields": {
+      "employees": "Employees",
+      "branches": "Branches",
+      "sections": "Sections"
+    }
   },
   "common": {
     "noData": "No data available",
