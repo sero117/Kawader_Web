@@ -65,28 +65,98 @@
           </div>
         </div>
 
-        <!-- Fanned personnel-card stack -->
+        <!-- Fanned personnel-card stack — back two are static depth, the
+             front card cycles through five real feature pages. -->
         <div class="ed-card-fan relative mx-auto" style="width: 230px; height: 210px;">
-          @for (p of [
-            { name: 'welcome.roles.manager.title', role: '#B87333', pct: 78 },
-            { name: 'welcome.roles.hr.title',      role: 'var(--ed-accent)', pct: 92 },
-            { name: 'welcome.roles.employee.title',role: '#5F6E48', pct: 64 },
-          ]; track p.name) {
-            <div class="ed-index-card p-4">
-              <div class="flex items-center gap-2.5 mb-3">
-                <span class="w-8 h-8 rounded-full flex-shrink-0" [style.background]="p.role" style="opacity:0.85"></span>
-                <div class="flex-1">
-                  <div class="ed-card-line h-2 rounded-full mb-1.5" style="width: 65%;"></div>
-                  <div class="ed-card-line h-1.5 rounded-full" style="width: 40%; opacity: 0.6;"></div>
-                </div>
+          <div class="ed-index-card ed-index-card-back" style="transform: rotate(-7deg) translate(-14px, 6px); z-index: 1;"></div>
+          <div class="ed-index-card ed-index-card-back" style="transform: rotate(4deg) translate(10px, -2px); z-index: 2;"></div>
+
+          <div class="ed-index-card ed-index-card-front" style="z-index: 3;">
+
+            <!-- Page 1 — الموظفون: الحضور، الإجازات، الورديات -->
+            <div class="ed-page p-4" style="animation-delay: 0s;">
+              <div class="ed-mono flex items-center justify-between mb-3" style="font-size: 9px; color: var(--ed-fg-faint);">
+                <span>{{ 'welcome.roles.employee.title' | translate }}</span>
+                <span>001</span>
               </div>
-              <div class="ed-ledger-row ed-mono" style="font-size: 10px; color: var(--ed-fg-faint);">
-                <span>{{ p.name | translate }}</span>
-                <span class="ed-ledger-dots"></span>
-                <span [style.color]="p.role" class="font-bold">{{ p.pct }}%</span>
+              <div class="ed-ledger-row ed-mono mb-2" style="font-size: 10px; color: var(--ed-fg-muted);">
+                <span>الحضور اليوم</span><span class="ed-ledger-dots"></span>
+                <span class="font-bold" style="color: var(--ed-moss);">✓ حاضر</span>
+              </div>
+              <div class="ed-ledger-row ed-mono mb-2" style="font-size: 10px; color: var(--ed-fg-muted);">
+                <span>الإجازات</span><span class="ed-ledger-dots"></span>
+                <span class="font-bold" style="color: var(--ed-fg);">إجازة نشطة</span>
+              </div>
+              <div class="ed-ledger-row ed-mono" style="font-size: 10px; color: var(--ed-fg-muted);">
+                <span>الوردية الحالية</span><span class="ed-ledger-dots"></span>
+                <span class="font-bold" style="color: var(--ed-accent);">صباحية</span>
               </div>
             </div>
-          }
+
+            <!-- Page 2 — تعريف وردية وتحديد الأيام -->
+            <div class="ed-page p-4" style="animation-delay: 3.4s;">
+              <div class="ed-mono flex items-center justify-between mb-3" style="font-size: 9px; color: var(--ed-fg-faint);">
+                <span>وردية صباحية</span>
+                <span>٠٨:٠٠–١٦:٠٠</span>
+              </div>
+              <div class="flex items-center justify-between gap-1 mb-3">
+                @for (d of ['ح','ن','ث','ر','خ','ج','س']; track $index) {
+                  <span class="ed-day-chip ed-mono" [class.ed-day-chip-active]="$index < 5">{{ d }}</span>
+                }
+              </div>
+              <div class="ed-ledger-row ed-mono" style="font-size: 10px; color: var(--ed-fg-muted);">
+                <span>عدد أيام الدوام</span><span class="ed-ledger-dots"></span>
+                <span class="font-bold" style="color: var(--ed-fg);">٥ أيام</span>
+              </div>
+            </div>
+
+            <!-- Page 3 — كشف الرواتب -->
+            <div class="ed-page p-4" style="animation-delay: 6.8s;">
+              <div class="ed-mono mb-2" style="font-size: 9px; color: var(--ed-fg-faint);">كشف الراتب — هذا الشهر</div>
+              <div class="ed-display font-semibold text-xl mb-3" style="color: var(--ed-accent);">24,500 <span class="ed-mono text-[9px] font-semibold" style="color: var(--ed-fg-faint);">SAR</span></div>
+              <div class="ed-ledger-row ed-mono mb-2" style="font-size: 10px; color: var(--ed-fg-muted);">
+                <span>الحوافز</span><span class="ed-ledger-dots"></span>
+                <span class="font-bold" style="color: var(--ed-moss);">+500</span>
+              </div>
+              <div class="ed-ledger-row ed-mono" style="font-size: 10px; color: var(--ed-fg-muted);">
+                <span>الحالة</span><span class="ed-ledger-dots"></span>
+                <span class="font-bold" style="color: var(--ed-moss);">مدفوع</span>
+              </div>
+            </div>
+
+            <!-- Page 4 — الاشتراك -->
+            <div class="ed-page p-4" style="animation-delay: 10.2s;">
+              <div class="ed-mono flex items-center justify-between mb-3" style="font-size: 9px; color: var(--ed-fg-faint);">
+                <span>الاشتراك الحالي</span>
+                <span class="ed-stamp rounded-full px-2 py-0.5 font-bold" style="font-family:'IBM Plex Sans Arabic',sans-serif; font-size:8px;">نشط</span>
+              </div>
+              <p class="font-bold text-sm mb-3" style="color: var(--ed-fg);">الخطة الاحترافية</p>
+              <div class="ed-ledger-row ed-mono mb-2" style="font-size: 10px; color: var(--ed-fg-muted);">
+                <span>التجديد</span><span class="ed-ledger-dots"></span>
+                <span class="font-bold" style="color: var(--ed-fg);">١٢ يومًا</span>
+              </div>
+              <div class="ed-ledger-row ed-mono" style="font-size: 10px; color: var(--ed-fg-muted);">
+                <span>الموظفون</span><span class="ed-ledger-dots"></span>
+                <span class="font-bold" style="color: var(--ed-fg);">٥٠ حدًا أقصى</span>
+              </div>
+            </div>
+
+            <!-- Page 5 — البصمة -->
+            <div class="ed-page p-4 flex flex-col items-center justify-center text-center" style="animation-delay: 13.6s;">
+              <div class="relative mb-2">
+                <svg class="w-9 h-9" fill="none" viewBox="0 0 24 24" stroke="var(--ed-accent)" stroke-width="1.5" style="opacity:0.85">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4.052" />
+                </svg>
+                <span class="absolute -top-0.5 -end-1 w-2 h-2 rounded-full" style="background: var(--ed-moss); box-shadow: 0 0 0 2px var(--ed-card);"></span>
+              </div>
+              <p class="ed-mono text-[10px] font-semibold mb-2" style="color: var(--ed-moss);">جهاز متصل الآن</p>
+              <div class="ed-ledger-row ed-mono w-full" style="font-size: 9px; color: var(--ed-fg-faint);">
+                <span>الرقم التسلسلي</span><span class="ed-ledger-dots"></span>
+                <span class="font-bold" style="color: var(--ed-fg);">DVC-0417</span>
+              </div>
+            </div>
+
+          </div>
         </div>
 
       </div>
@@ -128,52 +198,6 @@
             <p class="font-bold text-sm" style="color: var(--ed-fg);">{{ 'welcome.facts.timeSaved.title' | translate }}</p>
             <p class="text-[11px]" style="color: var(--ed-fg-faint);">{{ 'welcome.facts.timeSaved.desc' | translate }}</p>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Features -->
-    <section class="px-5 sm:px-10 pt-8 pb-16 max-w-5xl mx-auto">
-      <span class="ed-kicker ed-mono ms-4">{{ 'welcome.dossier.kickers.features' | translate }}</span>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 rounded-2xl rounded-tr-none overflow-hidden p-0.5" style="background: var(--ed-line);">
-        <div class="ed-tile ed-reveal rounded-2xl p-5">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: color-mix(in srgb, var(--ed-accent) 16%, transparent); color: var(--ed-accent);">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
-            </svg>
-          </div>
-          <h3 class="font-bold text-sm mb-1.5" style="color: var(--ed-fg);">{{ 'welcome.features.employees.title' | translate }}</h3>
-          <p class="text-xs leading-relaxed" style="color: var(--ed-fg-faint);">{{ 'welcome.features.employees.desc' | translate }}</p>
-        </div>
-
-        <div class="ed-tile ed-reveal rounded-2xl p-5">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: color-mix(in srgb, var(--ed-moss) 16%, transparent); color: var(--ed-moss);">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/>
-            </svg>
-          </div>
-          <h3 class="font-bold text-sm mb-1.5" style="color: var(--ed-fg);">{{ 'welcome.features.payroll.title' | translate }}</h3>
-          <p class="text-xs leading-relaxed" style="color: var(--ed-fg-faint);">{{ 'welcome.features.payroll.desc' | translate }}</p>
-        </div>
-
-        <div class="ed-tile ed-reveal rounded-2xl p-5">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: rgba(166,75,60,0.14); color: var(--ed-rust);">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-            </svg>
-          </div>
-          <h3 class="font-bold text-sm mb-1.5" style="color: var(--ed-fg);">{{ 'welcome.features.shifts.title' | translate }}</h3>
-          <p class="text-xs leading-relaxed" style="color: var(--ed-fg-faint);">{{ 'welcome.features.shifts.desc' | translate }}</p>
-        </div>
-
-        <div class="ed-tile ed-reveal rounded-2xl p-5">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: rgba(184,115,51,0.16); color: #B87333;">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
-            </svg>
-          </div>
-          <h3 class="font-bold text-sm mb-1.5" style="color: var(--ed-fg);">{{ 'welcome.features.branches.title' | translate }}</h3>
-          <p class="text-xs leading-relaxed" style="color: var(--ed-fg-faint);">{{ 'welcome.features.branches.desc' | translate }}</p>
         </div>
       </div>
     </section>
@@ -383,43 +407,6 @@
           <div class="ed-mono w-11 h-11 mx-auto rounded-full flex items-center justify-center font-bold mb-3" style="border: 2px solid var(--ed-accent); color: var(--ed-accent);">03</div>
           <h3 class="font-bold text-sm mb-1.5" style="color: var(--ed-fg);">{{ 'welcome.steps.three.title' | translate }}</h3>
           <p class="text-xs leading-relaxed" style="color: var(--ed-fg-faint);">{{ 'welcome.steps.three.desc' | translate }}</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Why Kawader — full-bleed alt band -->
-    <section class="pt-12 pb-24" style="background: var(--ed-alt-bg);">
-      <div class="px-5 sm:px-10 max-w-4xl mx-auto">
-        <span class="ed-kicker ed-mono ms-4" style="background: var(--ed-alt-bg);">{{ 'welcome.dossier.kickers.why' | translate }}</span>
-        <h2 class="ed-display font-semibold text-3xl text-center mb-10 rounded-tr-none" style="color: var(--ed-fg);">{{ 'welcome.why.title' | translate }}</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <div class="ed-tile ed-reveal rounded-2xl p-6 text-center">
-            <div class="w-11 h-11 mx-auto rounded-xl flex items-center justify-center mb-3" style="background: color-mix(in srgb, var(--ed-accent) 16%, transparent); color: var(--ed-accent);">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
-              </svg>
-            </div>
-            <h3 class="font-bold text-sm mb-1.5" style="color: var(--ed-fg);">{{ 'welcome.why.security.title' | translate }}</h3>
-            <p class="text-xs leading-relaxed" style="color: var(--ed-fg-faint);">{{ 'welcome.why.security.desc' | translate }}</p>
-          </div>
-          <div class="ed-tile ed-reveal rounded-2xl p-6 text-center">
-            <div class="w-11 h-11 mx-auto rounded-xl flex items-center justify-center mb-3" style="background: rgba(166,75,60,0.14); color: var(--ed-rust);">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
-              </svg>
-            </div>
-            <h3 class="font-bold text-sm mb-1.5" style="color: var(--ed-fg);">{{ 'welcome.why.speed.title' | translate }}</h3>
-            <p class="text-xs leading-relaxed" style="color: var(--ed-fg-faint);">{{ 'welcome.why.speed.desc' | translate }}</p>
-          </div>
-          <div class="ed-tile ed-reveal rounded-2xl p-6 text-center">
-            <div class="w-11 h-11 mx-auto rounded-xl flex items-center justify-center mb-3" style="background: color-mix(in srgb, var(--ed-moss) 16%, transparent); color: var(--ed-moss);">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/>
-              </svg>
-            </div>
-            <h3 class="font-bold text-sm mb-1.5" style="color: var(--ed-fg);">{{ 'welcome.why.support.title' | translate }}</h3>
-            <p class="text-xs leading-relaxed" style="color: var(--ed-fg-faint);">{{ 'welcome.why.support.desc' | translate }}</p>
-          </div>
         </div>
       </div>
     </section>

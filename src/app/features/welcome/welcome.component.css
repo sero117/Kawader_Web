@@ -161,14 +161,48 @@
 @keyframes ed-card-settle {
   from { opacity: 0; transform: translateY(30px) rotate(0deg) scale(0.94); }
 }
-.ed-index-card:nth-child(1) { transform: rotate(-7deg) translate(-14px, 6px); z-index: 1; animation-delay: 0.5s; }
-.ed-index-card:nth-child(2) { transform: rotate(3deg)  translate(10px, -2px); z-index: 2; animation-delay: 0.62s; }
-.ed-index-card:nth-child(3) { transform: rotate(-2deg) translate(-2px, -14px); z-index: 3; animation-delay: 0.74s; }
-.ed-card-fan:hover .ed-index-card:nth-child(1) { transform: rotate(-11deg) translate(-26px, 10px); }
-.ed-card-fan:hover .ed-index-card:nth-child(2) { transform: rotate(5deg)  translate(18px, 0px); }
-.ed-card-fan:hover .ed-index-card:nth-child(3) { transform: rotate(-2deg) translate(-2px, -20px) scale(1.02); }
+.ed-index-card-back:nth-of-type(1) { animation-delay: 0.5s; }
+.ed-index-card-back:nth-of-type(2) { animation-delay: 0.62s; }
+.ed-index-card-front { animation-delay: 0.74s; overflow: hidden; perspective: 800px; }
+.ed-card-fan:hover .ed-index-card-back:nth-of-type(1) { transform: rotate(-11deg) translate(-26px, 10px) !important; }
+.ed-card-fan:hover .ed-index-card-back:nth-of-type(2) { transform: rotate(5deg)  translate(18px, 0px) !important; }
+.ed-card-fan:hover .ed-index-card-front { transform: rotate(-2deg) translate(-2px, -6px) scale(1.02); }
 
 .ed-card-line { background: var(--ed-line); }
+
+/* ── Front card — cycles through five feature pages ──────────────────── */
+.ed-page {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  backface-visibility: hidden;
+  animation: ed-page-flip 17s ease-in-out infinite;
+}
+@keyframes ed-page-flip {
+  0%          { opacity: 0; transform: rotateX(-90deg); }
+  2%, 18%     { opacity: 1; transform: rotateX(0deg); }
+  20%, 100%   { opacity: 0; transform: rotateX(90deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ed-page { animation: none !important; opacity: 0 !important; transform: none !important; }
+  .ed-page:first-child { opacity: 1 !important; }
+}
+
+.ed-day-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  font-size: 8px;
+  font-weight: 700;
+  background: var(--ed-bg);
+  color: var(--ed-fg-faint);
+}
+.ed-day-chip-active {
+  background: var(--ed-accent);
+  color: #fff;
+}
 
 /* ══════════════════════════════════════════════════════════════════════
    Ledger rows — dotted-leader label/value (facts bar, plan specs)
