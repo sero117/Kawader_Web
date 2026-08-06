@@ -109,7 +109,7 @@ export class ManagerOverviewComponent implements OnInit {
       branches:  isHr ? of(null) : this.brSvc.getAll({ pageNumber: 1, pageSize: 1 }).pipe(catchError(() => of(null))),
       devices:   isHr ? of(null) : this.devSvc.getAll(1, 1).pipe(catchError(() => of(null))),
       logs:      isHr ? of(null) : this.admsSvc.getLogs().pipe(catchError(() => of(null))),
-      payrolls:  this.payrollSvc.getAll({ pageNumber: 1, pageSize: 1 }).pipe(catchError(() => of(null))),
+      payrolls:  isHr ? of(null) : this.payrollSvc.getAll({ pageNumber: 1, pageSize: 1 }).pipe(catchError(() => of(null))),
       employeeList: this.empSvc.getAll({ pageNumber: 1, pageSize: 50 }).pipe(catchError(() => of(null))),
     }).subscribe(({ employees, branches, devices, logs, payrolls, employeeList }) => {
       const latestRun = payrolls?.items?.[0];
