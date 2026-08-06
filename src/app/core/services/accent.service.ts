@@ -11,7 +11,10 @@ export interface AccentColor {
 const STORAGE_KEY = 'kawader_accent';
 
 export const ACCENT_COLORS: AccentColor[] = [
-  { id: 'indigo',   label: 'الليلي',   light: '#4F46E5', dark: '#818CF8', swatch: '#4F46E5' },
+  // 'indigo' used to live here, but it and 'navy' below read as almost the
+  // same blue in the picker's dots — swapped for a calmer, clearly distinct
+  // olive-green instead of two near-duplicate blues.
+  { id: 'olive',    label: 'الزيتوني',  light: '#5F6E48', dark: '#8DA36A', swatch: '#5F6E48' },
   { id: 'navy',     label: 'البحري',   light: '#1D4ED8', dark: '#60A5FA', swatch: '#1D4ED8' },
   { id: 'burgundy', label: 'الخمري',   light: '#9F1239', dark: '#C1394E', swatch: '#9F1239' },
   { id: 'brown',    label: 'البني',    light: '#92400E', dark: '#C6873F', swatch: '#92400E' },

@@ -88,7 +88,7 @@
           }
           <button type="button" (click)="submitAssign()" [disabled]="!selectedSystemId() || submitting()"
             class="flex-1 py-2.5 rounded-xl text-sm font-bold"
-            style="background: var(--text-base); color: var(--bg-surface);"
+            style="background: var(--nav-accent); color: #fff;"
             [style.opacity]="!selectedSystemId() || submitting() ? '0.5' : '1'">
             {{ submitting() ? ('manager.shiftAssignment.assigning' | translate) : ('manager.shiftAssignment.confirmAssign' | translate) }}
           </button>

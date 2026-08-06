@@ -219,7 +219,7 @@
             <button type="button" (click)="closeDeviceModal()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
               style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
             <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
-              style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
+              style="background: var(--nav-accent); color: #fff;" [style.opacity]="submitting() ? '0.5' : '1'">
               {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
             </button>
           </div>
@@ -276,7 +276,7 @@
           </div>
         </div>
         <button (click)="showSecretModal.set(false)" class="w-full py-2.5 rounded-xl text-sm font-bold"
-          style="background: var(--text-base); color: var(--bg-surface);">
+          style="background: var(--nav-accent); color: #fff;">
           {{ 'manager.devices.secretDone' | translate }}
         </button>
       </div>
@@ -353,7 +353,7 @@
         </div>
         <div class="flex items-center gap-2">
           <button (click)="openAddEmp()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold"
-            style="background: var(--text-base); color: var(--bg-surface);">
+            style="background: var(--nav-accent); color: #fff;">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
             </svg>
@@ -522,7 +522,7 @@
           <button type="button" (click)="showAddEmpModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
             style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
           <button type="button" (click)="submitAddEmployee()" [disabled]="empSubmitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
-            style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="empSubmitting() ? '0.5' : '1'">
+            style="background: var(--nav-accent); color: #fff;" [style.opacity]="empSubmitting() ? '0.5' : '1'">
             {{ empSubmitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
           </button>
         </div>
@@ -572,7 +572,7 @@
           <button type="button" (click)="showEditEmpModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
             style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
           <button type="button" (click)="submitEditEmployee()" [disabled]="editEmpSubmit()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
-            style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="editEmpSubmit() ? '0.5' : '1'">
+            style="background: var(--nav-accent); color: #fff;" [style.opacity]="editEmpSubmit() ? '0.5' : '1'">
             {{ editEmpSubmit() ? ('common.saving' | translate) : ('common.save' | translate) }}
           </button>
         </div>

@@ -33,8 +33,12 @@ input[type="checkbox"] {
   --accent-light:     #A0673A;
   --accent-dark:      #C99361;
   --nav-accent:       var(--accent-light);
-  --table-row-bg:     color-mix(in srgb, var(--accent-light) 3%, #ffffff);
-  --table-row-bg-alt: color-mix(in srgb, var(--accent-light) 6%, #f8f7f4);
+  /* Row surfaces stay neutral regardless of the picked accent — only the
+     brief hover state carries a tint, matching the Subscriptions table
+     (which never zebra-striped rows with the accent to begin with) and
+     avoiding a muddy look with cooler/less-warm accent choices. */
+  --table-row-bg:     var(--bg-surface);
+  --table-row-bg-alt: var(--bg-surface-2);
   --table-row-hover:  color-mix(in srgb, var(--accent-light) 12%, #f0eeeb);
   --card-shadow:      rgba(0, 0, 0, 0.055);
   --sidebar-bg:       linear-gradient(175deg, color-mix(in srgb, var(--accent-light) 5%, #ffffff) 0%, color-mix(in srgb, var(--accent-light) 9%, #f3f2ef) 100%);
@@ -91,7 +95,7 @@ input[type="checkbox"] {
   --nav-active-text:  var(--accent-dark);
   --nav-accent:       var(--accent-dark);
   --table-row-bg:     var(--bg-surface);
-  --table-row-bg-alt: color-mix(in srgb, var(--accent-dark) 6%, transparent);
+  --table-row-bg-alt: var(--bg-surface-2);
   --table-row-hover:  color-mix(in srgb, var(--accent-dark) 14%, transparent);
   --card-shadow:      rgba(0, 0, 0, 0.2);
   --sidebar-bg:       linear-gradient(175deg, color-mix(in srgb, var(--accent-dark) 10%, #13122a) 0%, color-mix(in srgb, var(--accent-dark) 7%, #0c0b1e) 100%);

@@ -215,7 +215,7 @@
             <button type="button" (click)="showAddModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
               style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
             <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
-              style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
+              style="background: var(--nav-accent); color: #fff;" [style.opacity]="submitting() ? '0.5' : '1'">
               {{ submitting() ? ('common.saving' | translate) : ('manager.shiftSystems.addBtn' | translate) }}
             </button>
           </div>
@@ -273,7 +273,7 @@
             <button type="button" (click)="showEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
               style="background: var(--bg-subtle-sm); color: var(--text-muted);">{{ 'common.cancel' | translate }}</button>
             <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-bold"
-              style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.5' : '1'">
+              style="background: var(--nav-accent); color: #fff;" [style.opacity]="submitting() ? '0.5' : '1'">
               {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
             </button>
           </div>

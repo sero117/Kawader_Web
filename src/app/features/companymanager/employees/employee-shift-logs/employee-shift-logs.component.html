@@ -128,7 +128,7 @@
       }
       <div class="flex gap-2 pt-1">
         <button type="submit" [disabled]="submitting()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-          style="background: var(--text-base); color: var(--bg-surface);" [style.opacity]="submitting() ? '0.6' : '1'">
+          style="background: var(--nav-accent); color: #fff;" [style.opacity]="submitting() ? '0.6' : '1'">
           {{ submitting() ? ('common.saving' | translate) : ('common.save' | translate) }}
         </button>
         <button type="button" (click)="cancelEdit()" [disabled]="submitting()" class="px-4 py-2.5 rounded-xl text-sm font-semibold"
