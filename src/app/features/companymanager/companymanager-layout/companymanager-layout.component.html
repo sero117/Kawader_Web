@@ -83,22 +83,20 @@
         </button>
         <div class="sidebar-accordion-body" [class.open]="shiftsOpen()">
           <div class="sidebar-sub">
-            <!-- Shifts / Shift Systems config — CompanyManager only, no HR permission on these controllers -->
-            @if (isManager) {
-              <a [routerLink]="basePath + '/shifts'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                </svg>
-                <span class="sidebar-link-label">{{ 'manager.nav.shifts' | translate }}</span>
-              </a>
-              <a [routerLink]="basePath + '/shift-systems'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
-                </svg>
-                <span class="sidebar-link-label">{{ 'manager.nav.shiftSystems' | translate }}</span>
-              </a>
-            }
+            <!-- Shifts / Shift Systems config — HR now has backend permission here too -->
+            <a [routerLink]="basePath + '/shifts'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+              </svg>
+              <span class="sidebar-link-label">{{ 'manager.nav.shifts' | translate }}</span>
+            </a>
+            <a [routerLink]="basePath + '/shift-systems'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+              </svg>
+              <span class="sidebar-link-label">{{ 'manager.nav.shiftSystems' | translate }}</span>
+            </a>
             <a [routerLink]="basePath + '/shift-logs'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -109,20 +107,18 @@
           </div>
         </div>
       } @else {
-        <!-- Shifts group — collapsed (icon only) -->
-        @if (isManager) {
-          <a [routerLink]="basePath + '/shifts'" routerLinkActive="sidebar-active" class="sidebar-link">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-            </svg>
-          </a>
-          <a [routerLink]="basePath + '/shift-systems'" routerLinkActive="sidebar-active" class="sidebar-link">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
-            </svg>
-          </a>
-        }
+        <!-- Shifts group — collapsed (icon only). HR now has backend permission here too -->
+        <a [routerLink]="basePath + '/shifts'" routerLinkActive="sidebar-active" class="sidebar-link">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+          </svg>
+        </a>
+        <a [routerLink]="basePath + '/shift-systems'" routerLinkActive="sidebar-active" class="sidebar-link">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+          </svg>
+        </a>
         <a [routerLink]="basePath + '/shift-logs'" routerLinkActive="sidebar-active" class="sidebar-link">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -147,21 +143,22 @@
         </a>
       }
 
-      <!-- Payroll section -->
-      @if (!collapsed()) {
-        <div class="sidebar-section">
-          <span class="sidebar-section-label">{{ 'manager.nav.payrollSection' | translate }}</span>
-        </div>
-      }
+      <!-- Payroll section — CompanyManager only, no HR permission on Payroll -->
+      @if (isManager) {
+        @if (!collapsed()) {
+          <div class="sidebar-section">
+            <span class="sidebar-section-label">{{ 'manager.nav.payrollSection' | translate }}</span>
+          </div>
+        }
 
-      <!-- Payroll -->
-      <a [routerLink]="basePath + '/payroll'" routerLinkActive="sidebar-active" class="sidebar-link">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3M3.75 18h16.5a1.5 1.5 0 0 0 1.5-1.5V7.5a1.5 1.5 0 0 0-1.5-1.5H3.75a1.5 1.5 0 0 0-1.5 1.5v9a1.5 1.5 0 0 0 1.5 1.5Z"/>
-        </svg>
-        <span class="sidebar-link-label">{{ 'manager.nav.payroll' | translate }}</span>
-      </a>
+        <a [routerLink]="basePath + '/payroll'" routerLinkActive="sidebar-active" class="sidebar-link">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3M3.75 18h16.5a1.5 1.5 0 0 0 1.5-1.5V7.5a1.5 1.5 0 0 0-1.5-1.5H3.75a1.5 1.5 0 0 0-1.5 1.5v9a1.5 1.5 0 0 0 1.5 1.5Z"/>
+          </svg>
+          <span class="sidebar-link-label">{{ 'manager.nav.payroll' | translate }}</span>
+        </a>
+      }
 
       <!-- Subscription section — CompanyManager only -->
       @if (isManager) {
@@ -185,14 +182,16 @@
           <span class="sidebar-section-label">{{ 'manager.nav.devicesSection' | translate }}</span>
         </div>
       }
-      <!-- Device management: all roles -->
-      <a [routerLink]="basePath + '/devices'" routerLinkActive="sidebar-active" class="sidebar-link">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z"/>
-        </svg>
-        <span class="sidebar-link-label">{{ 'manager.nav.devices' | translate }}</span>
-      </a>
+      <!-- Device management — CompanyManager only, no HR permission on Devices -->
+      @if (isManager) {
+        <a [routerLink]="basePath + '/devices'" routerLinkActive="sidebar-active" class="sidebar-link">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z"/>
+          </svg>
+          <span class="sidebar-link-label">{{ 'manager.nav.devices' | translate }}</span>
+        </a>
+      }
       <!-- ADMS logs: visible to both Manager and HR -->
       <a [routerLink]="basePath + '/adms-logs'" routerLinkActive="sidebar-active" class="sidebar-link">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">

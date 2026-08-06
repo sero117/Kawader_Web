@@ -66,7 +66,10 @@ export class ManagerOverviewComponent implements OnInit {
 
   private allLogsCache: AdmsLog[] = [];
 
-  readonly quickActions = [
+  readonly isHr = this.auth.getStoredRole() === Role.Employee &&
+                  this.auth.getStoredEmployeeType() === EmployeeType.HumanResourceManager;
+
+  private readonly allQuickActions = [
     {
       labelKey: 'manager.overview.qEmployees',
       link: '/dashboard/manager/branches',
@@ -93,10 +96,13 @@ export class ManagerOverviewComponent implements OnInit {
     },
   ];
 
+  readonly quickActions = this.isHr
+    ? this.allQuickActions.filter(a => a.labelKey === 'manager.overview.qShifts')
+    : this.allQuickActions;
+
   ngOnInit(): void {
     const todayIso = this.companyTime.todayIso();
-    const isHr = this.auth.getStoredRole() === Role.Employee &&
-                 this.auth.getStoredEmployeeType() === EmployeeType.HumanResourceManager;
+    const isHr = this.isHr;
 
     forkJoin({
       employees: this.empSvc.getActive().pipe(catchError(() => of([]))),
