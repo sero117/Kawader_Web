@@ -5,6 +5,8 @@ import { filter } from 'rxjs/operators';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../../core/services/language.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { Role, EmployeeType as AuthEmployeeType } from '../../../../core/models/auth.models';
 import { EmployeeService } from '../../../../core/services/employee.service';
 import { BranchService } from '../../../../core/services/branch.service';
 import { SectionService } from '../../../../core/services/section.service';
@@ -35,6 +37,13 @@ export class EmployeeOverviewComponent implements OnInit {
   private readonly lang               = inject(LanguageService);
   private readonly route              = inject(ActivatedRoute);
   private readonly destroyRef         = inject(DestroyRef);
+  private readonly auth               = inject(AuthService);
+
+  // HR has no backend permission on the general shift-system endpoint (as
+  // opposed to the employee-specific shift assignment tab), so this widget
+  // is skipped entirely for HR instead of calling an endpoint that always 403s.
+  readonly isHr = this.auth.getStoredRole() === Role.Employee &&
+                  this.auth.getStoredEmployeeType() === AuthEmployeeType.HumanResourceManager;
 
   employeeId = 0;
 
@@ -97,7 +106,7 @@ export class EmployeeOverviewComponent implements OnInit {
           });
         }
         if (d.sectionId) {
-          this.sectionService.getById(d.sectionId).subscribe({
+          this.sectionService.getById(d.sectionId, this.isHr).subscribe({
             next: (sres: any) => this.sectionName.set((sres?.data ?? sres)?.name ?? null),
             error: () => this.sectionName.set(null),
           });
@@ -107,7 +116,10 @@ export class EmployeeOverviewComponent implements OnInit {
     });
 
     // Work hours aren't on the employee record itself — they live per-weekday
-    // on whatever shift system the employee is assigned to.
+    // on whatever shift system the employee is assigned to. HR has no backend
+    // permission on this endpoint, so skip the call entirely rather than let
+    // it 403 (the global interceptor would toast that as "no permission").
+    if (this.isHr) return;
     const todayDow = this.companyTime.toCompanyTime().getUTCDay();
     this.shiftSystemService.getEmployeeShiftSystem(this.employeeId).subscribe({
       next: (res: any) => {

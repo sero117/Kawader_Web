@@ -64,15 +64,17 @@
           <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.sectionIdLabel' | translate }}</p>
           <p class="text-sm" style="color: var(--text-muted);">{{ sectionName() ?? '—' }}</p>
         </div>
-        <div>
-          <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.workStartTimeLabel' | translate }} / {{ 'manager.addEmployee.workEndTimeLabel' | translate }}</p>
-          <p class="text-sm font-mono" style="color: var(--text-muted);">
-            {{ employeeTodayShift()?.startTime?.substring(0,5) ?? '—' }} → {{ employeeTodayShift()?.endTime?.substring(0,5) ?? '—' }}
-          </p>
-          @if (!employeeTodayShift()) {
-            <p class="text-[10px] mt-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.noShiftTodayHint' | translate }}</p>
-          }
-        </div>
+        @if (!isHr) {
+          <div>
+            <p class="text-[10px] font-semibold uppercase tracking-[0.15em] mb-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.workStartTimeLabel' | translate }} / {{ 'manager.addEmployee.workEndTimeLabel' | translate }}</p>
+            <p class="text-sm font-mono" style="color: var(--text-muted);">
+              {{ employeeTodayShift()?.startTime?.substring(0,5) ?? '—' }} → {{ employeeTodayShift()?.endTime?.substring(0,5) ?? '—' }}
+            </p>
+            @if (!employeeTodayShift()) {
+              <p class="text-[10px] mt-0.5" style="color: var(--text-very-faint);">{{ 'manager.addEmployee.noShiftTodayHint' | translate }}</p>
+            }
+          </div>
+        }
       </div>
     </div>
 

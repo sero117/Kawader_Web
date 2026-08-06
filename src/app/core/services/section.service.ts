@@ -1,10 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpParams } from '@angular/common/http';
+import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiService } from './api.service';
 import { Section, CreateSectionRequest, UpdateSectionRequest, GetSectionsParams } from '../models/section.models';
 import { ApiResponse } from '../models/auth.models';
+
+const SILENT_HEADERS = new HttpHeaders().set('X-Silent', 'true');
 
 @Injectable({ providedIn: 'root' })
 export class SectionService {
@@ -21,8 +23,11 @@ export class SectionService {
     return this.api.get<any>(this.baseUrl, p);
   }
 
-  getById(id: number): Observable<ApiResponse<Section>> {
-    return this.api.get<ApiResponse<Section>>(`${this.baseUrl}/${id}`);
+  /** HR has no backend permission on Sections (they live under Branches,
+   *  which HR can't access) — pass silent=true there so a 403 doesn't
+   *  surface the global "no permission" toast for what's just a display lookup. */
+  getById(id: number, silent = false): Observable<ApiResponse<Section>> {
+    return this.api.get<ApiResponse<Section>>(`${this.baseUrl}/${id}`, undefined, silent ? SILENT_HEADERS : undefined);
   }
 
   create(payload: CreateSectionRequest): Observable<any> {

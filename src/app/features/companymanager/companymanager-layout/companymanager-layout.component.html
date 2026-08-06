@@ -83,13 +83,17 @@
         </button>
         <div class="sidebar-accordion-body" [class.open]="shiftsOpen()">
           <div class="sidebar-sub">
-            <!-- Shifts / Shift Systems config — HR now has backend permission here too -->
-            <a [routerLink]="basePath + '/shifts'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-              </svg>
-              <span class="sidebar-link-label">{{ 'manager.nav.shifts' | translate }}</span>
-            </a>
+            <!-- General shift-times page — CompanyManager only; HR's Shifts
+                 permission covers shift-systems/shift-logs but this specific
+                 endpoint still 403s for HR in practice. -->
+            @if (isManager) {
+              <a [routerLink]="basePath + '/shifts'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                </svg>
+                <span class="sidebar-link-label">{{ 'manager.nav.shifts' | translate }}</span>
+              </a>
+            }
             <a [routerLink]="basePath + '/shift-systems'" routerLinkActive="sidebar-active" class="sidebar-sub-link">
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -107,12 +111,14 @@
           </div>
         </div>
       } @else {
-        <!-- Shifts group — collapsed (icon only). HR now has backend permission here too -->
-        <a [routerLink]="basePath + '/shifts'" routerLinkActive="sidebar-active" class="sidebar-link">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-          </svg>
-        </a>
+        <!-- Shifts group — collapsed (icon only) -->
+        @if (isManager) {
+          <a [routerLink]="basePath + '/shifts'" routerLinkActive="sidebar-active" class="sidebar-link">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+          </a>
+        }
         <a [routerLink]="basePath + '/shift-systems'" routerLinkActive="sidebar-active" class="sidebar-link">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round"
