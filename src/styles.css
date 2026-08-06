@@ -1774,13 +1774,17 @@ select option {
 
 /* ── Header avatar ────────────────────────────────────────────────── */
 
+/* Neutral on purpose — the sidebar footer already shows the same user's
+   initial as a solid accent-filled circle, so this one (top header, other
+   end of the screen) stayed a plain chip instead of repeating the same
+   loud accent color twice for one person. */
 .header-avatar {
   position: relative;
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--nav-accent) 0%, color-mix(in srgb, var(--nav-accent) 55%, #000) 100%);
-  color: #fff;
+  background: var(--bg-subtle-md);
+  color: var(--text-base);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1789,7 +1793,7 @@ select option {
   flex-shrink: 0;
   user-select: none;
   letter-spacing: 0;
-  box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 3.5px color-mix(in srgb, var(--nav-accent) 35%, transparent);
+  box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 3.5px var(--border);
   transition: box-shadow 0.2s;
 }
 

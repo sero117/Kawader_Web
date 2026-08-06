@@ -70,8 +70,8 @@
 }
 .ed-rail-base {
   background: var(--ed-card);
-  border-bottom: 1px solid var(--ed-line);
-  box-shadow: 0 8px 24px -16px rgba(0,0,0,0.4);
+  border: 1px solid var(--ed-line);
+  box-shadow: 0 10px 30px -14px rgba(0,0,0,0.35);
 }
 .ed-tab {
   position: relative;

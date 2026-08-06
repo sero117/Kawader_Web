@@ -1,35 +1,35 @@
 <div class="relative overflow-hidden min-h-screen" style="background: var(--ed-bg); color: var(--ed-fg);">
 
   <!-- Folder-tab navigation rail — mirrors the landing page, "Plans" active -->
-  <header class="ed-rail fixed top-0 inset-x-0 z-30">
-    <div class="ed-rail-base flex items-end justify-between px-5 sm:px-10">
-      <a routerLink="/" class="flex items-center gap-2 pb-2.5 pt-3">
-        <svg width="26" height="26" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="2" width="96" height="96" rx="20" fill="var(--ed-accent)"/>
-          <g fill="#FFFFFF">
-            <g opacity="0.72"><circle cx="31" cy="45" r="7"/><rect x="24" y="53" width="14" height="25" rx="7"/></g>
-            <g opacity="0.72"><circle cx="69" cy="45" r="7"/><rect x="62" y="53" width="14" height="25" rx="7"/></g>
-            <circle cx="50" cy="37" r="9.5"/><rect x="38.5" y="48" width="23" height="32" rx="11.5"/>
-          </g>
-        </svg>
-        <span class="ed-display font-semibold text-xl" style="color: var(--ed-fg);">{{ 'brand.name' | translate }}</span>
-      </a>
-
-      <nav class="flex items-end gap-1.5">
+  <header class="ed-rail fixed top-4 inset-x-4 sm:inset-x-10 z-30">
+    <div class="ed-rail-base flex items-end justify-between px-5 sm:px-10 rounded-2xl">
+      <div class="flex items-end gap-1.5">
+        <a routerLink="/" class="flex items-center gap-2 pb-2.5 pt-3 me-2">
+          <svg width="26" height="26" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="96" height="96" rx="20" fill="var(--ed-accent)"/>
+            <g fill="#FFFFFF">
+              <g opacity="0.72"><circle cx="31" cy="45" r="7"/><rect x="24" y="53" width="14" height="25" rx="7"/></g>
+              <g opacity="0.72"><circle cx="69" cy="45" r="7"/><rect x="62" y="53" width="14" height="25" rx="7"/></g>
+              <circle cx="50" cy="37" r="9.5"/><rect x="38.5" y="48" width="23" height="32" rx="11.5"/>
+            </g>
+          </svg>
+          <span class="ed-display font-semibold text-xl" style="color: var(--ed-fg);">{{ 'brand.name' | translate }}</span>
+        </a>
         <a routerLink="/" class="ed-tab hidden sm:block">{{ 'welcome.nav.main' | translate }}</a>
         <a routerLink="/plans" class="ed-tab ed-tab-active hidden sm:block">{{ 'welcome.nav.plans' | translate }}</a>
-        <div class="flex items-center gap-2 pb-2.5">
-          <div class="ed-switchers">
-            <app-language-switcher />
-            <span class="ed-switchers-divider"></span>
-            <app-theme-switcher />
-          </div>
-          <a routerLink="/auth/login" class="ed-btn-primary text-xs font-bold px-4 py-2 rounded-lg"
-            style="background: var(--ed-accent); color: #fff;">
-            {{ 'welcome.nav.login' | translate }}
-          </a>
+      </div>
+
+      <div class="flex items-center gap-2 pb-2.5">
+        <div class="ed-switchers">
+          <app-language-switcher />
+          <span class="ed-switchers-divider"></span>
+          <app-theme-switcher />
         </div>
-      </nav>
+        <a routerLink="/auth/login" class="ed-btn-primary text-xs font-bold px-4 py-2 rounded-lg"
+          style="background: var(--ed-accent); color: #fff;">
+          {{ 'welcome.nav.login' | translate }}
+        </a>
+      </div>
     </div>
   </header>
 
