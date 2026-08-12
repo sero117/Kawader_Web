@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { EmployeeCompany } from '../../../core/models/employee.models';
 import { EmployeeType } from '../../../core/models/auth.models';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-select-company',
@@ -85,13 +86,6 @@ export class SelectCompanyComponent implements OnInit {
   }
 
   private apiErr(err: any): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail']) {
-      const v = body?.[key];
-      if (typeof v === 'string' && v.trim()) return v.trim();
-    }
-    return 'Failed to load your companies.';
+    return apiErrorMessage(err, 'Failed to load your companies.');
   }
 }

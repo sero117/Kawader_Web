@@ -7,6 +7,7 @@ import {
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { AuthService } from '../../../core/services/auth.service';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 function passwordComplexity(ctrl: AbstractControl): ValidationErrors | null {
   const v: string = ctrl.value ?? '';
@@ -102,19 +103,9 @@ export class ForgotPasswordComponent {
   }
 
   private apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    switch (err?.status) {
-      case 400: return 'Invalid code or phone number.';
-      case 404: return 'Account not found.';
-      case 500: return 'Server error. Please try again later.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback, {
+      400: 'Invalid code or phone number.',
+      404: 'Account not found.',
+    });
   }
 }

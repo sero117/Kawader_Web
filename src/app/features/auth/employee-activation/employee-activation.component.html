@@ -64,10 +64,10 @@
 
       <form [formGroup]="step1Form" (ngSubmit)="submitStep1()" class="space-y-4" novalidate>
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+          <label for="empActPhone" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
             {{ 'activation.phoneLabel' | translate }}
           </label>
-          <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onPhoneInput($event)"
+          <input id="empActPhone" formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onPhoneInput($event)"
             [placeholder]="'activation.phonePlaceholder' | translate"
             class="auth-input"
             [class.is-invalid]="step1Form.get('phoneNumber')!.invalid && step1Form.get('phoneNumber')!.touched"
@@ -109,10 +109,10 @@
 
         <!-- Code -->
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+          <label for="empActCode" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
             {{ 'activation.codeLabel' | translate }}
           </label>
-          <input formControlName="code" type="text" inputmode="numeric" maxlength="6"
+          <input id="empActCode" formControlName="code" type="text" inputmode="numeric" maxlength="6"
             [placeholder]="'activation.codePlaceholder' | translate"
             class="auth-input tracking-[0.3em] text-center"
             [class.is-invalid]="step2Form.get('code')!.invalid && step2Form.get('code')!.touched"
@@ -124,11 +124,11 @@
 
         <!-- Password -->
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+          <label for="empActPassword" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
             {{ 'activation.passwordLabel' | translate }}
           </label>
           <div class="relative">
-            <input formControlName="password" [type]="showPw() ? 'text' : 'password'"
+            <input id="empActPassword" formControlName="password" [type]="showPw() ? 'text' : 'password'"
               [placeholder]="'activation.passwordPlaceholder' | translate"
               class="auth-input pr-11"
               [class.is-invalid]="step2Form.get('password')!.invalid && step2Form.get('password')!.touched"
@@ -156,11 +156,11 @@
 
         <!-- Confirm Password -->
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+          <label for="empActConfirmPassword" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
             {{ 'activation.confirmPasswordLabel' | translate }}
           </label>
           <div class="relative">
-            <input formControlName="confirmPassword" [type]="showCpw() ? 'text' : 'password'"
+            <input id="empActConfirmPassword" formControlName="confirmPassword" [type]="showCpw() ? 'text' : 'password'"
               [placeholder]="'activation.confirmPasswordPlaceholder' | translate"
               class="auth-input pr-11"
               [class.is-invalid]="step2Form.get('confirmPassword')!.touched && step2Form.hasError('mismatch')"

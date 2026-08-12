@@ -30,10 +30,11 @@
 
       <!-- Phone number -->
       <div>
-        <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+        <label for="loginPhone" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
           {{ 'auth.login.phoneLabel' | translate }}
         </label>
         <input
+          id="loginPhone"
           formControlName="phoneNumber"
           type="tel"
           inputmode="numeric"
@@ -53,11 +54,12 @@
 
       <!-- Password -->
       <div>
-        <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+        <label for="loginPassword" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
           {{ 'auth.login.passwordLabel' | translate }}
         </label>
         <div class="relative">
           <input
+            id="loginPassword"
             formControlName="password"
             [type]="showPassword() ? 'text' : 'password'"
             placeholder="••••••••"
@@ -134,10 +136,10 @@
   </p>
 
   <div class="mt-4 w-full max-w-[320px] mx-auto">
-    <label class="block text-[10px] font-semibold uppercase tracking-[0.16em] mb-1.5 text-center" style="color: var(--auth-fg-30);">
+    <label for="loginRoleShortcut" class="block text-[10px] font-semibold uppercase tracking-[0.16em] mb-1.5 text-center" style="color: var(--auth-fg-30);">
       {{ 'auth.roleShortcutLabel' | translate }}
     </label>
-    <select class="auth-input" style="appearance: none; -webkit-appearance: none; text-align: center; cursor: pointer;"
+    <select id="loginRoleShortcut" class="auth-input" style="appearance: none; -webkit-appearance: none; text-align: center; cursor: pointer;"
       (change)="onRoleShortcut($any($event.target).value)">
       <option value="">{{ 'auth.roleShortcutPlaceholder' | translate }}</option>
       <option value="/auth/company-setup">{{ 'auth.roleOptionManager' | translate }}</option>

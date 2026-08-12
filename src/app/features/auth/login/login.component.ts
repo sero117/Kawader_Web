@@ -13,19 +13,8 @@ import { CompanyService } from '../../../core/services/company.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { SignInRequest, AuthTokenResponse, Role } from '../../../core/models/auth.models';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
-
-/** The raw backend message, if any — used both for display and for detecting known
- *  business-rule identifiers (e.g. an unverified/not-yet-activated account) that
- *  deserve a friendlier message than whatever raw text the API returns. */
-function rawBackendMessage(err: any): string | null {
-  const body = err?.error;
-  if (typeof body === 'string' && body.trim()) return body.trim();
-  for (const key of ['message', 'title', 'detail', 'error']) {
-    const v = body?.[key];
-    if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-  }
-  return null;
-}
+import { extractErrorMessage, ServiceProblemDetails } from '../../../core/models/problem-details.model';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 /** Matches the backend's business-rule identifiers for an account that exists
  *  but hasn't completed activation yet (no password set / not yet verified). */
@@ -33,35 +22,22 @@ function isNotVerifiedMessage(msg: string | null | undefined): boolean {
   return !!msg && /not.?verif|unverif|not.?activ|inactiv/i.test(msg);
 }
 
-function extractErrorMessage(err: any): string {
-  if (err?.status === 0) return 'Cannot connect to server. Check your internet connection.';
-
+function rawBackendMessage(err: any): string | null {
   const body = err?.error;
-  const raw  = rawBackendMessage(err);
-  if (raw) return raw;
+  if (typeof body === 'string' && body.trim()) return body.trim();
+  return extractErrorMessage(body as ServiceProblemDetails | null);
+}
 
-  if (body?.errors) {
-    if (Array.isArray(body.errors)) {
-      const m = body.errors.map((e: any) => e?.message ?? e).filter((s: any) => typeof s === 'string').join('. ');
-      if (m) return m;
-    } else if (typeof body.errors === 'object') {
-      const m = (Object.values(body.errors) as unknown[]).flat()
-        .filter((s): s is string => typeof s === 'string').join('. ');
-      if (m) return m;
-    }
-  }
-
-  switch (err?.status) {
-    case 400: return 'Invalid phone number or password.';
-    case 401: return 'Incorrect phone number or password.';
-    case 403: return 'Access denied.';
-    case 404: return 'Account not found.';
-    case 429: return 'Too many attempts. Please wait a moment.';
-    case 500:
-    case 502:
-    case 503: return 'Server error. Please try again later.';
-    default:  return 'Sign in failed. Please try again.';
-  }
+function loginErrorMessage(err: any): string {
+  return apiErrorMessage(err, 'Sign in failed. Please try again.', {
+    400: 'Invalid phone number or password.',
+    401: 'Incorrect phone number or password.',
+    403: 'Access denied.',
+    404: 'Account not found.',
+    429: 'Too many attempts. Please wait a moment.',
+    502: 'Server error. Please try again later.',
+    503: 'Server error. Please try again later.',
+  });
 }
 
 @Component({
@@ -167,7 +143,7 @@ export class LoginComponent implements OnInit {
         this.errorMessage.set(
           isNotVerifiedMessage(rawBackendMessage(err))
             ? this.lang.t('auth.login.accountNotVerified')
-            : extractErrorMessage(err),
+            : loginErrorMessage(err),
         );
       },
     });

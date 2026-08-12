@@ -73,10 +73,10 @@
 
       <!-- Phone number -->
       <div>
-        <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+        <label for="confirmPhone" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
           {{ 'auth.verify.phoneLabel' | translate }}
         </label>
-        <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onPhoneInput($event)"
+        <input id="confirmPhone" formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onPhoneInput($event)"
           [placeholder]="'auth.verify.phonePlaceholder' | translate"
           class="auth-input" [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched"
           [attr.disabled]="loading() || null" />
@@ -89,10 +89,10 @@
 
       <!-- OTP code -->
       <div>
-        <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+        <label for="confirmCode" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
           {{ 'auth.verify.codeLabel' | translate }}
         </label>
-        <input formControlName="code" type="text" inputmode="numeric" maxlength="6"
+        <input id="confirmCode" formControlName="code" type="text" inputmode="numeric" maxlength="6"
           autocomplete="one-time-code" placeholder="• • • • • •"
           class="auth-input text-2xl font-mono text-center py-4" style="letter-spacing: 0.5em;"
           [class.is-invalid]="code.invalid && code.touched"

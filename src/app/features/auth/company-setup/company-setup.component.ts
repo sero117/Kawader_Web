@@ -16,7 +16,7 @@ import { Role } from '../../../core/models/auth.models';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
 import { lettersOnlyInput } from '../../../core/utils/letters-only-input';
 import { requestLocation } from '../../../core/utils/geolocation';
-import { ServiceProblemDetails, extractErrorMessage } from '../../../core/models/problem-details.model';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 // ── Validators ────────────────────────────────────────────────────────────────
 
@@ -298,10 +298,7 @@ export class CompanySetupComponent {
   get lng()       { return this.step3Form.get('longitude')!; }
 
   private apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
     const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
 
     // The backend builds an internal username from firstName-lastName-<random
     // digits> and rejects it if the name has non-English characters — but its
@@ -309,37 +306,17 @@ export class CompanySetupComponent {
     // 'أحمد-محمد-9287' is invalid, can only contain letters or digits."),
     // which is confusing since the user only ever typed their name, never a
     // username. Show the actual rule instead.
-    if (typeof body.InvalidUserName === 'string') {
+    if (typeof body?.InvalidUserName === 'string') {
       return this.lang.t('setup.nameLettersOnly');
     }
 
     // "This phone number already has an account" is far clearer than the raw
     // backend wording, and tells the user what to actually do about it
     // (sign in instead of trying to set the account up again).
-    if (typeof body.UserAlreadyHasPassword === 'string') {
+    if (typeof body?.UserAlreadyHasPassword === 'string') {
       return this.lang.t('setup.userAlreadyHasPassword');
     }
 
-    // Field-level validation messages (e.g. "Name must be English letters or
-    // numbers") can land in `errors`, `detail`/`title`, or a custom
-    // `extensions` entry depending on the endpoint — this shared helper checks
-    // all of those, unlike the plain message/title/detail/error lookup this
-    // used to do on its own, which silently fell through to the generic
-    // fallback whenever the real message was in `extensions`.
-    const extracted = extractErrorMessage(body as ServiceProblemDetails);
-    if (extracted) return extracted;
-
-    for (const key of ['message', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-
-    switch (err?.status) {
-      case 401: return 'Session expired.';
-      case 403: return 'You do not have permission.';
-      case 409: return 'This record already exists.';
-      case 500: return 'Server error. Please try again later.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback);
   }
 }

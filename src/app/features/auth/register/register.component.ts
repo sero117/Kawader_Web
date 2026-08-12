@@ -12,35 +12,16 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { SignUpRequest, GenerateCodeRequest, Role } from '../../../core/models/auth.models';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
 import { lettersOnlyInput } from '../../../core/utils/letters-only-input';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 /** Several Identity endpoints return the created resource directly on success
  *  (e.g. `{ id, code }`) with no `isSuccess` envelope at all — only an explicit
  *  `isSuccess: false` should be treated as a failure. */
 function apiErr(err: any, fallback: string): string {
-  if (err?.status === 0) return 'Cannot connect to server. Check your internet connection.';
-  const body = err?.error;
-  if (!body) return fallback;
-  if (typeof body === 'string' && body.trim()) return body.trim();
-  for (const key of ['title', 'message', 'detail', 'error']) {
-    const v = body[key];
-    if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-  }
-  if (body.errors) {
-    if (Array.isArray(body.errors)) {
-      const m = body.errors.map((e: any) => e?.message ?? e).filter((s: any) => typeof s === 'string').join('. ');
-      if (m) return m;
-    } else if (typeof body.errors === 'object') {
-      const m = (Object.values(body.errors) as unknown[]).flat()
-        .filter((s): s is string => typeof s === 'string').join('. ');
-      if (m) return m;
-    }
-  }
-  switch (err?.status) {
-    case 409: return 'This phone number is already registered.';
-    case 429: return 'Too many attempts. Please wait a moment.';
-    case 500: return 'Server error. Please try again later.';
-    default:  return fallback;
-  }
+  return apiErrorMessage(err, fallback, {
+    409: 'This phone number is already registered.',
+    429: 'Too many attempts. Please wait a moment.',
+  });
 }
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {

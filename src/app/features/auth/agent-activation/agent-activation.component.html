@@ -64,10 +64,10 @@
 
       <form [formGroup]="step1Form" (ngSubmit)="submitStep1()" class="space-y-4" novalidate>
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+          <label for="agentActPhone" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
             {{ 'agentActivation.phoneLabel' | translate }}
           </label>
-          <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onPhoneInput($event)"
+          <input id="agentActPhone" formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onPhoneInput($event)"
             [placeholder]="'agentActivation.phonePlaceholder' | translate"
             class="auth-input"
             [class.is-invalid]="step1Form.get('phoneNumber')!.invalid && step1Form.get('phoneNumber')!.touched"
@@ -109,10 +109,10 @@
 
         <!-- Code -->
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+          <label for="agentActCode" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
             {{ 'agentActivation.codeLabel' | translate }}
           </label>
-          <input formControlName="code" type="text" inputmode="numeric" maxlength="6"
+          <input id="agentActCode" formControlName="code" type="text" inputmode="numeric" maxlength="6"
             [placeholder]="'agentActivation.codePlaceholder' | translate"
             class="auth-input tracking-[0.3em] text-center"
             [class.is-invalid]="step2Form.get('code')!.invalid && step2Form.get('code')!.touched"
@@ -124,11 +124,11 @@
 
         <!-- Password -->
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+          <label for="agentActPassword" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
             {{ 'agentActivation.passwordLabel' | translate }}
           </label>
           <div class="relative">
-            <input formControlName="password" [type]="showPw() ? 'text' : 'password'"
+            <input id="agentActPassword" formControlName="password" [type]="showPw() ? 'text' : 'password'"
               [placeholder]="'agentActivation.passwordPlaceholder' | translate"
               class="auth-input pr-11"
               [class.is-invalid]="step2Form.get('password')!.invalid && step2Form.get('password')!.touched"
@@ -156,11 +156,11 @@
 
         <!-- Confirm Password -->
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
+          <label for="agentActConfirmPassword" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--auth-fg-35);">
             {{ 'agentActivation.confirmPasswordLabel' | translate }}
           </label>
           <div class="relative">
-            <input formControlName="confirmPassword" [type]="showCpw() ? 'text' : 'password'"
+            <input id="agentActConfirmPassword" formControlName="confirmPassword" [type]="showCpw() ? 'text' : 'password'"
               [placeholder]="'agentActivation.confirmPasswordPlaceholder' | translate"
               class="auth-input pr-11"
               [class.is-invalid]="step2Form.get('confirmPassword')!.touched && step2Form.hasError('mismatch')"

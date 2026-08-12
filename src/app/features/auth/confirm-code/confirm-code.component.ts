@@ -6,25 +6,14 @@ import { NotificationService } from '../../../core/services/notification.service
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { ConfirmCodeRequest, GenerateCodeRequest, AuthTokenResponse } from '../../../core/models/auth.models';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 /** Several Identity endpoints return the created/verified resource directly on
  *  success (e.g. confirm-code returns the auth tokens themselves) with no
  *  `isSuccess` envelope at all — only an explicit `isSuccess: false` counts
  *  as a failure. */
 function apiErr(err: any, fallback: string): string {
-  if (err?.status === 0) return 'Cannot connect to server. Check your internet connection.';
-  const body = err?.error;
-  if (!body) return fallback;
-  if (typeof body === 'string' && body.trim()) return body.trim();
-  for (const key of ['title', 'message', 'detail', 'error']) {
-    const v = body[key];
-    if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-  }
-  switch (err?.status) {
-    case 429: return 'Too many attempts. Please wait a moment.';
-    case 500: return 'Server error. Please try again later.';
-    default:  return fallback;
-  }
+  return apiErrorMessage(err, fallback, { 429: 'Too many attempts. Please wait a moment.' });
 }
 
 @Component({
