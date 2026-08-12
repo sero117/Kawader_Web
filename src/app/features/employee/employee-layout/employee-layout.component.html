@@ -205,13 +205,13 @@
           {{ displayName().charAt(0).toUpperCase() }}
         </div>
         <span class="sidebar-user-name">{{ displayName() }}</span>
-        <button (click)="signOut()" class="sidebar-user-action" [title]="'nav.signOut' | translate">
+        <button (click)="signOut()" class="sidebar-user-action" [title]="'nav.signOut' | translate" [attr.aria-label]="'nav.signOut' | translate">
           <svg style="width:13px;height:13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
           </svg>
         </button>
       </div>
-      <button (click)="toggle()" class="sidebar-toggle">
+      <button (click)="toggle()" class="sidebar-toggle" [attr.aria-label]="'common.toggleSidebar' | translate">
         <svg class="sidebar-toggle-icon" style="width:14px;height:14px;"
           [style.transform]="collapsed() ? 'scaleX(-1)' : 'scaleX(1)'"
           fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -228,7 +228,7 @@
     <!-- Mobile topbar -->
     <div class="sm:hidden flex items-center gap-3 px-4 h-14 flex-shrink-0 sticky top-0 z-10"
       style="background: var(--bg-surface); border-bottom: 1px solid var(--border);">
-      <button (click)="toggle()"
+      <button (click)="toggle()" [attr.aria-label]="'common.toggleSidebar' | translate"
         class="w-9 h-9 inline-flex items-center justify-center rounded-xl flex-shrink-0"
         style="background: var(--bg-subtle-sm); color: var(--text-faint);">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

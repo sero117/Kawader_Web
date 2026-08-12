@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, HostListener } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeSwitcherComponent } from '../../../core/components/theme-switcher/theme-switcher.component';
@@ -20,6 +20,11 @@ export class AgentLayoutComponent {
   displayName = signal(this.authService.getDisplayName());
 
   toggle(): void { this.collapsed.update(v => !v); }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (window.innerWidth < 640) this.collapsed.set(true);
+  }
 
   signOut(): void {
     this.authService.clearTokens();

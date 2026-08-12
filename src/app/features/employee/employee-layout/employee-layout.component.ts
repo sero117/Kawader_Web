@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import { Component, signal, computed, inject, OnInit, HostListener } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -50,7 +50,7 @@ export class EmployeeLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.companyTimeService.ensureLoaded();
-    this.employeeService.getMyCompanies().subscribe({
+    this.employeeService.getMyCompanies(true).subscribe({
       next: (res: any) => {
         const raw  = res?.data ?? res;
         const list: EmployeeCompany[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
@@ -61,6 +61,11 @@ export class EmployeeLayoutComponent implements OnInit {
   }
 
   toggle(): void { this.collapsed.update(v => !v); }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (window.innerWidth < 640) this.collapsed.set(true);
+  }
 
   toggleCompanyMenu(): void {
     if (!this.canSwitchCompany()) return;
