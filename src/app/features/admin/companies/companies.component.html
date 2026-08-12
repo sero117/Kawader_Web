@@ -1,4 +1,4 @@
-<!-- Page heading -->
+﻿<!-- Page heading -->
 <div class="flex items-center justify-between mb-7">
   <div>
     <div class="flex items-center gap-2 mb-1">
@@ -46,6 +46,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
         </svg>
         <input type="tel" inputmode="numeric" maxlength="10"
+          [attr.aria-label]="'admin.companies.phoneSearchPlaceholder' | translate"
           [placeholder]="'admin.companies.phoneSearchPlaceholder' | translate"
           class="w-full ps-9 pe-4 py-2.5 rounded-xl text-sm"
           style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
@@ -61,6 +62,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
         </svg>
         <input type="text"
+          [attr.aria-label]="'admin.companies.emailSearchPlaceholder' | translate"
           [placeholder]="'admin.companies.emailSearchPlaceholder' | translate"
           class="w-full ps-9 pe-4 py-2.5 rounded-xl text-sm"
           style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
@@ -124,6 +126,9 @@
         <tbody>
           @for (c of companiesWithStatus(); track c.id) {
             <tr class="cursor-pointer" (click)="viewCompany(c)"
+              tabindex="0" role="button"
+              [attr.aria-label]="c.companyName"
+              (keydown.enter)="viewCompany(c)" (keydown.space)="$event.preventDefault(); viewCompany(c)"
               style="transition: background 0.1s;"
               [attr.data-frozen]="c.isFrozen ? '1' : null"
               [style.background]="c.isFrozen ? 'rgba(99,102,241,0.03)' : 'transparent'"
@@ -177,7 +182,7 @@
                     <button (click)="confirmUnfreeze(c.id, $event)"
                       class="inline-flex items-center gap-1 px-2 h-7 rounded-lg text-[11px] font-bold transition-all flex-shrink-0"
                       style="color: rgba(99,102,241,1); background: rgba(99,102,241,0.16); border: 1px solid rgba(99,102,241,0.32);"
-                      [title]="'admin.companies.unfreezeTitle' | translate">
+                      [title]="'admin.companies.unfreezeTitle' | translate" [attr.aria-label]="'admin.companies.unfreezeTitle' | translate">
                       <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25z" />
                       </svg>
@@ -188,7 +193,7 @@
                     <button (click)="confirmFreeze(c.id, $event)"
                       class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors flex-shrink-0"
                       style="color: rgba(148,163,184,0.65); background: rgba(148,163,184,0.07);"
-                      [title]="'admin.companies.freezeTitle' | translate">
+                      [title]="'admin.companies.freezeTitle' | translate" [attr.aria-label]="'admin.companies.freezeTitle' | translate">
                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18M3 12h18M5.636 5.636l12.728 12.728M18.364 5.636 5.636 18.364" />
                       </svg>
@@ -197,7 +202,7 @@
                   <!-- Manage currencies -->
                   <button (click)="openCurrencies(c, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    style="color: rgba(217,119,6,0.75); background: rgba(245,158,11,0.09);" [title]="'admin.companies.manageCurrencies' | translate">
+                    style="color: rgba(217,119,6,0.75); background: rgba(245,158,11,0.09);" [title]="'admin.companies.manageCurrencies' | translate" [attr.aria-label]="'admin.companies.manageCurrencies' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m4.5-9.5c0-1.657-2.015-3-4.5-3S7.5 4.843 7.5 6.5 9.515 9.5 12 9.5s4.5 1.343 4.5 3-2.015 3-4.5 3-4.5-1.343-4.5-3"/>
                     </svg>
@@ -205,7 +210,7 @@
                   <!-- Edit -->
                   <button (click)="openEdit(c, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    style="color: var(--text-faint); background: var(--bg-subtle-sm);" [title]="'admin.companies.editTitle' | translate">
+                    style="color: var(--text-faint); background: var(--bg-subtle-sm);" [title]="'admin.companies.editTitle' | translate" [attr.aria-label]="'admin.companies.editTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
                     </svg>
@@ -213,7 +218,7 @@
                   <!-- Delete -->
                   <button (click)="confirmDelete(c.id, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                    style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);" [title]="'admin.companies.deleteTitle' | translate">
+                    style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);" [title]="'admin.companies.deleteTitle' | translate" [attr.aria-label]="'admin.companies.deleteTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                     </svg>
@@ -270,7 +275,7 @@
       <!-- Header -->
       <div class="flex items-center justify-between px-6 pt-6 pb-5" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'admin.companies.addBtn' | translate }}</h2>
-        <button (click)="closeWizard()" class="w-8 h-8 rounded-lg flex items-center justify-center" style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+        <button (click)="closeWizard()" class="w-8 h-8 rounded-lg flex items-center justify-center" style="color: var(--text-faint); background: var(--bg-subtle-sm);" [attr.aria-label]="'common.close' | translate">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -291,8 +296,8 @@
 
         <form [formGroup]="addForm" (ngSubmit)="submitAdd()" class="space-y-4" novalidate>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.wizard.companyPhone' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
-            <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onAddPhoneInput($event)" placeholder="09XXXXXXXX" class="modal-input"
+            <label for="addCompanyPhone" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.wizard.companyPhone' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
+            <input id="addCompanyPhone" formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onAddPhoneInput($event)" placeholder="09XXXXXXXX" class="modal-input"
               [class.is-invalid]="addForm.get('phoneNumber')!.invalid && addForm.get('phoneNumber')!.touched"
               [attr.disabled]="submitting() || null" />
             @if (addForm.get('phoneNumber')!.invalid && addForm.get('phoneNumber')!.touched) {
@@ -302,8 +307,8 @@
             }
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.wizard.companyEmail' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
-            <input formControlName="email" type="email" placeholder="contact@company.com" class="modal-input"
+            <label for="addCompanyEmail" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.wizard.companyEmail' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
+            <input id="addCompanyEmail" formControlName="email" type="email" placeholder="contact@company.com" class="modal-input"
               [class.is-invalid]="addForm.get('email')!.invalid && addForm.get('email')!.touched"
               [attr.disabled]="submitting() || null" />
             @if (addForm.get('email')!.invalid && addForm.get('email')!.touched) {
@@ -311,8 +316,8 @@
             }
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.countryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
-            <select formControlName="countryId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
+            <label for="addCompanyCountry" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.countryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
+            <select id="addCompanyCountry" formControlName="countryId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
               <option [ngValue]="null" disabled>{{ 'admin.companies.selectCountry' | translate }}</option>
               @for (c of countries(); track c.id) {
                 <option [ngValue]="c.id">{{ c.arabicName }} / {{ c.englishName }}</option>
@@ -321,8 +326,8 @@
             <p class="text-xs mt-1.5" style="color: var(--text-faint);">{{ 'admin.companies.newCompanyNoCurrenciesHint' | translate }}</p>
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.agentLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
-            <select formControlName="agentId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
+            <label for="addCompanyAgent" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.agentLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
+            <select id="addCompanyAgent" formControlName="agentId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
               <option [ngValue]="null">{{ 'admin.companies.noAgent' | translate }}</option>
               @for (ag of agents(); track ag.id) {
                 <option [ngValue]="ag.id">{{ ag.firstName }} {{ ag.lastName }}</option>
@@ -364,7 +369,7 @@
             <p class="text-[11px] font-mono" style="color: var(--text-very-faint);">#{{ selectedCompany()!.id }}</p>
           </div>
         </div>
-        <button (click)="showViewModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+        <button (click)="showViewModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="color: var(--text-faint); background: var(--bg-subtle-sm);" [attr.aria-label]="'common.close' | translate">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -429,7 +434,7 @@
           <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'admin.edit.title' | translate }}</h2>
           <p class="text-xs mt-0.5" style="color: var(--text-faint);">#{{ selectedCompany()!.id }}</p>
         </div>
-        <button (click)="showEditModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center" style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+        <button (click)="showEditModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center" style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -438,8 +443,8 @@
 
       <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.edit.phoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
-          <input formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onEditPhoneInput($event)" placeholder="09XXXXXXXX" class="modal-input"
+          <label for="editCompanyPhone" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.edit.phoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
+          <input id="editCompanyPhone" formControlName="phoneNumber" type="tel" inputmode="numeric" maxlength="10" (input)="onEditPhoneInput($event)" placeholder="09XXXXXXXX" class="modal-input"
             [class.is-invalid]="editForm.get('phoneNumber')!.invalid && editForm.get('phoneNumber')!.touched"
             [attr.disabled]="submitting() || null" />
           @if (editForm.get('phoneNumber')!.invalid && editForm.get('phoneNumber')!.touched) {
@@ -449,8 +454,8 @@
           }
         </div>
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.edit.emailLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
-          <input formControlName="email" type="email" placeholder="contact@company.com" class="modal-input"
+          <label for="editCompanyEmail" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.edit.emailLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
+          <input id="editCompanyEmail" formControlName="email" type="email" placeholder="contact@company.com" class="modal-input"
             [class.is-invalid]="editForm.get('email')!.invalid && editForm.get('email')!.touched"
             [attr.disabled]="submitting() || null" />
           @if (editForm.get('email')!.invalid && editForm.get('email')!.touched) {
@@ -458,8 +463,8 @@
           }
         </div>
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.countryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
-          <select formControlName="countryId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
+          <label for="editCompanyCountry" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.countryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span></label>
+          <select id="editCompanyCountry" formControlName="countryId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
             <option [ngValue]="null" disabled>{{ 'admin.companies.selectCountry' | translate }}</option>
             @for (c of countries(); track c.id) {
               <option [ngValue]="c.id">{{ c.arabicName }} / {{ c.englishName }}</option>
@@ -467,8 +472,8 @@
           </select>
         </div>
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.agentLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
-          <select formControlName="agentId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
+          <label for="editCompanyAgent" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.agentLabel' | translate }} <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span></label>
+          <select id="editCompanyAgent" formControlName="agentId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
             <option [ngValue]="null">{{ 'admin.companies.noAgent' | translate }}</option>
             @for (ag of agents(); track ag.id) {
               <option [ngValue]="ag.id">{{ ag.firstName }} {{ ag.lastName }}</option>
@@ -588,7 +593,7 @@
           <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'admin.companies.manageCurrencies' | translate }}</h2>
           <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ currenciesTarget()!.companyName ?? currenciesTarget()!.phoneNumber }}</p>
         </div>
-        <button (click)="closeCurrenciesModal()" class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="color: var(--text-faint); background: var(--bg-subtle-sm);">
+        <button (click)="closeCurrenciesModal()" class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="color: var(--text-faint); background: var(--bg-subtle-sm);" [attr.aria-label]="'common.close' | translate">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -620,7 +625,7 @@
                   <span class="text-xs" style="color: var(--text-faint);">{{ cc.arabicName }}</span>
                 </div>
                 <button (click)="revokeCurrency(cc.id)" [disabled]="submitting()" class="w-7 h-7 rounded-lg flex items-center justify-center"
-                  style="color: rgba(239,68,68,0.6); background: rgba(239,68,68,0.08);" [title]="'admin.companies.revokeCurrency' | translate">
+                  style="color: rgba(239,68,68,0.6); background: rgba(239,68,68,0.08);" [title]="'admin.companies.revokeCurrency' | translate" [attr.aria-label]="'admin.companies.revokeCurrency' | translate">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -632,8 +637,8 @@
 
         <div class="flex gap-2 items-end pt-2" style="border-top: 1px solid var(--border);padding-top:14px">
           <div class="flex-1">
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.grantCurrency' | translate }}</label>
-            <select class="modal-input" style="appearance:none;-webkit-appearance:none;" [value]="grantCurrencyId()" (change)="grantCurrencyId.set(+$any($event.target).value || null)" [disabled]="submitting()">
+            <label for="grantCurrencySelect" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.grantCurrency' | translate }}</label>
+            <select id="grantCurrencySelect" class="modal-input" style="appearance:none;-webkit-appearance:none;" [value]="grantCurrencyId()" (change)="grantCurrencyId.set(+$any($event.target).value || null)" [disabled]="submitting()">
               <option [value]="''">{{ 'admin.companies.selectCurrency' | translate }}</option>
               @for (cur of availableCurrenciesToGrant(); track cur.id) {
                 <option [value]="cur.id">{{ cur.code }} — {{ cur.arabicName }}</option>
@@ -641,8 +646,8 @@
             </select>
           </div>
           <div style="width:80px">
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.priority' | translate }}</label>
-            <input type="number" min="1" class="modal-input" [value]="grantPriority()" (input)="grantPriority.set(+$any($event.target).value || 1)" [disabled]="submitting()" />
+            <label for="grantPriorityInput" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">{{ 'admin.companies.priority' | translate }}</label>
+            <input id="grantPriorityInput" type="number" min="1" class="modal-input" [value]="grantPriority()" (input)="grantPriority.set(+$any($event.target).value || 1)" [disabled]="submitting()" />
           </div>
           <button (click)="grantCurrency()" [disabled]="submitting() || !grantCurrencyId()" class="h-[42px] px-4 rounded-xl text-sm font-semibold flex-shrink-0"
             style="background: var(--nav-accent); color: #fff;" [style.opacity]="(submitting() || !grantCurrencyId()) ? '0.5' : '1'">

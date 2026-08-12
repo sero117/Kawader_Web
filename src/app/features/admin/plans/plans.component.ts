@@ -8,6 +8,7 @@ import { SubscriptionCategory } from '../../../core/models/subscription-category
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { UrlFilter } from '../../../core/utils/url-filter';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-plans',
@@ -471,9 +472,6 @@ export class PlansComponent implements OnInit {
   }
 
   apiErr(err: any): string {
-    const b = err?.error;
-    if (!b) return this.lang.t('errors.unexpected');
-    for (const k of ['title', 'message', 'detail']) { if (typeof b[k] === 'string' && b[k].trim()) return b[k]; }
-    return this.lang.t('errors.unexpected');
+    return apiErrorMessage(err, this.lang.t('errors.unexpected'));
   }
 }

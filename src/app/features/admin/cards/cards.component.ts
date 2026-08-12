@@ -10,6 +10,7 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../../environments/environment';
 import { UrlFilter } from '../../../core/utils/url-filter';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-cards',
@@ -475,9 +476,6 @@ export class CardsComponent implements OnInit {
   }
 
   apiErr(err: any): string {
-    const b = err?.error;
-    if (!b) return this.lang.t('errors.unexpected');
-    for (const k of ['title', 'message', 'detail']) { if (typeof b[k] === 'string' && b[k].trim()) return b[k]; }
-    return this.lang.t('errors.unexpected');
+    return apiErrorMessage(err, this.lang.t('errors.unexpected'));
   }
 }

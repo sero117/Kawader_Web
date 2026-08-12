@@ -6,6 +6,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
 import { AccountService } from '../../../core/services/account.service';
 import { Account, GetAccountsParams } from '../../../core/models/account.models';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-accounts',
@@ -183,20 +184,12 @@ export class AccountsComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
+    const result = apiErrorMessage(err, fallback, { 404: 'Account not found.' });
+    // Some 400s put their actionable message in a bare `type` field instead
+    // of title/detail/message — only used once nothing else matched.
+    if (result === fallback && err?.status === 400 && typeof err?.error?.type === 'string') {
+      return err.error.type;
     }
-    switch (err?.status) {
-      case 400: return body?.type ?? fallback;
-      case 403: return 'You do not have permission.';
-      case 404: return 'Account not found.';
-      case 500: return 'Server error. Please try again later.';
-      default:  return fallback;
-    }
+    return result;
   }
 }

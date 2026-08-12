@@ -16,6 +16,7 @@ import {
   Company, GetCompaniesParams,
 } from '../../../core/models/company.models';
 import { formatCompanyDate } from '../../../core/utils/company-time';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-companies',
@@ -126,11 +127,11 @@ export class CompaniesComponent implements OnInit {
       next: res => this.agents.set(res.items ?? []),
       error: () => {},
     });
-    this.countryService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+    this.countryService.getAll({ pageNumber: 1, pageSize: 100 }, true).subscribe({
       next: res => this.countries.set(res.items ?? []),
       error: () => {},
     });
-    this.currencyService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+    this.currencyService.getAll({ pageNumber: 1, pageSize: 100 }, true).subscribe({
       next: res => this.allCurrencies.set(res.items ?? []),
       error: () => {},
     });
@@ -552,30 +553,6 @@ export class CompaniesComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    if (body.errors) {
-      if (Array.isArray(body.errors)) {
-        const m = body.errors.map((e: any) => e?.message ?? e).filter((s: any) => typeof s === 'string').join('. ');
-        if (m) return m;
-      } else if (typeof body.errors === 'object') {
-        const m = (Object.values(body.errors) as unknown[]).flat()
-          .filter((s): s is string => typeof s === 'string').join('. ');
-        if (m) return m;
-      }
-    }
-    switch (err?.status) {
-      case 401: return 'Session expired. Please sign in again.';
-      case 403: return 'You do not have permission for this action.';
-      case 409: return 'This record already exists.';
-      case 500: return 'Server error. Please try again later.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback);
   }
 }

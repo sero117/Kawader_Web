@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, HostListener } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -69,7 +69,7 @@ export class AdminLayoutComponent implements OnInit {
     const id    = this.authService.getUserId();
     if (!phone || !id) return;
 
-    this.accountService.getAll({ phoneNumber: phone, pageNumber: 1, pageSize: 10 }).subscribe({
+    this.accountService.getAll({ phoneNumber: phone, pageNumber: 1, pageSize: 10 }, true).subscribe({
       next: res => {
         const items = res?.data?.items ?? [];
         const match = items.find(a => a.id === id);
@@ -80,6 +80,11 @@ export class AdminLayoutComponent implements OnInit {
   }
 
   toggle(): void { this.collapsed.update(v => !v); }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (window.innerWidth < 640) this.collapsed.set(true);
+  }
 
   onWelcomeNavigate(path: string): void {
     this.showWelcome.set(false);

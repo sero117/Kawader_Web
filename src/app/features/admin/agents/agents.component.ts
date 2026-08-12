@@ -11,6 +11,7 @@ import { Agent, CreateAgentRequest, UpdateAgentRequest } from '../../../core/mod
 import { CountryService } from '../../../core/services/country.service';
 import { Country } from '../../../core/models/country.models';
 import { formatCompanyDate } from '../../../core/utils/company-time';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-agents',
@@ -235,7 +236,7 @@ export class AgentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
-    this.countryService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+    this.countryService.getAll({ pageNumber: 1, pageSize: 100 }, true).subscribe({
       next: res => this.countries.set(res.items ?? []),
       error: () => {},
     });
@@ -356,11 +357,6 @@ export class AgentsComponent implements OnInit {
   }
 
   apiErr(err: any): string {
-    if (err?.status === 0) return this.lang.t('errors.unexpected');
-    const b = err?.error;
-    if (!b) return this.lang.t('errors.unexpected');
-    if (typeof b === 'string' && b.trim()) return b.trim();
-    for (const k of ['title', 'message', 'detail']) { if (typeof b[k] === 'string' && b[k].trim()) return b[k]; }
-    return this.lang.t('errors.unexpected');
+    return apiErrorMessage(err, this.lang.t('errors.unexpected'));
   }
 }

@@ -104,37 +104,55 @@ export class AdminOverviewComponent implements OnInit {
       error: () => this.agentCount.set(null),
     });
 
-    this.countryService.getAll({ pageNumber: 1, pageSize: 1 }).subscribe({
+    this.countryService.getAll({ pageNumber: 1, pageSize: 1 }, true).subscribe({
       next: res => this.countryCount.set(res?.totalCount ?? 0),
       error: () => this.countryCount.set(null),
     });
 
-    this.currencyService.getAll({ pageNumber: 1, pageSize: 1 }).subscribe({
+    this.currencyService.getAll({ pageNumber: 1, pageSize: 1 }, true).subscribe({
       next: res => this.currencyCount.set(res?.totalCount ?? 0),
       error: () => this.currencyCount.set(null),
     });
 
     forkJoin([
-      this.cardService.getAll({ pageNumber: 1, pageSize: 1 }),
-      this.cardService.getAll({ pageNumber: 1, pageSize: 1, status: CardStatus.Available }),
-      this.cardService.getAll({ pageNumber: 1, pageSize: 1, status: CardStatus.Used }),
-      this.cardService.getAll({ pageNumber: 1, pageSize: 1, status: CardStatus.Revoked }),
+      this.cardService.getAll({ pageNumber: 1, pageSize: 1 }, true),
+      this.cardService.getAll({ pageNumber: 1, pageSize: 1, status: CardStatus.Available }, true),
+      this.cardService.getAll({ pageNumber: 1, pageSize: 1, status: CardStatus.Used }, true),
+      this.cardService.getAll({ pageNumber: 1, pageSize: 1, status: CardStatus.Revoked }, true),
     ]).subscribe({
-      next: ([total, available, used, revoked]) => this.cardCounts.set({
-        total: total?.totalCount ?? 0, a: available?.totalCount ?? 0, b: used?.totalCount ?? 0, c: revoked?.totalCount ?? 0,
-      }),
+      // CardService.getAll() returns the raw HTTP response, which the API
+      // envelopes as { data: { totalCount, items } } — every other caller
+      // (cards.component.ts) unwraps with `res?.data ?? res` before reading
+      // fields; this forkJoin was reading `.totalCount` straight off the
+      // envelope and always got `undefined`, silently showing 0 for every count.
+      next: ([total, available, used, revoked]) => {
+        const t = (total as any)?.data ?? total;
+        const a = (available as any)?.data ?? available;
+        const u = (used as any)?.data ?? used;
+        const r = (revoked as any)?.data ?? revoked;
+        this.cardCounts.set({
+          total: t?.totalCount ?? 0, a: a?.totalCount ?? 0, b: u?.totalCount ?? 0, c: r?.totalCount ?? 0,
+        });
+      },
       error: () => this.cardCounts.set(null),
     });
 
     forkJoin([
-      this.subscriptionService.getAll({ pageNumber: 1, pageSize: 1 }),
-      this.subscriptionService.getAll({ pageNumber: 1, pageSize: 1, status: SubscriptionStatus.Active }),
-      this.subscriptionService.getAll({ pageNumber: 1, pageSize: 1, status: SubscriptionStatus.Expired }),
-      this.subscriptionService.getAll({ pageNumber: 1, pageSize: 1, status: SubscriptionStatus.Pending }),
+      this.subscriptionService.getAll({ pageNumber: 1, pageSize: 1 }, true),
+      this.subscriptionService.getAll({ pageNumber: 1, pageSize: 1, status: SubscriptionStatus.Active }, true),
+      this.subscriptionService.getAll({ pageNumber: 1, pageSize: 1, status: SubscriptionStatus.Expired }, true),
+      this.subscriptionService.getAll({ pageNumber: 1, pageSize: 1, status: SubscriptionStatus.Pending }, true),
     ]).subscribe({
-      next: ([total, active, expired, pending]) => this.subCounts.set({
-        total: total?.totalCount ?? 0, a: active?.totalCount ?? 0, b: expired?.totalCount ?? 0, c: pending?.totalCount ?? 0,
-      }),
+      // Same envelope-unwrap gap as CardService above — see comment there.
+      next: ([total, active, expired, pending]) => {
+        const t = (total as any)?.data ?? total;
+        const a = (active as any)?.data ?? active;
+        const e = (expired as any)?.data ?? expired;
+        const p = (pending as any)?.data ?? pending;
+        this.subCounts.set({
+          total: t?.totalCount ?? 0, a: a?.totalCount ?? 0, b: e?.totalCount ?? 0, c: p?.totalCount ?? 0,
+        });
+      },
       error: () => this.subCounts.set(null),
     });
   }
