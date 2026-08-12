@@ -18,7 +18,7 @@ import {
 } from '../../../../core/models/payroll.models';
 import { formatCurrencyAmount } from '../../../../core/utils/currency-format';
 import { CompanyTimeService } from '../../../../core/services/company-time.service';
-import { ServiceProblemDetails, extractErrorMessage } from '../../../../core/models/problem-details.model';
+import { apiErrorMessage } from '../../../../core/utils/api-error-message';
 
 const POLL_INTERVAL_MS = 6000;
 
@@ -217,7 +217,7 @@ export class PayrollDetailComponent implements OnInit {
   loadActiveEmployees(): void {
     this.activeEmployeesLoading.set(true);
     this.activeEmployeesError.set(null);
-    this.employeeService.getActive(this.employeeFilter() || undefined, this.run()?.currencyId).subscribe({
+    this.employeeService.getActive(this.employeeFilter() || undefined, this.run()?.currencyId, true).subscribe({
       next: list => {
         this.activeEmployees.set(list);
         this.activeEmployeesLoading.set(false);
@@ -465,28 +465,15 @@ export class PayrollDetailComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    // Some endpoints (e.g. add-employees-to-run) attach the actionable message
-    // under a dynamic field-name key instead of message/title/detail/error
-    // (e.g. {"Emp1-7": "..."}) — extractErrorMessage already handles that
-    // shape (it's what the global interceptor uses), so delegate to it
-    // instead of re-checking only the fixed key list here.
-    const serverMsg = typeof body === 'string' && body.trim()
-      ? body.trim()
-      : extractErrorMessage(body as ServiceProblemDetails | null);
-    if (serverMsg) return serverMsg;
-
-    switch (err?.status) {
-      case 401: return 'Session expired.';
-      case 403: return 'You do not have permission.';
-      case 404: return 'Not found — it may have been removed, or an employee is no longer in this company.';
-      case 409: return 'That employee is already on this payroll run.';
-      case 412: return this.processingStatus() === 'Processing'
+    // 412 depends on live component state, so it can't be a static override.
+    if (err?.status === 412) {
+      return this.processingStatus() === 'Processing'
         ? 'Still calculating the previous change — please wait a moment.'
         : 'This payroll run can no longer be modified.';
-      case 500: return 'Server error. Please try again later.';
-      default:  return fallback;
     }
+    return apiErrorMessage(err, fallback, {
+      404: 'Not found — it may have been removed, or an employee is no longer in this company.',
+      409: 'That employee is already on this payroll run.',
+    });
   }
 }

@@ -1,4 +1,4 @@
-<!-- Page heading -->
+﻿<!-- Page heading -->
 <div class="flex items-center justify-between mb-7">
   <div>
     <h1 class="font-bold text-2xl mb-1" style="color: var(--text-base);">{{ 'manager.payroll.title' | translate }}</h1>
@@ -62,7 +62,7 @@
   <!-- Status filter -->
   <div class="p-5 pb-4">
     <div class="flex flex-wrap gap-3">
-      <select class="ps-3 pe-8 py-2.5 rounded-xl text-sm" style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none; max-width: 220px;"
+      <select [attr.aria-label]="'manager.payroll.statusAll' | translate" class="ps-3 pe-8 py-2.5 rounded-xl text-sm" style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none; max-width: 220px;"
         [value]="filter.value().status"
         (change)="onStatusFilterChange($any($event.target).value)">
         <option value="">{{ 'manager.payroll.statusAll' | translate }}</option>
@@ -124,7 +124,10 @@
         </thead>
         <tbody>
           @for (r of runs(); track r.id) {
-            <tr (click)="goToDetail(r)" style="cursor: pointer;">
+            <tr (click)="goToDetail(r)" style="cursor: pointer;"
+              tabindex="0" role="button"
+              [attr.aria-label]="formatDate(r.periodStart) + ' – ' + formatDate(r.periodEnd)"
+              (keydown.enter)="goToDetail(r)" (keydown.space)="$event.preventDefault(); goToDetail(r)">
               <td>
                 <div class="flex items-center gap-2.5">
                   <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-bold"
@@ -174,7 +177,7 @@
                     <button (click)="confirmDelete(r.id, $event)"
                       class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                       style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);"
-                      [title]="'manager.payroll.deleteRunBtn' | translate">
+                      [title]="'manager.payroll.deleteRunBtn' | translate" [attr.aria-label]="'manager.payroll.deleteRunBtn' | translate">
                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                       </svg>
@@ -227,7 +230,7 @@
 
       <div class="flex items-center justify-between px-6 pt-6 pb-5" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.payroll.createBtn' | translate }}</h2>
-        <button (click)="showCreateModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showCreateModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -248,10 +251,10 @@
 
         <form [formGroup]="createForm" (ngSubmit)="submitCreate()" class="space-y-4" novalidate>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="payrollCurrency" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.payroll.currencyLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="currencyId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
+            <select id="payrollCurrency" formControlName="currencyId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
               <option [ngValue]="null" disabled>{{ 'manager.payroll.selectCurrency' | translate }}</option>
               @for (cur of myCurrencies(); track cur.id) {
                 <option [ngValue]="cur.id">{{ cur.code }} — {{ cur.arabicName }}</option>
@@ -260,10 +263,10 @@
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="payrollPeriodStart" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.payroll.periodStartLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="periodStart" type="date" class="modal-input"
+              <input id="payrollPeriodStart" formControlName="periodStart" type="date" class="modal-input"
                 [class.is-invalid]="createForm.get('periodStart')!.invalid && createForm.get('periodStart')!.touched"
                 [attr.disabled]="submitting() || null" />
               @if (createForm.get('periodStart')!.invalid && createForm.get('periodStart')!.touched) {
@@ -271,10 +274,10 @@
               }
             </div>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="payrollPeriodEnd" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.payroll.periodEndLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="periodEnd" type="date" class="modal-input"
+              <input id="payrollPeriodEnd" formControlName="periodEnd" type="date" class="modal-input"
                 [class.is-invalid]="createForm.get('periodEnd')!.invalid && createForm.get('periodEnd')!.touched"
                 [attr.disabled]="submitting() || null" />
               @if (createForm.get('periodEnd')!.invalid && createForm.get('periodEnd')!.touched) {

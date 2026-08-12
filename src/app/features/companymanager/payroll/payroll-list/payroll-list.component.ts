@@ -10,7 +10,7 @@ import { SnackbarService } from '../../../../core/services/snackbar.service';
 import { PayrollRun, PayrollStatus, UncoveredEmployee } from '../../../../core/models/payroll.models';
 import { Currency } from '../../../../core/models/currency.models';
 import { CompanyTimeService } from '../../../../core/services/company-time.service';
-import { ServiceProblemDetails, extractErrorMessage } from '../../../../core/models/problem-details.model';
+import { apiErrorMessage } from '../../../../core/utils/api-error-message';
 
 function periodRangeValidator(group: AbstractControl): ValidationErrors | null {
   const start = group.get('periodStart')?.value;
@@ -134,7 +134,7 @@ export class PayrollListComponent implements OnInit {
       const lastDay = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
       periodEnd = `${y}-${pad(m + 1)}-${pad(lastDay)}`;
     }
-    this.payrollService.getUncovered({ periodStart, periodEnd }).subscribe({
+    this.payrollService.getUncovered({ periodStart, periodEnd }, true).subscribe({
       next: list => this.uncovered.set(list ?? []),
       error: () => this.uncovered.set([]),
     });
@@ -238,25 +238,10 @@ export class PayrollListComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    // Some endpoints attach the actionable message under a dynamic
-    // field-name key instead of message/title/detail/error (e.g. a
-    // per-employee shift-hours validation keyed "Emp1-7") — extractErrorMessage
-    // already handles that shape (it's what the global interceptor uses).
-    const serverMsg = typeof body === 'string' && body.trim()
-      ? body.trim()
-      : extractErrorMessage(body as ServiceProblemDetails | null);
-    if (serverMsg) return serverMsg;
-    switch (err?.status) {
-      case 401: return 'Session expired.';
-      case 403: return 'You do not have permission.';
-      case 404: return 'Payroll run not found.';
-      case 409: return 'This period overlaps an existing payroll run.';
-      case 412: return 'This payroll run can no longer be modified.';
-      case 500: return 'Server error. Please try again later.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback, {
+      404: 'Payroll run not found.',
+      409: 'This period overlaps an existing payroll run.',
+      412: 'This payroll run can no longer be modified.',
+    });
   }
 }
