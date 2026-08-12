@@ -7,6 +7,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
 import { ShiftService } from '../../../core/services/shift.service';
 import { Shift, ShiftType, GetShiftsParams } from '../../../core/models/shift.models';
 import { CompanyTimeService } from '../../../core/services/company-time.service';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-shifts',
@@ -230,22 +231,10 @@ export class ShiftsComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    switch (err?.status) {
-      case 401: return 'Session expired.';
-      case 403: return 'Permission denied.';
-      case 404: return 'Shift not found.';
-      case 409: return 'Shift already exists.';
-      case 422: return 'Operation not allowed.';
-      case 500: return 'Server error. Please try again.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback, {
+      404: 'Shift not found.',
+      409: 'Shift already exists.',
+      422: 'Operation not allowed.',
+    });
   }
 }

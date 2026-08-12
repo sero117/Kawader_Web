@@ -96,7 +96,7 @@
               </td>
               <td>
                 @if (row.checked) {
-                  <select class="modal-input" style="appearance:none; -webkit-appearance:none; max-width: 260px;"
+                  <select [attr.aria-label]="dayLabel(row.dow) + ' — ' + ('manager.shiftSystemDays.colShift' | translate)" class="modal-input" style="appearance:none; -webkit-appearance:none; max-width: 260px;"
                     [class.is-invalid]="!row.shiftId"
                     [ngModel]="row.shiftId" (ngModelChange)="setShift(row.dow, $event)" [disabled]="saving()">
                     <option [ngValue]="null" disabled>{{ 'manager.addShiftSystemDay.shiftPlaceholder' | translate }}</option>

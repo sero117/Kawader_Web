@@ -12,6 +12,7 @@ import {
 import { EmployeeService } from '../../../core/services/employee.service';
 import { Employee } from '../../../core/models/employee.models';
 import { CompanyTimeService } from '../../../core/services/company-time.service';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-shift-logs',
@@ -197,25 +198,8 @@ export class ShiftLogsComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    if (body.errors && typeof body.errors === 'object') {
-      const m = (Object.values(body.errors) as unknown[])
-        .filter((s): s is string => typeof s === 'string').join('. ');
-      if (m) return m;
-    }
-    for (const key of ['title', 'message', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    switch (err?.status) {
-      case 401: return 'Session expired.';
-      case 403: return 'Permission denied.';
-      case 404: return 'Log not found.';
-      case 500: return 'Server error. Please try again.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback, {
+      404: 'Log not found.',
+    });
   }
 }

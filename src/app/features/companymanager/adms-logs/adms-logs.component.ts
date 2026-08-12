@@ -2,6 +2,7 @@ import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { AdmsService, AdmsLog } from '../../../core/services/adms.service';
 import { CompanyTimeService } from '../../../core/services/company-time.service';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 const VERIFY_ICONS: Record<number, string> = {
   0: '🖐',
@@ -176,14 +177,6 @@ export class AdmsLogsComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    return fallback;
+    return apiErrorMessage(err, fallback);
   }
 }

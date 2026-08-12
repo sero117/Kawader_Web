@@ -11,6 +11,7 @@ import { CompanyTimeService } from '../../../core/services/company-time.service'
 import {
   CompanyHoliday, HolidayRecurrence, GetCompanyHolidaysParams,
 } from '../../../core/models/company-holiday.models';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 /** A run of consecutive-day holidays created together (same name/paid/recurrence,
  *  each day exactly one day after the last) — collapsed into a single display row
@@ -354,26 +355,9 @@ export class CompanyHolidaysComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    if (body.errors && typeof body.errors === 'object') {
-      const m = (Object.values(body.errors) as unknown[])
-        .filter((s): s is string => typeof s === 'string').join('. ');
-      if (m) return m;
-    }
-    for (const key of ['title', 'message', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    switch (err?.status) {
-      case 401: return 'Session expired.';
-      case 403: return 'Permission denied.';
-      case 404: return 'Holiday not found.';
-      case 409: return 'A holiday with this key already exists.';
-      case 500: return 'Server error. Please try again.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback, {
+      404: 'Holiday not found.',
+      409: 'A holiday with this key already exists.',
+    });
   }
 }

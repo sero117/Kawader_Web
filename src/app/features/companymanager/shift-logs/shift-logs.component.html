@@ -21,10 +21,10 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
       <!-- Employee ID -->
       <div>
-        <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+        <label for="shiftLogFilterEmployee" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
           {{ 'manager.shiftLogs.filterEmployee' | translate }}
         </label>
-        <input type="number" min="1"
+        <input id="shiftLogFilterEmployee" type="number" min="1"
           [placeholder]="'manager.shiftLogs.filterEmployeePlaceholder' | translate"
           class="w-full px-3 py-2.5 rounded-xl text-sm"
           style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
@@ -35,10 +35,10 @@
       </div>
       <!-- Shift System -->
       <div>
-        <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+        <label for="shiftLogFilterSystem" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
           {{ 'manager.shiftLogs.filterSystem' | translate }}
         </label>
-        <select class="w-full px-3 py-2.5 rounded-xl text-sm"
+        <select id="shiftLogFilterSystem" class="w-full px-3 py-2.5 rounded-xl text-sm"
           style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none; appearance: none; -webkit-appearance: none;"
           [value]="filter.value().shiftSystemId"
           (change)="onImmediateFilter({ shiftSystemId: $any($event.target).value })">
@@ -50,10 +50,10 @@
       </div>
       <!-- From date -->
       <div>
-        <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+        <label for="shiftLogFilterFrom" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
           {{ 'manager.shiftLogs.filterFrom' | translate }}
         </label>
-        <input type="date"
+        <input id="shiftLogFilterFrom" type="date"
           class="w-full px-3 py-2.5 rounded-xl text-sm"
           style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
           [value]="filter.value().fromDate"
@@ -63,10 +63,10 @@
       </div>
       <!-- To date -->
       <div>
-        <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+        <label for="shiftLogFilterTo" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
           {{ 'manager.shiftLogs.filterTo' | translate }}
         </label>
-        <input type="date"
+        <input id="shiftLogFilterTo" type="date"
           class="w-full px-3 py-2.5 rounded-xl text-sm"
           style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
           [value]="filter.value().toDate"

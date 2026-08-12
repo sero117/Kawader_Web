@@ -9,6 +9,7 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Device, DeviceEmployee } from '../../../core/models/device.models';
 import { ActiveEmployee } from '../../../core/models/employee.models';
 import { UrlFilter } from '../../../core/utils/url-filter';
+import { ServiceProblemDetails, extractErrorMessage } from '../../../core/models/problem-details.model';
 
 @Component({
   selector: 'app-devices',
@@ -309,7 +310,7 @@ export class DevicesComponent implements OnInit {
   }
 
   loadActiveEmployees(): void {
-    this.employeeService.getActive().subscribe({
+    this.employeeService.getActive(undefined, undefined, true).subscribe({
       next: (list: any) => {
         const items = Array.isArray(list) ? list : (list?.data ?? []);
         this.activeEmployees.set(items);
@@ -420,12 +421,9 @@ export class DevicesComponent implements OnInit {
     if (err?.status === 0) return 'Cannot connect to server.';
     if (statusMap[err?.status]) return this.lang.t(statusMap[err.status]);
     const body = err?.error;
-    if (!body) return this.lang.t(fallback);
     if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
+    const extracted = extractErrorMessage(body as ServiceProblemDetails | null);
+    if (extracted) return extracted;
     return this.lang.t(fallback);
   }
 }

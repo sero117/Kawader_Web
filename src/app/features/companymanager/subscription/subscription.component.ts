@@ -6,6 +6,7 @@ import { Plan } from '../../../core/models/plan.models';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../core/services/language.service';
 import { CompanyTimeService } from '../../../core/services/company-time.service';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-subscription',
@@ -284,9 +285,6 @@ export class SubscriptionComponent implements OnInit {
   }
 
   apiErr(err: any): string {
-    const b = err?.error;
-    if (!b) return this.lang.t('errors.unexpected');
-    for (const k of ['title', 'message', 'detail']) { if (typeof b[k] === 'string' && b[k].trim()) return b[k]; }
-    return this.lang.t('errors.unexpected');
+    return apiErrorMessage(err, this.lang.t('errors.unexpected'));
   }
 }

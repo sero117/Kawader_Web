@@ -128,6 +128,14 @@ export class CompanyManagerLayoutComponent implements OnInit {
     }
   }
 
+  // Same threshold/behavior as the on-init and per-navigation checks above —
+  // this just makes it also react to an in-place window resize (e.g. a
+  // desktop window dragged narrower), which those two didn't cover.
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (window.innerWidth < 640) this.collapsed.set(true);
+  }
+
   onWelcomeNavigate(path: string): void {
     this.showWelcome.set(false);
     this.router.navigate([path]);

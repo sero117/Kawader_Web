@@ -1,4 +1,4 @@
-<!-- Page heading -->
+﻿<!-- Page heading -->
 <div class="flex items-center justify-between mb-7">
   <div>
     <h1 class="font-bold text-2xl mb-0.5" style="color: var(--text-base);">{{ 'manager.shifts.title' | translate }}</h1>
@@ -54,6 +54,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
       </svg>
       <input type="text"
+        [attr.aria-label]="'manager.shifts.searchPlaceholder' | translate"
         [placeholder]="'manager.shifts.searchPlaceholder' | translate"
         class="w-full ps-9 pe-4 py-2.5 rounded-xl text-sm"
         style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
@@ -62,7 +63,7 @@
         onfocus="this.style.borderColor='rgba(128,128,128,0.35)'"
         onblur="this.style.borderColor='var(--border)'" />
     </div>
-    <select class="px-3 py-2.5 rounded-xl text-sm"
+    <select [attr.aria-label]="'manager.shifts.typeAll' | translate" class="px-3 py-2.5 rounded-xl text-sm"
       style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none; appearance: none; -webkit-appearance: none; min-width: 140px;"
       [value]="filter.value().type"
       (change)="onTypeFilter($any($event.target).value)">
@@ -145,7 +146,7 @@
                   <button (click)="openEdit(shift, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: var(--text-faint); background: var(--bg-subtle-sm);"
-                    [title]="'manager.shifts.editTitle' | translate">
+                    [title]="'manager.shifts.editTitle' | translate" [attr.aria-label]="'manager.shifts.editTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
                     </svg>
@@ -153,7 +154,7 @@
                   <button (click)="confirmDelete(shift.id, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);"
-                    [title]="'manager.shifts.deleteTitle' | translate">
+                    [title]="'manager.shifts.deleteTitle' | translate" [attr.aria-label]="'manager.shifts.deleteTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                     </svg>
@@ -212,7 +213,7 @@
 
       <div class="flex items-center justify-between px-6 pt-6 pb-5 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.addShift.title' | translate }}</h2>
-        <button (click)="showAddModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showAddModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -235,10 +236,10 @@
 
           <!-- Name -->
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="addShiftName" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.addShift.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="name" type="text" maxlength="100" class="modal-input"
+            <input id="addShiftName" formControlName="name" type="text" maxlength="100" class="modal-input"
               [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched"
               [attr.disabled]="submitting() || null" />
             @if (addForm.get('name')!.invalid && addForm.get('name')!.touched) {
@@ -249,10 +250,10 @@
           <!-- Start + End time -->
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="addShiftStart" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addShift.startTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="startTime" type="time" class="modal-input"
+              <input id="addShiftStart" formControlName="startTime" type="time" class="modal-input"
                 [class.is-invalid]="addForm.get('startTime')!.invalid && addForm.get('startTime')!.touched"
                 [attr.disabled]="submitting() || null" />
               @if (addForm.get('startTime')!.invalid && addForm.get('startTime')!.touched) {
@@ -260,10 +261,10 @@
               }
             </div>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="addShiftEnd" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addShift.endTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="endTime" type="time" class="modal-input"
+              <input id="addShiftEnd" formControlName="endTime" type="time" class="modal-input"
                 [class.is-invalid]="addForm.get('endTime')!.invalid && addForm.get('endTime')!.touched"
                 [attr.disabled]="submitting() || null" />
               @if (addForm.get('endTime')!.invalid && addForm.get('endTime')!.touched) {
@@ -274,10 +275,10 @@
 
           <!-- Type -->
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="addShiftType" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.addShift.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="type" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
+            <select id="addShiftType" formControlName="type" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
               <option [ngValue]="ShiftType.Regular">{{ 'manager.shiftTypes.0' | translate }}</option>
               <option [ngValue]="ShiftType.Overtime">{{ 'manager.shiftTypes.1' | translate }}</option>
             </select>
@@ -310,7 +311,7 @@
           <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.editShift.title' | translate }}</h2>
           <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ selectedShift()!.name }}</p>
         </div>
-        <button (click)="showEditModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showEditModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -332,10 +333,10 @@
         <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
 
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editShiftName" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editShift.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="name" type="text" maxlength="100" class="modal-input"
+            <input id="editShiftName" formControlName="name" type="text" maxlength="100" class="modal-input"
               [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched"
               [attr.disabled]="submitting() || null" />
             @if (editForm.get('name')!.invalid && editForm.get('name')!.touched) {
@@ -345,28 +346,28 @@
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="editShiftStart" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.editShift.startTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="startTime" type="time" class="modal-input"
+              <input id="editShiftStart" formControlName="startTime" type="time" class="modal-input"
                 [class.is-invalid]="editForm.get('startTime')!.invalid && editForm.get('startTime')!.touched"
                 [attr.disabled]="submitting() || null" />
             </div>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="editShiftEnd" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.editShift.endTimeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="endTime" type="time" class="modal-input"
+              <input id="editShiftEnd" formControlName="endTime" type="time" class="modal-input"
                 [class.is-invalid]="editForm.get('endTime')!.invalid && editForm.get('endTime')!.touched"
                 [attr.disabled]="submitting() || null" />
             </div>
           </div>
 
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editShiftType" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editShift.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="type" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
+            <select id="editShiftType" formControlName="type" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
               <option [ngValue]="ShiftType.Regular">{{ 'manager.shiftTypes.0' | translate }}</option>
               <option [ngValue]="ShiftType.Overtime">{{ 'manager.shiftTypes.1' | translate }}</option>
             </select>

@@ -7,6 +7,7 @@ import { UrlFilter } from '../../../core/utils/url-filter';
 import { ShiftSystemService } from '../../../core/services/shift-system.service';
 import { ShiftSystem, GetShiftSystemsParams } from '../../../core/models/shift.models';
 import { CompanyTimeService } from '../../../core/services/company-time.service';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-shift-systems',
@@ -193,21 +194,9 @@ export class ShiftSystemsComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    switch (err?.status) {
-      case 401: return 'Session expired.';
-      case 403: return 'Permission denied.';
-      case 404: return 'Shift system not found.';
-      case 409: return 'Shift system already exists.';
-      case 500: return 'Server error. Please try again.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback, {
+      404: 'Shift system not found.',
+      409: 'Shift system already exists.',
+    });
   }
 }

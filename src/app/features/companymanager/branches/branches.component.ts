@@ -9,6 +9,7 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 import { Branch, GetBranchesParams } from '../../../core/models/branch.models';
 import { requestLocation } from '../../../core/utils/geolocation';
 import { CompanyTimeService } from '../../../core/services/company-time.service';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-branches',
@@ -257,31 +258,10 @@ export class BranchesComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    if (body.errors) {
-      if (Array.isArray(body.errors)) {
-        const m = body.errors.map((e: any) => e?.message ?? e).filter((s: any) => typeof s === 'string').join('. ');
-        if (m) return m;
-      } else if (typeof body.errors === 'object') {
-        const m = (Object.values(body.errors) as unknown[]).flat().filter((s): s is string => typeof s === 'string').join('. ');
-        if (m) return m;
-      }
-    }
-    switch (err?.status) {
-      case 401: return 'Session expired.';
-      case 403: return 'You do not have permission.';
-      case 404: return 'Branch not found.';
-      case 409: return 'A branch with this code already exists.';
-      case 412: return 'No changes detected or record already deleted.';
-      case 500: return 'Server error. Please try again later.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback, {
+      404: 'Branch not found.',
+      409: 'A branch with this code already exists.',
+      412: 'No changes detected or record already deleted.',
+    });
   }
 }

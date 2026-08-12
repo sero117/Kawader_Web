@@ -1,4 +1,4 @@
-<!-- Page heading -->
+﻿<!-- Page heading -->
 <div class="flex items-center justify-between mb-7">
   <div>
     <h1 class="font-bold text-2xl mb-1" style="color: var(--text-base);">{{ 'manager.branches.title' | translate }}</h1>
@@ -32,7 +32,7 @@
         <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
         </svg>
-        <input type="text" [placeholder]="'manager.branches.searchName' | translate"
+        <input type="text" [attr.aria-label]="'manager.branches.searchName' | translate" [placeholder]="'manager.branches.searchName' | translate"
           class="w-full ps-9 pe-4 py-2.5 rounded-xl text-sm"
           style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
           [value]="filter.value().name"
@@ -44,7 +44,7 @@
         <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-very-faint);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
         </svg>
-        <input type="text" [placeholder]="'manager.branches.searchCode' | translate"
+        <input type="text" [attr.aria-label]="'manager.branches.searchCode' | translate" [placeholder]="'manager.branches.searchCode' | translate"
           class="w-full ps-9 pe-4 py-2.5 rounded-xl text-sm"
           style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
           [value]="filter.value().code"
@@ -134,7 +134,7 @@
                   <button (click)="viewSections(b)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: rgba(99,102,241,0.8); background: rgba(99,102,241,0.08);"
-                    [title]="'manager.branches.viewSections' | translate">
+                    [title]="'manager.branches.viewSections' | translate" [attr.aria-label]="'manager.branches.viewSections' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
                     </svg>
@@ -143,7 +143,7 @@
                   <button (click)="openEdit(b, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: var(--text-faint); background: var(--bg-subtle-sm);"
-                    [title]="'manager.branches.editTitle' | translate">
+                    [title]="'manager.branches.editTitle' | translate" [attr.aria-label]="'manager.branches.editTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
                     </svg>
@@ -152,7 +152,7 @@
                   <button (click)="confirmDelete(b.id, $event)"
                     class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                     style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);"
-                    [title]="'manager.branches.deleteTitle' | translate">
+                    [title]="'manager.branches.deleteTitle' | translate" [attr.aria-label]="'manager.branches.deleteTitle' | translate">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                     </svg>
@@ -209,7 +209,7 @@
 
       <div class="flex items-center justify-between px-6 pt-6 pb-5" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.addBranch.title' | translate }}</h2>
-        <button (click)="showAddModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showAddModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -231,10 +231,10 @@
         <form [formGroup]="addForm" (ngSubmit)="submitAdd()" class="space-y-4" novalidate>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="addBranchName" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addBranch.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="name" type="text" class="modal-input"
+              <input id="addBranchName" formControlName="name" type="text" class="modal-input"
                 [class.is-invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched"
                 [attr.disabled]="submitting() || null" />
               @if (addForm.get('name')!.invalid && addForm.get('name')!.touched) {
@@ -244,10 +244,10 @@
               }
             </div>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="addBranchCode" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addBranch.codeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="code" type="text" maxlength="20" class="modal-input"
+              <input id="addBranchCode" formControlName="code" type="text" maxlength="20" class="modal-input"
                 [class.is-invalid]="addForm.get('code')!.invalid && addForm.get('code')!.touched"
                 [attr.disabled]="submitting() || null" />
               @if (addForm.get('code')!.invalid && addForm.get('code')!.touched) {
@@ -260,28 +260,28 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="addBranchCity" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addBranch.cityLabel' | translate }}
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
-              <input formControlName="city" type="text" class="modal-input" [attr.disabled]="submitting() || null" />
+              <input id="addBranchCity" formControlName="city" type="text" class="modal-input" [attr.disabled]="submitting() || null" />
             </div>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="addBranchAddress" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addBranch.addressLabel' | translate }}
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
-              <input formControlName="address" type="text" class="modal-input" [attr.disabled]="submitting() || null" />
+              <input id="addBranchAddress" formControlName="address" type="text" class="modal-input" [attr.disabled]="submitting() || null" />
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="addBranchLat" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addBranch.latLabel' | translate }}
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
-              <input formControlName="latitude" type="number" step="any" class="modal-input"
+              <input id="addBranchLat" formControlName="latitude" type="number" step="any" class="modal-input"
                 [class.is-invalid]="addForm.get('latitude')!.invalid && addForm.get('latitude')!.touched"
                 [attr.disabled]="submitting() || null" />
               @if (addForm.get('latitude')!.invalid && addForm.get('latitude')!.touched) {
@@ -289,11 +289,11 @@
               }
             </div>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="addBranchLng" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.addBranch.lngLabel' | translate }}
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
-              <input formControlName="longitude" type="number" step="any" class="modal-input"
+              <input id="addBranchLng" formControlName="longitude" type="number" step="any" class="modal-input"
                 [class.is-invalid]="addForm.get('longitude')!.invalid && addForm.get('longitude')!.touched"
                 [attr.disabled]="submitting() || null" />
               @if (addForm.get('longitude')!.invalid && addForm.get('longitude')!.touched) {
@@ -347,7 +347,7 @@
           <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.editBranch.title' | translate }}</h2>
           <p class="text-xs mt-0.5" style="color: var(--text-faint);">{{ selected()!.name }}</p>
         </div>
-        <button (click)="showEditModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showEditModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -368,10 +368,10 @@
       <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="space-y-4" novalidate>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editBranchName" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editBranch.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="name" type="text" class="modal-input"
+            <input id="editBranchName" formControlName="name" type="text" class="modal-input"
               [class.is-invalid]="editForm.get('name')!.invalid && editForm.get('name')!.touched"
               [attr.disabled]="submitting() || null" />
             @if (editForm.get('name')!.invalid && editForm.get('name')!.touched) {
@@ -381,10 +381,10 @@
             }
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editBranchCode" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editBranch.codeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="code" type="text" maxlength="20" class="modal-input"
+            <input id="editBranchCode" formControlName="code" type="text" maxlength="20" class="modal-input"
               [class.is-invalid]="editForm.get('code')!.invalid && editForm.get('code')!.touched"
               [attr.disabled]="submitting() || null" />
             @if (editForm.get('code')!.invalid && editForm.get('code')!.touched) {
@@ -397,25 +397,25 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editBranchCity" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editBranch.cityLabel' | translate }}
             </label>
-            <input formControlName="city" type="text" class="modal-input" [attr.disabled]="submitting() || null" />
+            <input id="editBranchCity" formControlName="city" type="text" class="modal-input" [attr.disabled]="submitting() || null" />
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editBranchAddress" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editBranch.addressLabel' | translate }}
             </label>
-            <input formControlName="address" type="text" class="modal-input" [attr.disabled]="submitting() || null" />
+            <input id="editBranchAddress" formControlName="address" type="text" class="modal-input" [attr.disabled]="submitting() || null" />
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editBranchLat" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editBranch.latLabel' | translate }}
             </label>
-            <input formControlName="latitude" type="number" step="any" class="modal-input"
+            <input id="editBranchLat" formControlName="latitude" type="number" step="any" class="modal-input"
               [class.is-invalid]="editForm.get('latitude')!.invalid && editForm.get('latitude')!.touched"
               [attr.disabled]="submitting() || null" />
             @if (editForm.get('latitude')!.invalid && editForm.get('latitude')!.touched) {
@@ -423,10 +423,10 @@
             }
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editBranchLng" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.editBranch.lngLabel' | translate }}
             </label>
-            <input formControlName="longitude" type="number" step="any" class="modal-input"
+            <input id="editBranchLng" formControlName="longitude" type="number" step="any" class="modal-input"
               [class.is-invalid]="editForm.get('longitude')!.invalid && editForm.get('longitude')!.touched"
               [attr.disabled]="submitting() || null" />
             @if (editForm.get('longitude')!.invalid && editForm.get('longitude')!.touched) {

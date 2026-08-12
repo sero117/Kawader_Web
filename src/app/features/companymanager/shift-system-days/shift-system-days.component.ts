@@ -8,6 +8,7 @@ import { LanguageService } from '../../../core/services/language.service';
 import { ShiftSystemService } from '../../../core/services/shift-system.service';
 import { ShiftService } from '../../../core/services/shift.service';
 import { Shift, ShiftSystemDay, DayOfWeek } from '../../../core/models/shift.models';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 const ALL_DAYS: DayOfWeek[] = [
   DayOfWeek.Sunday,
@@ -189,20 +190,8 @@ export class ShiftSystemDaysComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    switch (err?.status) {
-      case 401: return 'Session expired.';
-      case 403: return 'Permission denied.';
-      case 422: return 'This day is already configured for this system.';
-      case 500: return 'Server error. Please try again.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback, {
+      422: 'This day is already configured for this system.',
+    });
   }
 }
