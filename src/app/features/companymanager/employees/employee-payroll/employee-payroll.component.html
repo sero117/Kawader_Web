@@ -1,4 +1,4 @@
-<!-- Actions -->
+﻿<!-- Actions -->
 <div class="flex items-center justify-end mb-5">
   @if (activeTab() === 'incentives') {
     <div class="flex items-center gap-2">
@@ -105,28 +105,28 @@
           <div class="px-5 pb-4 space-y-3">
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
               <div>
-                <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+                <label for="incFilterFrom" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
                   {{ 'manager.incentivesDeductions.filterFrom' | translate }}
                 </label>
-                <input type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
+                <input id="incFilterFrom" type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
                   [value]="incentivesFilter().fromDate"
                   (input)="onIncentiveDateFilter({ fromDate: $any($event.target).value })" />
               </div>
               <div>
-                <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+                <label for="incFilterTo" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
                   {{ 'manager.incentivesDeductions.filterTo' | translate }}
                 </label>
-                <input type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
+                <input id="incFilterTo" type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
                   [value]="incentivesFilter().toDate"
                   (input)="onIncentiveDateFilter({ toDate: $any($event.target).value })" />
               </div>
               <div>
-                <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+                <label for="incFilterType" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
                   {{ 'manager.incentivesDeductions.filterType' | translate }}
                 </label>
-                <select class="w-full px-3 py-2.5 rounded-xl text-sm"
+                <select id="incFilterType" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none; appearance: none; -webkit-appearance: none;"
                   (change)="onIncentiveTypeFilterChange($any($event.target).value)">
                   <option value="">{{ 'manager.incentivesDeductions.typeAll' | translate }}</option>
@@ -136,10 +136,10 @@
                 </select>
               </div>
               <div>
-                <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+                <label for="incFilterConsumed" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
                   {{ 'manager.incentivesDeductions.filterConsumed' | translate }}
                 </label>
-                <select class="w-full px-3 py-2.5 rounded-xl text-sm"
+                <select id="incFilterConsumed" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none; appearance: none; -webkit-appearance: none;"
                   (change)="onIncentiveConsumedFilterChange($any($event.target).value)">
                   <option value="">{{ 'manager.incentivesDeductions.consumedAll' | translate }}</option>
@@ -209,7 +209,7 @@
                             class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                             [style.color]="inc.isConsumed ? 'var(--text-very-faint)' : 'var(--text-faint)'"
                             [style.background]="'var(--bg-subtle-sm)'" [style.cursor]="inc.isConsumed ? 'not-allowed' : 'pointer'"
-                            [title]="(inc.isConsumed ? 'manager.incentivesDeductions.consumedLockedHint' : 'common.edit') | translate">
+                            [title]="(inc.isConsumed ? 'manager.incentivesDeductions.consumedLockedHint' : 'common.edit') | translate" [attr.aria-label]="(inc.isConsumed ? 'manager.incentivesDeductions.consumedLockedHint' : 'common.edit') | translate">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
                             </svg>
@@ -219,7 +219,7 @@
                             [style.color]="inc.isConsumed ? 'var(--text-very-faint)' : 'rgba(239,68,68,0.55)'"
                             [style.background]="inc.isConsumed ? 'var(--bg-subtle-sm)' : 'rgba(239,68,68,0.07)'"
                             [style.cursor]="inc.isConsumed ? 'not-allowed' : 'pointer'"
-                            [title]="(inc.isConsumed ? 'manager.incentivesDeductions.consumedLockedHint' : 'common.delete') | translate">
+                            [title]="(inc.isConsumed ? 'manager.incentivesDeductions.consumedLockedHint' : 'common.delete') | translate" [attr.aria-label]="(inc.isConsumed ? 'manager.incentivesDeductions.consumedLockedHint' : 'common.delete') | translate">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                             </svg>
@@ -271,28 +271,28 @@
           <div class="px-5 pb-4 space-y-3">
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
               <div>
-                <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+                <label for="dedFilterFrom" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
                   {{ 'manager.incentivesDeductions.filterFrom' | translate }}
                 </label>
-                <input type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
+                <input id="dedFilterFrom" type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
                   [value]="deductionsFilter().fromDate"
                   (input)="onDeductionDateFilter({ fromDate: $any($event.target).value })" />
               </div>
               <div>
-                <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+                <label for="dedFilterTo" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
                   {{ 'manager.incentivesDeductions.filterTo' | translate }}
                 </label>
-                <input type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
+                <input id="dedFilterTo" type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
                   [value]="deductionsFilter().toDate"
                   (input)="onDeductionDateFilter({ toDate: $any($event.target).value })" />
               </div>
               <div>
-                <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+                <label for="dedFilterType" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
                   {{ 'manager.incentivesDeductions.filterType' | translate }}
                 </label>
-                <select class="w-full px-3 py-2.5 rounded-xl text-sm"
+                <select id="dedFilterType" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none; appearance: none; -webkit-appearance: none;"
                   (change)="onDeductionTypeFilterChange($any($event.target).value)">
                   <option value="">{{ 'manager.incentivesDeductions.typeAll' | translate }}</option>
@@ -302,10 +302,10 @@
                 </select>
               </div>
               <div>
-                <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+                <label for="dedFilterConsumed" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
                   {{ 'manager.incentivesDeductions.filterConsumed' | translate }}
                 </label>
-                <select class="w-full px-3 py-2.5 rounded-xl text-sm"
+                <select id="dedFilterConsumed" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none; appearance: none; -webkit-appearance: none;"
                   (change)="onDeductionConsumedFilterChange($any($event.target).value)">
                   <option value="">{{ 'manager.incentivesDeductions.consumedAll' | translate }}</option>
@@ -375,7 +375,7 @@
                             class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                             [style.color]="ded.isConsumed ? 'var(--text-very-faint)' : 'var(--text-faint)'"
                             [style.background]="'var(--bg-subtle-sm)'" [style.cursor]="ded.isConsumed ? 'not-allowed' : 'pointer'"
-                            [title]="(ded.isConsumed ? 'manager.incentivesDeductions.consumedLockedHint' : 'common.edit') | translate">
+                            [title]="(ded.isConsumed ? 'manager.incentivesDeductions.consumedLockedHint' : 'common.edit') | translate" [attr.aria-label]="(ded.isConsumed ? 'manager.incentivesDeductions.consumedLockedHint' : 'common.edit') | translate">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
                             </svg>
@@ -385,7 +385,7 @@
                             [style.color]="ded.isConsumed ? 'var(--text-very-faint)' : 'rgba(239,68,68,0.55)'"
                             [style.background]="ded.isConsumed ? 'var(--bg-subtle-sm)' : 'rgba(239,68,68,0.07)'"
                             [style.cursor]="ded.isConsumed ? 'not-allowed' : 'pointer'"
-                            [title]="(ded.isConsumed ? 'manager.incentivesDeductions.consumedLockedHint' : 'common.delete') | translate">
+                            [title]="(ded.isConsumed ? 'manager.incentivesDeductions.consumedLockedHint' : 'common.delete') | translate" [attr.aria-label]="(ded.isConsumed ? 'manager.incentivesDeductions.consumedLockedHint' : 'common.delete') | translate">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                             </svg>
@@ -437,28 +437,28 @@
           <div class="px-5 pb-4 space-y-3">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+                <label for="leaveFilterFrom" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
                   {{ 'manager.incentivesDeductions.filterFrom' | translate }}
                 </label>
-                <input type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
+                <input id="leaveFilterFrom" type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
                   [value]="leavesFilter().fromDate"
                   (input)="onLeaveDateFilter({ fromDate: $any($event.target).value })" />
               </div>
               <div>
-                <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+                <label for="leaveFilterTo" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
                   {{ 'manager.incentivesDeductions.filterTo' | translate }}
                 </label>
-                <input type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
+                <input id="leaveFilterTo" type="date" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;"
                   [value]="leavesFilter().toDate"
                   (input)="onLeaveDateFilter({ toDate: $any($event.target).value })" />
               </div>
               <div>
-                <label class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
+                <label for="leaveFilterPaid" class="block text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style="color: var(--text-very-faint);">
                   {{ 'manager.leaves.filterPaid' | translate }}
                 </label>
-                <select class="w-full px-3 py-2.5 rounded-xl text-sm"
+                <select id="leaveFilterPaid" class="w-full px-3 py-2.5 rounded-xl text-sm"
                   style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none; appearance: none; -webkit-appearance: none;"
                   (change)="onLeaveIsPaidFilterChange($any($event.target).value)">
                   <option value="">{{ 'manager.incentivesDeductions.typeAll' | translate }}</option>
@@ -529,7 +529,7 @@
                           <button (click)="openEditLeave(lv, $event)"
                             class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                             style="color: var(--text-faint); background: var(--bg-subtle-sm);"
-                            [title]="'common.edit' | translate">
+                            [title]="'common.edit' | translate" [attr.aria-label]="'common.edit' | translate">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
                             </svg>
@@ -537,7 +537,7 @@
                           <button (click)="confirmDeleteLeave(lv, $event)"
                             class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                             style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);"
-                            [title]="'common.delete' | translate">
+                            [title]="'common.delete' | translate" [attr.aria-label]="'common.delete' | translate">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                             </svg>
@@ -584,7 +584,7 @@
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-bold text-sm" style="color: var(--text-base);">{{ 'manager.leaveBalance.tab' | translate }}</h3>
             <div class="flex items-center gap-2">
-              <input type="number" [value]="balanceYear()"
+              <input type="number" [attr.aria-label]="'manager.leaveBalance.tab' | translate" [value]="balanceYear()"
                 (change)="changeBalanceYear($any($event.target).valueAsNumber || balanceYear())"
                 class="w-24 px-3 py-2 rounded-xl text-sm text-center"
                 style="background: var(--bg-subtle-sm); border: 1px solid var(--border); color: var(--text-muted); outline: none;" />
@@ -637,7 +637,7 @@
               <button (click)="confirmDeleteBalance()"
                 class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                 style="background: rgba(239,68,68,0.08); color: rgba(239,68,68,0.7);"
-                [title]="'manager.leaveBalance.deleteBtn' | translate">
+                [title]="'manager.leaveBalance.deleteBtn' | translate" [attr.aria-label]="'manager.leaveBalance.deleteBtn' | translate">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                 </svg>
@@ -658,7 +658,7 @@
       (click)="$event.stopPropagation()">
       <div class="flex items-center justify-between px-6 pt-6 pb-5 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.incentivesDeductions.addIncentiveBtn' | translate }}</h2>
-        <button (click)="showIncentiveAddModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showIncentiveAddModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -674,10 +674,10 @@
         }
         <form [formGroup]="incentiveForm" (ngSubmit)="submitAddIncentive()" class="space-y-4" novalidate>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="addIncType" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="incentiveType" class="modal-input" style="appearance:none; -webkit-appearance:none;"
+            <select id="addIncType" formControlName="incentiveType" class="modal-input" style="appearance:none; -webkit-appearance:none;"
               [class.is-invalid]="incentiveForm.get('incentiveType')!.invalid && incentiveForm.get('incentiveType')!.touched">
               <option [ngValue]="null" disabled>{{ 'manager.incentivesDeductions.typePlaceholder' | translate }}</option>
               @for (t of incentiveTypeList; track t) {
@@ -689,10 +689,10 @@
             }
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="addIncAmount" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.amountLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="amount" type="number" min="0.01" step="0.01" class="modal-input"
+            <input id="addIncAmount" formControlName="amount" type="number" min="0.01" step="0.01" class="modal-input"
               [class.is-invalid]="incentiveForm.get('amount')!.invalid && incentiveForm.get('amount')!.touched" />
             @if (incentiveForm.get('amount')!.hasError('required') && incentiveForm.get('amount')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
@@ -702,21 +702,21 @@
             }
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="addIncDate" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.dateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="date" type="date" class="modal-input"
+            <input id="addIncDate" formControlName="date" type="date" class="modal-input"
               [class.is-invalid]="incentiveForm.get('date')!.invalid && incentiveForm.get('date')!.touched" />
             @if (incentiveForm.get('date')!.invalid && incentiveForm.get('date')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="addIncReason" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.reasonLabel' | translate }}
               <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
             </label>
-            <textarea formControlName="reason" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
+            <textarea id="addIncReason" formControlName="reason" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
             @if (incentiveForm.get('reason')!.hasError('maxlength')) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'manager.incentivesDeductions.reasonMaxError' | translate }}</p>
             }
@@ -743,7 +743,7 @@
       (click)="$event.stopPropagation()">
       <div class="flex items-center justify-between px-6 pt-6 pb-5 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.incentivesDeductions.editIncentiveTitle' | translate }}</h2>
-        <button (click)="showIncentiveEditModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showIncentiveEditModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -759,36 +759,36 @@
         }
         <form [formGroup]="incentiveForm" (ngSubmit)="submitEditIncentive()" class="space-y-4" novalidate>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editIncType" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="incentiveType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+            <select id="editIncType" formControlName="incentiveType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
               @for (t of incentiveTypeList; track t) {
                 <option [ngValue]="t">{{ incentiveTypeLabel(t) }}</option>
               }
             </select>
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editIncAmount" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.amountLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="amount" type="number" min="0.01" step="0.01" class="modal-input" />
+            <input id="editIncAmount" formControlName="amount" type="number" min="0.01" step="0.01" class="modal-input" />
             @if (incentiveForm.get('amount')!.hasError('positiveAmount') && incentiveForm.get('amount')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'manager.incentivesDeductions.amountPositiveError' | translate }}</p>
             }
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editIncDate" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.dateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="date" type="date" class="modal-input" />
+            <input id="editIncDate" formControlName="date" type="date" class="modal-input" />
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editIncReason" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.reasonLabel' | translate }}
               <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
             </label>
-            <textarea formControlName="reason" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
+            <textarea id="editIncReason" formControlName="reason" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
           </div>
           <div class="flex gap-3 pt-1">
             <button type="button" (click)="showIncentiveEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
@@ -832,7 +832,7 @@
       (click)="$event.stopPropagation()">
       <div class="flex items-center justify-between px-6 pt-6 pb-5 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.incentivesDeductions.addDeductionBtn' | translate }}</h2>
-        <button (click)="showDeductionAddModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showDeductionAddModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -848,10 +848,10 @@
         }
         <form [formGroup]="deductionForm" (ngSubmit)="submitAddDeduction()" class="space-y-4" novalidate>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="addDedType" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="deductionType" class="modal-input" style="appearance:none; -webkit-appearance:none;"
+            <select id="addDedType" formControlName="deductionType" class="modal-input" style="appearance:none; -webkit-appearance:none;"
               [class.is-invalid]="deductionForm.get('deductionType')!.invalid && deductionForm.get('deductionType')!.touched">
               <option [ngValue]="null" disabled>{{ 'manager.incentivesDeductions.typePlaceholder' | translate }}</option>
               @for (t of deductionTypeList; track t) {
@@ -863,10 +863,10 @@
             }
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="addDedAmount" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.amountLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="amount" type="number" min="0.01" step="0.01" class="modal-input"
+            <input id="addDedAmount" formControlName="amount" type="number" min="0.01" step="0.01" class="modal-input"
               [class.is-invalid]="deductionForm.get('amount')!.invalid && deductionForm.get('amount')!.touched" />
             @if (deductionForm.get('amount')!.hasError('required') && deductionForm.get('amount')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
@@ -876,21 +876,21 @@
             }
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="addDedDate" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.dateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="date" type="date" class="modal-input"
+            <input id="addDedDate" formControlName="date" type="date" class="modal-input"
               [class.is-invalid]="deductionForm.get('date')!.invalid && deductionForm.get('date')!.touched" />
             @if (deductionForm.get('date')!.invalid && deductionForm.get('date')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
             }
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="addDedReason" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.reasonLabel' | translate }}
               <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
             </label>
-            <textarea formControlName="reason" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
+            <textarea id="addDedReason" formControlName="reason" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
             @if (deductionForm.get('reason')!.hasError('maxlength')) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'manager.incentivesDeductions.reasonMaxError' | translate }}</p>
             }
@@ -917,7 +917,7 @@
       (click)="$event.stopPropagation()">
       <div class="flex items-center justify-between px-6 pt-6 pb-5 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.incentivesDeductions.editDeductionTitle' | translate }}</h2>
-        <button (click)="showDeductionEditModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showDeductionEditModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -933,36 +933,36 @@
         }
         <form [formGroup]="deductionForm" (ngSubmit)="submitEditDeduction()" class="space-y-4" novalidate>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editDedType" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="deductionType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
+            <select id="editDedType" formControlName="deductionType" class="modal-input" style="appearance:none; -webkit-appearance:none;">
               @for (t of deductionTypeList; track t) {
                 <option [ngValue]="t">{{ deductionTypeLabel(t) }}</option>
               }
             </select>
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editDedAmount" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.amountLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="amount" type="number" min="0.01" step="0.01" class="modal-input" />
+            <input id="editDedAmount" formControlName="amount" type="number" min="0.01" step="0.01" class="modal-input" />
             @if (deductionForm.get('amount')!.hasError('positiveAmount') && deductionForm.get('amount')!.touched) {
               <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'manager.incentivesDeductions.amountPositiveError' | translate }}</p>
             }
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editDedDate" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.dateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="date" type="date" class="modal-input" />
+            <input id="editDedDate" formControlName="date" type="date" class="modal-input" />
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editDedReason" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.reasonLabel' | translate }}
               <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
             </label>
-            <textarea formControlName="reason" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
+            <textarea id="editDedReason" formControlName="reason" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
           </div>
           <div class="flex gap-3 pt-1">
             <button type="button" (click)="showDeductionEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
@@ -1006,7 +1006,7 @@
       (click)="$event.stopPropagation()">
       <div class="flex items-center justify-between px-6 pt-6 pb-5 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.leaves.addBtn' | translate }}</h2>
-        <button (click)="showLeaveAddModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showLeaveAddModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1023,20 +1023,20 @@
         <form [formGroup]="leaveForm" (ngSubmit)="submitAddLeave()" class="space-y-4" novalidate>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="addLeaveStart" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.leaves.startLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="startDate" type="date" class="modal-input"
+              <input id="addLeaveStart" formControlName="startDate" type="date" class="modal-input"
                 [class.is-invalid]="leaveForm.get('startDate')!.invalid && leaveForm.get('startDate')!.touched" />
               @if (leaveForm.get('startDate')!.invalid && leaveForm.get('startDate')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
               }
             </div>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="addLeaveEnd" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.leaves.endLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="endDate" type="date" class="modal-input"
+              <input id="addLeaveEnd" formControlName="endDate" type="date" class="modal-input"
                 [class.is-invalid]="leaveForm.get('endDate')!.invalid && leaveForm.get('endDate')!.touched" />
               @if (leaveForm.get('endDate')!.invalid && leaveForm.get('endDate')!.touched) {
                 <p class="text-xs mt-1" style="color: rgba(239,68,68,0.75);">{{ 'validation.required' | translate }}</p>
@@ -1053,11 +1053,11 @@
             </label>
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="addLeaveNotes" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.reasonLabel' | translate }}
               <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
             </label>
-            <textarea formControlName="notes" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
+            <textarea id="addLeaveNotes" formControlName="notes" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
           </div>
           <div class="flex gap-3 pt-1">
             <button type="button" (click)="showLeaveAddModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
@@ -1081,7 +1081,7 @@
       (click)="$event.stopPropagation()">
       <div class="flex items-center justify-between px-6 pt-6 pb-5 flex-shrink-0" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.leaves.editTitle' | translate }}</h2>
-        <button (click)="showLeaveEditModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showLeaveEditModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1098,16 +1098,16 @@
         <form [formGroup]="leaveForm" (ngSubmit)="submitEditLeave()" class="space-y-4" novalidate>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="editLeaveStart" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.leaves.startLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="startDate" type="date" class="modal-input" />
+              <input id="editLeaveStart" formControlName="startDate" type="date" class="modal-input" />
             </div>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="editLeaveEnd" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.leaves.endLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="endDate" type="date" class="modal-input" />
+              <input id="editLeaveEnd" formControlName="endDate" type="date" class="modal-input" />
             </div>
           </div>
           @if (leaveForm.hasError('dateRange')) {
@@ -1120,11 +1120,11 @@
             </label>
           </div>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editLeaveNotes" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.incentivesDeductions.reasonLabel' | translate }}
               <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
             </label>
-            <textarea formControlName="notes" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
+            <textarea id="editLeaveNotes" formControlName="notes" rows="2" maxlength="500" class="modal-input resize-none"></textarea>
           </div>
           <div class="flex gap-3 pt-1">
             <button type="button" (click)="showLeaveEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
@@ -1168,7 +1168,7 @@
       (click)="$event.stopPropagation()">
       <div class="flex items-center justify-between px-6 pt-6 pb-5" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.leaveBalance.addBtn' | translate }}</h2>
-        <button (click)="showBalanceAddModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showBalanceAddModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1185,10 +1185,10 @@
         <form [formGroup]="balanceAddForm" (ngSubmit)="submitAddBalance()" class="space-y-4" novalidate>
           <p class="text-xs" style="color: var(--text-faint);">{{ 'manager.leaveBalance.yearLabel' | translate }}: <span class="font-bold" style="color: var(--text-base);">{{ balanceYear() }}</span></p>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="addBalanceTotalDays" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.leaveBalance.totalDays' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="totalDays" type="number" min="0" step="1" class="modal-input" />
+            <input id="addBalanceTotalDays" formControlName="totalDays" type="number" min="0" step="1" class="modal-input" />
           </div>
           <div class="flex gap-3 pt-1">
             <button type="button" (click)="showBalanceAddModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
@@ -1212,7 +1212,7 @@
       (click)="$event.stopPropagation()">
       <div class="flex items-center justify-between px-6 pt-6 pb-5" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.leaveBalance.editBtn' | translate }}</h2>
-        <button (click)="showBalanceEditModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showBalanceEditModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1228,10 +1228,10 @@
         }
         <form [formGroup]="balanceEditForm" (ngSubmit)="submitEditBalance()" class="space-y-4" novalidate>
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="editBalanceTotalDays" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.leaveBalance.totalDays' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="totalDays" type="number" min="0" step="1" class="modal-input" />
+            <input id="editBalanceTotalDays" formControlName="totalDays" type="number" min="0" step="1" class="modal-input" />
           </div>
           <div class="flex gap-3 pt-1">
             <button type="button" (click)="showBalanceEditModal.set(false)" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
@@ -1255,7 +1255,7 @@
       (click)="$event.stopPropagation()">
       <div class="flex items-center justify-between px-6 pt-6 pb-5" style="border-bottom: 1px solid var(--border);">
         <h2 class="font-bold text-lg" style="color: var(--text-base);">{{ 'manager.leaveBalance.carryOverBtn' | translate }}</h2>
-        <button (click)="showCarryOverModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showCarryOverModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1273,16 +1273,16 @@
         <form [formGroup]="carryOverForm" (ngSubmit)="submitCarryOver()" class="space-y-4" novalidate>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="carryFromYear" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.leaveBalance.fromYear' | translate }}
               </label>
-              <input formControlName="fromYear" type="number" class="modal-input" />
+              <input id="carryFromYear" formControlName="fromYear" type="number" class="modal-input" />
             </div>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="carryToYear" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.leaveBalance.toYear' | translate }}
               </label>
-              <input formControlName="toYear" type="number" class="modal-input" />
+              <input id="carryToYear" formControlName="toYear" type="number" class="modal-input" />
             </div>
           </div>
           <div class="flex gap-3 pt-1">

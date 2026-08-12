@@ -36,7 +36,7 @@ export class EmployeeShiftAssignmentComponent implements OnInit {
     this.selectedSystemId.set(null);
     this.loading.set(true);
 
-    this.shiftSystemService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+    this.shiftSystemService.getAll({ pageNumber: 1, pageSize: 100 }, true).subscribe({
       next: (res: any) => {
         const raw  = res?.data ?? res;
         const list: ShiftSystem[] = Array.isArray(raw) ? raw : (raw?.items ?? []);

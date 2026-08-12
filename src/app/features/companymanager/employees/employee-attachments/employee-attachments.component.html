@@ -118,7 +118,7 @@
 <!-- ══ IMAGE PREVIEW LIGHTBOX ══ -->
 @if (previewImageUrl()) {
   <div class="fixed inset-0 z-[60] flex items-center justify-center p-6" style="background: rgba(0,0,0,0.85);" (click)="closeImagePreview()">
-    <button type="button" (click)="closeImagePreview()" class="absolute top-4 end-4 w-9 h-9 rounded-full flex items-center justify-center" style="background: rgba(255,255,255,0.12); color: #fff;">
+    <button type="button" (click)="closeImagePreview()" [attr.aria-label]="'common.close' | translate" class="absolute top-4 end-4 w-9 h-9 rounded-full flex items-center justify-center" style="background: rgba(255,255,255,0.12); color: #fff;">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>

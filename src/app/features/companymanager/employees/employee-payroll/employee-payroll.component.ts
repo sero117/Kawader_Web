@@ -24,6 +24,7 @@ import {
 import { formatCurrencyAmount } from '../../../../core/utils/currency-format';
 import { CompanyTimeService } from '../../../../core/services/company-time.service';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { apiErrorMessage } from '../../../../core/utils/api-error-message';
 
 type Tab = 'incentives' | 'deductions' | 'leaves' | 'balance';
 
@@ -892,28 +893,11 @@ export class EmployeePayrollPageComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    if (body.errors && typeof body.errors === 'object') {
-      const m = (Object.values(body.errors) as unknown[])
-        .filter((s): s is string => typeof s === 'string').join('. ');
-      if (m) return m;
-    }
-    for (const key of ['title', 'message', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    switch (err?.status) {
-      case 401: return 'Session expired.';
-      case 403: return 'Permission denied.';
-      case 404: return 'Record not found.';
-      case 400: return 'Invalid data submitted.';
-      case 409: return 'Already exists.';
-      case 500: return 'Server error. Please try again.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback, {
+      400: 'Invalid data submitted.',
+      404: 'Record not found.',
+      409: 'Already exists.',
+    });
   }
 }
 

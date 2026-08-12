@@ -55,8 +55,8 @@
     } @else {
     <form [formGroup]="addForm" (ngSubmit)="submitAdd()" class="space-y-4 max-w-md">
       <div>
-        <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">{{ 'manager.shiftLogs.shiftLabel' | translate }}</label>
-        <select formControlName="shiftId" class="auth-input w-full text-sm" [attr.disabled]="submitting() || null">
+        <label for="addLogShift" class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">{{ 'manager.shiftLogs.shiftLabel' | translate }}</label>
+        <select id="addLogShift" formControlName="shiftId" class="auth-input w-full text-sm" [attr.disabled]="submitting() || null">
           <option [ngValue]="null" disabled>{{ 'manager.shiftLogs.shiftPlaceholder' | translate }}</option>
           @for (s of availableShifts(); track s.id) { <option [ngValue]="s.id">{{ s.name }}</option> }
         </select>
@@ -65,22 +65,22 @@
         }
       </div>
       <div>
-        <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">{{ 'manager.shiftLogs.dateLabel' | translate }}</label>
-        <input type="date" formControlName="date" class="auth-input w-full text-sm" [attr.disabled]="submitting() || null" />
+        <label for="addLogDate" class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">{{ 'manager.shiftLogs.dateLabel' | translate }}</label>
+        <input id="addLogDate" type="date" formControlName="date" class="auth-input w-full text-sm" [attr.disabled]="submitting() || null" />
         @if (addForm.get('date')?.invalid && addForm.get('date')?.touched) {
           <p class="text-[11px] mt-1" style="color: rgba(239,68,68,0.8);">{{ 'common.required' | translate }}</p>
         }
       </div>
       <div>
-        <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">{{ 'manager.shiftLogs.checkInLabel' | translate }}</label>
-        <input type="time" formControlName="checkInTime" class="auth-input w-full text-sm" [attr.disabled]="submitting() || null" />
+        <label for="addLogCheckIn" class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">{{ 'manager.shiftLogs.checkInLabel' | translate }}</label>
+        <input id="addLogCheckIn" type="time" formControlName="checkInTime" class="auth-input w-full text-sm" [attr.disabled]="submitting() || null" />
         @if (addForm.get('checkInTime')?.invalid && addForm.get('checkInTime')?.touched) {
           <p class="text-[11px] mt-1" style="color: rgba(239,68,68,0.8);">{{ 'common.required' | translate }}</p>
         }
       </div>
       <div>
-        <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">{{ 'manager.shiftLogs.notesLabel' | translate }}</label>
-        <textarea formControlName="notes" rows="3" class="auth-input w-full text-sm resize-none"
+        <label for="addLogNotes" class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">{{ 'manager.shiftLogs.notesLabel' | translate }}</label>
+        <textarea id="addLogNotes" formControlName="notes" rows="3" class="auth-input w-full text-sm resize-none"
           [placeholder]="'manager.shiftLogs.notesPlaceholder' | translate" [attr.disabled]="submitting() || null"></textarea>
       </div>
       @if (modalError()) {
@@ -106,21 +106,21 @@
         </div>
       }
       <div>
-        <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
+        <label for="editLogCheckOut" class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">
           {{ 'manager.shiftLogs.checkOutLabel' | translate }}
           <span class="font-normal" style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
         </label>
-        <input type="time" formControlName="checkOutTime" class="auth-input w-full text-sm" [attr.disabled]="submitting() || null" />
+        <input id="editLogCheckOut" type="time" formControlName="checkOutTime" class="auth-input w-full text-sm" [attr.disabled]="submitting() || null" />
       </div>
       <div>
-        <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">{{ 'manager.shiftLogs.colStatus' | translate }}</label>
-        <select formControlName="status" class="auth-input w-full text-sm" [attr.disabled]="submitting() || null">
+        <label for="editLogStatus" class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">{{ 'manager.shiftLogs.colStatus' | translate }}</label>
+        <select id="editLogStatus" formControlName="status" class="auth-input w-full text-sm" [attr.disabled]="submitting() || null">
           @for (s of statusList; track s) { <option [ngValue]="s">{{ statusLabel(s) }}</option> }
         </select>
       </div>
       <div>
-        <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">{{ 'manager.shiftLogs.notesLabel' | translate }}</label>
-        <textarea formControlName="notes" rows="3" class="auth-input w-full text-sm resize-none"
+        <label for="editLogNotes" class="block text-xs font-semibold mb-1.5" style="color: var(--text-muted);">{{ 'manager.shiftLogs.notesLabel' | translate }}</label>
+        <textarea id="editLogNotes" formControlName="notes" rows="3" class="auth-input w-full text-sm resize-none"
           [placeholder]="'manager.shiftLogs.notesPlaceholder' | translate" [attr.disabled]="submitting() || null"></textarea>
       </div>
       @if (modalError()) {
@@ -199,12 +199,12 @@
               <td class="text-xs truncate" style="color: var(--text-faint); max-width: 160px;">{{ log.notes || '—' }}</td>
               <td>
                 <div class="flex items-center justify-end gap-1.5">
-                  <button (click)="openEdit(log)" class="w-8 h-8 rounded-lg flex items-center justify-center" style="color: var(--text-faint); background: var(--bg-subtle-sm);" [title]="'manager.shiftLogs.editTitle' | translate">
+                  <button (click)="openEdit(log)" class="w-8 h-8 rounded-lg flex items-center justify-center" style="color: var(--text-faint); background: var(--bg-subtle-sm);" [title]="'manager.shiftLogs.editTitle' | translate" [attr.aria-label]="'manager.shiftLogs.editTitle' | translate">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </button>
-                  <button (click)="confirmDelete(log)" class="w-8 h-8 rounded-lg flex items-center justify-center" style="color: rgba(239,68,68,0.6); background: rgba(239,68,68,0.07);">
+                  <button (click)="confirmDelete(log)" class="w-8 h-8 rounded-lg flex items-center justify-center" style="color: rgba(239,68,68,0.6); background: rgba(239,68,68,0.07);" [attr.aria-label]="'manager.shiftLogs.deleteTitle' | translate">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                     </svg>

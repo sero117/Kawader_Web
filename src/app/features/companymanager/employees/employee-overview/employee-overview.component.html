@@ -144,14 +144,14 @@
                 </p>
               </div>
               <div class="flex items-center gap-1 flex-shrink-0">
-                <button (click)="openEmContactEdit(c)"
+                <button (click)="openEmContactEdit(c)" [attr.aria-label]="'common.edit' | translate"
                   class="w-7 h-7 rounded-lg flex items-center justify-center"
                   style="color: var(--text-faint); background: var(--bg-subtle-md);">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
                   </svg>
                 </button>
-                <button (click)="openEmContactDelete(c.id)"
+                <button (click)="openEmContactDelete(c.id)" [attr.aria-label]="'common.delete' | translate"
                   class="w-7 h-7 rounded-lg flex items-center justify-center"
                   style="color: rgba(239,68,68,0.6); background: rgba(239,68,68,0.07);">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -183,7 +183,7 @@
     @if (emContactsView() === 'add' || emContactsView() === 'edit') {
       <div class="max-w-md">
         <div class="flex items-center gap-2 mb-4">
-          <button (click)="emContactsView.set('list')" class="w-7 h-7 rounded-lg flex items-center justify-center"
+          <button (click)="emContactsView.set('list')" [attr.aria-label]="'common.back' | translate" class="w-7 h-7 rounded-lg flex items-center justify-center"
             style="color: var(--text-faint); background: var(--bg-subtle-sm);">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -200,10 +200,10 @@
 
           <!-- Name -->
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="emContactName" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.emergencyContacts.nameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <input formControlName="name" type="text" maxlength="100" (input)="onEmContactNameInput($event)" class="modal-input"
+            <input id="emContactName" formControlName="name" type="text" maxlength="100" (input)="onEmContactNameInput($event)" class="modal-input"
               [class.is-invalid]="emContactForm.get('name')!.invalid && emContactForm.get('name')!.touched"
               [attr.disabled]="emContactsSubmitting() || null" />
           </div>
@@ -211,10 +211,10 @@
           <!-- Phone + Priority -->
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="emContactPhone" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.emergencyContacts.phoneLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="phone" type="tel" inputmode="numeric" maxlength="10" (input)="onEmContactPhoneInput($event)" class="modal-input"
+              <input id="emContactPhone" formControlName="phone" type="tel" inputmode="numeric" maxlength="10" (input)="onEmContactPhoneInput($event)" class="modal-input"
                 [class.is-invalid]="emContactForm.get('phone')!.invalid && emContactForm.get('phone')!.touched"
                 [attr.disabled]="emContactsSubmitting() || null" />
               @if (emContactForm.get('phone')!.invalid && emContactForm.get('phone')!.touched) {
@@ -222,19 +222,19 @@
               }
             </div>
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="emContactPriority" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.emergencyContacts.priorityLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
               </label>
-              <input formControlName="priority" type="number" min="1" step="1" class="modal-input" [attr.disabled]="emContactsSubmitting() || null" />
+              <input id="emContactPriority" formControlName="priority" type="number" min="1" step="1" class="modal-input" [attr.disabled]="emContactsSubmitting() || null" />
             </div>
           </div>
 
           <!-- Relation -->
           <div>
-            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+            <label for="emContactRelation" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
               {{ 'manager.emergencyContacts.relationLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
             </label>
-            <select formControlName="relation" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="emContactsSubmitting() || null">
+            <select id="emContactRelation" formControlName="relation" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="emContactsSubmitting() || null">
               <option [ngValue]="RelationType.Father">{{ 'manager.relationTypes.0' | translate }}</option>
               <option [ngValue]="RelationType.Mother">{{ 'manager.relationTypes.1' | translate }}</option>
               <option [ngValue]="RelationType.Brother">{{ 'manager.relationTypes.2' | translate }}</option>

@@ -20,6 +20,7 @@ import {
 import { formatCurrencyAmount } from '../../../../core/utils/currency-format';
 import { digitsOnlyInput } from '../../../../core/utils/phone-input';
 import { lettersOnlyInput } from '../../../../core/utils/letters-only-input';
+import { apiErrorMessage } from '../../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-employee-overview',
@@ -96,7 +97,7 @@ export class EmployeeOverviewComponent implements OnInit {
         const d = (res?.data ?? res) as Employee;
         this.employee.set(d);
         if (d.branchId) {
-          this.branchService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+          this.branchService.getAll({ pageNumber: 1, pageSize: 100 }, true).subscribe({
             next: (bres: any) => {
               const raw = bres?.data ?? bres;
               const list: Branch[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
@@ -121,7 +122,7 @@ export class EmployeeOverviewComponent implements OnInit {
     // it 403 (the global interceptor would toast that as "no permission").
     if (this.isHr) return;
     const todayDow = this.companyTime.toCompanyTime().getUTCDay();
-    this.shiftSystemService.getEmployeeShiftSystem(this.employeeId).subscribe({
+    this.shiftSystemService.getEmployeeShiftSystem(this.employeeId, true).subscribe({
       next: (res: any) => {
         const data = res?.data ?? res;
         const days: { dayOfWeek: number; startTime: string; endTime: string }[] = data?.days ?? [];
@@ -254,20 +255,6 @@ export class EmployeeOverviewComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    switch (err?.status) {
-      case 401: return 'Session expired. Please sign in again.';
-      case 403: return 'You do not have permission.';
-      case 404: return 'Not found.';
-      case 500: return 'Server error. Please try again later.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback);
   }
 }

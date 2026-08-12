@@ -89,7 +89,7 @@ export class EmployeeDetailComponent implements OnInit {
     this.backUrl.set(`${base}/employees`);
 
     this.loadEmployee();
-    this.branchService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+    this.branchService.getAll({ pageNumber: 1, pageSize: 100 }, true).subscribe({
       next: (res: any) => {
         const raw = res?.data ?? res;
         this.formBranches.set(Array.isArray(raw) ? raw : (raw?.items ?? []));

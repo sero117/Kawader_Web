@@ -11,6 +11,7 @@ import { SnackbarService } from '../../../../core/services/snackbar.service';
 import { CompanyTimeService } from '../../../../core/services/company-time.service';
 import { Employee } from '../../../../core/models/employee.models';
 import { ShiftLog, Shift, AttendanceStatus, CreateShiftLogRequest } from '../../../../core/models/shift.models';
+import { apiErrorMessage } from '../../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-employee-shift-logs',
@@ -86,7 +87,7 @@ export class EmployeeShiftLogsComponent implements OnInit {
     this.modalError.set(null);
     this.hasShift.set(null);
     this.view.set('add');
-    this.shiftSystemService.getEmployeeShiftSystem(this.employeeId).subscribe({
+    this.shiftSystemService.getEmployeeShiftSystem(this.employeeId, true).subscribe({
       next: () => this.hasShift.set(true),
       error: (err: any) => this.hasShift.set(err?.status === 404 ? false : true),
     });
@@ -246,21 +247,8 @@ export class EmployeeShiftLogsComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    switch (err?.status) {
-      case 401: return 'Session expired. Please sign in again.';
-      case 403: return 'You do not have permission.';
-      case 404: return 'Not found.';
-      case 412: return 'No changes detected or record already deleted.';
-      case 500: return 'Server error. Please try again later.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback, {
+      412: 'No changes detected or record already deleted.',
+    });
   }
 }

@@ -21,6 +21,7 @@ import {
 import { digitsOnlyInput } from '../../../core/utils/phone-input';
 import { lettersOnlyInput } from '../../../core/utils/letters-only-input';
 import { CompanyTimeService } from '../../../core/services/company-time.service';
+import { apiErrorMessage } from '../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-employees',
@@ -138,7 +139,7 @@ export class EmployeesComponent implements OnInit {
     }
     this.watchEmployeeType(this.addForm.get('employeeRole')!, this.addForm);
     this.loadEmployees();
-    this.branchService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+    this.branchService.getAll({ pageNumber: 1, pageSize: 100 }, true).subscribe({
       next: (res: any) => {
         const raw = res?.data ?? res;
         this.formBranches.set(Array.isArray(raw) ? raw : (raw?.items ?? []));
@@ -426,33 +427,10 @@ export class EmployeesComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    if (body.errors) {
-      if (Array.isArray(body.errors)) {
-        const m = body.errors.map((e: any) => e?.message ?? e)
-          .filter((s: any) => typeof s === 'string').join('. ');
-        if (m) return m;
-      } else if (typeof body.errors === 'object') {
-        const m = (Object.values(body.errors) as unknown[]).flat()
-          .filter((s): s is string => typeof s === 'string').join('. ');
-        if (m) return m;
-      }
-    }
-    switch (err?.status) {
-      case 401: return 'Session expired. Please sign in again.';
-      case 403: return 'You do not have permission.';
-      case 404: return 'Employee not found.';
-      case 409: return 'This employee already exists.';
-      case 412: return 'No changes detected or record already deleted.';
-      case 500: return 'Server error. Please try again later.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback, {
+      404: 'Employee not found.',
+      409: 'This employee already exists.',
+      412: 'No changes detected or record already deleted.',
+    });
   }
 }

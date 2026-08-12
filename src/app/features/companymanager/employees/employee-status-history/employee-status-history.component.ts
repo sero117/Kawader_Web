@@ -9,6 +9,7 @@ import { CompanyTimeService } from '../../../../core/services/company-time.servi
 import {
   EmployeeStatus, EmployeeStatusHistory, CreateStatusHistoryRequest, UpdateStatusHistoryRequest,
 } from '../../../../core/models/employee.models';
+import { apiErrorMessage } from '../../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-employee-status-history',
@@ -179,20 +180,6 @@ export class EmployeeStatusHistoryComponent implements OnInit {
   }
 
   apiErr(err: any, fallback: string): string {
-    if (err?.status === 0) return 'Cannot connect to server.';
-    const body = err?.error;
-    if (!body) return fallback;
-    if (typeof body === 'string' && body.trim()) return body.trim();
-    for (const key of ['message', 'title', 'detail', 'error']) {
-      const v = body[key];
-      if (typeof v === 'string' && v.trim() && v.length < 400) return v.trim();
-    }
-    switch (err?.status) {
-      case 401: return 'Session expired. Please sign in again.';
-      case 403: return 'You do not have permission.';
-      case 404: return 'Not found.';
-      case 500: return 'Server error. Please try again later.';
-      default:  return fallback;
-    }
+    return apiErrorMessage(err, fallback);
   }
 }

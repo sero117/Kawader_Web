@@ -42,7 +42,7 @@
     <button (click)="openEdit()"
       class="w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
       style="color: var(--text-faint); background: var(--bg-subtle-sm);"
-      [title]="'manager.employees.editTitle' | translate">
+      [title]="'manager.employees.editTitle' | translate" [attr.aria-label]="'manager.employees.editTitle' | translate">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
       </svg>
@@ -50,7 +50,7 @@
     <button (click)="confirmDelete()"
       class="w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
       style="color: rgba(239,68,68,0.55); background: rgba(239,68,68,0.07);"
-      [title]="'manager.employees.deleteTitle' | translate">
+      [title]="'manager.employees.deleteTitle' | translate" [attr.aria-label]="'manager.employees.deleteTitle' | translate">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
         <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
       </svg>
@@ -96,7 +96,7 @@
             {{ employee()!.firstName }} {{ employee()!.lastName }}
           </p>
         </div>
-        <button (click)="showEditModal.set(false)" class="w-8 h-8 rounded-lg flex items-center justify-center"
+        <button (click)="showEditModal.set(false)" [attr.aria-label]="'common.close' | translate" class="w-8 h-8 rounded-lg flex items-center justify-center"
           style="color: var(--text-faint); background: var(--bg-subtle-sm);">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -117,10 +117,10 @@
             <!-- First + Last name -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                <label for="editEmpFirstName" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.firstNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <input formControlName="firstName" type="text" (input)="onEditFirstNameInput($event)" class="modal-input"
+                <input id="editEmpFirstName" formControlName="firstName" type="text" (input)="onEditFirstNameInput($event)" class="modal-input"
                   [class.is-invalid]="editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched"
                   [attr.disabled]="submitting() || null" />
                 @if (editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched) {
@@ -128,10 +128,10 @@
                 }
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                <label for="editEmpLastName" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.lastNameLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <input formControlName="lastName" type="text" (input)="onEditLastNameInput($event)" class="modal-input"
+                <input id="editEmpLastName" formControlName="lastName" type="text" (input)="onEditLastNameInput($event)" class="modal-input"
                   [class.is-invalid]="editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched"
                   [attr.disabled]="submitting() || null" />
                 @if (editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched) {
@@ -143,10 +143,10 @@
             <!-- Employee Number + Job Title -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                <label for="editEmpNumber" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.employeeNumberLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <input formControlName="employeeNumber" type="text" maxlength="50" class="modal-input"
+                <input id="editEmpNumber" formControlName="employeeNumber" type="text" maxlength="50" class="modal-input"
                   [class.is-invalid]="editForm.get('employeeNumber')!.invalid && editForm.get('employeeNumber')!.touched"
                   [attr.disabled]="submitting() || null" />
                 @if (editForm.get('employeeNumber')!.invalid && editForm.get('employeeNumber')!.touched) {
@@ -154,10 +154,10 @@
                 }
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                <label for="editEmpJobTitle" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.jobTitleLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <input formControlName="jobTitle" type="text" maxlength="100" class="modal-input"
+                <input id="editEmpJobTitle" formControlName="jobTitle" type="text" maxlength="100" class="modal-input"
                   [class.is-invalid]="editForm.get('jobTitle')!.invalid && editForm.get('jobTitle')!.touched"
                   [attr.disabled]="submitting() || null" />
                 @if (editForm.get('jobTitle')!.invalid && editForm.get('jobTitle')!.touched) {
@@ -169,10 +169,10 @@
             <!-- Birth Date + Gender -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                <label for="editEmpBirthDate" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.birthDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <input formControlName="birthDate" type="date" class="modal-input"
+                <input id="editEmpBirthDate" formControlName="birthDate" type="date" class="modal-input"
                   [class.is-invalid]="editForm.get('birthDate')!.invalid && editForm.get('birthDate')!.touched"
                   [attr.disabled]="submitting() || null" />
                 @if (editForm.get('birthDate')!.invalid && editForm.get('birthDate')!.touched) {
@@ -180,10 +180,10 @@
                 }
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                <label for="editEmpGender" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.genderLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <select formControlName="gender" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
+                <select id="editEmpGender" formControlName="gender" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
                   <option [ngValue]="GenderType.Male">{{ 'manager.genderTypes.0' | translate }}</option>
                   <option [ngValue]="GenderType.Female">{{ 'manager.genderTypes.1' | translate }}</option>
                 </select>
@@ -192,11 +192,11 @@
 
             <!-- Nationality -->
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="editEmpNationality" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.editEmployee.nationalityLabel' | translate }}
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
-              <input formControlName="nationality" type="text" maxlength="100" class="modal-input"
+              <input id="editEmpNationality" formControlName="nationality" type="text" maxlength="100" class="modal-input"
                 [class.is-invalid]="editForm.get('nationality')!.invalid && editForm.get('nationality')!.touched"
                 [attr.disabled]="submitting() || null" />
               @if (editForm.get('nationality')!.invalid && editForm.get('nationality')!.touched) {
@@ -206,11 +206,11 @@
 
             <!-- Email -->
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="editEmpEmail" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.editEmployee.emailLabel' | translate }}
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
-              <input formControlName="email" type="text" placeholder="employee@company.com" class="modal-input"
+              <input id="editEmpEmail" formControlName="email" type="text" placeholder="employee@company.com" class="modal-input"
                 [class.is-invalid]="editForm.get('email')!.invalid && editForm.get('email')!.touched"
                 [attr.disabled]="submitting() || null" />
               @if (editForm.get('email')!.invalid && editForm.get('email')!.touched) {
@@ -221,10 +221,10 @@
             <!-- Employee Role + Contract Type -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                <label for="editEmpRole" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.typeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <select formControlName="employeeRole" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
+                <select id="editEmpRole" formControlName="employeeRole" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
                   <option [ngValue]="EmployeeType.Employee">{{ 'manager.employeeTypes.0' | translate }}</option>
                   <option [ngValue]="EmployeeType.HumanResourceManager">{{ 'manager.employeeTypes.1' | translate }}</option>
                   <option [ngValue]="EmployeeType.DepartmentManager">{{ 'manager.employeeTypes.2' | translate }}</option>
@@ -232,10 +232,10 @@
                 </select>
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                <label for="editEmpContractType" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.contractTypeLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <select formControlName="contractType" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
+                <select id="editEmpContractType" formControlName="contractType" class="modal-input" style="appearance:none; -webkit-appearance:none;" [attr.disabled]="submitting() || null">
                   <option [ngValue]="ContractType.FullTime">{{ 'manager.contractTypes.0' | translate }}</option>
                   <option [ngValue]="ContractType.PartTime">{{ 'manager.contractTypes.1' | translate }}</option>
                   <option [ngValue]="ContractType.Temporary">{{ 'manager.contractTypes.2' | translate }}</option>
@@ -248,7 +248,7 @@
             <!-- Branch + Section cascading selects -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                <label for="editEmpBranch" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.branchIdLabel' | translate }}
                   @if (editForm.get('employeeRole')!.value === EmployeeType.HumanResourceManager) {
                     <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
@@ -256,7 +256,7 @@
                     <span style="color: rgba(239,68,68,0.7);">*</span>
                   }
                 </label>
-                <select formControlName="branchId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
+                <select id="editEmpBranch" formControlName="branchId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
                   [class.is-invalid]="editForm.get('branchId')!.invalid && editForm.get('branchId')!.touched"
                   (change)="onEditBranchChange(editForm.get('branchId')!.value)"
                   [attr.disabled]="submitting() || null">
@@ -268,11 +268,11 @@
               </div>
               @if (editForm.get('employeeRole')!.value !== EmployeeType.HumanResourceManager && editForm.get('employeeRole')!.value !== EmployeeType.BranchManager) {
                 <div>
-                  <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                  <label for="editEmpSection" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                     {{ 'manager.editEmployee.sectionIdLabel' | translate }}
                     <span style="color: rgba(239,68,68,0.7);">*</span>
                   </label>
-                  <select formControlName="sectionId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
+                  <select id="editEmpSection" formControlName="sectionId" class="modal-input" style="appearance:none;-webkit-appearance:none;"
                     [class.is-invalid]="editForm.get('sectionId')!.invalid && editForm.get('sectionId')!.touched"
                     [attr.disabled]="!editForm.get('branchId')!.value || submitting() || null">
                     <option [ngValue]="null">{{ 'common.selectSection' | translate }}</option>
@@ -287,10 +287,10 @@
             <!-- Hire Date + Base Salary -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                <label for="editEmpHireDate" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.hireDateLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <input formControlName="hireDate" type="date" class="modal-input"
+                <input id="editEmpHireDate" formControlName="hireDate" type="date" class="modal-input"
                   [class.is-invalid]="editForm.get('hireDate')!.invalid && editForm.get('hireDate')!.touched"
                   [attr.disabled]="submitting() || null" />
                 @if (editForm.get('hireDate')!.invalid && editForm.get('hireDate')!.touched) {
@@ -298,11 +298,11 @@
                 }
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                <label for="editEmpBaseSalary" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.baseSalaryLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
                 <div class="flex items-center gap-2">
-                  <input formControlName="baseSalary" type="number" min="0.01" step="0.01" class="modal-input"
+                  <input id="editEmpBaseSalary" formControlName="baseSalary" type="number" min="0.01" step="0.01" class="modal-input"
                     [class.is-invalid]="editForm.get('baseSalary')!.invalid && editForm.get('baseSalary')!.touched"
                     [attr.disabled]="submitting() || null" />
                   @if (currencySymbolFor(editForm.value.currencyId)) {
@@ -316,10 +316,10 @@
                 }
               </div>
               <div>
-                <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+                <label for="editEmpCurrency" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                   {{ 'manager.editEmployee.currencyLabel' | translate }} <span style="color: rgba(239,68,68,0.7);">*</span>
                 </label>
-                <select formControlName="currencyId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
+                <select id="editEmpCurrency" formControlName="currencyId" class="modal-input" style="appearance:none;-webkit-appearance:none;" [attr.disabled]="submitting() || null">
                   <option [ngValue]="null" disabled>{{ 'manager.editEmployee.selectCurrency' | translate }}</option>
                   @for (cur of myCurrencies(); track cur.id) {
                     <option [ngValue]="cur.id">{{ cur.code }} — {{ cur.arabicName }}</option>
@@ -333,11 +333,11 @@
 
             <!-- Internal Notes -->
             <div>
-              <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
+              <label for="editEmpNotes" class="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style="color: var(--text-faint);">
                 {{ 'manager.editEmployee.internalNotesLabel' | translate }}
                 <span style="color: var(--text-very-faint);">{{ 'common.optional' | translate }}</span>
               </label>
-              <textarea formControlName="internalNotes" rows="3" maxlength="1000" class="modal-input resize-none"
+              <textarea id="editEmpNotes" formControlName="internalNotes" rows="3" maxlength="1000" class="modal-input resize-none"
                 [class.is-invalid]="editForm.get('internalNotes')!.invalid && editForm.get('internalNotes')!.touched"
                 [attr.disabled]="submitting() || null"></textarea>
               @if (editForm.get('internalNotes')!.invalid && editForm.get('internalNotes')!.touched) {
