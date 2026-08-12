@@ -8,6 +8,7 @@ import { Role, EmployeeType } from '../../../core/models/auth.models';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { Employee } from '../../../core/models/employee.models';
 import { BranchService } from '../../../core/services/branch.service';
+import { Branch } from '../../../core/models/branch.models';
 import { DeviceService } from '../../../core/services/device.service';
 import { AdmsService, AdmsLog } from '../../../core/services/adms.service';
 import { PayrollService } from '../../../core/services/payroll.service';
@@ -39,6 +40,7 @@ export class ManagerOverviewComponent implements OnInit {
   deviceCount     = signal<number | null>(null);
   todayPunchCount = signal<number | null>(null);
   payrollTotal    = signal<number | null>(null);
+  payrollPrevTotal = signal<number | null>(null);
 
   displayEmployee = signal(0);
   displayBranch   = signal(0);
@@ -56,6 +58,9 @@ export class ManagerOverviewComponent implements OnInit {
   recentLogs      = signal<AdmsLog[]>([]);
   chartDays       = signal<{ label: string; count: number; heightPx: number }[]>([]);
   recentEmployees = signal<Employee[]>([]);
+  branches        = signal<Branch[]>([]);
+  newHiresThisMonth = signal(0);
+  devicesActiveToday = signal<{ active: number; total: number } | null>(null);
 
   // ── Attendance rate as a ring (circumference-based dash offset) ────────────
   private readonly ringCircumference = 2 * Math.PI * 34;
@@ -64,6 +69,75 @@ export class ManagerOverviewComponent implements OnInit {
     return this.ringCircumference * (1 - rate / 100);
   });
 
+  /** On-time attendees only — the summary's own presentCount is "everyone who
+   *  showed up" (on-time + late combined), so this subtracts lateCount to give
+   *  a bucket that's mutually exclusive with "late" instead of overlapping it. */
+  readonly onTimeCount = computed(() => {
+    const s = this.attendanceSummary();
+    return s ? Math.max(0, s.presentCount - s.lateCount) : 0;
+  });
+
+  readonly onTimeRate = computed(() => {
+    const s = this.attendanceSummary();
+    if (!s || s.presentCount === 0) return null;
+    return Math.round((this.onTimeCount() / s.presentCount) * 100);
+  });
+
+  /** Today's punch count vs the average of the previous 6 days already on the
+   *  7-day chart — a quick "is today normal" signal without a second request. */
+  readonly punchTrendPct = computed(() => {
+    const days = this.chartDays();
+    if (days.length < 7) return null;
+    const prev = days.slice(0, 6);
+    const avg = prev.reduce((s, d) => s + d.count, 0) / prev.length;
+    if (avg === 0) return null;
+    return Math.round(((days[6].count - avg) / avg) * 100);
+  });
+
+  readonly avgSalary = computed(() => {
+    const total = this.payrollTotal();
+    const n = this.employeeCount();
+    return total != null && n ? total / n : null;
+  });
+
+  readonly payrollTrendPct = computed(() => {
+    const curr = this.payrollTotal();
+    const prev = this.payrollPrevTotal();
+    if (curr == null || !prev) return null;
+    return Math.round(((curr - prev) / prev) * 100);
+  });
+
+  /** Top branches by headcount, from the same 50-employee sample used for
+   *  "recently added" — a representative distribution, not an exact count for
+   *  companies with more than 50 employees. */
+  readonly branchDistribution = computed(() => {
+    const list = this.branches();
+    if (!list.length) return [];
+    const counts = new Map<number, number>();
+    for (const e of this.recentEmployeeSample) {
+      if (e.branchId != null) counts.set(e.branchId, (counts.get(e.branchId) ?? 0) + 1);
+    }
+    const total = [...counts.values()].reduce((s, c) => s + c, 0);
+    if (total === 0) return [];
+    return list
+      .map(b => ({ name: b.name, count: counts.get(b.id) ?? 0 }))
+      .filter(b => b.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 4)
+      .map(b => ({ ...b, pct: Math.round((b.count / total) * 100) }));
+  });
+
+  /** One-line synthesized read on today's attendance — the page's opening
+   *  thesis rather than a generic greeting. */
+  readonly heroStatusKey = computed(() => {
+    const rate = this.attendanceSummary()?.rate;
+    if (rate == null) return null;
+    if (rate >= 90) return 'manager.overview.statusExcellent';
+    if (rate >= 75) return 'manager.overview.statusGood';
+    return 'manager.overview.statusWatch';
+  });
+
+  private recentEmployeeSample: Employee[] = [];
   private allLogsCache: AdmsLog[] = [];
 
   readonly isHr = this.auth.getStoredRole() === Role.Employee &&
@@ -105,14 +179,15 @@ export class ManagerOverviewComponent implements OnInit {
     const isHr = this.isHr;
 
     forkJoin({
-      employees: this.empSvc.getActive().pipe(catchError(() => of([]))),
-      branches:  isHr ? of(null) : this.brSvc.getAll({ pageNumber: 1, pageSize: 1 }).pipe(catchError(() => of(null))),
+      employees: this.empSvc.getActive(undefined, undefined, true).pipe(catchError(() => of([]))),
+      branches:  isHr ? of(null) : this.brSvc.getAll({ pageNumber: 1, pageSize: 100 }, true).pipe(catchError(() => of(null))),
       devices:   isHr ? of(null) : this.devSvc.getAll(1, 1).pipe(catchError(() => of(null))),
       logs:      isHr ? of(null) : this.admsSvc.getLogs().pipe(catchError(() => of(null))),
-      payrolls:  isHr ? of(null) : this.payrollSvc.getAll({ pageNumber: 1, pageSize: 1 }).pipe(catchError(() => of(null))),
+      payrolls:  isHr ? of(null) : this.payrollSvc.getAll({ pageNumber: 1, pageSize: 2 }).pipe(catchError(() => of(null))),
       employeeList: this.empSvc.getAll({ pageNumber: 1, pageSize: 50 }).pipe(catchError(() => of(null))),
     }).subscribe(({ employees, branches, devices, logs, payrolls, employeeList }) => {
-      const latestRun = payrolls?.items?.[0];
+      const runs = payrolls?.items ?? [];
+      const [latestRun, prevRun] = runs;
       if (latestRun) {
         this.payrollSvc.getById(latestRun.id, undefined, true).subscribe({
           next: detail => {
@@ -125,10 +200,21 @@ export class ManagerOverviewComponent implements OnInit {
       } else {
         this.payrollTotal.set(0);
       }
+      if (prevRun) {
+        this.payrollSvc.getById(prevRun.id, undefined, true).subscribe({
+          next: detail => {
+            const total = (detail.payslips ?? []).reduce((sum, p) => sum + (p.netSalary ?? 0), 0);
+            this.payrollPrevTotal.set(total);
+          },
+          error: () => this.payrollPrevTotal.set(null),
+        });
+      }
       this.employeeCount.set(Array.isArray(employees) ? employees.length : 0);
 
       const brRes = (branches as any)?.data ?? branches;
-      this.branchCount.set(brRes?.totalCount ?? brRes?.items?.length ?? null);
+      const branchList: Branch[] = Array.isArray(brRes) ? brRes : (brRes?.items ?? []);
+      this.branches.set(branchList);
+      this.branchCount.set(brRes?.totalCount ?? branchList.length ?? null);
 
       const devRes = (devices as any)?.data ?? devices;
       this.deviceCount.set(devRes?.totalCount ?? devRes?.items?.length ?? null);
@@ -138,12 +224,19 @@ export class ManagerOverviewComponent implements OnInit {
       const fullEmployees: Employee[] = Array.isArray(empListRaw)
         ? empListRaw
         : (empListRaw?.items ?? empListRaw?.data ?? []);
-      this.recentEmployees.set(
-        [...fullEmployees]
-          .filter(e => !!e.createdAt)
-          .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
-          .slice(0, 5),
-      );
+      this.recentEmployeeSample = fullEmployees;
+      const sortedByNewest = [...fullEmployees]
+        .filter(e => !!e.createdAt)
+        .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''));
+      this.recentEmployees.set(sortedByNewest.slice(0, 5));
+
+      const nowCompany = this.companyTime.toCompanyTime();
+      const thisYear  = nowCompany.getUTCFullYear();
+      const thisMonth = nowCompany.getUTCMonth();
+      this.newHiresThisMonth.set(sortedByNewest.filter(e => {
+        const d = this.companyTime.toCompanyTime(e.createdAt);
+        return d.getUTCFullYear() === thisYear && d.getUTCMonth() === thisMonth;
+      }).length);
 
       const allLogs: AdmsLog[] = Array.isArray(logs)
         ? logs
@@ -154,6 +247,15 @@ export class ManagerOverviewComponent implements OnInit {
       );
       this.todayPunchCount.set(todayLogs.length);
       this.recentLogs.set([...todayLogs].reverse().slice(0, 6));
+
+      if (!isHr && this.deviceCount()) {
+        const deviceKeys = new Set(
+          todayLogs
+            .map(l => l.deviceSerial ?? l.serialNumber ?? l.deviceName)
+            .filter((v): v is string => !!v),
+        );
+        this.devicesActiveToday.set({ active: deviceKeys.size, total: this.deviceCount()! });
+      }
 
       // Attendance summary: deduplicate by employee, first punch only
       const LATE_HOUR = 9;
