@@ -1,8 +1,8 @@
 import { HttpInterceptorFn, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { throwError } from 'rxjs';
-import { catchError, switchMap, tap } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { LanguageService } from '../services/language.service';
 import { SnackbarService } from '../services/snackbar.service';
@@ -26,6 +26,44 @@ const AUTH_URL_FRAGMENTS = [
   '/Identity/reset-password',
   '/Identity/complete-company-info',
 ];
+
+// Module-level (not per-request) on purpose: this file is a functional
+// interceptor, so every invocation runs in the same module scope and shares
+// this variable like a singleton. Without that sharing, N requests that all
+// 401 at once (e.g. a forkJoin firing 5 calls on page load with an expired
+// token) would each start their own refresh call — if the backend rotates
+// refresh tokens on use, only the first succeeds and the rest force-logout a
+// session that had just been legitimately renewed a moment earlier.
+let refreshInFlight$: Observable<string> | null = null;
+
+/** Ensures at most one /Identity/refresh-token call is ever in flight at a
+ *  time. Concurrent callers all subscribe to the same shared Observable
+ *  (via shareReplay) and get the same resulting token — or the same error —
+ *  instead of each triggering their own HTTP call. Resets itself once the
+ *  call settles so the next expiry starts a fresh refresh. */
+function refreshAccessToken(auth: AuthService): Observable<string> {
+  if (refreshInFlight$) return refreshInFlight$;
+
+  const refreshTok = auth.getRefreshToken();
+  const userId = auth.getUserId();
+  if (!refreshTok || userId == null) {
+    return throwError(() => new Error('No refresh token available'));
+  }
+
+  refreshInFlight$ = auth.refreshToken({ userId, refreshToken: refreshTok }).pipe(
+    map(res => {
+      const tokens = res?.data;
+      const newAccess = tokens?.accessToken ?? tokens?.token;
+      if (!newAccess) throw new Error('Refresh response missing access token');
+      auth.saveTokens(tokens);
+      return newAccess as string;
+    }),
+    shareReplay(1),
+    finalize(() => { refreshInFlight$ = null; }),
+  );
+
+  return refreshInFlight$;
+}
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
@@ -73,32 +111,20 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => err);
       }
 
-      // 401 = no/expired token. If a refresh token is on hand, try it once and
-      // retry the original request; otherwise (or if refresh itself fails) send
-      // the user to login instead of leaving them stuck on a broken page.
+      // 401 = no/expired token. Try a refresh (shared across any other
+      // requests that 401 at the same moment — see refreshAccessToken above)
+      // and retry this request with the new token; if there's no refresh
+      // token or the refresh itself fails, send the user to login instead of
+      // leaving them stuck on a broken page.
       if (err.status === 401 && !isAuthUrl) {
-        const refreshTok = auth.getRefreshToken();
-        const userId = auth.getUserId();
-        if (refreshTok && userId != null) {
-          return auth.refreshToken({ userId, refreshToken: refreshTok }).pipe(
-            switchMap(res => {
-              const tokens = res?.data;
-              const newAccess = tokens?.accessToken ?? tokens?.token;
-              if (!newAccess) return throwError(() => err);
-              auth.saveTokens(tokens);
-              const retryHeaders = headers.set('Authorization', `Bearer ${newAccess}`);
-              return next(req.clone({ headers: retryHeaders }));
-            }),
-            catchError(() => {
-              auth.clearTokens();
-              router.navigate(['/auth/login']);
-              return throwError(() => err);
-            }),
-          );
-        }
-        auth.clearTokens();
-        router.navigate(['/auth/login']);
-        return throwError(() => err);
+        return refreshAccessToken(auth).pipe(
+          switchMap(newAccess => next(req.clone({ headers: headers.set('Authorization', `Bearer ${newAccess}`) }))),
+          catchError(() => {
+            auth.clearTokens();
+            router.navigate(['/auth/login']);
+            return throwError(() => err);
+          }),
+        );
       }
 
       // A 403 specifically on /Companies/status plausibly means the account's

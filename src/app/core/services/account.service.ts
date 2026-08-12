@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiService } from './api.service';
@@ -23,8 +23,7 @@ export class AccountService {
     if (params.phoneNumber) p = p.set('PhoneNumber', params.phoneNumber);
     if (params.firstName)   p = p.set('FirstName',   params.firstName);
     if (params.lastName)    p = p.set('LastName',    params.lastName);
-    const headers = silent ? new HttpHeaders({ 'X-Silent': '1' }) : undefined;
-    return this.api.get(this.baseUrl, p, headers);
+    return this.api.get(this.baseUrl, p, { silent });
   }
 
   lock(id: number): Observable<{ id: number }> {

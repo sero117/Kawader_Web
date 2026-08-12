@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiService } from './api.service';
@@ -12,8 +12,6 @@ import {
   GetReferredCompaniesParams,
   PagedResult,
 } from '../models/agent.models';
-
-const SILENT_HEADERS = new HttpHeaders().set('X-Silent', 'true');
 
 @Injectable({ providedIn: 'root' })
 export class AgentService {
@@ -31,7 +29,7 @@ export class AgentService {
       .set('PageNumber', params.pageNumber)
       .set('PageSize',   params.pageSize);
     if (params.name) p = p.set('Name', params.name);
-    return this.api.get<PagedResult<Agent>>(this.baseUrl, p, silent ? SILENT_HEADERS : undefined);
+    return this.api.get<PagedResult<Agent>>(this.baseUrl, p, { silent });
   }
 
   getById(id: number): Observable<Agent> {

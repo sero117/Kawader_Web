@@ -17,12 +17,12 @@ export class ShiftSystemService {
 
   // ── Systems ───────────────────────────────────────────────────────────────
 
-  getAll(params?: GetShiftSystemsParams): Observable<any> {
+  getAll(params?: GetShiftSystemsParams, silent = false): Observable<any> {
     let p = new HttpParams();
     if (params?.pageNumber) p = p.set('PageNumber', params.pageNumber);
     if (params?.pageSize)   p = p.set('PageSize',   params.pageSize);
     if (params?.name)       p = p.set('Name',        params.name);
-    return this.api.get<any>(this.baseUrl, p);
+    return this.api.get<any>(this.baseUrl, p, { silent });
   }
 
   create(payload: CreateShiftSystemRequest): Observable<{ id: number }> {
@@ -57,8 +57,12 @@ export class ShiftSystemService {
 
   // ── Employee Assignment ───────────────────────────────────────────────────
 
-  getEmployeeShiftSystem(employeeId: number): Observable<EmployeeShiftSystem> {
-    return this.api.get<EmployeeShiftSystem>(`${this.empUrl}/${employeeId}/shift-system`);
+  /** Pass silent=true where "no shift assigned" is an expected, handled
+   *  outcome (e.g. a display-only widget) rather than the tab's primary
+   *  content — a 404 never toasts regardless (see auth.interceptor.ts), this
+   *  only covers other error classes (500, network) for those soft lookups. */
+  getEmployeeShiftSystem(employeeId: number, silent = false): Observable<EmployeeShiftSystem> {
+    return this.api.get<EmployeeShiftSystem>(`${this.empUrl}/${employeeId}/shift-system`, undefined, { silent });
   }
 
   assignEmployee(employeeId: number, payload: AssignShiftSystemRequest): Observable<{ id: number }> {

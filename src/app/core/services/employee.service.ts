@@ -39,16 +39,16 @@ export class EmployeeService {
    *  to add to a payroll run already fixed to one currency). Passing it
    *  everywhere `getActive` is used would wrongly hide employees paid in
    *  other currencies from unrelated employee pickers/counts. */
-  getActive(filter?: string, currencyId?: number): Observable<ActiveEmployee[]> {
+  getActive(filter?: string, currencyId?: number, silent = false): Observable<ActiveEmployee[]> {
     let p = new HttpParams();
     if (filter) p = p.set('Filter', filter);
     if (currencyId) p = p.set('CurrencyId', currencyId);
-    return this.api.get<ActiveEmployee[]>(`${this.baseUrl}/active`, p);
+    return this.api.get<ActiveEmployee[]>(`${this.baseUrl}/active`, p, { silent });
   }
 
   /** Companies the authenticated employee belongs to — used to resolve tenant context. */
-  getMyCompanies(): Observable<any> {
-    return this.api.get<any>(`${this.baseUrl}/my-companies`);
+  getMyCompanies(silent = false): Observable<any> {
+    return this.api.get<any>(`${this.baseUrl}/my-companies`, undefined, { silent });
   }
 
   // Returns the uploaded file URL as a string

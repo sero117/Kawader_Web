@@ -12,16 +12,18 @@ export class CountryService {
   private readonly api     = inject(ApiService);
   private readonly baseUrl = `${environment.apiUrl}/Countries`;
 
-  getAll(params: GetCountriesParams): Observable<PagedResult<Country>> {
+  /** Pass silent=true for background/dropdown/count lookups where a
+   *  permission or network failure shouldn't surface the global error toast. */
+  getAll(params: GetCountriesParams, silent = false): Observable<PagedResult<Country>> {
     let p = new HttpParams()
       .set('PageNumber', params.pageNumber)
       .set('PageSize',   params.pageSize);
     if (params.name) p = p.set('Name', params.name);
-    return this.api.get<PagedResult<Country>>(this.baseUrl, p);
+    return this.api.get<PagedResult<Country>>(this.baseUrl, p, { silent });
   }
 
-  getById(id: number): Observable<Country> {
-    return this.api.get<Country>(`${this.baseUrl}/${id}`);
+  getById(id: number, silent = false): Observable<Country> {
+    return this.api.get<Country>(`${this.baseUrl}/${id}`, undefined, { silent });
   }
 
   create(payload: CreateCountryRequest): Observable<{ id: number }> {

@@ -3,6 +3,7 @@ import { companyManagerGuard } from './core/guards/companymanager.guard';
 import { employeeGuard } from './core/guards/employee.guard';
 import { hrGuard } from './core/guards/hr.guard';
 import { agentGuard } from './core/guards/agent.guard';
+import { adminGuard } from './core/guards/admin.guard';
 import { payrollAccessGuard } from './core/guards/payroll-access.guard';
 
 export const routes: Routes = [
@@ -63,6 +64,7 @@ export const routes: Routes = [
   // ── Admin dashboard ────────────────────────────────────────────────────────
   {
     path: 'dashboard/admin',
+    canActivate: [adminGuard],
     loadComponent: () =>
       import('./features/admin/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
     children: [

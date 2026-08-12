@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
@@ -20,8 +20,6 @@ import {
   RecalculateRequest,
   PagedResult,
 } from '../models/payroll.models';
-
-const SILENT_HEADERS = new HttpHeaders().set('X-Silent', 'true');
 
 // The API may return numeric enum values instead of string literals.
 const STATUS_MAP: Record<number, PayrollStatus> = { 0: 'Draft', 1: 'Approved', 2: 'Paid' };
@@ -60,7 +58,7 @@ export class PayrollService {
     return this.api.get<any>(
       `${this.baseUrl}/${payrollRunId}`,
       p,
-      silent ? SILENT_HEADERS : undefined,
+      { silent },
     ).pipe(map(normalizeDetail));
   }
 
@@ -79,10 +77,8 @@ export class PayrollService {
   // Silent — the component shows its own specific, translated message for the
   // 409/412 cases this call commonly hits; the generic interceptor toast on
   // top of that was showing the user two messages for one failure.
-  private static readonly SILENT_HEADERS = new HttpHeaders().set('X-Silent', 'true');
-
   addPayslips(payrollRunId: number, payload: AddPayslipsRequest): Observable<void> {
-    return this.api.post<void>(`${this.baseUrl}/${payrollRunId}/payslips`, payload, PayrollService.SILENT_HEADERS);
+    return this.api.post<void>(`${this.baseUrl}/${payrollRunId}/payslips`, payload, { silent: true });
   }
 
   updatePayslip(payrollRunId: number, payslipId: number, payload: UpdatePayslipRequest): Observable<void> {
@@ -111,11 +107,13 @@ export class PayrollService {
   }
 
   /** Active/probation employees with no payslip anywhere in the given period, grouped
-   *  by currency in the UI — an empty array means the period is fully covered. */
-  getUncovered(params: GetUncoveredParams): Observable<UncoveredEmployee[]> {
+   *  by currency in the UI — an empty array means the period is fully covered.
+   *  This is a background warning-banner lookup, so callers pass silent=true;
+   *  a failure here just means the banner doesn't show, not a real error. */
+  getUncovered(params: GetUncoveredParams, silent = false): Observable<UncoveredEmployee[]> {
     const p = new HttpParams()
       .set('periodStart', params.periodStart)
       .set('periodEnd',   params.periodEnd);
-    return this.api.get<UncoveredEmployee[]>(`${this.baseUrl}/uncovered`, p);
+    return this.api.get<UncoveredEmployee[]>(`${this.baseUrl}/uncovered`, p, { silent });
   }
 }

@@ -11,17 +11,20 @@ export class BranchService {
   private readonly api     = inject(ApiService);
   private readonly baseUrl = `${environment.apiUrl}/Branches`;
 
-  getAll(params?: GetBranchesParams): Observable<any> {
+  /** Pass silent=true for background/display lookups (e.g. resolving a
+   *  branch name on an employee's overview) where HR — which has no backend
+   *  permission on Branches — shouldn't see the global error toast. */
+  getAll(params?: GetBranchesParams, silent = false): Observable<any> {
     let p = new HttpParams();
     if (params?.pageNumber) p = p.set('PageNumber', params.pageNumber);
     if (params?.pageSize)   p = p.set('PageSize',   params.pageSize);
     if (params?.name)       p = p.set('Name',        params.name);
     if (params?.code)       p = p.set('Code',        params.code);
-    return this.api.get<any>(this.baseUrl, p);
+    return this.api.get<any>(this.baseUrl, p, { silent });
   }
 
-  getById(id: number): Observable<ApiResponse<Branch>> {
-    return this.api.get<ApiResponse<Branch>>(`${this.baseUrl}/${id}`);
+  getById(id: number, silent = false): Observable<ApiResponse<Branch>> {
+    return this.api.get<ApiResponse<Branch>>(`${this.baseUrl}/${id}`, undefined, { silent });
   }
 
   create(payload: CreateBranchRequest): Observable<any> {

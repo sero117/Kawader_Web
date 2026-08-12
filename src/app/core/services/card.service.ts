@@ -10,7 +10,10 @@ export class CardService {
   private readonly api     = inject(ApiService);
   private readonly baseUrl = `${environment.apiUrl}/Cards`;
 
-  getAll(params: GetCardsParams): Observable<any> {
+  /** Pass silent=true for background/count lookups (e.g. a dashboard tile)
+   *  where a permission or network failure shouldn't surface the global
+   *  error toast. */
+  getAll(params: GetCardsParams, silent = false): Observable<any> {
     let p = new HttpParams()
       .set('PageNumber', params.pageNumber)
       .set('PageSize', params.pageSize);
@@ -18,7 +21,7 @@ export class CardService {
     if (params.status != null) p = p.set('Status', params.status);
     if (params.serialNumber) p = p.set('SerialNumber', params.serialNumber);
     if (params.distinct)     p = p.set('Distinct', params.distinct);
-    return this.api.get<any>(this.baseUrl, p);
+    return this.api.get<any>(this.baseUrl, p, { silent });
   }
 
   getById(id: number): Observable<Card> {

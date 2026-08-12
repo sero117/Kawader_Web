@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiService } from './api.service';
@@ -8,21 +8,22 @@ import {
   CurrencyRate, GetCurrencyRatesParams, PagedResult,
 } from '../models/currency.models';
 
-const SILENT_HEADERS = new HttpHeaders().set('X-Silent', 'true');
-
 @Injectable({ providedIn: 'root' })
 export class CurrencyService {
   private readonly api     = inject(ApiService);
   private readonly baseUrl = `${environment.apiUrl}/Currencies`;
 
-  /** Admin only — CompanyManager callers get 403. Use getMe() for company-manager screens. */
-  getAll(params: GetCurrenciesParams): Observable<PagedResult<Currency>> {
+  /** Admin only — CompanyManager/HR callers get 403. Use getMe() for
+   *  company-manager/HR screens. Pass silent=true for background/count
+   *  lookups (e.g. a dashboard tile) where a permission failure shouldn't
+   *  surface the global error toast. */
+  getAll(params: GetCurrenciesParams, silent = false): Observable<PagedResult<Currency>> {
     let p = new HttpParams()
       .set('PageNumber', params.pageNumber)
       .set('PageSize',   params.pageSize);
     if (params.code) p = p.set('Code', params.code);
     if (params.name) p = p.set('Name', params.name);
-    return this.api.get<PagedResult<Currency>>(this.baseUrl, p);
+    return this.api.get<PagedResult<Currency>>(this.baseUrl, p, { silent });
   }
 
   getById(id: number): Observable<Currency> {
@@ -54,6 +55,6 @@ export class CurrencyService {
    *  granted yet — do not treat that as an error. Backend renamed this from
    *  /me to /company (also fixing the HR 403 — it's no longer CompanyManager-only). */
   getMe(silent = false): Observable<Currency[]> {
-    return this.api.get<Currency[]>(`${this.baseUrl}/company`, undefined, silent ? SILENT_HEADERS : undefined);
+    return this.api.get<Currency[]>(`${this.baseUrl}/company`, undefined, { silent });
   }
 }
