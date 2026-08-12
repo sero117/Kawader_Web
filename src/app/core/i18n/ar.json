@@ -160,6 +160,7 @@
     "deleting": "جارٍ الحذف…",
     "close": "إغلاق",
     "hide": "إخفاء",
+    "toggleSidebar": "تبديل القائمة الجانبية",
     "saveFailed": "فشل الحفظ. حاول مجدداً.",
     "success": {
       "added": "تمت الإضافة بنجاح",
@@ -865,7 +866,19 @@
       "absent": "غائب",
       "attendanceRate": "نسبة الحضور",
       "recentEmployees": "آخر الموظفين المضافين",
-      "noRecentEmployees": "لا يوجد موظفون مضافون حديثاً"
+      "noRecentEmployees": "لا يوجد موظفون مضافون حديثاً",
+      "attendanceRateToday": "نسبة الحضور اليوم",
+      "statusExcellent": "أداء ممتاز",
+      "statusGood": "أداء جيد",
+      "statusWatch": "يستدعي المتابعة",
+      "newThisMonth": "جديد هذا الشهر",
+      "avgPerEmployee": "بالمتوسط لكل موظف",
+      "vsWeekAvg": "عن متوسط الأسبوع",
+      "vsLastRun": "عن الدورة السابقة",
+      "activeToday": "نشط اليوم",
+      "workforceByBranch": "توزيع الموظفين على الفروع",
+      "onTimeRate": "معدل الالتزام بالوقت",
+      "onTime": "حاضر بالوقت"
     },
     "branches": {
       "title": "الفروع",

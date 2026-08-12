@@ -1322,12 +1322,22 @@ select option {
 .kpi-body { flex: 1; min-width: 0; }
 
 .kpi-value {
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
   font-size: 1.625rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text-base);
   line-height: 1;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   margin-bottom: 0.3rem;
+}
+
+.kpi-caption {
+  font-size: 0.68rem;
+  color: var(--text-very-faint);
+  margin-top: 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .kpi-label {
@@ -1468,6 +1478,128 @@ select option {
 }
 
 .quick-action-icon svg { width: 16px; height: 16px; }
+
+/* ── Overview: tonal KPI icon (accent-derived, replaces per-card rainbow) ── */
+
+.kpi-icon-tonal {
+  background: color-mix(in srgb, var(--nav-accent) 14%, var(--bg-surface));
+  color: var(--nav-accent);
+  box-shadow: 0 0 0 3px var(--bg-page);
+}
+
+/* ── Overview: KPI trend delta chip ──────────────────────────────── */
+
+.kpi-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  margin-top: 0.15rem;
+  white-space: nowrap;
+}
+
+.kpi-delta svg { width: 10px; height: 10px; flex-shrink: 0; }
+
+.kpi-delta.up   { color: #059669; }
+.kpi-delta.down { color: #dc2626; }
+.kpi-delta.flat { color: var(--text-faint); }
+
+/* ── Overview: hero synthesized status line ──────────────────────── */
+
+.hero-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.hero-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.hero-status-dot.excellent { background: #059669; }
+.hero-status-dot.good      { background: #d97706; }
+.hero-status-dot.watch     { background: #dc2626; }
+
+.hero-status-num {
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  font-weight: 700;
+}
+
+/* ── Overview: three-segment attendance stacked bar ──────────────── */
+
+.attendance-stack-bar {
+  display: flex;
+  width: 100%;
+  height: 8px;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: var(--bg-subtle-sm);
+}
+
+.attendance-stack-seg {
+  height: 100%;
+  transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.attendance-stack-seg.on-time { background: #059669; }
+.attendance-stack-seg.late    { background: #d97706; }
+.attendance-stack-seg.absent  { background: #dc2626; }
+
+/* ── Overview: workforce-by-branch distribution list ──────────────── */
+
+.branch-dist-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.4rem 0;
+}
+
+.branch-dist-name {
+  width: 30%;
+  min-width: 72px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-base);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.branch-dist-track {
+  flex: 1;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--bg-subtle-sm);
+  overflow: hidden;
+}
+
+.branch-dist-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--nav-accent);
+  transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.branch-dist-pct {
+  width: 34px;
+  flex-shrink: 0;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: end;
+}
 
 /* ── Empty state ──────────────────────────────────────────────────── */
 

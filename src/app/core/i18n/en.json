@@ -160,6 +160,7 @@
     "deleting": "Deleting…",
     "close": "Close",
     "hide": "Hide",
+    "toggleSidebar": "Toggle sidebar",
     "saveFailed": "Save failed. Please try again.",
     "success": {
       "added": "Added successfully",
@@ -865,7 +866,19 @@
       "absent": "Absent",
       "attendanceRate": "Attendance Rate",
       "recentEmployees": "Recently Added Employees",
-      "noRecentEmployees": "No employees added recently"
+      "noRecentEmployees": "No employees added recently",
+      "attendanceRateToday": "Today's Attendance Rate",
+      "statusExcellent": "Excellent",
+      "statusGood": "Good",
+      "statusWatch": "Needs attention",
+      "newThisMonth": "new this month",
+      "avgPerEmployee": "avg. per employee",
+      "vsWeekAvg": "vs. weekly avg",
+      "vsLastRun": "vs. last run",
+      "activeToday": "active today",
+      "workforceByBranch": "Employees by Branch",
+      "onTimeRate": "On-time Rate",
+      "onTime": "On time"
     },
     "branches": {
       "title": "Branches",
