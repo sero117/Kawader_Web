@@ -185,6 +185,10 @@ export class DevicesComponent implements OnInit {
       }).subscribe({
         next: (res: any) => {
           this.submitting.set(false);
+          if (res?.isSuccess === false) {
+            this.snackbar.show(res.message || this.lang.t('common.saveFailed'), 'error');
+            return;
+          }
           this.closeDeviceModal();
           this.loadDevices();
           const secret = res?.data?.deviceSecret ?? res?.deviceSecret;
