@@ -13,6 +13,7 @@ import { DeviceService } from '../../../core/services/device.service';
 import { AdmsService, AdmsLog } from '../../../core/services/adms.service';
 import { PayrollService } from '../../../core/services/payroll.service';
 import { CompanyTimeService } from '../../../core/services/company-time.service';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-manager-overview',
@@ -28,10 +29,15 @@ export class ManagerOverviewComponent implements OnInit {
   private readonly admsSvc = inject(AdmsService);
   private readonly payrollSvc = inject(PayrollService);
   private readonly companyTime = inject(CompanyTimeService);
+  private readonly lang        = inject(LanguageService);
+
+  /** Follows the current app language instead of a fixed locale, so switching
+   *  the language switcher actually changes how dates render (see dateLocale()). */
+  private dateLocale(): string { return this.lang.current() === 'ar' ? 'ar-SA' : 'en-GB'; }
 
   loading         = signal(true);
   readonly managerName = this.auth.getDisplayName();
-  readonly todayDate   = computed(() => this.companyTime.formatDate(new Date().toISOString(), 'ar-SA', {
+  readonly todayDate   = computed(() => this.companyTime.formatDate(new Date().toISOString(), this.dateLocale(), {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   }));
 
@@ -310,7 +316,7 @@ export class ManagerOverviewComponent implements OnInit {
       const iso = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
       return {
         iso,
-        label: d.toLocaleDateString('ar-SA', { weekday: 'short', timeZone: 'UTC' }),
+        label: d.toLocaleDateString(this.dateLocale(), { weekday: 'short', timeZone: 'UTC' }),
         count: 0,
       };
     });
@@ -360,7 +366,7 @@ export class ManagerOverviewComponent implements OnInit {
 
   employeeAddedDate(e: Employee): string {
     if (!e.createdAt) return '—';
-    try { return this.companyTime.formatDate(e.createdAt, 'ar-SA', { month: 'short', day: 'numeric' }); }
+    try { return this.companyTime.formatDate(e.createdAt, this.dateLocale(), { month: 'short', day: 'numeric' }); }
     catch { return e.createdAt.substring(0, 10); }
   }
 }
