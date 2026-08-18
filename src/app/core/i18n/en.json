@@ -1326,7 +1326,10 @@
       "results": "results",
       "result": "result",
       "prev": "Prev",
-      "next": "Next"
+      "next": "Next",
+      "noShiftTitle": "Can't add attendance",
+      "noShiftLine1": "This employee isn't assigned to an active shift system.",
+      "noShiftLine2": "Please assign a shift system first via the Shift tab."
     },
     "addShiftLog": {
       "title": "Add Attendance Log",
@@ -1519,6 +1522,7 @@
       "systemPlaceholder": "Select a shift system…",
       "confirmAssign": "Confirm",
       "loadError": "Failed to load shift assignment.",
+      "systemsLoadError": "Couldn't load shift systems. You may not have permission to access this data.",
       "unassigning": "Removing…",
       "assigning": "Assigning…"
     },

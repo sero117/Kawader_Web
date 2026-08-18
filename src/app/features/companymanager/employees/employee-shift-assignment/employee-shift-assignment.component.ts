@@ -4,6 +4,7 @@ import { TranslatePipe } from '../../../../core/pipes/translate.pipe';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ShiftSystemService } from '../../../../core/services/shift-system.service';
 import { EmployeeShiftSystem, ShiftSystem, DayOfWeek } from '../../../../core/models/shift.models';
+import { apiErrorMessage } from '../../../../core/utils/api-error-message';
 
 @Component({
   selector: 'app-employee-shift-assignment',
@@ -23,6 +24,7 @@ export class EmployeeShiftAssignmentComponent implements OnInit {
   showAssignForm      = signal(false);
   submitting          = signal(false);
   availableSystems    = signal<ShiftSystem[]>([]);
+  systemsError        = signal<string | null>(null);
   selectedSystemId    = signal<number | null>(null);
   successMsg          = signal<string | null>(null);
 
@@ -36,14 +38,7 @@ export class EmployeeShiftAssignmentComponent implements OnInit {
     this.selectedSystemId.set(null);
     this.loading.set(true);
 
-    this.shiftSystemService.getAll({ pageNumber: 1, pageSize: 100 }, true).subscribe({
-      next: (res: any) => {
-        const raw  = res?.data ?? res;
-        const list: ShiftSystem[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
-        this.availableSystems.set(list);
-      },
-      error: () => {},
-    });
+    this.loadAvailableSystems();
 
     this.shiftSystemService.getEmployeeShiftSystem(this.employeeId).subscribe({
       next: (res: any) => {
@@ -53,6 +48,20 @@ export class EmployeeShiftAssignmentComponent implements OnInit {
       error: (err) => {
         this.loading.set(false);
         if (err?.status === 404) this.employeeShiftSystem.set(null);
+      },
+    });
+  }
+
+  loadAvailableSystems(): void {
+    this.systemsError.set(null);
+    this.shiftSystemService.getAll({ pageNumber: 1, pageSize: 100 }, true).subscribe({
+      next: (res: any) => {
+        const raw  = res?.data ?? res;
+        const list: ShiftSystem[] = Array.isArray(raw) ? raw : (raw?.items ?? []);
+        this.availableSystems.set(list);
+      },
+      error: (err) => {
+        this.systemsError.set(apiErrorMessage(err, this.lang.t('manager.shiftAssignment.systemsLoadError')));
       },
     });
   }

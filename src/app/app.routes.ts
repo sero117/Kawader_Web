@@ -5,6 +5,7 @@ import { hrGuard } from './core/guards/hr.guard';
 import { agentGuard } from './core/guards/agent.guard';
 import { adminGuard } from './core/guards/admin.guard';
 import { payrollAccessGuard } from './core/guards/payroll-access.guard';
+import { shiftSystemsAccessGuard } from './core/guards/shift-systems-access.guard';
 
 export const routes: Routes = [
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -395,12 +396,14 @@ export const routes: Routes = [
       {
         path: 'shift-systems',
         title: 'تصنيف الورديات',
+        canActivate: [shiftSystemsAccessGuard],
         loadComponent: () =>
           import('./features/companymanager/shift-systems/shift-systems.component').then(m => m.ShiftSystemsComponent),
       },
       {
         path: 'shift-systems/:shiftSystemId/days',
         title: 'أيام الدوام',
+        canActivate: [shiftSystemsAccessGuard],
         loadComponent: () =>
           import('./features/companymanager/shift-system-days/shift-system-days.component').then(m => m.ShiftSystemDaysComponent),
       },

@@ -44,6 +44,17 @@ import { LanguageService } from '../../services/language.service';
       background: var(--nav-active-bg);
       color: var(--nav-active-text);
     }
+    /* Visual size stays 26x24 (fits the compact header track); the button's
+       real tap target is enlarged via an invisible pseudo-element so it
+       doesn't blow out the header layout on mobile. */
+    @media (max-width: 640px) {
+      .lang-btn { position: relative; }
+      .lang-btn::after {
+        content: '';
+        position: absolute;
+        inset: -10px -4px;
+      }
+    }
     .lang-compact {
       display: none;
       align-items: center;
